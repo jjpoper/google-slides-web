@@ -1,0 +1,165 @@
+module.exports = {
+  root: true,
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+      warnOnUnsupportedTypeScriptVersion: true,
+      ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
+      sourceType: "module", // Allows for the use of imports
+  },
+  plugins: ["@typescript-eslint"],
+  extends: ["airbnb-base", "plugin:@typescript-eslint/recommended"],
+  rules: {
+      semi: 0,
+      quotes: 0,
+      // quotes: [1, "single", { allowTemplateLiterals: true }],
+      "prefer-const": 0,
+      "arrow-body-style": 0,
+      "consistent-return": 0,
+      "no-plusplus": 0,
+      "global-require": 0,
+      "comma-dangle": 0,
+      "padded-blocks": 0,
+      "no-restricted-syntax": 0,
+      "no-mixed-operators": 0,
+      "no-else-return": 0,
+      "no-floating-decimal": 0,
+      "one-var": 0,
+      radix: 0,
+      "no-continue": 0,
+      indent: 0,
+      camelcase: 0,
+      "arrow-parens": 0,
+      "no-unused-expressions": 2,
+      "no-console": 2,
+      "no-bitwise": 1,
+      "no-nested-ternary": 1,
+      "no-prototype-builtins": 1,
+      "no-dupe-class-members": 0,
+      "no-param-reassign": 0,
+      "array-callback-return": 0,
+      "object-curly-newline": 0,
+      "no-underscore-dangle": 0,
+      "class-methods-use-this": 0,
+      "object-shorthand": 0,
+      "spaced-comment": [
+          2,
+          "always",
+          {
+              markers: ["/"],
+          },
+      ],
+      "no-use-before-define": [
+          1,
+          {
+              variables: false,
+          },
+      ],
+      "lines-between-class-members": [
+          2,
+          "always",
+          {
+              exceptAfterSingleLine: true,
+          },
+      ],
+      // 括号前后禁止使用空格
+      "object-curly-spacing": 'off',
+      "no-restricted-globals": 'off',
+      "max-len": [
+          2,
+          180,
+          4,
+          {
+              ignoreUrls: true,
+          },
+      ],
+      // 按规则定义方法定义顺序
+      "keyword-spacing": [
+          2,
+          {
+              overrides: {
+                  if: {
+                      after: false,
+                  },
+                  for: {
+                      after: false,
+                  },
+                  while: {
+                      after: false,
+                  },
+                  catch: {
+                      after: false,
+                  },
+              },
+          },
+      ],
+      "import/prefer-default-export": 0,
+      "import/no-extraneous-dependencies": 0,
+      "import/extensions": 0,
+      "import/no-unresolved": 0,
+    //   "@typescript-eslint/indent": [2, 4],
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/explicit-member-accessibility": 0,
+      "@typescript-eslint/interface-name-prefix": 0,
+      "@typescript-eslint/no-triple-slash-reference": 0,
+      "@typescript-eslint/member-delimiter-style": 0,
+      "@typescript-eslint/ban-ts-ignore": 0,
+      "@typescript-eslint/camelcase": [
+          1,
+          {
+              properties: "never",
+          },
+      ],
+      "@typescript-eslint/explicit-function-return-type": [
+          0,
+          {
+              allowExpressions: true,
+              allowTypedFunctionExpressions: true,
+          },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+          1,
+          {
+              vars: "all",
+              args: "after-used",
+              ignoreRestSiblings: true,
+              argsIgnorePattern: "^_",
+          },
+      ]
+  },
+  globals: {
+      cancelAnimationFrame: false,
+      clearImmediate: true,
+      clearInterval: false,
+      clearTimeout: false,
+      console: false,
+      document: false,
+      escape: false,
+      exports: false,
+      fetch: false,
+      Map: false,
+      module: false,
+      navigator: false,
+      process: false,
+      Promise: false,
+      requestAnimationFrame: true,
+      require: false,
+      Set: false,
+      setImmediate: false,
+      setInterval: false,
+      setTimeout: false,
+      window: false,
+      XMLHttpRequest: false,
+      env: false,
+      cc: false,
+      iqiyi: false,
+      pingback: false,
+      md5: false,
+      axios: false,
+      Redux: false,
+      reduxLogger: false,
+  },
+  env: {
+      browser: true,
+      node: true,
+  },
+};
