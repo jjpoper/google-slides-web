@@ -43,8 +43,8 @@ export default {
       // slied_id+'_'+page_id+'_'+'choice' 
       // slied_id+'_'+page_id+'_'+'choice' 
       getItem({
-        slideid: '1KxKT-',
-        pageid: 'j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg_p',
+        slideid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
+        pageid: 'p',
         itemid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg_p_choice'
       })
     }
