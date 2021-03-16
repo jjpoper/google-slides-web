@@ -10,6 +10,9 @@ yarn install
 yarn serve
 ```
 
+### url
+http://localhost:8000/#/students
+
 ### Compiles and minifies for production
 ```
 yarn build
