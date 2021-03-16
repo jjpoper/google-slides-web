@@ -2,6 +2,15 @@
   <div class="home">
     <div @click="auth" class="button">授权获取ppt</div>
     <pptcontent v-if="contentUrl" :url="contentUrl" />
+    <template v-if="title">
+      <div>{{title}}</div>
+      <div v-for="item in options" :key="item.id">
+        <label >{{item.text}}</label>
+
+        <input type="radio" name="test" :value="item.id" />
+        <br />
+      </div> 
+    </template>
   </div>
 </template>
 <style scoped>
@@ -24,6 +33,8 @@ export default {
   data() {
     return {
       contentUrl: null,
+      title: '',
+      options: []
     };
   },
   components: {
@@ -46,6 +57,10 @@ export default {
         slideid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
         pageid: 'p',
         itemid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg_p_choice'
+      }).then((d) => {
+        const {title, options} = d.data.data.item.data
+        this.title = title
+        this.options = options
       })
     }
   },
