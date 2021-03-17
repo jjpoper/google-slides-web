@@ -26,3 +26,11 @@
   }
 }
 </style>
+<script>
+export default {
+  mounted() {
+     window.winWidth = document.documentElement.clientWidth;
+     window.winHeight = document.documentElement.clientHeight;
+  }
+}
+</script>

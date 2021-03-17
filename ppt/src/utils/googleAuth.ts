@@ -1,3 +1,4 @@
+/* eslint-disable keyword-spacing */
 /* eslint-disable vars-on-top */
 /* eslint-disable no-plusplus */
 /* eslint-disable arrow-body-style */
@@ -25,25 +26,25 @@ const SCOPES = "https://www.googleapis.com/auth/presentations.readonly";
  * Prints the number of slides and elements in a sample presentation:
  * https://docs.google.com/presentation/d/1EAYk18WDjIG-zp_0vLm3CsfQh_i8eXc67Jo2O9C6Vuc/edit
  */
-function getppts (pageObjectId: string, resPic: any) {
+function getppts(pageObjectId: string, resPic: any) {
   gapi.client.slides.presentations.pages.getThumbnail({
     presentationId: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
     pageObjectId,
     thumbnailProperties: {
       thumbnailSize: 'SMALL',
     },
-  }).then(function(response: any) {
-    console.log(response.result.contentUrl);
+  }).then(function (response: any) {
+    // console.log(response.result.contentUrl);
     resPic(response.result.contentUrl);
-  }, function() {});
+  }, function () { });
 }
 
 function listSlides(res: any) {
   window.gapi.client.slides.presentations.get({
     presentationId: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
-  }).then(function(response: any) {
+  }).then(function (response: any) {
     var presentation = response.result;
-    console.log(presentation);
+    // console.log(presentation);
     var slides = presentation.slides;
     getppts(slides[0].objectId, res);
     // var pall = [];
@@ -58,7 +59,7 @@ function listSlides(res: any) {
     // Promise.all(pall).then((arr) => {
     //   res(arr);
     // });
-  }, function() {});
+  }, function () { });
 }
 
 /**
@@ -87,7 +88,7 @@ function initClient(res: any) {
 
     // Handle the initial sign-in state.
     updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get(), res);
-  }, function() {});
+  }, function () { });
 }
 /**
  *  On load, called to load the auth2 library and API client library.

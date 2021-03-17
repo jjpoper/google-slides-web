@@ -58,7 +58,8 @@ export default {
         pageid: 'p',
         itemid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg_p_choice'
       }).then((d) => {
-        const {title, options} = d.data.data.item.data
+        // console.log(d)
+        const {title, options} = d.data.data[0].item.data
         this.title = title
         this.options = options
       })

@@ -1,6 +1,8 @@
 import Vue from 'vue';
-import App from './App';
-import router from './router/index.ts';
+import App from './App.vue';
+import router from './router/index';
+import './elementUse'
+import './assets/css/teacher.css'
 
 Vue.config.productionTip = false;
 

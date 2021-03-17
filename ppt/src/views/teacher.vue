@@ -1,14 +1,73 @@
 <template>
-  <div class="home">
-    <img width="100%" src='https://docs.google.com/presentation/d/1gAvOsCgcFoTDEf68QaoSR1B8WUnY3fERbCzizJBZKtM/export/png?access_token=ya29.a0AfH6SMBN-4YKgSLSLhNSMeaX2egFLmvw6OHNy6WppUMdU9kpLslbCCMxHFHsLTrqCzXWf5fa8sE-fnVzFjhNlNZliGf8DfbE_Lca5YS8GCCAj1ahdKiBLUTT_BVnXpr_bVVcOFlsEKO13tuBryKOTr5vjs5P'>
-  </div>
+  <el-container>
+    <el-main>
+      <div @click="auth" class="button">授权获取ppt</div>
+      <pptcontent v-if="contentUrl" :url="contentUrl" />
+    </el-main>
+    <el-aside width="200px">
+      <template v-if="title">
+        <div>{{title}}</div>
+        <div v-for="item in options" :key="item.id">
+          <label >{{item.text}}</label>
+          <input type="radio" name="test" :value="item.id" />
+          <br />
+        </div> 
+      </template>
+    </el-aside>
+  </el-container>
 </template>
 
 <script>
-// @ is an alias to /src
+import { gotoGoogleAuth } from '../utils/googleAuth.ts';
+import pptcontent from '../components/pptcontent';
+import { getItem } from '../model/index'
 
 export default {
+  data() {
+    return {
+      contentUrl: null,
+      title: '',
+      options: []
+    };
+  },
   components: {
+    pptcontent,
+  },
+  mounted() {
+    this.getItemData()
+    this.tryToGetPPT()
+    this.$loading({
+      lock: true,
+      text: 'Loading',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)'
+    });
+  },
+  methods: {
+    // 需要等googleapi加载完成
+    tryToGetPPT() {
+
+    },
+    auth() {
+      gotoGoogleAuth().then((d) => {
+        console.log(d);
+        this.contentUrl = d;
+      });
+    },
+    getItemData() {
+      // slied_id+'_'+page_id+'_'+'choice' 
+      // slied_id+'_'+page_id+'_'+'choice' 
+      getItem({
+        slideid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
+        pageid: 'p',
+        itemid: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg_p_choice'
+      }).then((d) => {
+        // console.log(d)
+        const {title, options} = d.data.data[0].item.data
+        this.title = title
+        this.options = options
+      })
+    }
   },
 };
 </script>
