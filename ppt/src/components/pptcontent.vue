@@ -5,8 +5,8 @@
 </template>
 <style scoped>
 .ppt{
-  width: 300px;
-  height: 300px;
+  width: 100%;
+  /* height: 90%; */
 }
 </style>
 

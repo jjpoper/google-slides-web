@@ -26,33 +26,36 @@ const SCOPES = "https://www.googleapis.com/auth/presentations.readonly";
  * Prints the number of slides and elements in a sample presentation:
  * https://docs.google.com/presentation/d/1EAYk18WDjIG-zp_0vLm3CsfQh_i8eXc67Jo2O9C6Vuc/edit
  */
-function getppts(pageObjectId: string, resPic: any) {
-  gapi.client.slides.presentations.pages.getThumbnail({
-    presentationId: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
+export const getppts = async (pageObjectId: string, slideId: string) => {
+  const response = await gapi.client.slides.presentations.pages.getThumbnail({
+    presentationId: slideId,
     pageObjectId,
     thumbnailProperties: {
       thumbnailSize: 'SMALL',
     },
-  }).then(function (response: any) {
-    // console.log(response.result.contentUrl);
-    resPic(response.result.contentUrl);
-  }, function () { });
+  })
+  return response.result.contentUrl
+  // .then(function (response: any) {
+  //   // console.log(response.result.contentUrl);
+  //   // resPic(response.result.contentUrl);
+  // }, function () { });
 }
 
-function listSlides(res: any) {
+function listSlides(res: any, slideId: string) {
   window.gapi.client.slides.presentations.get({
-    presentationId: '1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg',
+    presentationId: slideId,
   }).then(function (response: any) {
     var presentation = response.result;
     // console.log(presentation);
     var slides = presentation.slides;
-    getppts(slides[0].objectId, res);
+    res(slides)
+    // getppts(slides[0].objectId, res);
     // var pall = [];
     // for (let i = 0; i < slides; i++) {
     //   const item = slides[i];
     //   var fn = new Promise((resPic) => {
     //     console.log(item.objectId);
-    //     getppts(item.objectId, resPic);
+    //     resPic(getppts(item.objectId));
     //   });
     //   pall.push(fn);
     // }
@@ -66,9 +69,10 @@ function listSlides(res: any) {
  *  Called when the signed in status changes, to update the UI
  *  appropriately. After a sign-in, the API is called.
  */
-function updateSigninStatus(isSignedIn: boolean, res: any) {
+function updateSigninStatus(isSignedIn: boolean, res: any, slideId: string) {
+  // console.log('3', isSignedIn)
   if (isSignedIn) {
-    listSlides(res);
+    listSlides(res, slideId);
   }
 }
 
@@ -76,7 +80,8 @@ function updateSigninStatus(isSignedIn: boolean, res: any) {
  *  Initializes the API client library and sets up sign-in state
  *  listeners.
  */
-function initClient(res: any) {
+function initClient(res: any, slideId: string) {
+  // console.log('===')
   gapi.client.init({
     apiKey: API_KEY,
     clientId: CLIENT_ID,
@@ -85,18 +90,18 @@ function initClient(res: any) {
   }).then(function () {
     // Listen for sign-in state changes.
     gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
+    // console.log('2')
     // Handle the initial sign-in state.
-    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get(), res);
+    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get(), res, slideId);
   }, function () { });
 }
 /**
  *  On load, called to load the auth2 library and API client library.
  */
-export const gotoGoogleAuth = () => {
+export const gotoGoogleAuth = (slideId: string) => {
   return new Promise((res) => {
     gapi.load('client:auth2', () => {
-      initClient(res);
+      initClient(res, slideId);
     });
   });
 };

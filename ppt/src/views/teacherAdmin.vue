@@ -3,23 +3,43 @@
     <el-main>
       <div class="block" v-if="pptUrl">
         <pptcontent :url="pptUrl" />
+        <el-pagination
+          style="line-height: 50px"
+          background
+          layout="prev, pager, next"
+          @current-change="pageChange"
+          :current-page="0"
+          :page-count="slides.length">
+        </el-pagination>
+
+        <el-button type="primary" class="invite" @click="copyUrl">邀请学生</el-button>
       </div>
     </el-main>
     <el-aside width="400px">
       <template v-if="options.length > 0">
-        <studentsItem :options="options" :title="title"/>
+        <teacherItem :options="options" :title="title"/>
       </template>
     </el-aside>
   </el-container>
 </template>
-
+<style scoped>
+.block{
+  position: relative;
+}
+.invite{
+  position: absolute;
+  right: 10px;
+  bottom: 20px;
+}
+</style>
 <script>
+import copy from 'copy-to-clipboard';
 import { gotoGoogleAuth, getppts } from '../utils/googleAuth.ts';
 import pptcontent from '../components/pptcontent';
 import { getItem } from '../model/index'
-import { showLoading, hideLoading } from '../utils/loading'
-import studentsItem from '../components/studentsItem'
-import {createSo} from '../socket/socket.student'
+import { showLoading, hideLoading, showToast } from '../utils/loading'
+import teacherItem from '../components/teacherItem'
+import {createSo} from '../socket/socket.teacher'
 
 export default {
   loadingEl: null,
@@ -31,11 +51,12 @@ export default {
       slides:[],
       current: 0,
       slide_id: 0,
+      currentSo: null
     };
   },
   components: {
     pptcontent,
-    studentsItem
+    teacherItem
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -102,13 +123,24 @@ export default {
       showLoading()
       this.getCurrentPPT()
       this.getItemData()
+      this.emitSo({"type":"change_page", "params": {"page": this.current}})
+    },
+    copyUrl() {
+      copy(location.href.replace(/teacher/, 'students'));
+      showToast('复制url成功')
     },
     joinRoom() {
-      createSo(this.slide_id, this.msgListener)
+      this.currentSo = createSo(this.slide_id, this.msgListener)
     },
     msgListener(d) {
       console.log(d)
+    },
+    // '{"type":"change_page", "params": {"page": 3}}'
+    emitSo(data) {
+      if(this.currentSo) {
+        this.currentSo.emit('control', `${data}`);
+      }
     }
-  },
+  }
 };
 </script>
