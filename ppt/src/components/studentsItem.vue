@@ -3,7 +3,9 @@
     <b>{{title}}</b>
     <template>
       <div class="item" v-for="item in options" :key="item.id">
-        <el-radio v-model="radio" :label="item.id"  class="ra">{{item.text}}</el-radio>
+        <el-radio v-model="radio" :label="item.id"  class="ra" @change="changAnswer">
+          {{item.text}}
+        </el-radio>
       </div>
     </template>
   </div>
@@ -21,14 +23,6 @@
   line-height: 50px;
   position: relative;
 }
-.ra{
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  line-height: 50px;
-}
 </style>
 
 <script>
@@ -41,11 +35,20 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    answer: {
+      type: Function,
+      default: () => {}
     }
   },
   data() {
     return {
       radio: null
+    }
+  },
+  methods: {
+    changAnswer(value) {
+      this.answer(value)
     }
   }
 };

@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>老师端</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div>老师端</div>
+    <script src="https://cdn.bootcss.com/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+      var socket = io('ws://ws.newzealand.actself.me', {transports: ["websocket"]});
+      socket.on('connect', data => {
+        // 加入房间，room是slide_id，user_id 是老师的名称，role必须是teacher
+        socket.emit('join-room', '{"room":"slide_1", "user_id": "teacher_1", "role":"teacher"}', data => {console.log("老师加入房间")});
+
+        // 发送 control ，type和 params 随便定义，学生那边收到的就是这些。
+        socket.emit('control', '{"room":"slide_1", "type":"lock_page", "params": {"page": 3}}', data => {console.log("发送control")});
+      });
+      
+      // 老师端接收到学生发来的答案
+      socket.on('response', data => {
+        console.log("收到学生发来的答案：" + data);
+      });
+      
+      // 老师端接到系统信息（目前只有一个在线学生人数）
+      socket.on('status', data => {
+        console.log("收到系统信息：" + data);
+      });
+    </script>
+  </body>
+</html>
