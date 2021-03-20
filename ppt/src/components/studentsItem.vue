@@ -26,6 +26,7 @@
 </style>
 
 <script>
+import {getStudentsAnswer, saveStudentsAnswer} from '../utils/store'
 export default {
   props: {
     options: {
@@ -39,15 +40,23 @@ export default {
     answer: {
       type: Function,
       default: () => {}
+    },
+    pageId: {
+      type: String,
+      default: ''
     }
+  },
+  created() {
+    console.log(this.pageId)
   },
   data() {
     return {
-      radio: null
+      radio: getStudentsAnswer(this.pageId)
     }
   },
   methods: {
     changAnswer(value) {
+      saveStudentsAnswer(this.pageId, value)
       this.answer(value)
     }
   }

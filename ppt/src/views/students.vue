@@ -7,7 +7,7 @@
     </el-main>
     <el-aside width="400px">
       <template v-if="options.length > 0">
-        <studentsItem :options="options" :title="title" :answer="answer"/>
+        <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
       </template>
     </el-aside>
   </el-container>
@@ -22,6 +22,7 @@ import studentsItem from '../components/studentsItem'
 import {createSo} from '../socket/socket.student'
 import {SocketEventsEnum} from '../socket/socketEvents'
 import {generateUuid} from '../utils/help'
+import {setStoreUid} from '../utils/store'
 
 export default {
   data() {
@@ -35,6 +36,15 @@ export default {
       currentSo: null,
       uid: generateUuid('slide', 16) // uid
     };
+  },
+  created() {
+    console.log(this.uid, 'created')
+    setStoreUid(this.uid)
+  },
+  computed: {
+    'getPid'() {
+      return this.slides[this.current].objectId
+    }
   },
   components: {
     pptcontent,

@@ -4,7 +4,7 @@
     <template>
       <div class="item" v-for="item in options" :key="item.id">
         {{item.text}}
-        <span class="tip">{{counts(item.id)}}人已答</span>
+        <span class="tip"><span class="red">{{counts(item.id)}}</span>人已答</span>
       </div>
     </template>
   </div>
@@ -28,6 +28,10 @@
   line-height: 50px;
   font-size: 12px;
 }
+.red{
+  color: red;
+  margin: 0 3px;
+}
 </style>
 
 <script>
@@ -45,6 +49,13 @@ export default {
       type: Array,
       default: [],
     },
+    pageId: {
+      type: String,
+      default: ''
+    }
+  },
+  created() {
+    console.log(this.pageId)
   },
   methods: {
     counts(id) {

@@ -17,7 +17,7 @@
     </el-main>
     <el-aside width="400px">
       <template v-if="options.length > 0">
-        <teacherItem :options="options" :title="title" :answerList="answerList"/>
+        <teacherItem :options="options" :title="title" :answerList="answerList" :pageId="getPid"/>
       </template>
     </el-aside>
   </el-container>
@@ -50,6 +50,7 @@ import teacherItem from '../components/teacherItem'
 import {createSo} from '../socket/socket.teacher'
 import {SocketEventsEnum} from '../socket/socketEvents'
 import {generateUuid} from '../utils/help'
+import {setStoreUid, saveTeacherAlist, getTeacherAlist} from '../utils/store'
 
 export default {
   data() {
@@ -65,6 +66,14 @@ export default {
       answerList: [], // 用户回答的内容
       uid: generateUuid('slide', 16) // uid
     };
+  },
+  created() {
+    setStoreUid(this.uid)
+  },
+  computed: {
+    'getPid'() {
+      return this.slides[this.current].objectId
+    }
   },
   components: {
     pptcontent,
@@ -136,7 +145,7 @@ export default {
       showLoading()
       this.getCurrentPPT()
       this.options = []
-      this.answerList = []
+      this.answerList = getTeacherAlist(this.getPid)
       this.getItemData()
       // 换页命令
       // '{"type":"change_page", "params": {"page": 3}}'
@@ -166,6 +175,7 @@ export default {
             answer
           })
           this.answerList = filterData
+          saveTeacherAlist(currentPageId, filterData)
           this.$forceUpdate()
         }
       } else if(d.type === SocketEventsEnum.STUDENTS_COUNTS) {

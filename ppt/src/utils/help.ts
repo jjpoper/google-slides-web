@@ -8,5 +8,7 @@ export const generateUuid = (prefix: string, length?: number) => {
       date = Math.floor(date / 16)
       return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16) // eslint-disable-line no-bitwise
   })
-  return `${!prefix ? '' : prefix}${uuid.slice(0, len)}`
+  const id = `${!prefix ? '' : prefix}${uuid.slice(0, len)}`
+  console.log(id)
+  return id
 }
