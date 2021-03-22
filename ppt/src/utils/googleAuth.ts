@@ -89,10 +89,12 @@ function initClient(res: any, slideId: string) {
     scope: SCOPES,
   }).then(function () {
     // Listen for sign-in state changes.
-    gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+    // gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
     // console.log('2')
     // Handle the initial sign-in state.
-    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get(), res, slideId);
+    gapi.auth2.getAuthInstance().signIn().then(() => {
+      updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get(), res, slideId);
+    });
   }, function () { });
 }
 /**
