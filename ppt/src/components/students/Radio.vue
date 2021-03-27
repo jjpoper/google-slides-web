@@ -1,15 +1,10 @@
 <template>
   <div>
     <b>{{title}}</b>
-    <template v-for="item in options">
-      <div :key="item.id" class="outer">
-        <div class="item">
-          {{item.text}}
-          <span class="tip"><span class="red">{{counts(item.id)}}</span>人已答</span>
-        </div>
-        <span class="users" v-if="counts(item.id) > 0">
-          Selected: {{getUsers(item.id)}}
-        </span>
+    <template>
+      <div class="item" v-for="item in options" :key="item.id">
+        {{item.text}}
+        <span class="tip"><span class="red">{{counts(item.id)}}</span>人已答</span>
       </div>
     </template>
   </div>
@@ -36,16 +31,6 @@
 .red{
   color: red;
   margin: 0 3px;
-}
-.outer{
-  line-height: 30px;
-}
-.users{
-  line-height: 30px;
-  display: inline-block;
-  width: 100%;
-  padding-left: 20px;
-  text-align: left;
 }
 </style>
 
@@ -80,9 +65,6 @@ export default {
       } else {
         return 0
       }
-    },
-    getUsers(id) {
-      return this.answerList.filter((item) => item.answer == id).map((item) => item.user_id.substr(-3)).join(",")
     }
   }
 };

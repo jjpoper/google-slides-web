@@ -17,6 +17,10 @@ export default {
       type: String,
       default: '',
     },
+    teacher: {
+      type: Boolean,
+      default: false,
+    }
   },
 };
 </script>

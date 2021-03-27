@@ -1,25 +1,31 @@
 <template>
   <el-container>
-    <el-main>
+    <el-main v-show="!showResponse">
       <div class="block" v-if="pptUrl">
-        <pptcontent :url="pptUrl" />
+        <pptcontent :url="pptUrl" :teacher="true"/>
         <el-pagination
           style="line-height: 50px"
           background
+          small
           layout="prev, pager, next"
           @current-change="pageChange"
           :current-page="0"
           :page-count="slides.length">
         </el-pagination>
-        <el-button type="primary" class="counts">当前学生人数：{{studentCounts}}</el-button>
-        <el-button type="primary" class="invite" @click="copyUrl">邀请学生</el-button>
+        <el-button type="primary" class="counts">当前人数：{{studentCounts}}</el-button>
+        <el-button type="primary" class="invite" @click="openShare">Share</el-button>
+        <el-button type="primary" class="Presenting">Presenting</el-button>
+        <el-button type="primary"  class="Show" @click="showres">Show Responses </el-button>
+        <el-button type="primary"  class="noShow gray" >{{ answerList.length > 0 ? `${answerList.length} Responses` : `no Responses`}}</el-button>
       </div>
     </el-main>
-    <el-aside width="400px">
+    <el-main v-show="showResponse">
+      <el-button type="primary" @click="hideRes">hide Responses</el-button>
       <template v-if="options.length > 0">
-        <teacherItem :options="options" :title="title" :answerList="answerList" :pageId="getPid"/>
+        <teacherItem v-if="answerList.length > 0" :options="options" :title="title" :answerList="answerList" :pageId="getPid"/>
+        <div v-else> Waiting For Responses </div>
       </template>
-    </el-aside>
+    </el-main>
   </el-container>
 </template>
 <style scoped>
@@ -39,6 +45,45 @@
   border: none !important;
   color: #333;
 }
+.Show{
+  position: absolute;
+  right: 100px;
+  bottom: 20px;
+}
+.noShow{
+  position: absolute;
+  right: 300px;
+  bottom: 20px;
+}
+.Presenting{
+  position: absolute;
+  left: 100px;
+  bottom: 20px;
+  background-color: transparent !important;
+  border: none !important;
+  color: #333;
+}
+.gray{
+  background-color: transparent !important;
+  border: none !important;
+  color: #333;
+}
+.modal{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.shareBox{
+  width: 300px;
+  height: 200px;
+  background-color: #fff;
+  position: relative;
+  margin: 0 auto;
+}
 </style>
 <script>
 import { MessageBox } from 'element-ui';
@@ -56,6 +101,7 @@ import { generateUuid } from '@/utils/help';
 export default {
   data() {
     return {
+      showResponse: false, // 默认不展示老师的回答
       studentCounts: 0,
       pptUrl: null,
       title: '',
@@ -76,6 +122,7 @@ export default {
     } else {
       this.joinRoom()
     }
+    this.openShare()
   },
   computed: {
     'getPid'() {
@@ -111,6 +158,7 @@ export default {
         const {title, options} = this.slides[this.current].items.data
         this.title = title
         this.options = options
+        this.answerList = getTeacherAlist(this.getPid)
       })
     },
     getCurrentPPT() {
@@ -128,7 +176,7 @@ export default {
     },
     copyUrl() {
       copy(`${location.href.replace(/teacher/, 'students')}&page=${this.current}`);
-      showToast('复制url成功')
+      showToast('copy link success')
     },
     joinRoom() {
       this.currentSo = createSo(this.slide_id, this.uid, this.msgListener)
@@ -182,6 +230,25 @@ export default {
            
     //   });
     // }
+    openShare() {
+      const url = `${location.href.replace(/teacher/, 'students')}&page=${this.current}`
+      MessageBox.confirm(url, 'Share this link with your students', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: 'copy',
+          cancelButtonText: 'Enter classroom'
+        })
+        .then(() => {
+          this.copyUrl()
+        })
+        .catch(action => {
+        });
+    },
+    showres() {
+      this.showResponse = true
+    },
+    hideRes() {
+      this.showResponse = false
+    }
   }
 };
 </script>
