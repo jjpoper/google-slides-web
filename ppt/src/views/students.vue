@@ -14,15 +14,14 @@
 </template>
 
 <script>
-import { gotoGoogleAuth, getppts } from '../utils/googleAuth.ts';
 import pptcontent from '../components/pptcontent';
-import { getItem } from '../model/index'
+import { getAllPPTS } from '../model/index'
 import { showLoading, hideLoading } from '../utils/loading'
 import studentsItem from '../components/studentsItem'
 import {createSo} from '../socket/socket.student'
 import {SocketEventsEnum} from '../socket/socketEvents'
-import {generateUuid} from '../utils/help'
-import {setStoreUid} from '../utils/store'
+import {getStudentUid, setStudentUid} from '../utils/user'
+import { generateUuid } from '@/utils/help';
 
 export default {
   data() {
@@ -34,16 +33,21 @@ export default {
       current: 0,
       slide_id: 0,
       currentSo: null,
-      uid: generateUuid('slide', 16) // uid
+      uid: getStudentUid() // uid
     };
   },
-  created() {
-    console.log(this.uid, 'created')
-    setStoreUid(this.uid)
+  mounted() {
+    if(this.uid === null || this.uid === undefined) {
+      this.uid = generateUuid('student', 16)
+      setStudentUid(this.uid)
+      this.joinRoom()
+    } else {
+      this.joinRoom()
+    }
   },
   computed: {
     'getPid'() {
-      return this.slides[this.current].objectId
+      return this.slides[this.current].page_id
     }
   },
   components: {
@@ -54,66 +58,35 @@ export default {
     next(vm => {
       vm.slide_id = to.query.slide_id
       vm.current = to.query.page || 0
-      vm.joinRoom()
-      vm.tryToGetPPTSlides()
+      vm.getAllSlides()
     })
   },
-  mounted() {
-    showLoading()
-  },
   methods: {
-    // 需要等googleapi加载完成
-    tryToGetPPTSlides() {
-      let delay = () => {
-        setTimeout(() => {
-          console.log('try', gapi)
-          if(gapi) {
-            delay = null
-            this.authToGetSlides()
-          } else {
-            delay()
-          }
-        }, 500)
-      }
-      delay()
-    },
-    authToGetSlides() {
-      gotoGoogleAuth(this.slide_id).then((d) => {
-        console.log(d);
+    getAllSlides() {
+      showLoading()
+      getAllPPTS(this.slide_id).then((list) => {
+        console.log(list);
         // this.contentUrl = d;
         // hideLoading()
-        this.slides = d
+        this.slides = list
         this.getCurrentPPT()
         this.getItemData()
+        hideLoading()
       });
     },
     getItemData() {
-      getItem({
-        slideid: this.slide_id,
-        pageid: this.slides[this.current].objectId,
-      }).then((d) => {
-
-        if(d.data.data && d.data.data.length > 0) {
-          const len = d.data.data.length
-          const {title, options} = d.data.data[len-1].item.data
-          // console.log(options)
-          this.title = title
-          this.options = options
-        } else {
-          this.options = []
-        }
-        
+      this.options = []
+      this.$nextTick(() => {
+        const {title, options} = this.slides[this.current].items.data
+        this.title = title
+        this.options = options
       })
     },
     getCurrentPPT() {
-      getppts(this.slides[this.current].objectId, this.slide_id).then((url) => {
-        this.pptUrl = url
-        hideLoading()
-      })
+      this.pptUrl = this.slides[this.current].thumbnail_url
     },
     pageChange(page) {
       this.current = page
-      showLoading()
       this.getCurrentPPT()
       this.options = []
       this.getItemData()
@@ -131,14 +104,30 @@ export default {
     answer(v) {
       console.log(v, this.currentSo)
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
-      this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${this.slides[this.current].objectId}", "item_id": "item_1", "answer": "${v}"}`)
+      this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${this.slides[this.current].page_id}", "item_id": "item_1", "answer": "${v}"}`)
     },
     emitSo(message) {
       if(this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         this.currentSo.emit('response', message);
       }
-    }
+    },
+    // enterUid() {
+    //   MessageBox.prompt('建议请输入手机号', '为了更好的演示体验，记录当前用户选中的内容信息，仅做demo参考', {
+    //     confirmButtonText: '确定',
+    //     showCancelButton: false,
+    //     showClose: false,
+    //     inputPattern: /[0-9]/,
+    //     inputErrorMessage: '至少输入0-9的任意数字'
+    //   }).then(({ value }) => {
+    //     console.log(value)
+    //     setStudentUid(setUid)
+    //     this.uid = value
+    //     this.joinRoom()
+    //   }).catch(() => {
+           
+    //   });
+    // }
   },
 };
 </script>

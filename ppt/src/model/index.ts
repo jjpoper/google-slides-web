@@ -11,3 +11,18 @@ export const getItem = ({
     item_id: itemid
   })
 }
+
+// 获取所有的ppt内容
+export const getAllPPTS = async (slideid: string) => {
+  const data = await axios.post('http://api.newzealand.actself.me/slide/get_all', {
+    slide_id: slideid,
+  })
+  let list = []
+  console.log(data)
+  try {
+    list = data.data.data.pages
+  } catch(e) {
+    // console.log(e)
+  }
+  return list
+}

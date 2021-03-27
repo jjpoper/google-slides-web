@@ -41,16 +41,17 @@
 }
 </style>
 <script>
+import { MessageBox } from 'element-ui';
 import copy from 'copy-to-clipboard';
-import { gotoGoogleAuth, getppts } from '../utils/googleAuth.ts';
 import pptcontent from '../components/pptcontent';
-import { getItem } from '../model/index'
+import { getAllPPTS } from '../model/index'
 import { showLoading, hideLoading, showToast } from '../utils/loading'
 import teacherItem from '../components/teacherItem'
 import {createSo} from '../socket/socket.teacher'
 import {SocketEventsEnum} from '../socket/socketEvents'
-import {generateUuid} from '../utils/help'
-import {setStoreUid, saveTeacherAlist, getTeacherAlist} from '../utils/store'
+import {getTeacherUid, setTeacherUid} from '../utils/user'
+import {saveTeacherAlist, getTeacherAlist} from '../utils/store'
+import { generateUuid } from '@/utils/help';
 
 export default {
   data() {
@@ -64,15 +65,21 @@ export default {
       slide_id: 0,
       currentSo: null,
       answerList: [], // 用户回答的内容
-      uid: generateUuid('slide', 16) // uid
+      uid: getTeacherUid() // uid
     };
   },
-  created() {
-    setStoreUid(this.uid)
+  mounted() {
+    if(this.uid === null || this.uid === undefined) {
+      this.uid = generateUuid('teacher', 16)
+      setTeacherUid(this.uid)
+      this.joinRoom()
+    } else {
+      this.joinRoom()
+    }
   },
   computed: {
     'getPid'() {
-      return this.slides[this.current].objectId
+      return this.slides[this.current].page_id
     }
   },
   components: {
@@ -82,67 +89,35 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.slide_id = to.query.slide_id
-      vm.tryToGetPPTSlides()
-      vm.joinRoom()
+      vm.getAllSlides()
     })
   },
-  mounted() {
-    showLoading()
-  },
   methods: {
-    // 需要等googleapi加载完成
-    tryToGetPPTSlides() {
-      let delay = () => {
-        setTimeout(() => {
-          console.log('try', gapi)
-          if(gapi) {
-            delay = null
-            this.authToGetSlides()
-          } else {
-            delay()
-          }
-        }, 500)
-      }
-      delay()
-    },
-    authToGetSlides() {
-      gotoGoogleAuth(this.slide_id).then((d) => {
-        console.log(d);
+    getAllSlides() {
+      showLoading()
+      getAllPPTS(this.slide_id).then((list) => {
+        console.log(list);
         // this.contentUrl = d;
         // hideLoading()
-        this.slides = d
+        this.slides = list
         this.getCurrentPPT()
         this.getItemData()
+        hideLoading()
       });
     },
     getItemData() {
-      // slied_id+'_'+page_id+'_'+'choice' 
-      // slied_id+'_'+page_id+'_'+'choice' 
-      getItem({
-        slideid: this.slide_id,
-        pageid: this.slides[this.current].objectId,
-      }).then((d) => {
-        if(d.data.data && d.data.data.length > 0) {
-          const len = d.data.data.length
-          const {title, options} = d.data.data[len-1].item.data
-          // console.log(options)
-          this.title = title
-          this.options = options
-        } else {
-          this.options = []
-        }
-        
+      this.options = []
+      this.$nextTick(() => {
+        const {title, options} = this.slides[this.current].items.data
+        this.title = title
+        this.options = options
       })
     },
     getCurrentPPT() {
-      getppts(this.slides[this.current].objectId, this.slide_id).then((url) => {
-        this.pptUrl = url
-        hideLoading()
-      })
+      this.pptUrl = this.slides[this.current].thumbnail_url
     },
     pageChange(value) {
       this.current = value - 1
-      showLoading()
       this.getCurrentPPT()
       this.options = []
       this.answerList = getTeacherAlist(this.getPid)
@@ -167,7 +142,7 @@ export default {
       console.log(d)
       if(d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const {answer, page_id, room, user_id} = d
-        const currentPageId = this.slides[this.current].objectId
+        const currentPageId = this.slides[this.current].page_id
         if(page_id === currentPageId && room === this.slide_id) {
           const filterData = this.answerList.filter((item) => item.user_id !== user_id)
           filterData.push({
@@ -175,6 +150,7 @@ export default {
             answer
           })
           this.answerList = filterData
+          console.log(this.answerList)
           saveTeacherAlist(currentPageId, filterData)
           this.$forceUpdate()
         }
@@ -189,7 +165,23 @@ export default {
         // this.currentSo.emit('control', JSON.stringify(data));
         this.currentSo.emit('control', message);
       }
-    }
+    },
+    // enterUid() {
+    //   MessageBox.prompt('建议请输入手机号', '为了更好的演示体验，记录当前用户选中的内容信息，仅做demo参考', {
+    //     confirmButtonText: '确定',
+    //     showCancelButton: false,
+    //     showClose: false,
+    //     inputPattern: /[0-9]/,
+    //     inputErrorMessage: '至少输入0-9的任意数字'
+    //   }).then(({ value }) => {
+    //     console.log(value)
+    //     setTeacherUid(setUid)
+    //     this.uid = value
+    //     this.joinRoom()
+    //   }).catch(() => {
+           
+    //   });
+    // }
   }
 };
 </script>
