@@ -1,18 +1,38 @@
 <template>
   <div>
-    <b>{{title}}</b>
-    <template v-for="item in options">
-      <div :key="item.id" class="outer">
-        <div class="item">
-          {{item.text}}
-          <span class="tip"><span class="red">{{counts(item.id)}}</span>人已答</span>
+    <div v-show="showStatistics">
+      <b style="textAlign: left">{{title}} Statistics</b>
+      <template v-for="item in options">
+        <div :key="item.id" class="outer">
+          <div class="item">
+            {{item.text}}
+            <span class="tip"><span class="red">{{counts(item.id)}}</span>人已答</span>
+          </div>
         </div>
-        <span class="users" v-if="counts(item.id) > 0">
-          Selected: {{getUsers(item.id)}}
-        </span>
+      </template>
+    </div>
+    <div v-show="!showStatistics">
+      <b style="textAlign: left">{{title}} Personal</b>
+      <div class="userlist">
+        <template v-for="item in answerList">
+            <div class="users" :key="item.user_id">
+              选项 {{getAnswer(item.answer).text}}
+              <br/>
+              学生 {{item.user_id}}
+            </div>
+        </template>
       </div>
-    </template>
-  </div>
+    </div>
+    <el-pagination
+      style="line-height: 50px; float: left"
+      background
+      small
+      layout="prev, pager, next"
+      @current-change="pageChange"
+      :current-page="0"
+      :page-count="2">
+    </el-pagination>
+  </div>  
 </template>
 <style scoped>
 .item{
@@ -40,11 +60,20 @@
 .outer{
   line-height: 30px;
 }
-.users{
-  line-height: 30px;
-  display: inline-block;
+.userlist{
   width: 100%;
-  padding-left: 20px;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+}
+.users{
+  line-height: 50px;
+  display: inline-block;
+  background-color: #999;
+  padding: 10px;
+  border-radius: 4px;
   text-align: left;
 }
 </style>
@@ -69,6 +98,11 @@ export default {
       default: ''
     }
   },
+  data() {
+    return {
+      showStatistics: true
+    }
+  },
   created() {
     console.log(this.pageId)
   },
@@ -81,8 +115,17 @@ export default {
         return 0
       }
     },
-    getUsers(id) {
-      return this.answerList.filter((item) => item.answer == id).map((item) => item.user_id.substr(-3)).join(",")
+    getAnswer(answer) {
+      const data = this.options.filter((item) => item.id == answer)[0]
+      console.log(data)
+      return data
+    },
+    pageChange(value) {
+      if(value == 2) {
+        this.showStatistics = false
+      } else {
+        this.showStatistics = true
+      }
     }
   }
 };
