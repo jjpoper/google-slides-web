@@ -10,9 +10,37 @@
         <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
       </template>
     </el-aside>
+    <el-aside width="400px" class="scroll-student">
+      <template v-for="(slideItem, index) in slides">
+        <studentsItem
+          v-if="slideItem.items.data"
+          :key="index"
+          :options="slideItem.items.data.options"
+          :title="slideItem.items.data.title"
+          :currentAnswer="allAnswers[slideItem.page_id]"
+          :readonly="true"
+          :pageId="slideItem.page_id">
+          <div class="scroll-mask"></div>
+        </studentsItem>
+      </template>
+    </el-aside>
   </el-container>
 </template>
-
+<style>
+.scroll-student{
+  max-height: 700px;
+  background-color: #999;
+  overflow-y: scroll;
+}
+.scroll-mask{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top:0;
+  left: 0;
+  background-color: transparent;
+}
+</style>
 <script>
 import pptcontent from '../components/pptcontent';
 import { getAllPPTS } from '../model/index'
@@ -22,6 +50,7 @@ import {createSo} from '../socket/socket.student'
 import {SocketEventsEnum} from '../socket/socketEvents'
 import {getStudentUid, setStudentUid} from '../utils/user'
 import { generateUuid } from '@/utils/help';
+import { getStudentsAnswer } from '@/utils/store';
 
 export default {
   data() {
@@ -33,6 +62,7 @@ export default {
       current: 0,
       slide_id: 0,
       currentSo: null,
+      allAnswers: {},
       uid: getStudentUid() // uid
     };
   },
@@ -71,15 +101,30 @@ export default {
         this.slides = list
         this.getCurrentPPT()
         this.getItemData()
+        this.getAllAnswers()
         hideLoading()
       });
+    },
+    getAllAnswers() {
+      for(let i = 0; i< this.slides.length; i++) {
+        const choice = this.slides[this.current].items
+        if(choice && choice.data) {
+          const pid = this.slides[i].page_id
+          const value = getStudentsAnswer(pid)
+          this.$set(this.allAnswers, pid, value )
+          console.log(getStudentsAnswer(pid))
+        }
+      }
     },
     getItemData() {
       this.options = []
       this.$nextTick(() => {
-        const {title, options} = this.slides[this.current].items.data
-        this.title = title
-        this.options = options
+        const choice = this.slides[this.current].items
+        if(choice && choice.data) {
+          const {title, options} = this.slides[this.current].items.data
+          this.title = title
+          this.options = options
+        }
       })
     },
     getCurrentPPT() {
@@ -103,8 +148,11 @@ export default {
     },
     answer(v) {
       console.log(v, this.currentSo)
+      const pid = this.slides[this.current].page_id
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
-      this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${this.slides[this.current].page_id}", "item_id": "item_1", "answer": "${v}"}`)
+      this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
+      this.allAnswers[pid] = v
+      console.log(this.allAnswers)
     },
     emitSo(message) {
       if(this.currentSo) {

@@ -17,7 +17,7 @@ export const getAllPPTS = async (slideid: string) => {
   const data = await axios.post('http://api.newzealand.actself.me/slide/get_all', {
     slide_id: slideid,
   })
-  let list = []
+  let list = data.data.data.pages
   // console.log(data)
   try {
     list = data.data.data.pages.filter((item: any) => {

@@ -155,10 +155,13 @@ export default {
     getItemData() {
       this.options = []
       this.$nextTick(() => {
-        const {title, options} = this.slides[this.current].items.data
-        this.title = title
-        this.options = options
-        this.answerList = getTeacherAlist(this.getPid)
+        const choice = this.slides[this.current].items
+        if(choice && choice.data) {
+          const {title, options} = choice.data
+          this.title = title
+          this.options = options
+          this.answerList = getTeacherAlist(this.getPid)
+        }
       })
     },
     getCurrentPPT() {
