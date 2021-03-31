@@ -16,10 +16,8 @@
       </div>
     </div>
     </el-main>
-    <el-aside width="400px">
-      <template v-if="options.length > 0">
-        <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
-      </template>
+    <el-aside width="400px" v-if="options && options.length > 0">
+      <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
     </el-aside>
     <!-- <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -151,6 +149,7 @@ export default {
       this.options = []
       this.$nextTick(() => {
         const choice = this.slides[this.current].items
+        console.log(choice)
         if(choice && choice.data) {
           const {title, options} = this.slides[this.current].items.data
           this.title = title

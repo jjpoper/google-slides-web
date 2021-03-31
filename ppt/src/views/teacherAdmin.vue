@@ -210,7 +210,6 @@ export default {
       } else if(d.type === SocketEventsEnum.RENAME) {
         const {user_id, user_name_new} = d
         setStundentUidAndName(user_id, user_name_new)
-        this.
       }
       
     },
