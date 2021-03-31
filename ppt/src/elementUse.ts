@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { Main, Aside, Container, Form, FormItem, Progress, Pagination, Radio, Button } from 'element-ui';
+import { Main, Aside, Container, Form, FormItem, Progress, Pagination, Radio, Button, Checkbox } from 'element-ui';
 
 Vue.use(Main)
 Vue.use(Aside)
@@ -10,3 +10,4 @@ Vue.use(Progress)
 Vue.use(Pagination)
 Vue.use(Radio)
 Vue.use(Button)
+Vue.use(Checkbox)

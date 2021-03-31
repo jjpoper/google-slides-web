@@ -4,13 +4,24 @@
       <div class="block" v-if="pptUrl">
         <pptcontent :url="pptUrl" />
       </div>
+
+    <div class="sfooter" v-if="slides.length > 0">
+      <div>
+        {{uname}}
+        <el-button type="primary" @click="enterUname">改名</el-button>
+      </div>
+      <div class="checkboxs">
+        <el-checkbox :checked="allAnswers[getPid] >= 0" >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
+        <div class="scroll-mask"></div>
+      </div>
+    </div>
     </el-main>
     <el-aside width="400px">
       <template v-if="options.length > 0">
         <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
       </template>
     </el-aside>
-    <el-aside width="400px" class="scroll-student">
+    <!-- <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
         <studentsItem
           v-if="slideItem.items.data"
@@ -23,7 +34,7 @@
           <div class="scroll-mask"></div>
         </studentsItem>
       </template>
-    </el-aside>
+    </el-aside> -->
   </el-container>
 </template>
 <style>
@@ -40,6 +51,17 @@
   left: 0;
   background-color: transparent;
 }
+.sfooter{
+  height: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.checkboxs{
+  position: relative;
+  flex: 1
+}
 </style>
 <script>
 import pptcontent from '../components/pptcontent';
@@ -48,9 +70,10 @@ import { showLoading, hideLoading } from '../utils/loading'
 import studentsItem from '../components/studentsItem'
 import {createSo} from '../socket/socket.student'
 import {SocketEventsEnum} from '../socket/socketEvents'
-import {getStudentUid, setStudentUid} from '../utils/user'
+import {getStudentUid, getUserName, setStudentUid, setUserName} from '../utils/user'
 import { generateUuid } from '@/utils/help';
 import { getStudentsAnswer } from '@/utils/store';
+import {MessageBox} from 'element-ui'
 
 export default {
   data() {
@@ -63,6 +86,7 @@ export default {
       slide_id: 0,
       currentSo: null,
       allAnswers: {},
+      uname: '',
       uid: getStudentUid() // uid
     };
   },
@@ -138,6 +162,12 @@ export default {
     },
     joinRoom() {
       this.currentSo = createSo(this.slide_id, this.uid, this.msgListener)
+      const uname = getUserName(this.uid)
+      console.log(uname, 'uname')
+      this.uname = uname != 'null' && uname != undefined ? uname : ''
+      if(!this.uname) {
+        this.enterUname()
+      }
     },
     msgListener(d) {
       console.log(d, d.type, '====收到页码命令')
@@ -160,22 +190,21 @@ export default {
         this.currentSo.emit('response', message);
       }
     },
-    // enterUid() {
-    //   MessageBox.prompt('建议请输入手机号', '为了更好的演示体验，记录当前用户选中的内容信息，仅做demo参考', {
-    //     confirmButtonText: '确定',
-    //     showCancelButton: false,
-    //     showClose: false,
-    //     inputPattern: /[0-9]/,
-    //     inputErrorMessage: '至少输入0-9的任意数字'
-    //   }).then(({ value }) => {
-    //     console.log(value)
-    //     setStudentUid(setUid)
-    //     this.uid = value
-    //     this.joinRoom()
-    //   }).catch(() => {
+    enterUname() {
+      MessageBox.prompt('enter a new name', 'enter a new name', {
+        confirmButtonText: '确定',
+        showCancelButton: false,
+        showClose: false,
+        inputPattern: /\s*$/g,
+        inputErrorMessage: '用户名不能为空'
+      }).then(({ value }) => {
+        console.log(value)
+        this.uname = value
+        setUserName(this.uid, value)
+      }).catch(() => {
            
-    //   });
-    // }
+      });
+    }
   },
 };
 </script>
