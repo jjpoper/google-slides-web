@@ -193,25 +193,23 @@ export default {
       console.log(d)
       if(d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const {answer, page_id, room, user_id, action_type, user_name} = d
-        if(action_type == 1) {
-          // 改名
-          setStundentUidAndName(user_id, user_name)
-        } else {
-          const currentPageId = this.slides[this.current].page_id
-          if(page_id === currentPageId && room === this.slide_id) {
-            const filterData = this.answerList.filter((item) => item.user_id !== user_id)
-            filterData.push({
-              user_id,
-              answer
-            })
-            this.answerList = filterData
-            console.log(this.answerList)
-            saveTeacherAlist(currentPageId, filterData)
-            this.$forceUpdate()
-          }
+        const currentPageId = this.slides[this.current].page_id
+        if(page_id === currentPageId && room === this.slide_id) {
+          const filterData = this.answerList.filter((item) => item.user_id !== user_id)
+          filterData.push({
+            user_id,
+            answer
+          })
+          this.answerList = filterData
+          console.log(this.answerList)
+          saveTeacherAlist(currentPageId, filterData)
+          this.$forceUpdate()
         }
       } else if(d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         this.studentCounts = d.student_count
+      } else if(d.type === SocketEventsEnum.RENAME) {
+        const {user_id, user_name_new} = d
+        setStundentUidAndName(user_id, user_name_new)
       }
       
     },

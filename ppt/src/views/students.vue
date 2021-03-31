@@ -187,16 +187,17 @@ export default {
       console.log(v, this.currentSo)
       const pid = this.slides[this.current].page_id
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
-      this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
+      this.emitSo('response', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
       this.allAnswers[pid] = v
       this.$set(this.allAnswers, pid, v )
       // this.$forceUpdate()
       console.log(this.allAnswers, '====', this.allAnswers[this.getPid])
     },
-    emitSo(message) {
+    emitSo(action, message) {
       if(this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        this.currentSo.emit('response', message);
+        console.log(action)
+        this.currentSo.emit(action, message);
       }
     },
     enterUname() {
@@ -207,7 +208,7 @@ export default {
       }).then(({ value }) => {
         if(!value) value = this.uid
         this.uname = value
-        this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name": "${value}", "action_type": "1"}`)
+        this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
         setUserName(this.uid, value)
       }).catch(() => {
            
