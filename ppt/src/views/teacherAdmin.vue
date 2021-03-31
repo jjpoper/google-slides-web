@@ -116,7 +116,7 @@ export default {
   },
   mounted() {
     if(this.uid === null || this.uid === undefined) {
-      this.uid = generateUuid('teacher', 16)
+      this.uid = generateUuid('t_', 16)
       setTeacherUid(this.uid)
       this.joinRoom()
     } else {

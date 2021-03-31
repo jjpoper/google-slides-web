@@ -20,9 +20,9 @@ export const getAllPPTS = async (slideid: string) => {
   let list = data.data.data.pages
   // console.log(data)
   try {
-    list = data.data.data.pages.filter((item: any) => {
-      return item.items.type === 'choice'
-    })
+    // list = data.data.data.pages.filter((item: any) => {
+    //   return item.items.type === 'choice'
+    // })
   } catch(e) {
     // console.log(e)
   }

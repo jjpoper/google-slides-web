@@ -10,8 +10,8 @@
         {{uname}}
         <el-button type="primary" @click="enterUname">改名</el-button>
       </div>
-      <div class="checkboxs">
-        <el-checkbox :checked="allAnswers[getPid] >= 0" >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
+      <div class="checkboxs" >
+        <el-checkbox :value="currentAnswerd" >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
         <div class="scroll-mask"></div>
       </div>
     </div>
@@ -50,6 +50,7 @@
   top:0;
   left: 0;
   background-color: transparent;
+  z-index: 99999;
 }
 .sfooter{
   height: 50px;
@@ -92,7 +93,7 @@ export default {
   },
   mounted() {
     if(this.uid === null || this.uid === undefined) {
-      this.uid = generateUuid('student', 16)
+      this.uid = generateUuid('s_', 16)
       setStudentUid(this.uid)
       this.joinRoom()
     } else {
@@ -102,6 +103,11 @@ export default {
   computed: {
     'getPid'() {
       return this.slides[this.current].page_id
+    },
+    'currentAnswerd'() {
+      const ans = this.allAnswers[this.getPid]
+      console.log(parseInt(ans) >= 0, '!isNaN(ans) && ans >= 0', ans)
+      return parseInt(ans) >= 0
     }
   },
   components: {
@@ -136,9 +142,10 @@ export default {
           const pid = this.slides[i].page_id
           const value = getStudentsAnswer(pid)
           this.$set(this.allAnswers, pid, value )
-          console.log(getStudentsAnswer(pid))
+          // console.log(getStudentsAnswer(pid))
         }
       }
+      console.log(this.allAnswers[this.getPid], '===', this.allAnswers)
     },
     getItemData() {
       this.options = []
@@ -182,7 +189,9 @@ export default {
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
       this.allAnswers[pid] = v
-      console.log(this.allAnswers)
+      this.$set(this.allAnswers, pid, v )
+      // this.$forceUpdate()
+      console.log(this.allAnswers, '====', this.allAnswers[this.getPid])
     },
     emitSo(message) {
       if(this.currentSo) {
@@ -195,10 +204,8 @@ export default {
         confirmButtonText: '确定',
         showCancelButton: false,
         showClose: false,
-        inputPattern: /\s*$/g,
-        inputErrorMessage: '用户名不能为空'
       }).then(({ value }) => {
-        console.log(value)
+        if(!value) value = this.uid
         this.uname = value
         setUserName(this.uid, value)
       }).catch(() => {
