@@ -207,6 +207,7 @@ export default {
       }).then(({ value }) => {
         if(!value) value = this.uid
         this.uname = value
+        this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name": "${value}", "action_type": "1"}`)
         setUserName(this.uid, value)
       }).catch(() => {
            

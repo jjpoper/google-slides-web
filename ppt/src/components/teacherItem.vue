@@ -18,7 +18,7 @@
             <div class="users" :key="item.user_id">
               选项 {{getAnswer(item.answer).text}}
               <br/>
-              学生 {{item.user_id}}
+              学生 {{getUname(item.user_id)}}
             </div>
         </template>
       </div>
@@ -79,6 +79,7 @@
 </style>
 
 <script>
+import { getStundentUidAndName } from '@/utils/user';
 export default {
   props: {
     options: {
@@ -126,6 +127,11 @@ export default {
       } else {
         this.showStatistics = true
       }
+    },
+    getUname(id) {
+      console.log(getStundentUidAndName(id))
+      const name = getStundentUidAndName(id)
+      return name ? name : id
     }
   }
 };
