@@ -4,11 +4,11 @@
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, userId: string, callback: callback) => {
+export const createSo = (room: string, userId: string, name: string, callback: callback) => {
   const socket = window.io('ws://ws.newzealand.actself.me', {transports: ["websocket"]});
   socket.on('connect', () => {
     // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
-    socket.emit('join-room', `{"room":"${room}", "user_id": "${userId}", "role":"student"}`, () => {
+    socket.emit('join-room', `{"room":"${room}", "user_id": "${userId}", "user_name": "${name}", "role":"student"}`, () => {
       console.log("学生加入房间");
     });
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么

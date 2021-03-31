@@ -8,7 +8,7 @@
     <div class="sfooter" v-if="slides.length > 0">
       <div>
         {{uname}}
-        <el-button type="primary" @click="enterUname">改名</el-button>
+        <el-button type="primary" @click="enterUname(false)">改名</el-button>
       </div>
       <div class="checkboxs" >
         <el-checkbox :value="currentAnswerd" >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
@@ -95,9 +95,9 @@ export default {
     if(this.uid === null || this.uid === undefined) {
       this.uid = generateUuid('s_', 16)
       setStudentUid(this.uid)
-      this.joinRoom()
+      this.beforejoinRoom()
     } else {
-      this.joinRoom()
+      this.beforejoinRoom()
     }
   },
   computed: {
@@ -167,14 +167,18 @@ export default {
       this.options = []
       this.getItemData()
     },
-    joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener)
+    beforejoinRoom() {
       const uname = getUserName(this.uid)
       console.log(uname, 'uname')
       this.uname = uname != 'null' && uname != undefined ? uname : ''
       if(!this.uname) {
-        this.enterUname()
+        this.enterUname(true)
+      } else {
+        this.joinRoom()
       }
+    },
+    joinRoom() {
+      this.currentSo = createSo(this.slide_id, this.uid, this.uname, this.msgListener)
     },
     msgListener(d) {
       console.log(d, d.type, '====收到页码命令')
@@ -200,7 +204,7 @@ export default {
         this.currentSo.emit(action, message);
       }
     },
-    enterUname() {
+    enterUname(status) {
       MessageBox.prompt('enter a new name', 'enter a new name', {
         confirmButtonText: '确定',
         showCancelButton: false,
@@ -208,8 +212,12 @@ export default {
       }).then(({ value }) => {
         if(!value) value = this.uid
         this.uname = value
-        this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
         setUserName(this.uid, value)
+        if(status) {
+          this.joinRoom
+        } else {
+          this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
+        }
       }).catch(() => {
            
       });
