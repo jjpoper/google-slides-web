@@ -19,7 +19,7 @@
         <el-button type="primary"  class="noShow gray" >{{ answerList.length > 0 ? `${answerList.length} Responses` : `no Responses`}}</el-button>
       </div>
     </el-main>
-    <el-main v-show="showResponse">
+    <el-main v-if="showResponse">
       <el-button type="primary" @click="hideRes">hide Responses</el-button>
       <template v-if="options&&options.length > 0">
         <teacherItem v-if="answerList.length > 0" :options="options" :title="title" :answerList="answerList" :pageId="getPid"/>
@@ -98,7 +98,7 @@ import teacherItem from '../components/teacherItem'
 import teacherTextItem from '../components/teacherTextItem'
 import {createSo} from '../socket/socket.teacher'
 import {SocketEventsEnum} from '../socket/socketEvents'
-import {getTeacherUid, setTeacherUid} from '../utils/user'
+import {getTeacherUid, setStundentUidAndName, setTeacherUid} from '../utils/user'
 import {saveTeacherAlist, getTeacherAlist} from '../utils/store'
 import { generateUuid } from '@/utils/help';
 
@@ -198,7 +198,7 @@ export default {
       // user_id: "slidec3dcef92c1cf458c"
       console.log(d)
       if(d.type === SocketEventsEnum.ANSWER_QUESTION) {
-        const {answer, page_id, room, user_id} = d
+        const {answer, page_id, room, user_id, action_type, user_name} = d
         const currentPageId = this.slides[this.current].page_id
         if(page_id === currentPageId && room === this.slide_id) {
           const filterData = this.answerList.filter((item) => item.user_id !== user_id)
@@ -213,6 +213,9 @@ export default {
         }
       } else if(d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         this.studentCounts = d.student_count
+      } else if(d.type === SocketEventsEnum.RENAME) {
+        const {user_id, user_name_new} = d
+        setStundentUidAndName(user_id, user_name_new)
       }
       
     },

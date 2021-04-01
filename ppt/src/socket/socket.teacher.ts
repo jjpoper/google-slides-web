@@ -32,6 +32,10 @@ export const createSo = (room: string, userId: string, callback: callback) => {
     callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
   });
 
+  socket.on('rename', (data: any) => {
+    callback({type: SocketEventsEnum.RENAME, ...JSON.parse(data)})
+  });
+
   return socket
 
 }

@@ -19,3 +19,10 @@ export const getUserName = (uid: string) => {
 export const setUserName = (uid: string, name: string) => {
   return localStorage.setItem(`${getUrlParam("slide_id")}_student_${uid}`, name)
 }
+// 存储所有学生用户id和用户名关系表
+export const setStundentUidAndName = (uid: string, name: string) => {
+  localStorage.setItem(`${getUrlParam("slide_id")}_Teacher_${uid}`, name)
+}
+export const getStundentUidAndName = (uid: string) => {
+  return localStorage.getItem(`${getUrlParam("slide_id")}_Teacher_${uid}`)
+}

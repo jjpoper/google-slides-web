@@ -8,7 +8,7 @@
     <div class="sfooter" v-if="slides.length > 0">
       <div>
         {{uname}}
-        <el-button type="primary" @click="enterUname">改名</el-button>
+        <el-button type="primary" @click="enterUname(false)">改名</el-button>
       </div>
       <div class="checkboxs" >
         <el-checkbox :value="currentAnswerd" >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
@@ -16,13 +16,8 @@
       </div>
     </div>
     </el-main>
-    <el-aside width="400px">
-      <template v-if="options&&options.length>1">
-        <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
-      </template>
-      <template v-else>
-        <textItem/>
-      </template>
+    <el-aside width="400px" v-if="options && options.length > 0">
+      <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
     </el-aside>
     <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -99,9 +94,9 @@ export default {
     if(this.uid === null || this.uid === undefined) {
       this.uid = generateUuid('s_', 16)
       setStudentUid(this.uid)
-      this.joinRoom()
+      this.beforejoinRoom()
     } else {
-      this.joinRoom()
+      this.beforejoinRoom()
     }
   },
   computed: {
@@ -156,6 +151,7 @@ export default {
       this.options = []
       this.$nextTick(() => {
         const choice = this.slides[this.current].items
+        console.log(choice)
         if(choice && choice.data) {
           const {title, options} = this.slides[this.current].items.data
           this.title = title
@@ -172,14 +168,18 @@ export default {
       this.options = []
       this.getItemData()
     },
-    joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener)
+    beforejoinRoom() {
       const uname = getUserName(this.uid)
       console.log(uname, 'uname')
       this.uname = uname != 'null' && uname != undefined ? uname : ''
       if(!this.uname) {
-        this.enterUname()
+        this.enterUname(true)
+      } else {
+        this.joinRoom()
       }
+    },
+    joinRoom() {
+      this.currentSo = createSo(this.slide_id, this.uid, this.uname, this.msgListener)
     },
     msgListener(d) {
       console.log(d, d.type, '====收到页码命令')
@@ -192,19 +192,20 @@ export default {
       console.log(v, this.currentSo)
       const pid = this.slides[this.current].page_id
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
-      this.emitSo(`{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
+      this.emitSo('response', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
       this.allAnswers[pid] = v
       this.$set(this.allAnswers, pid, v )
       // this.$forceUpdate()
       console.log(this.allAnswers, '====', this.allAnswers[this.getPid])
     },
-    emitSo(message) {
+    emitSo(action, message) {
       if(this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        this.currentSo.emit('response', message);
+        console.log(action)
+        this.currentSo.emit(action, message);
       }
     },
-    enterUname() {
+    enterUname(status) {
       MessageBox.prompt('enter a new name', 'enter a new name', {
         confirmButtonText: '确定',
         showCancelButton: false,
@@ -213,6 +214,11 @@ export default {
         if(!value) value = this.uid
         this.uname = value
         setUserName(this.uid, value)
+        if(status) {
+          this.joinRoom
+        } else {
+          this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
+        }
       }).catch(() => {
            
       });
