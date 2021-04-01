@@ -21,9 +21,12 @@
     </el-main>
     <el-main v-if="showResponse">
       <el-button type="primary" @click="hideRes">hide Responses</el-button>
-      <template v-if="options.length > 0">
+      <template v-if="options&&options.length > 0">
         <teacherItem v-if="answerList.length > 0" :options="options" :title="title" :answerList="answerList" :pageId="getPid"/>
         <div v-else> Waiting For Responses </div>
+      </template>
+      <template v-else>
+        <teacherTextItem/>
       </template>
     </el-main>
   </el-container>
@@ -92,11 +95,13 @@ import pptcontent from '../components/pptcontent';
 import { getAllPPTS } from '../model/index'
 import { showLoading, hideLoading, showToast } from '../utils/loading'
 import teacherItem from '../components/teacherItem'
+import teacherTextItem from '../components/teacherTextItem'
 import {createSo} from '../socket/socket.teacher'
 import {SocketEventsEnum} from '../socket/socketEvents'
 import {getTeacherUid, setStundentUidAndName, setTeacherUid} from '../utils/user'
 import {saveTeacherAlist, getTeacherAlist} from '../utils/store'
 import { generateUuid } from '@/utils/help';
+
 
 export default {
   data() {
@@ -131,7 +136,8 @@ export default {
   },
   components: {
     pptcontent,
-    teacherItem
+    teacherItem,
+    teacherTextItem
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {

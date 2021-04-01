@@ -19,7 +19,7 @@
     <el-aside width="400px" v-if="options && options.length > 0">
       <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
     </el-aside>
-    <!-- <el-aside width="400px" class="scroll-student">
+    <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
         <studentsItem
           v-if="slideItem.items.data"
@@ -67,6 +67,7 @@ import pptcontent from '../components/pptcontent';
 import { getAllPPTS } from '../model/index'
 import { showLoading, hideLoading } from '../utils/loading'
 import studentsItem from '../components/studentsItem'
+import textItem from '../components/students/textItem'
 import {createSo} from '../socket/socket.student'
 import {SocketEventsEnum} from '../socket/socketEvents'
 import {getStudentUid, getUserName, setStudentUid, setUserName} from '../utils/user'
@@ -110,7 +111,8 @@ export default {
   },
   components: {
     pptcontent,
-    studentsItem
+    studentsItem,
+    textItem
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
