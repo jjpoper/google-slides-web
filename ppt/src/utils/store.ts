@@ -16,9 +16,37 @@ export const getStudentsAnswer = (itemid: string) => {
   return isNaN(value) ? null : value
 }
 
+export const saveStudentsDataList = (id:string,arr:any[],type:string) => {
+  localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${id}_${type}`, JSON.stringify(arr))
+}
+
+export const getStudentsDataList = (id:string,type:string) => {
+  let data = localStorage.getItem(`${getUrlParam("slide_id")}_${storeUid}_${id}_${type}`) || ''
+  let arr = []
+  try {
+    arr = JSON.parse(data)
+  } catch(e) {
+    // console.log(e)
+  }
+  return arr
+}
 const TEACHER_ANSWER = 'TEACHER_ANSWER'
 export const saveTeacherAlist = (itemid: string, answerList: any[]) => {
   localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${TEACHER_ANSWER}_${itemid}`, JSON.stringify(answerList))
+}
+
+export const saveTeacherDatalist = (itemid: string, answerList: any[],type:string) => {
+  localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${type}_${itemid}`, JSON.stringify(answerList))
+}
+export const getTeacherDatalist = (itemid: string,type: string) => {
+  let listString = localStorage.getItem(`${getUrlParam("slide_id")}_${storeUid}_${type}_${itemid}`) || ''
+  let arr = []
+  try {
+    arr = JSON.parse(listString)
+  } catch(e) {
+    // console.log(e)
+  }
+  return arr
 }
 export const getTeacherAlist = (itemid: string) => {
   let listString = localStorage.getItem(`${getUrlParam("slide_id")}_${storeUid}_${TEACHER_ANSWER}_${itemid}`) || ''

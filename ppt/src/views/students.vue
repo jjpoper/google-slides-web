@@ -5,19 +5,28 @@
         <pptcontent :url="pptUrl" />
       </div>
 
-    <div class="sfooter" v-if="slides.length > 0">
-      <div>
-        {{uname}}
-        <el-button type="primary" @click="enterUname(false)">改名</el-button>
+      <div class="sfooter" v-if="slides.length > 0">
+        <div>
+          {{uname}}
+          <el-button type="primary" @click="enterUname(false)">改名</el-button>
+        </div>
+        <div class="checkboxs">
+          <el-checkbox
+            :value="currentAnswerd||textSended"
+          >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
+          <div class="scroll-mask"></div>
+        </div>
       </div>
-      <div class="checkboxs" >
-        <el-checkbox :value="currentAnswerd" >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
-        <div class="scroll-mask"></div>
-      </div>
-    </div>
     </el-main>
-    <el-aside width="400px" v-if="options && options.length > 0">
-      <studentsItem :options="options" :title="title" :answer="answer" :pageId="getPid"/>
+    <el-aside width="400px">
+      <studentsItem
+        v-if="options && options.length > 0"
+        :options="options"
+        :title="title"
+        :answer="answer"
+        :pageId="getPid"
+      />
+      <textItem v-if="type=='text'" :method="sendText" :pageId="getPid" />
     </el-aside>
     <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -32,81 +41,92 @@
           <div class="scroll-mask"></div>
         </studentsItem>
       </template>
-    </el-aside> -->
+    </el-aside>-->
   </el-container>
 </template>
 <style>
-.scroll-student{
+.scroll-student {
   max-height: 700px;
   background-color: #999;
   overflow-y: scroll;
 }
-.scroll-mask{
+.scroll-mask {
   position: absolute;
   width: 100%;
   height: 100%;
-  top:0;
+  top: 0;
   left: 0;
   background-color: transparent;
   z-index: 99999;
 }
-.sfooter{
+.sfooter {
   height: 50px;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.checkboxs{
+.checkboxs {
   position: relative;
-  flex: 1
+  flex: 1;
 }
 </style>
 <script>
-import pptcontent from '../components/pptcontent';
-import { getAllPPTS } from '../model/index'
-import { showLoading, hideLoading } from '../utils/loading'
-import studentsItem from '../components/studentsItem'
-import textItem from '../components/students/textItem'
-import {createSo} from '../socket/socket.student'
-import {SocketEventsEnum} from '../socket/socketEvents'
-import {getStudentUid, getUserName, setStudentUid, setUserName} from '../utils/user'
-import { generateUuid } from '@/utils/help';
-import { getStudentsAnswer } from '@/utils/store';
-import {MessageBox} from 'element-ui'
+import pptcontent from "../components/pptcontent";
+import { getAllPPTS } from "../model/index";
+import { showLoading, hideLoading } from "../utils/loading";
+import studentsItem from "../components/studentsItem";
+import textItem from "../components/students/textItem";
+import { createSo } from "../socket/socket.student";
+import { SocketEventsEnum } from "../socket/socketEvents";
+import {
+  getStudentUid,
+  getUserName,
+  setStudentUid,
+  setUserName
+} from "../utils/user";
+import { generateUuid } from "@/utils/help";
+import { getStudentsAnswer, getStudentsDataList } from "@/utils/store";
+import { MessageBox } from "element-ui";
 
 export default {
   data() {
     return {
       pptUrl: null,
-      title: '',
+      title: "",
       options: [],
-      slides:[],
+      slides: [],
       current: 0,
       slide_id: 0,
       currentSo: null,
       allAnswers: {},
-      uname: '',
+      uname: "",
+      type: "",
       uid: getStudentUid() // uid
     };
   },
   mounted() {
-    if(this.uid === null || this.uid === undefined) {
-      this.uid = generateUuid('s_', 16)
-      setStudentUid(this.uid)
-      this.beforejoinRoom()
+    if (this.uid === null || this.uid === undefined) {
+      this.uid = generateUuid("s_", 16);
+      setStudentUid(this.uid);
+      this.beforejoinRoom();
     } else {
-      this.beforejoinRoom()
+      this.beforejoinRoom();
     }
   },
   computed: {
-    'getPid'() {
-      return this.slides[this.current].page_id
+    getPid() {
+      return this.slides[this.current].page_id;
     },
-    'currentAnswerd'() {
-      const ans = this.allAnswers[this.getPid]
-      console.log(parseInt(ans) >= 0, '!isNaN(ans) && ans >= 0', ans)
-      return parseInt(ans) >= 0
+    currentAnswerd() {
+      const ans = this.allAnswers[this.getPid];
+      console.log(parseInt(ans) >= 0, "!isNaN(ans) && ans >= 0", ans);
+      return parseInt(ans) >= 0;
+    },
+    textSended() {
+      let textData = getStudentsDataList(this.getPid, SocketEventsEnum.TEXT_INPUT);
+      console.log(textData.length);
+      return textData.length > 0;
     }
   },
   components: {
@@ -116,113 +136,137 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.slide_id = to.query.slide_id
-      vm.current = to.query.page || 0
-      vm.getAllSlides()
-    })
+      vm.slide_id = to.query.slide_id;
+      vm.current = to.query.page || 0;
+      vm.getAllSlides();
+    });
   },
   methods: {
     getAllSlides() {
-      showLoading()
-      getAllPPTS(this.slide_id).then((list) => {
+      showLoading();
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
-        this.slides = list
-        this.getCurrentPPT()
-        this.getItemData()
-        this.getAllAnswers()
-        hideLoading()
+        this.slides = list;
+        this.getCurrentPPT();
+        this.getItemData();
+        this.getAllAnswers();
+        hideLoading();
       });
     },
+    //发送text
+    sendText(index, msg) {
+      console.log("index==" + index + "  msg==" + msg);
+      const pid = this.slides[this.current].page_id;
+      this.textSended = true;
+      // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
+      this.emitSo(
+        "response",
+        `{"room": "${this.slide_id}", "type":"${SocketEventsEnum.TEXT_INPUT}","user_id": "${this.uid}","user_name":"${this.uname}","page_id": "${pid}", "item_id": "${index}", "content":"${msg}"}`
+      );
+    },
     getAllAnswers() {
-      for(let i = 0; i< this.slides.length; i++) {
-        const choice = this.slides[this.current].items
-        if(choice && choice.data) {
-          const pid = this.slides[i].page_id
-          const value = getStudentsAnswer(pid)
-          this.$set(this.allAnswers, pid, value )
+      for (let i = 0; i < this.slides.length; i++) {
+        const choice = this.slides[this.current].items;
+        if (choice && choice.data) {
+          const pid = this.slides[i].page_id;
+          const value = getStudentsAnswer(pid);
+          this.$set(this.allAnswers, pid, value);
           // console.log(getStudentsAnswer(pid))
         }
       }
-      console.log(this.allAnswers[this.getPid], '===', this.allAnswers)
+      console.log(this.allAnswers[this.getPid], "===", this.allAnswers);
     },
     getItemData() {
-      this.options = []
+      this.options = [];
       this.$nextTick(() => {
-        const choice = this.slides[this.current].items
-        console.log(choice)
-        if(choice && choice.data) {
-          const {title, options} = this.slides[this.current].items.data
-          this.title = title
-          this.options = options
+        const choice = this.slides[this.current].items;
+        console.log("items data==" + choice.type);
+        if (choice && choice.data) {
+          this.type = this.slides[this.current].items.type;
+          const { title, options } = this.slides[this.current].items.data;
+          this.title = title;
+          this.options = options;
         }
-      })
+      });
     },
     getCurrentPPT() {
-      this.pptUrl = this.slides[this.current].thumbnail_url
+      this.pptUrl = this.slides[this.current].thumbnail_url;
     },
     pageChange(page) {
-      this.current = page
-      this.getCurrentPPT()
-      this.options = []
-      this.getItemData()
+      this.current = page;
+      this.getCurrentPPT();
+      this.options = [];
+      this.getItemData();
     },
     beforejoinRoom() {
-      const uname = getUserName(this.uid)
-      console.log(uname, 'uname')
-      this.uname = uname != 'null' && uname != undefined ? uname : ''
-      if(!this.uname) {
-        this.enterUname(true)
+      const uname = getUserName(this.uid);
+      console.log(uname, "uname");
+      this.uname = uname != "null" && uname != undefined ? uname : "";
+      if (!this.uname) {
+        this.enterUname(true);
       } else {
-        this.joinRoom()
+        this.joinRoom();
       }
     },
     joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.uname, this.msgListener)
+      this.currentSo = createSo(
+        this.slide_id,
+        this.uid,
+        this.uname,
+        this.msgListener
+      );
     },
     msgListener(d) {
-      console.log(d, d.type, '====收到页码命令')
+      console.log(d, d.type, "====收到页码命令");
       // 收到切换页码命令
-      if(d.type === SocketEventsEnum.GO_PAGE) {
-        this.pageChange(d.params.page)
+      if (d.type === SocketEventsEnum.GO_PAGE) {
+        this.pageChange(d.params.page);
       }
     },
     answer(v) {
-      console.log(v, this.currentSo)
-      const pid = this.slides[this.current].page_id
+      console.log("change answer==" + v, this.currentSo);
+      const pid = this.slides[this.current].page_id;
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
-      this.emitSo('response', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`)
-      this.allAnswers[pid] = v
-      this.$set(this.allAnswers, pid, v )
+      this.emitSo(
+        "response",
+        `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`
+      );
+
+      this.allAnswers[pid] = v;
+      this.$set(this.allAnswers, pid, v);
       // this.$forceUpdate()
-      console.log(this.allAnswers, '====', this.allAnswers[this.getPid])
+      console.log(this.allAnswers, "====", this.allAnswers[this.getPid]);
     },
     emitSo(action, message) {
-      if(this.currentSo) {
+      if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        console.log(action)
+        console.log(action);
         this.currentSo.emit(action, message);
       }
     },
     enterUname(status) {
-      MessageBox.prompt('enter a new name', 'enter a new name', {
-        confirmButtonText: '确定',
+      MessageBox.prompt("enter a new name", "enter a new name", {
+        confirmButtonText: "确定",
         showCancelButton: false,
-        showClose: false,
-      }).then(({ value }) => {
-        if(!value) value = this.uid
-        this.uname = value
-        setUserName(this.uid, value)
-        if(status) {
-          this.joinRoom
-        } else {
-          this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
-        }
-      }).catch(() => {
-           
-      });
+        showClose: false
+      })
+        .then(({ value }) => {
+          if (!value) value = this.uid;
+          this.uname = value;
+          setUserName(this.uid, value);
+          if (status) {
+            this.joinRoom;
+          } else {
+            this.emitSo(
+              "rename",
+              `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`
+            );
+          }
+        })
+        .catch(() => {});
     }
-  },
+  }
 };
 </script>
