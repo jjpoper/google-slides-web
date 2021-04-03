@@ -3,4 +3,5 @@ export enum SocketEventsEnum {
   ANSWER_QUESTION = 'ANSWER_QUESTION', // 回答
   STUDENTS_COUNTS = 'STUDENTS_COUNTS', // 人数
   RENAME = 'RENAME', // 改名
+  TEXT_INPUT = 'TEXT_INPUT',//文本框输入
 }

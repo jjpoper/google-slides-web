@@ -16,7 +16,7 @@
         <el-button type="primary" class="invite" @click="openShare">Share</el-button>
         <el-button type="primary" class="Presenting">Presenting</el-button>
         <el-button type="primary"  class="Show" @click="showres">Show Responses </el-button>
-        <el-button type="primary"  class="noShow gray" >{{ answerList.length > 0 ? `${answerList.length} Responses` : `no Responses`}}</el-button>
+        <el-button type="primary"  class="noShow gray" >{{ answerList.length+textList.length > 0 ? `${answerList.length+textList.length} Responses` : `no Responses`}}</el-button>
       </div>
     </el-main>
     <el-main v-if="showResponse">
@@ -25,8 +25,9 @@
         <teacherItem v-if="answerList.length > 0" :options="options" :title="title" :answerList="answerList" :pageId="getPid"/>
         <div v-else> Waiting For Responses </div>
       </template>
-      <template v-else>
-        <teacherTextItem/>
+      <template v-else-if="textList.length>0" >
+        <teacherTextItem v-if="textList.length>0" :textList="textList"/>
+        <div v-else> Waiting For Responses </div>
       </template>
     </el-main>
   </el-container>
@@ -99,8 +100,9 @@ import teacherTextItem from '../components/teacherTextItem'
 import {createSo} from '../socket/socket.teacher'
 import {SocketEventsEnum} from '../socket/socketEvents'
 import {getTeacherUid, setStundentUidAndName, setTeacherUid} from '../utils/user'
-import {saveTeacherAlist, getTeacherAlist} from '../utils/store'
+import {saveTeacherAlist,saveTeacherDatalist, getTeacherAlist,getTeacherDatalist} from '../utils/store'
 import { generateUuid } from '@/utils/help';
+import { createLogger } from 'vuex';
 
 
 export default {
@@ -116,6 +118,7 @@ export default {
       slide_id: 0,
       currentSo: null,
       answerList: [], // 用户回答的内容
+      textList:[],//用户输入的内容
       uid: getTeacherUid() // uid
     };
   },
@@ -178,6 +181,7 @@ export default {
       this.getCurrentPPT()
       this.options = []
       this.answerList = getTeacherAlist(this.getPid)
+      this.textList = getTeacherDatalist(this.getPid,SocketEventsEnum.TEXT_INPUT)
       this.getItemData()
       // 换页命令
       // '{"type":"change_page", "params": {"page": 3}}'
@@ -216,6 +220,42 @@ export default {
       } else if(d.type === SocketEventsEnum.RENAME) {
         const {user_id, user_name_new} = d
         setStundentUidAndName(user_id, user_name_new)
+      }else if(d.type == SocketEventsEnum.TEXT_INPUT){
+        const {content, page_id, room, user_id, action_type, user_name,item_id} = d
+        const currentPageId = this.slides[this.current].page_id
+        if(page_id === currentPageId && room === this.slide_id){
+          let textList = this.textList;
+          if(!textList||textList.length==0){
+            textList.push({
+              content,
+              user_id,
+              user_name,
+              item_id})
+          }else{
+            let found = false
+            for(let i=0;i<textList.length;i++){
+              console.log(textList[i].user_id+"   "+textList[i].item_id)
+              if(textList[i].user_id===user_id&&textList[i].item_id===item_id){
+                found = true;
+                textList[i].content = content
+                textList[i].user_name = user_name
+              }
+            }
+            if(!found){
+              textList.push({
+              content,
+              user_id,
+              user_name,
+              item_id})
+            }
+          }
+          this.textList = textList;
+          saveTeacherDatalist(currentPageId, textList,SocketEventsEnum.TEXT_INPUT)
+          this.$forceUpdate()
+        }
+        
+        //接收到text input的值
+
       }
       
     },
