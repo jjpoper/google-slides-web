@@ -211,12 +211,9 @@ export default {
       }
     },
     joinRoom() {
-      this.currentSo = createSo(
-        this.slide_id,
-        this.uid,
-        this.uname,
-        this.msgListener
-      );
+      this.currentSo = createSo(this.slide_id, this.uid, this.uname, this.msgListener, () => {
+        this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${this.uname}"}`)
+      })
     },
     msgListener(d) {
       console.log(d, d.type, "====收到页码命令");
@@ -250,22 +247,19 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "确定",
         showCancelButton: false,
-        showClose: false
-      })
-        .then(({ value }) => {
-          if (!value) value = this.uid;
-          this.uname = value;
-          setUserName(this.uid, value);
-          if (status) {
-            this.joinRoom;
-          } else {
-            this.emitSo(
-              "rename",
-              `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`
-            );
-          }
-        })
-        .catch(() => {});
+        showClose: false,
+      }).then(({ value }) => {
+        if(!value) value = this.uid
+        this.uname = value
+        setUserName(this.uid, value)
+        if(status) {
+          this.joinRoom()
+        } else {
+          this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
+        }
+      }).catch(() => {
+           
+      });
     }
   }
 };
