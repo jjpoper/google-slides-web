@@ -6,8 +6,11 @@
         :autosize="{ minRows: 3}"
         placeholder="请输入内容(按Ctrl+Enter键发送)"
         v-model="item.value"
-        @keyup.ctrl.enter.native="send(index)"
-      ></el-input>
+        @keyup.ctrl.enter.native="send(index)">
+        </el-input>
+        <div class="el-input__icon" v-if="item.textSended">
+          <i class="el-icon-edit-outline"></i>
+        </div>
     </div>
     <el-button type="text" @click="addInput()" :disabled="addDisable">+Add Other One</el-button>
   </div>
@@ -19,8 +22,18 @@
   flex-direction: column;
   padding: 20px;
 }
+.el-input__icon{
+  position: relative;
+  line-height: 25px;
+  margin-top: -22px;
+  margin-left: 93%;
+}
+.el-input__icon>i{
+  cursor: pointer;
+}
 .input_parent {
   display: flex;
+  flex-direction: column;
   padding-bottom: 20px;
 }
 /* .grid-content {
@@ -68,11 +81,12 @@ export default {
   methods: {
     addInput: function() {
       this.inputCount++;
-      var item = { value: "", id: this.inputCount };
+      var item = { value: "", id: this.inputCount ,textSended:false};
       this.arrList.push(item);
       this.addDisable = this.inputCount >= this.maxCount;
     },
     send: function(index) {
+      this.arrList[index].textSended = true
       saveStudentsDataList(this.pageId,this.arrList, SocketEventsEnum.TEXT_INPUT);
       var text = this.arrList[index].value;
       if (text) {

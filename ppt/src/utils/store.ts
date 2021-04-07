@@ -17,6 +17,7 @@ export const getStudentsAnswer = (itemid: string) => {
 }
 
 export const saveStudentsDataList = (id:string,arr:any[],type:string) => {
+  console.log(JSON.stringify(arr))
   localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${id}_${type}`, JSON.stringify(arr))
 }
 
@@ -30,16 +31,26 @@ export const getStudentsDataList = (id:string,type:string) => {
   }
   return arr
 }
+export const getNumberList=function(pageId:string,type:string){
+  let arr = getStudentsDataList(pageId, type);
+  if (arr && arr.length > 0) {
+    return arr;
+  }
+  arr.push({ value: 0, id: "0" });
+  return arr;
+}
 const TEACHER_ANSWER = 'TEACHER_ANSWER'
 export const saveTeacherAlist = (itemid: string, answerList: any[]) => {
   localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${TEACHER_ANSWER}_${itemid}`, JSON.stringify(answerList))
 }
 
 export const saveTeacherDatalist = (itemid: string, answerList: any[],type:string) => {
+  console.log("save number=="+JSON.stringify(answerList)+"  type =="+type)
   localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${type}_${itemid}`, JSON.stringify(answerList))
 }
 export const getTeacherDatalist = (itemid: string,type: string) => {
   let listString = localStorage.getItem(`${getUrlParam("slide_id")}_${storeUid}_${type}_${itemid}`) || ''
+  console.log(JSON.stringify(listString)+"  type =="+type)
   let arr = []
   try {
     arr = JSON.parse(listString)
