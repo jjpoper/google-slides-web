@@ -1,9 +1,9 @@
 <template>
   <div class="parent" v-if="textList&&textList.length>0">
-    <div class="parent_1" >
+    <div class="parent_1">
       <div class="parent_2" v-for="(item,index) in textList" :key="index">
-        <div class="grid-content">{{item.content}}</div>
-        <p class="stduent_name">{{item.user_name}}</p>
+        <div :id="item.user_id" class="grid-content">{{item.content}}</div>
+        <p class="stduent_name">{{getUname(item.user_id)}}</p>
       </div>
     </div>
   </div>
@@ -13,13 +13,12 @@
 .parent {
   display: flex;
   flex-direction: column;
-  line-height: auto;
 }
 .parent_1 {
   display: flex;
   flex-direction: row;
+  align-items: center;
   width: 100%;
-  line-height: 120px;
   flex-wrap: wrap;
 }
 .parent_2 {
@@ -27,7 +26,6 @@
   flex-direction: column;
   width: 30%;
   padding: 10px;
-  height: 100%;
 }
 .stduent_name {
   font-family: "PingFang SC";
@@ -45,7 +43,7 @@
   border: 1px solid #e5e9f2;
   line-height: 20px;
   text-align: left;
-  word-wrap:break-word;
+  word-wrap: break-word;
 }
 p {
   text-align: left;
@@ -53,6 +51,7 @@ p {
 </style>
 
 <script>
+import { getStundentUidAndName } from "@/utils/user";
 export default {
   props: {
     title: {
@@ -66,17 +65,30 @@ export default {
     pageId: {
       type: String,
       default: ""
+    },
+    getUserName: {
+      type: Function
     }
   },
 
   data() {
     return {};
   },
-
-  created() {
-    console.log("text template created!!" + this.textList.length);
-    
+  computed: {},
+  mounted: function() {
+    const max = 0
+    for (let i = 0; i < this.textList.length; i++) {
+      var x = document.getElementById(this.textList[i].user_id);
+      console.log(x.offsetHeight);
+    }
   },
-  methods: {}
+  created() {},
+  methods: {
+    getUname(id) {
+      console.log(getStundentUidAndName(id));
+      const name = getStundentUidAndName(id);
+      return name ? name : id;
+    }
+  }
 };
 </script>

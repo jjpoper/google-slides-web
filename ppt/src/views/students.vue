@@ -12,7 +12,7 @@
         </div>
         <div class="checkboxs">
           <el-checkbox
-            :value="currentAnswerd||textSended"
+            :value="currentAnswerd||textSended||numberSended"
           >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
           <div class="scroll-mask"></div>
         </div>
@@ -27,6 +27,8 @@
         :pageId="getPid"
       />
       <textItem v-if="type=='text'" :method="sendText" :pageId="getPid" />
+
+      <numberItem v-if="type=='number'" :method="sendText" :pageId="getPid" />
     </el-aside>
     <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -77,6 +79,7 @@ import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading } from "../utils/loading";
 import studentsItem from "../components/studentsItem";
 import textItem from "../components/students/textItem";
+import numberItem from "../components/students/numberIndex";
 import { createSo } from "../socket/socket.student";
 import { SocketEventsEnum } from "../socket/socketEvents";
 import {
@@ -102,6 +105,7 @@ export default {
       allAnswers: {},
       uname: "",
       type: "",
+      numberSended: false,
       uid: getStudentUid() // uid
     };
   },
@@ -124,15 +128,19 @@ export default {
       return parseInt(ans) >= 0;
     },
     textSended() {
-      let textData = getStudentsDataList(this.getPid, SocketEventsEnum.TEXT_INPUT);
+      let textData = getStudentsDataList(
+        this.getPid,
+        SocketEventsEnum.TEXT_INPUT
+      );
       console.log(textData.length);
-      return textData.length > 0;
+      return textData.length > 0 && this.type === SocketEventsEnum.TEXT_INPUT;
     }
   },
   components: {
     pptcontent,
     studentsItem,
-    textItem
+    textItem,
+    numberItem
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -159,7 +167,12 @@ export default {
     sendText(index, msg) {
       console.log("index==" + index + "  msg==" + msg);
       const pid = this.slides[this.current].page_id;
-      this.textSended = true;
+      if (this.type == SocketEventsEnum.TEXT_INPUT) {
+        this.textSended = true;
+      } else if (this.type == SocketEventsEnum.NUMBER_INPUT) {
+        this.numberSended = true;
+      }
+
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
@@ -182,9 +195,9 @@ export default {
       this.options = [];
       this.$nextTick(() => {
         const choice = this.slides[this.current].items;
-        console.log("items data==" + choice.type);
         if (choice && choice.data) {
-          this.type = this.slides[this.current].items.type;
+          this.type = choice.type;
+          console.log("currentType=="+this.type)
           const { title, options } = this.slides[this.current].items.data;
           this.title = title;
           this.options = options;
@@ -211,9 +224,18 @@ export default {
       }
     },
     joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.uname, this.msgListener, () => {
-        this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${this.uname}"}`)
-      })
+      this.currentSo = createSo(
+        this.slide_id,
+        this.uid,
+        this.uname,
+        this.msgListener,
+        () => {
+          this.emitSo(
+            "rename",
+            `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${this.uname}"}`
+          );
+        }
+      );
     },
     msgListener(d) {
       console.log(d, d.type, "====收到页码命令");
@@ -247,19 +269,22 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "确定",
         showCancelButton: false,
-        showClose: false,
-      }).then(({ value }) => {
-        if(!value) value = this.uid
-        this.uname = value
-        setUserName(this.uid, value)
-        if(status) {
-          this.joinRoom()
-        } else {
-          this.emitSo('rename', `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`)
-        }
-      }).catch(() => {
-           
-      });
+        showClose: false
+      })
+        .then(({ value }) => {
+          if (!value) value = this.uid;
+          this.uname = value;
+          setUserName(this.uid, value);
+          if (status) {
+            this.joinRoom();
+          } else {
+            this.emitSo(
+              "rename",
+              `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`
+            );
+          }
+        })
+        .catch(() => {});
     }
   }
 };
