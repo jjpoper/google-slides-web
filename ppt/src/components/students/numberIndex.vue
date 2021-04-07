@@ -1,8 +1,6 @@
 <template>
   <div class="parent">
-    <el-input type="number" 
-    @keyup.ctrl.enter.native="send()"
-    v-model="number"></el-input>
+    <el-input type="number" @keyup.ctrl.enter.native="send()" v-model="arrList[0].value"></el-input>
   </div>
 </template>
 <style scoped>
@@ -18,7 +16,7 @@ el-input {
 }
 </style>
 <script>
-//import { saveStudentsDataList, getStudentsDataList } from "../../utils/store";
+import { saveStudentsDataList, getStudentsDataList,getNumberList } from "../../utils/store";
 import { SocketEventsEnum } from "../../socket/socketEvents";
 export default {
   props: {
@@ -30,12 +28,19 @@ export default {
   },
   data() {
     return {
-      number: 0
+      arrList: getNumberList(this.pageId,SocketEventsEnum.NUMBER_INPUT)
     };
+  },
+  computed: {
   },
   methods: {
     send: function() {
-      this.method(0, this.number);
+      saveStudentsDataList(
+        this.pageId,
+        this.arrList,
+        SocketEventsEnum.NUMBER_INPUT
+      );
+      this.method(0, this.arrList[0].value);
     }
   }
 };

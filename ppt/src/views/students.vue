@@ -12,7 +12,7 @@
         </div>
         <div class="checkboxs">
           <el-checkbox
-            :value="currentAnswerd||textSended||numberSended"
+            :value="currentAnswerd||currentInputed"
           >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
           <div class="scroll-mask"></div>
         </div>
@@ -89,7 +89,11 @@ import {
   setUserName
 } from "../utils/user";
 import { generateUuid } from "@/utils/help";
-import { getStudentsAnswer, getStudentsDataList } from "@/utils/store";
+import {
+  getStudentsAnswer,
+  getStudentsDataList,
+  saveStudentsDataList
+} from "@/utils/store";
 import { MessageBox } from "element-ui";
 
 export default {
@@ -106,6 +110,7 @@ export default {
       uname: "",
       type: "",
       numberSended: false,
+      textSended: false,
       uid: getStudentUid() // uid
     };
   },
@@ -127,13 +132,11 @@ export default {
       console.log(parseInt(ans) >= 0, "!isNaN(ans) && ans >= 0", ans);
       return parseInt(ans) >= 0;
     },
-    textSended() {
-      let textData = getStudentsDataList(
-        this.getPid,
-        SocketEventsEnum.TEXT_INPUT
-      );
-      console.log(textData.length);
-      return textData.length > 0 && this.type === SocketEventsEnum.TEXT_INPUT;
+    currentInputed(){
+      if(this.textSended||this.numberSended)return true
+      const arr = getStudentsDataList(this.getPid,this.type)
+      console.log(arr&&arr.length>0)
+      return  arr&&arr.length>0
     }
   },
   components: {
@@ -172,11 +175,10 @@ export default {
       } else if (this.type == SocketEventsEnum.NUMBER_INPUT) {
         this.numberSended = true;
       }
-
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "type":"${SocketEventsEnum.TEXT_INPUT}","user_id": "${this.uid}","user_name":"${this.uname}","page_id": "${pid}", "item_id": "${index}", "content":"${msg}"}`
+        `{"room": "${this.slide_id}", "type":"${this.type}","user_id": "${this.uid}","user_name":"${this.uname}","page_id": "${pid}", "item_id": "${index}", "content":"${msg}"}`
       );
     },
     getAllAnswers() {
@@ -197,7 +199,7 @@ export default {
         const choice = this.slides[this.current].items;
         if (choice && choice.data) {
           this.type = choice.type;
-          console.log("currentType=="+this.type)
+          console.log("currentType==" + this.type);
           const { title, options } = this.slides[this.current].items.data;
           this.title = title;
           this.options = options;

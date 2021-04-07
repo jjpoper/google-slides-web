@@ -176,16 +176,14 @@ export default {
       this.current_user_id = user_di;
     },
     getResponeCount(){
-      if(this.type == SocketEventsEnum.ANSWER_QUESTION){
+      console.log("getResponeCount=="+this.type)
+      if(this.type == 'choice'){
         return this.answerList.length
       }else if(this.type == SocketEventsEnum.TEXT_INPUT||this.type==SocketEventsEnum.NUMBER_INPUT){
         console.log(this.textList.length)
         return this.textList.length;
-        
       }else{
-        console.log("length ==0")
         return 0;
-        
       }
     },
     getAllSlides() {
