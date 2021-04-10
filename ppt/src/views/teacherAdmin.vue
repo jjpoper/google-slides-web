@@ -200,7 +200,8 @@ export default {
     getItemData() {
       this.options = [];
       this.$nextTick(() => {
-        const choice = this.slides[this.current].items;
+        const choice = this.slides[this.current].items[0];
+        console.log(choice)
         if (choice && choice.data) {
           const { title, options } = choice.data;
           this.title = title;

@@ -18,7 +18,7 @@
         </div>
       </div>
     </el-main>
-    <el-aside width="400px">
+    <el-aside width="50%">
       <studentsItem
         v-if="options && options.length > 0"
         :options="options"
@@ -26,9 +26,12 @@
         :answer="answer"
         :pageId="getPid"
       />
-      <textItem v-if="type=='text'" :method="sendText" :pageId="getPid" />
+      <textItem v-else-if="type=='text'" :method="sendText" :pageId="getPid" />
 
-      <numberItem v-if="type=='number'" :method="sendText" :pageId="getPid" />
+      <numberItem v-else-if="type=='number'" :method="sendText" :pageId="getPid" />
+      <div v-else-if="type=='website'" style="width: 100%; height: 100%">
+        <iframe class="website" :src="`https://${currentData.url}`"/>
+      </div>
     </el-aside>
     <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -72,6 +75,10 @@
   position: relative;
   flex: 1;
 }
+.website{
+  width: 90%;
+  height: 100%;
+}
 </style>
 <script>
 import pptcontent from "../components/pptcontent";
@@ -111,6 +118,7 @@ export default {
       type: "",
       numberSended: false,
       textSended: false,
+      currentData: null,
       uid: getStudentUid() // uid
     };
   },
@@ -129,7 +137,7 @@ export default {
     },
     currentAnswerd() {
       const ans = this.allAnswers[this.getPid];
-      console.log(parseInt(ans) >= 0, "!isNaN(ans) && ans >= 0", ans);
+      console.log(parseInt(ans) >= 0, "choice 选择结果", ans);
       return parseInt(ans) >= 0;
     },
     currentInputed(){
@@ -183,7 +191,7 @@ export default {
     },
     getAllAnswers() {
       for (let i = 0; i < this.slides.length; i++) {
-        const choice = this.slides[this.current].items;
+        const choice = this.slides[this.current].items[0];
         if (choice && choice.data) {
           const pid = this.slides[i].page_id;
           const value = getStudentsAnswer(pid);
@@ -195,12 +203,16 @@ export default {
     },
     getItemData() {
       this.options = [];
+      this.textSended = false
+      this.numberSended = false
+      this.type = null
       this.$nextTick(() => {
-        const choice = this.slides[this.current].items;
+        const choice = this.slides[this.current].items[0];
         if (choice && choice.data) {
           this.type = choice.type;
           console.log("currentType==" + this.type);
-          const { title, options } = this.slides[this.current].items.data;
+          this.currentData = choice.data
+          const { title, options } = choice.data;
           this.title = title;
           this.options = options;
         }
@@ -255,7 +267,7 @@ export default {
         `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`
       );
 
-      this.allAnswers[pid] = v;
+      // this.allAnswers[pid] = v;
       this.$set(this.allAnswers, pid, v);
       // this.$forceUpdate()
       console.log(this.allAnswers, "====", this.allAnswers[this.getPid]);
