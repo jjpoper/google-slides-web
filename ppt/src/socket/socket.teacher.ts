@@ -7,7 +7,7 @@ import { SocketEventsEnum } from "./socketEvents";
 type callback = (d: any) => void
 
 export const createSo = (room: string, userId: string, callback: callback) => {
-  const socket = window.io('ws://ws.newzealand.actself.me', {transports: ["websocket"]});
+  const socket = window.io('wss://ws.newzealand.actself.me', {transports: ["websocket"]});
   socket.on('connect', () => {
     // 加入房间，room是slide_id，user_id 是老师的名称，role必须是teacher
     socket.emit('join-room', `{"room":"${room}", "user_id": "${userId}", "role":"teacher"}`, () => {
