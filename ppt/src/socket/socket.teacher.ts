@@ -1,13 +1,12 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-console */
-// import { io } from "socket.io-client"
-
+import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from "./socketEvents";
 
 type callback = (d: any) => void
 
 export const createSo = (room: string, userId: string, callback: callback) => {
-  const socket = window.io('wss://ws.newzealand.actself.me', {transports: ["websocket"]});
+  const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
   socket.on('connect', () => {
     // 加入房间，room是slide_id，user_id 是老师的名称，role必须是teacher
     socket.emit('join-room', `{"room":"${room}", "user_id": "${userId}", "role":"teacher"}`, () => {

@@ -35,6 +35,7 @@ html, body{
 }
 </style>
 <script>
+import './utils/pptConfig'
 export default {
   mounted() {
      window.winWidth = document.documentElement.clientWidth;

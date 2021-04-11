@@ -1,11 +1,12 @@
 import axios from 'axios';
+import PPT from '../utils/pptConfig'
 
 export const getItem = ({
   slideid,
   pageid,
   itemid
 }: any) => {
-  return axios.post('https://api.newzealand.actself.me/slide/items/view', {
+  return axios.post(`${PPT.requestUrl}slide/items/view`, {
     slide_id: slideid,
     page_id: pageid,
     item_id: itemid
@@ -14,7 +15,7 @@ export const getItem = ({
 
 // 获取所有的ppt内容
 export const getAllPPTS = async (slideid: string) => {
-  const data = await axios.post('https://api.newzealand.actself.me/slide/get_all', {
+  const data = await axios.post(`${PPT.requestUrl}slide/get_all`, {
     slide_id: slideid,
   })
   let list = data.data.data.pages
