@@ -90,12 +90,15 @@ import numberItem from "../components/students/numberIndex";
 import { createSo } from "../socket/socket.student";
 import { SocketEventsEnum } from "../socket/socketEvents";
 import {
-  getStudentUid,
   getUserName,
   setStudentUid,
   setUserName
 } from "../utils/user";
 import { generateUuid } from "@/utils/help";
+import {
+  getStudentUid,
+  getStudentUserName
+} from '@/model/store.student'
 import {
   getStudentsAnswer,
   getStudentsDataList,

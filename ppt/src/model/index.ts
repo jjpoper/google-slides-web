@@ -19,7 +19,7 @@ export const getAllPPTS = async (slideid: string) => {
     slide_id: slideid,
   })
   let list = data.data.data.pages
-  console.log(data.data.data)
+  // console.log(data.data.data)
   try {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'

@@ -23,7 +23,6 @@
       ],
       "@api/": ["./src/api"],
       "@model/": ["./src/model"],
-      "@models/": ["./src/models"]
     },
     "lib": [
       "esnext",
