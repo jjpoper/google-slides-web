@@ -1,8 +1,8 @@
 <template>
   <el-container>
     <el-main>
-      <div class="block" v-if="pptUrl">
-        <pptcontent :url="pptUrl" />
+      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+        <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
       </div>
 
       <div class="sfooter" v-if="slides.length > 0">
@@ -12,26 +12,32 @@
         </div>
         <div class="checkboxs">
           <el-checkbox
-            :value="currentAnswerd||currentInputed"
-          >slide {{parseInt(current)+1}}/{{slides.length}}</el-checkbox>
+            :value="currentAnswerd"
+          >slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
           <div class="scroll-mask"></div>
         </div>
       </div>
     </el-main>
     <el-aside width="50%">
-      <studentsItem
+      <StudentsIndexItem
+        v-if="currentItemData && currentItemData.items[0]"
+        :data="currentItemData"
+        :type="currentItemData.items[0].type"
+        :method="answerText"
+      />
+      <!-- <studentsItem
         v-if="options && options.length > 0"
         :options="options"
         :title="title"
         :answer="answer"
-        :pageId="getPid"
+        :pageId="currentPageId"
       />
-      <textItem v-else-if="type=='text'" :method="sendText" :pageId="getPid" />
+      <textItem v-else-if="type=='text'" :method="sendText" :pageId="currentPageId" />
 
-      <numberItem v-else-if="type=='number'" :method="sendText" :pageId="getPid" />
+      <numberItem v-else-if="type=='number'" :method="sendText" :pageId="currentPageId" />
       <div v-else-if="type=='website'" style="width: 100%; height: 100%">
         <iframe class="website" :src="`https://${currentData.url}`"/>
-      </div>
+      </div> -->
     </el-aside>
     <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -84,26 +90,16 @@
 import pptcontent from "../components/pptcontent";
 import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading } from "../utils/loading";
-import studentsItem from "../components/studentsItem";
-import textItem from "../components/students/textItem";
-import numberItem from "../components/students/numberIndex";
+import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
 import { SocketEventsEnum } from "../socket/socketEvents";
 import {
-  getUserName,
-  setStudentUid,
-  setUserName
-} from "../utils/user";
-import { generateUuid } from "@/utils/help";
-import {
   getStudentUid,
-  getStudentUserName
+  saveStudentsCurrentPageAnswerList,
+  getStudentCurrentPageAnswerList,
+  getStudentUserName,
+  saveStudentUserName
 } from '@/model/store.student'
-import {
-  getStudentsAnswer,
-  getStudentsDataList,
-  saveStudentsDataList
-} from "@/utils/store";
 import { MessageBox } from "element-ui";
 
 export default {
@@ -113,125 +109,84 @@ export default {
       title: "",
       options: [],
       slides: [],
-      current: 0,
+      currentIndex: 0,
       slide_id: 0,
       currentSo: null,
       allAnswers: {},
       uname: "",
       type: "",
-      numberSended: false,
-      textSended: false,
       currentData: null,
+      currentItemData: null,
+      currentAnswerd: false,
       uid: getStudentUid() // uid
     };
   },
   mounted() {
-    if (this.uid === null || this.uid === undefined) {
-      this.uid = generateUuid("s_", 16);
-      setStudentUid(this.uid);
-      this.beforejoinRoom();
-    } else {
-      this.beforejoinRoom();
-    }
-  },
-  computed: {
-    getPid() {
-      return this.slides[this.current].page_id;
-    },
-    currentAnswerd() {
-      const ans = this.allAnswers[this.getPid];
-      console.log(parseInt(ans) >= 0, "choice 选择结果", ans);
-      return parseInt(ans) >= 0;
-    },
-    currentInputed(){
-      if(this.textSended||this.numberSended)return true
-      const arr = getStudentsDataList(this.getPid,this.type)
-      console.log(arr&&arr.length>0)
-      return  arr&&arr.length>0
-    }
+    this.beforejoinRoom();
   },
   components: {
     pptcontent,
-    studentsItem,
-    textItem,
-    numberItem
+    StudentsIndexItem
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.slide_id = to.query.slide_id;
-      vm.current = to.query.page || 0;
+      vm.currentIndex = to.query.page || 0;
       vm.getAllSlides();
     });
   },
   methods: {
+    checkCurrentAnswerd(){
+      const {page_id} = this.currentItemData
+      const list = getStudentCurrentPageAnswerList(page_id);
+      console.log('list', list);
+      this.currentAnswerd = list.length > 0;
+    },
     getAllSlides() {
       showLoading();
       getAllPPTS(this.slide_id).then(list => {
         console.log(list);
-        // this.contentUrl = d;
-        // hideLoading()
         this.slides = list;
-        this.getCurrentPPT();
         this.getItemData();
-        this.getAllAnswers();
         hideLoading();
       });
     },
     //发送text
-    sendText(index, msg) {
+    answerText(index, msg) {
       console.log("index==" + index + "  msg==" + msg);
-      const pid = this.slides[this.current].page_id;
-      if (this.type == SocketEventsEnum.TEXT_INPUT) {
-        this.textSended = true;
-      } else if (this.type == SocketEventsEnum.NUMBER_INPUT) {
-        this.numberSended = true;
-      }
-      // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
+      const {page_id, items} = this.currentItemData;
+      const {type} = items[0]
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "type":"${this.type}","user_id": "${this.uid}","user_name":"${this.uname}","page_id": "${pid}", "item_id": "${index}", "content":"${msg}"}`
+        `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}"}`
       );
-    },
-    getAllAnswers() {
-      for (let i = 0; i < this.slides.length; i++) {
-        const choice = this.slides[this.current].items[0];
-        if (choice && choice.data) {
-          const pid = this.slides[i].page_id;
-          const value = getStudentsAnswer(pid);
-          this.$set(this.allAnswers, pid, value);
-          // console.log(getStudentsAnswer(pid))
-        }
-      }
-      console.log(this.allAnswers[this.getPid], "===", this.allAnswers);
+      saveStudentsCurrentPageAnswerList(page_id, {
+        item_id: index,
+        content: msg
+      })
+      this.currentAnswerd = true
     },
     getItemData() {
-      this.options = [];
-      this.textSended = false
-      this.numberSended = false
-      this.type = null
       this.$nextTick(() => {
-        const choice = this.slides[this.current].items[0];
-        if (choice && choice.data) {
-          this.type = choice.type;
-          console.log("currentType==" + this.type);
-          this.currentData = choice.data
-          const { title, options } = choice.data;
-          this.title = title;
-          this.options = options;
-        }
+        this.currentItemData = this.slides[this.currentIndex];
+        this.checkCurrentAnswerd();
+        // this.currentItemData = choice
+        // if (choice && choice.data) {
+        //   this.type = choice.type;
+        //   console.log("currentType==" + this.type);
+        //   this.currentData = choice.data
+        //   const { title, options } = choice.data;
+        //   this.title = title;
+        //   this.options = options;
+        // }
       });
     },
-    getCurrentPPT() {
-      this.pptUrl = this.slides[this.current].thumbnail_url;
-    },
     pageChange(page) {
-      this.current = page;
-      this.getCurrentPPT();
-      this.options = [];
+      this.currentIndex = page;
       this.getItemData();
     },
     beforejoinRoom() {
-      const uname = getUserName(this.uid);
+      const uname = getStudentUserName(this.uid);
       console.log(uname, "uname");
       this.uname = uname != "null" && uname != undefined ? uname : "";
       if (!this.uname) {
@@ -261,19 +216,23 @@ export default {
         this.pageChange(d.params.page);
       }
     },
-    answer(v) {
+    answerChoice(v) {
       console.log("change answer==" + v, this.currentSo);
-      const pid = this.slides[this.current].page_id;
+      const {page_id} = this.currentItemData;
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${pid}", "item_id": "item_1", "answer": "${v}"}`
+        `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
       );
-
-      // this.allAnswers[pid] = v;
-      this.$set(this.allAnswers, pid, v);
-      // this.$forceUpdate()
-      console.log(this.allAnswers, "====", this.allAnswers[this.getPid]);
+      saveStudentsCurrentPageAnswerList(page_id, {
+        item_id: 'item_1',
+        answer: v
+      })
+      this.currentAnswerd = true
+      // // this.allAnswers[pid] = v;
+      // this.$set(this.allAnswers, pid, v);
+      // // this.$forceUpdate()
+      // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
     },
     emitSo(action, message) {
       if (this.currentSo) {
@@ -291,7 +250,7 @@ export default {
         .then(({ value }) => {
           if (!value) value = this.uid;
           this.uname = value;
-          setUserName(this.uid, value);
+          saveStudentUserName(value);
           if (status) {
             this.joinRoom();
           } else {

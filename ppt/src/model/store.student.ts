@@ -3,6 +3,7 @@ import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
 
 const slideId = getUrlParam("slide_id")
+const UID_KEY = `${slideId}_sid`
 let studentId = ''
 
 // 学生端数据结构
@@ -27,20 +28,17 @@ const saveStudentStore = (key: string, value: any) => {
 
 const getStudentStore = (key: string): any => {
   const uniqueKey = `${slideId}_s_${studentId}_${key}`
-  getStore(uniqueKey)
-}
-
-export const setStudentUid = (uid: string) => {
-  saveStudentStore('uid', uid)
+  return getStore(uniqueKey)
 }
 
 export const getStudentUid = (): string => {
-  let sid = getStudentStore('uid')
+  let sid = getStore(UID_KEY)
   if(!sid) {
     // 自动生成并存储
     sid = generateUuid("s_", 16);
-    setStudentUid(sid)
+    saveStore(UID_KEY, sid)
   }
+  studentId = sid
   return sid
 }
 
@@ -50,6 +48,23 @@ export const getStudentUserName = (): string => {
 
 export const saveStudentUserName = (uname: string) => {
   saveStudentStore(`uname`, uname)
+}
+
+// 获取学生端当前page的回答列表信息
+export const getStudentCurrentPageAnswerList = (pageId: string) => {
+  const list = getStudentStore(`c_p_a_${pageId}`)
+  return list && list.length > 0 ? list : []
+}
+
+// 存储学生回答的信息
+export const saveStudentsCurrentPageAnswerList = (pageId: string, data: any) => {
+  const {user_id} = data
+  const storeList = getStudentCurrentPageAnswerList(pageId)
+  // 筛选已有答案
+  const filterData = storeList.filter((item: any) => item.user_id !== user_id);
+  filterData.push(data);
+  console.log(filterData);
+  saveStudentStore(`c_p_a_${pageId}`, filterData);
 }
 
 interface StudentCommentItem {
