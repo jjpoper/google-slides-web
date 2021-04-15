@@ -3,5 +3,5 @@ export const saveStore = (key: string, value: any) => {
 }
 export const getStore = (key: string) => {
   const value = localStorage.getItem(key)
-  return value ? JSON.parse(value) : null
+  return value && value !== 'undefined' && value !== 'null' ? JSON.parse(value) : null
 }

@@ -79,7 +79,7 @@
 </style>
 
 <script>
-import { getStundentUidAndName } from '@/utils/user';
+import { getCurrentPageAnswerList, getStundentUidAndName } from '@/model/store.teacher';
 export default {
   props: {
     data: {
@@ -91,11 +91,19 @@ export default {
   },
   data() {
     return {
-      showStatistics: true
+      showStatistics: true,
+      answerList: [],
+      options: [],
+      title: ''
     }
   },
-  created() {
-    console.log(this.pageId)
+  mounted() {
+    console.log(this.data)
+    const {title, options} = this.data.items[0].data
+    this.title = title
+    this.options = options
+    this.answerList = getCurrentPageAnswerList(this.data.page_id)
+    console.log(this.answerList)
   },
   methods: {
     counts(id) {

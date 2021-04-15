@@ -24,6 +24,7 @@
         :data="currentItemData"
         :type="currentItemData.items[0].type"
         :method="answerText"
+        :answer="answerChoice"
       />
       <!-- <studentsItem
         v-if="options && options.length > 0"

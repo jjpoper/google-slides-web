@@ -34,7 +34,11 @@ export default {
       default: () => {
         return {}
       }
-    }
+    },
+    answer: {
+      type: Function,
+      default: () => {}
+    },
   },
   data() {
     return {
@@ -42,6 +46,7 @@ export default {
     }
   },
   created() {
+    console
     this.optionData = this.data.items[0].data
   },
   data() {
