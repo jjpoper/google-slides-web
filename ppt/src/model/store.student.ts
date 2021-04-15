@@ -73,32 +73,32 @@ export const saveStudentsCurrentPageAnswerList = (pageId: string, data: SavaPara
 }
 
 interface StudentCommentItem {
-  index: number
-  id: string // pageid_answerid
-  content: string
-  items: {
-    teacher: string
-    time: string
-    content: string
-  }[]
+  studentId: string,
+  pageId: string,
+  itemId: string,
+  title: string,
+  time: string,
+  value: string,
+  teacherName: string,
+  slideIndex: string
 }
 
-// 学生端评价列表
+// 学生端评论列表
 export const getStudentCommentList = (): StudentCommentItem[] => {
-  const list = getStudentStore(`comment`)
+  const list = getStudentStore(`commentList`)
   return list && list.length > 0 ? list : []
 }
-// 需要区分是 新的 StudentCommentItem 还是 StudentCommentItem.items
+// 存储学生端评论列表
 export const addStudentComment = (data: StudentCommentItem) => {
   const list = getStudentCommentList()
-  const {id} = data
-  const idItem = list.filter(item => item.id === id)[0]
-  if(idItem) {
-    // 已存在。push到 items
-    idItem.items.push(data.items)
-  }
-  list.push(data)
-  saveStudentStore('comment', data)
+  // const {itemId} = data
+  // const idItem = list.filter(item => item.itemId === itemId)[0]
+  // if(idItem) {
+  //   // 已存在。push到 items
+  //   idItem.items.push(data.items)
+  // }
+  list.unshift(data)
+  saveStudentStore('commentList', list)
 }
 
 // 已读状态 true 表示有未读 false 没有未读

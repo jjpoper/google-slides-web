@@ -27,5 +27,11 @@ export const createSo = (room: string, userId: string, name: string, callback: c
     callback(JSON.parse(data))
   });
 
+  // 学生端收到老师发来的消息反馈
+  socket.on('comment', (data: string) => {
+    console.log("老师发来了消息反馈。详细数据：" + data);
+    callback(JSON.parse(data))
+  })
+
   return socket
 }

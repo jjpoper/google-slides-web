@@ -43,6 +43,7 @@
         :currentAnswerCount="currentAnswerCount"
       />
     </el-main>
+    <commentModal/>
   </el-container>
 </template>
 <style scoped>
@@ -110,13 +111,14 @@ import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
 import { createSo } from "../socket/socket.teacher";
-import { SocketEventsEnum } from "../socket/socketEvents";
+import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
 import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList
 } from '@/model/store.teacher'
+import commentModal from '../components/teacher/commentModal'
 
 export default {
   data() {
@@ -135,6 +137,9 @@ export default {
   mounted() {
     this.joinRoom();
     this.openShare();
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+      this.sendComment(data)
+    })
   },
   computed: {
     currentPageId() {
@@ -143,7 +148,8 @@ export default {
   },
   components: {
     pptcontent,
-    teacherIndexItem
+    teacherIndexItem,
+    commentModal
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -152,6 +158,32 @@ export default {
     });
   },
   methods: {
+    sendComment({
+        studentId,
+        pageId,
+        itemId,
+        title,
+        time,
+        value,
+        teacherName
+    }) {
+      const itemData = JSON.stringify({
+          type: SocketEventsEnum.TEACHER_COMMENT, 
+          studentId,
+          pageId,
+          itemId,
+          title,
+          time,
+          value,
+          teacherName,
+          slideIndex: this.currentIndex + 1,
+          "room":this.slide_id
+      })
+      console.log(itemData)
+      // this.currentSo.emit('comment', `'{"user_id":"${studentId}", "item": ${itemData}}'`, data => {console.log("发送消息反馈", data)})
+      // this.currentSo.emit('comment', `'{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}'`, data => {console.log("发送消息反馈")});
+      this.emitSo(itemData)
+    },
     getResponeCount() {
       // console.log("getResponeCount=="+this.type)
       // if(this.type == 'choice'){
@@ -304,6 +336,7 @@ export default {
       }
     },
     openShare() {
+      // return
       const url = `${location.href.replace(/teacher/, "students")}&page=${
         this.current
       }`;

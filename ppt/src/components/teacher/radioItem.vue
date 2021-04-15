@@ -19,6 +19,8 @@
               选项 {{getAnswer(item.answer).text}}
               <br/>
               学生 {{getUname(item.user_id)}}
+
+              <comment-icon :data="{pageId: data.page_id, itemId: 'choice', studentId: item.user_id, title: getAnswer(item.answer).text + '.option'}"/>
             </div>
         </template>
       </div>
@@ -75,12 +77,16 @@
   padding: 10px;
   border-radius: 4px;
   text-align: left;
+  min-width: 150px;
+  position: relative;
 }
 </style>
 
 <script>
 import { getCurrentPageAnswerList, getStundentUidAndName } from '@/model/store.teacher';
+import commentIcon from './commentIcon.vue';
 export default {
+  components: { commentIcon },
   props: {
     data: {
       type: Object,

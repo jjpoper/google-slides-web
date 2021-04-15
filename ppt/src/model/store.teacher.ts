@@ -32,7 +32,7 @@ export const getTeacherUid = (): string => {
 }
 
 export const getTeacherUserName = (): string => {
-  return getTeacherStore(`uname`)
+  return getTeacherStore(`uname`) || 'Mr Wang'
 }
 
 export const saveTeacherUserName = (uname: string) => {
@@ -50,25 +50,24 @@ export const getStundentUidAndName = (uid: string) => {
 }
 
 interface TeacherCommentItem {
-  index: number
-  content: string
-  items: {
-    teacher: string
-    time: string
-    content: string
-  }[]
+  teacher: string
+  time: string
+  value: string
 }
 
 // 老师端评价列表 pageid_studentid_answerid 为key
-export const getTeacherCommentList = (key: string): TeacherCommentItem[] => {
-  const list = getTeacherStore(`comment_${key}`)
+// @ts-ignore
+export const getTeacherCommentList = ({pageId, itemId, studentId}): TeacherCommentItem[] => {
+  const list = getTeacherStore(`comment_${pageId}_${itemId}_${studentId}`)
   return list && list.length > 0 ? list : []
 }
 
-export const addTeacherComment = (data: TeacherCommentItem) => {
-  const list = getTeacherCommentList()
-  list.push(data)
-  saveTeacherStore('comment', data)
+// @ts-ignore
+export const addTeacherComment = ({pageId, itemId, studentId}, data: TeacherCommentItem) => {
+  const key = `comment_${pageId}_${itemId}_${studentId}`
+  const list = getTeacherCommentList({pageId, itemId, studentId})
+  list.unshift(data)
+  saveTeacherStore(key, list)
 }
 
 // 获取学生端当前page的回答列表信息

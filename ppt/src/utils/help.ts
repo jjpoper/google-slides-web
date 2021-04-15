@@ -26,3 +26,15 @@ export const getUrlParam = (queryKey: string): string => {
   }
   return obj[queryKey]
 }
+
+export const getTimeValue = (value: number) => {
+  const date = new Date(value)
+  return {
+    year: date.getFullYear(),
+    month: `0${date.getMonth() + 1}`.substr(-2),
+    date: `0${date.getDate()}`.substr(-2),
+    hours: `0${date.getHours()}`.substr(-2),
+    minutes: `0${date.getMinutes()}`.substr(-2),
+    seconds: `0${date.getSeconds()}`.substr(-2),
+  }
+}

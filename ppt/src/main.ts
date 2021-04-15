@@ -5,7 +5,7 @@ import './elementUse'
 import './assets/css/teacher.css'
 
 Vue.config.productionTip = false;
-
+window.EventBus = new Vue();
 new Vue({
   router,
   render: (h) => h(App),

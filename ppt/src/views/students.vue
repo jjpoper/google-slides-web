@@ -16,9 +16,10 @@
           >slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
           <div class="scroll-mask"></div>
         </div>
+        <i class="el-icon-chat-dot-round readchat" @click="showStudentModal" :style="{color: unread ? 'red' : '#333'}"/>
       </div>
     </el-main>
-    <el-aside width="50%">
+    <el-aside width="30%" style="position: relative">
       <StudentsIndexItem
         v-if="currentItemData && currentItemData.items[0]"
         :data="currentItemData"
@@ -26,19 +27,7 @@
         :method="answerText"
         :answer="answerChoice"
       />
-      <!-- <studentsItem
-        v-if="options && options.length > 0"
-        :options="options"
-        :title="title"
-        :answer="answer"
-        :pageId="currentPageId"
-      />
-      <textItem v-else-if="type=='text'" :method="sendText" :pageId="currentPageId" />
-
-      <numberItem v-else-if="type=='number'" :method="sendText" :pageId="currentPageId" />
-      <div v-else-if="type=='website'" style="width: 100%; height: 100%">
-        <iframe class="website" :src="`https://${currentData.url}`"/>
-      </div> -->
+      <student-comment />
     </el-aside>
     <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
@@ -86,6 +75,10 @@
   width: 90%;
   height: 100%;
 }
+.readchat{
+  font-size: 30px;
+  cursor: pointer;
+}
 </style>
 <script>
 import pptcontent from "../components/pptcontent";
@@ -93,15 +86,20 @@ import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
-import { SocketEventsEnum } from "../socket/socketEvents";
+import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
 import {
   getStudentUid,
   saveStudentsCurrentPageAnswerList,
   getStudentCurrentPageAnswerList,
   getStudentUserName,
-  saveStudentUserName
+  saveStudentUserName,
+  addStudentComment,
+  unreadStudentComment,
+  getStudentCommentUnReadStatus,
+  readStudentComment
 } from '@/model/store.student'
 import { MessageBox } from "element-ui";
+import StudentComment from '@/components/students/studentComment.vue';
 
 export default {
   data() {
@@ -119,15 +117,19 @@ export default {
       currentData: null,
       currentItemData: null,
       currentAnswerd: false,
+      unread: false,
+      modalVisiable: false,
       uid: getStudentUid() // uid
     };
   },
   mounted() {
     this.beforejoinRoom();
+    this.unread = getStudentCommentUnReadStatus()
   },
   components: {
     pptcontent,
-    StudentsIndexItem
+    StudentsIndexItem,
+    StudentComment
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -216,7 +218,41 @@ export default {
       // 收到切换页码命令
       if (d.type === SocketEventsEnum.GO_PAGE) {
         this.pageChange(d.params.page);
+      } else if(d.type === SocketEventsEnum.TEACHER_COMMENT) {
+        this.onGetTeacherComment(d)
       }
+    },
+    // 收到评论
+    onGetTeacherComment(d) {
+      const {
+        studentId,
+        pageId,
+        itemId,
+        title,
+        time,
+        value,
+        teacherName,
+        slideIndex
+      } = d
+      if(studentId === this.uid) {
+        // 对比一下uid
+        addStudentComment(d)
+        unreadStudentComment()
+        this.unread = true
+      }
+    },
+    showStudentModal() {
+      if(!this.modalVisiable) {
+        this.unread = false
+        readStudentComment()
+        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, true)
+      } else if(this.unread) {
+        // 打开状态下有更新
+        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL_REFRESH)
+      } else {
+        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false)
+      }
+      this.modalVisiable = !this.modalVisiable
     },
     answerChoice(v) {
       console.log("change answer==" + v, this.currentSo);
