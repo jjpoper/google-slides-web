@@ -163,6 +163,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, {
         item_id: index,
+        key: index,
         content: msg
       })
       this.currentAnswerd = true
@@ -226,7 +227,7 @@ export default {
         `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, {
-        item_id: 'item_1',
+        key: 'item_1',
         answer: v
       })
       this.currentAnswerd = true

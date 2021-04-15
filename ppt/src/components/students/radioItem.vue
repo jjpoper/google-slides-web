@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative">
     <div class="item" v-for="item in optionData.options" :key="item.id">
-      <el-radio v-model="radio" :label="item.id"  class="ra"  @change="changAnswer">
+      <el-radio v-model="radio" :label="item.id"  class="ra" :value="item.id"  @change="changAnswer">
         {{item.text}}
       </el-radio>
     </div>
@@ -26,7 +26,9 @@
 </style>
 
 <script>
-import {getStudentsAnswer, saveStudentsAnswer} from '../../utils/store'
+import {
+getStudentCurrentPageAnswerList
+} from '@/model/store.student'
 export default {
   props: {
     data: {
@@ -42,16 +44,17 @@ export default {
   },
   data() {
     return {
-      optionData: {}
+      optionData: {},
+      pageId: '',
+      radio: -1
     }
   },
   created() {
-    console
     this.optionData = this.data.items[0].data
-  },
-  data() {
-    return {
-      radio: getStudentsAnswer(this.pageId)
+    this.pageId = this.data.page_id
+    const result = getStudentCurrentPageAnswerList(this.pageId)
+    if(result && result.length > 0) {
+      this.radio = result[0].answer
     }
   },
   methods: {
