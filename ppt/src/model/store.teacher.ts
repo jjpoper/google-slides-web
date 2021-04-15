@@ -77,12 +77,17 @@ export const getCurrentPageAnswerList = (pageId: string) => {
   return list && list.length > 0 ? list : []
 }
 
+interface SavaParams {
+  key: string
+  [key: string]: any
+}
+
 // 存储老师端学生回答的信息
-export const saveStudentsPageAnswerList = (pageId: string, data: any) => {
-  const {user_id} = data
+export const saveStudentsPageAnswerList = (pageId: string, data: SavaParams) => {
+  const {key} = data
   const storeList = getCurrentPageAnswerList(pageId)
   // 筛选已有答案
-  const filterData = storeList.filter((item: any) => item.user_id !== user_id);
+  const filterData = storeList.filter((item: any) => item.key !== key);
   filterData.push(data);
   console.log(filterData);
   saveTeacherStore(`c_p_a_${pageId}`, filterData);

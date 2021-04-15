@@ -244,7 +244,7 @@ export default {
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const { answer, user_id} = d;
-        saveStudentsPageAnswerList(this.currentPageId, {user_id, answer})
+        saveStudentsPageAnswerList(this.currentPageId, {user_id, answer, key: user_id})
       } else if (d.type == SocketEventsEnum.TEXT_INPUT || d.type === SocketEventsEnum.NUMBER_INPUT) {
         //接收到text input或者number input的值
         const {
@@ -291,7 +291,7 @@ export default {
         //   d.type
         // );
 
-        saveStudentsPageAnswerList(this.currentPageId, {user_id, content, user_name, item_id})
+        saveStudentsPageAnswerList(this.currentPageId, {user_id, content, user_name, item_id, key: item_id})
       }
 
       this.getResponeCount()
