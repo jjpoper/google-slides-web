@@ -1,8 +1,8 @@
 <template>
-  <numberIndex v-if="type === 'number'" v-bind="$attrs"/>
-  <textItem v-else-if="type === 'text'" v-bind="$attrs"/>
-  <radioItem v-else-if="type === 'choice'" v-bind="$attrs"/>
-  <website v-else-if="type === 'website'" v-bind="$attrs"/>
+  <numberIndex v-if="type === 'number'" v-bind="$attrs" :pageId="pageId"/>
+  <textItem v-else-if="type === 'text'" v-bind="$attrs" :pageId="pageId"/>
+  <radioItem v-else-if="type === 'choice'" v-bind="$attrs" :pageId="pageId"/>
+  <website v-else-if="type === 'website'" v-bind="$attrs" :pageId="pageId"/>
 </template>
 
 <script>
@@ -13,6 +13,10 @@ import website from './website'
 export default {
   props: {
     type: {
+      type: String,
+      default: ''
+    },
+    pageId: {
       type: String,
       default: ''
     }
