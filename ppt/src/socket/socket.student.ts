@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-template */
 import PPT from '../utils/pptConfig'
+import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d: any) => void
 
@@ -24,13 +25,13 @@ export const createSo = (room: string, userId: string, name: string, callback: c
   // 学端要响应老师发来的 control
   socket.on('control', (data: string) => {
     console.log("老师发来了control. 详细数据: " + data);
-    callback(JSON.parse(data))
+    callback({mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data)})
   });
 
   // 学生端收到老师发来的消息反馈
   socket.on('comment', (data: string) => {
     console.log("老师发来了消息反馈。详细数据：" + data);
-    callback(JSON.parse(data))
+    callback({mtype: SocketEventsEnum.TEACHER_COMMENT, ...JSON.parse(data)})
   })
 
   return socket

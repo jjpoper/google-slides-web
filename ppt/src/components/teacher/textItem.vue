@@ -74,7 +74,7 @@ export default {
   },
   mounted() {
     const {page_id, items} = this.data // 完整data
-    this.textList = getCurrentPageAnswerList(page_id)
+    this.textList = getCurrentPageAnswerList(page_id, items[0].type)
   },
   methods: {
     getUname(id) {

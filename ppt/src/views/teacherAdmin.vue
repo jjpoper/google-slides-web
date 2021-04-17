@@ -180,9 +180,9 @@ export default {
           "room":this.slide_id
       })
       console.log(itemData)
-      // this.currentSo.emit('comment', `'{"user_id":"${studentId}", "item": ${itemData}}'`, data => {console.log("发送消息反馈", data)})
-      // this.currentSo.emit('comment', `'{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}'`, data => {console.log("发送消息反馈")});
-      this.emitSo(itemData)
+      this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": ${itemData}}`)
+      // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
+      // this.emitSo(itemData)
     },
     getResponeCount() {
       // console.log("getResponeCount=="+this.type)
@@ -194,7 +194,7 @@ export default {
       // }else{
       //   return 0;
       // }
-      const list = getCurrentPageAnswerList(this.currentItemData.page_id)
+      const list = getCurrentPageAnswerList(this.currentItemData.page_id, this.currentItemData.items[0].type)
       console.log(list)
       this.currentAnswerCount = list.length
 
@@ -275,15 +275,16 @@ export default {
       if(room != this.slide_id || page_id !== this.currentPageId) return
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
-        const { answer, user_id} = d;
-        saveStudentsPageAnswerList(this.currentPageId, {user_id, answer, key: user_id})
+        const { answer, user_id, type} = d;
+        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, answer, key: user_id})
       } else if (d.type == SocketEventsEnum.TEXT_INPUT || d.type === SocketEventsEnum.NUMBER_INPUT) {
         //接收到text input或者number input的值
         const {
           content,
           user_id,
           user_name,
-          item_id
+          item_id,
+          type
         } = d;
         
         // let textList = this.textList;
@@ -323,7 +324,7 @@ export default {
         //   d.type
         // );
 
-        saveStudentsPageAnswerList(this.currentPageId, {user_id, content, user_name, item_id, key: `${item_id}_${user_id}`})
+        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, user_name, item_id, key: `${item_id}_${user_id}`})
       }
 
       this.getResponeCount()

@@ -71,8 +71,8 @@ export const addTeacherComment = ({pageId, itemId, studentId}, data: TeacherComm
 }
 
 // 获取学生端当前page的回答列表信息
-export const getCurrentPageAnswerList = (pageId: string) => {
-  const list = getTeacherStore(`c_p_a_${pageId}`)
+export const getCurrentPageAnswerList = (pageId: string, type: string) => {
+  const list = getTeacherStore(`c_p_a_${pageId}_${type}`)
   return list && list.length > 0 ? list : []
 }
 
@@ -82,12 +82,12 @@ interface SavaParams {
 }
 
 // 存储老师端学生回答的信息
-export const saveStudentsPageAnswerList = (pageId: string, data: SavaParams) => {
+export const saveStudentsPageAnswerList = (pageId: string, type: string, data: SavaParams) => {
   const {key} = data
-  const storeList = getCurrentPageAnswerList(pageId)
+  const storeList = getCurrentPageAnswerList(pageId, type)
   // 筛选已有答案
   const filterData = storeList.filter((item: any) => item.key !== key);
   filterData.push(data);
   console.log(filterData);
-  saveTeacherStore(`c_p_a_${pageId}`, filterData);
+  saveTeacherStore(`c_p_a_${pageId}_${type}`, filterData);
 }
