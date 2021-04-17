@@ -31,10 +31,15 @@ export default {
       arrList: getNumberList(this.pageId,SocketEventsEnum.NUMBER_INPUT)
     };
   },
+  created(){
+     
+  },
   computed: {
+    
   },
   methods: {
     send: function() {
+      console.log("pageid=="+this.pageId);
       saveStudentsDataList(
         this.pageId,
         this.arrList,
