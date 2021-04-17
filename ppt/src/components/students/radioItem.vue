@@ -52,7 +52,7 @@ export default {
   created() {
     this.optionData = this.data.items[0].data
     this.pageId = this.data.page_id
-    const result = getStudentCurrentPageAnswerList(this.pageId)
+    const result = getStudentCurrentPageAnswerList(this.pageId, this.data.items[0].type)
     if(result && result.length > 0) {
       this.radio = result[0].answer
     }

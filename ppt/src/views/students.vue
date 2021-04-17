@@ -140,8 +140,8 @@ export default {
   },
   methods: {
     checkCurrentAnswerd(){
-      const {page_id} = this.currentItemData
-      const list = getStudentCurrentPageAnswerList(page_id);
+      const {page_id, items} = this.currentItemData
+      const list = getStudentCurrentPageAnswerList(page_id, items[0].type);
       console.log('list', list);
       this.currentAnswerd = list.length > 0;
     },
@@ -163,7 +163,7 @@ export default {
         "response",
         `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}"}`
       );
-      saveStudentsCurrentPageAnswerList(page_id, {
+      saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
         content: msg
@@ -171,6 +171,7 @@ export default {
       this.currentAnswerd = true
     },
     getItemData() {
+      this.currentItemData = null
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
         this.checkCurrentAnswerd();
@@ -188,6 +189,9 @@ export default {
     pageChange(page) {
       this.currentIndex = page;
       this.getItemData();
+      if(this.modalVisiable) {
+        this.showStudentModal()
+      }
     },
     beforejoinRoom() {
       const uname = getStudentUserName(this.uid);
@@ -214,29 +218,32 @@ export default {
       );
     },
     msgListener(d) {
-      console.log(d, d.type, "====收到页码命令");
+      console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
-      if (d.type === SocketEventsEnum.GO_PAGE) {
+      if (d.mtype === SocketEventsEnum.GO_PAGE) {
         this.pageChange(d.params.page);
-      } else if(d.type === SocketEventsEnum.TEACHER_COMMENT) {
+      } else if(d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d)
       }
     },
     // 收到评论
     onGetTeacherComment(d) {
       const {
-        studentId,
-        pageId,
-        itemId,
-        title,
-        time,
-        value,
-        teacherName,
-        slideIndex
+        item: {
+          studentId,
+          pageId,
+          itemId,
+          title,
+          time,
+          value,
+          teacherName,
+          slideIndex
+        },
+        user_id
       } = d
-      if(studentId === this.uid) {
+      if(user_id === this.uid) {
         // 对比一下uid
-        addStudentComment(d)
+        addStudentComment(d.item)
         unreadStudentComment()
         this.unread = true
       }
@@ -256,13 +263,14 @@ export default {
     },
     answerChoice(v) {
       console.log("change answer==" + v, this.currentSo);
-      const {page_id} = this.currentItemData;
+      const {page_id, items} = this.currentItemData;
+      const {type} = items[0]
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
+        `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
       );
-      saveStudentsCurrentPageAnswerList(page_id, {
+      saveStudentsCurrentPageAnswerList(page_id, type, {
         key: 'item_1',
         answer: v
       })

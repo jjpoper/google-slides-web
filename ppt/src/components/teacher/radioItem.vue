@@ -19,7 +19,6 @@
               选项 {{getAnswer(item.answer).text}}
               <br/>
               学生 {{getUname(item.user_id)}}
-
               <comment-icon :data="{pageId: data.page_id, itemId: 'choice', studentId: item.user_id, title: getAnswer(item.answer).text + '.option'}"/>
             </div>
         </template>
@@ -74,7 +73,7 @@
   line-height: 50px;
   display: inline-block;
   background-color: #999;
-  padding: 10px;
+  padding: 10px 45px 10px 10px;
   border-radius: 4px;
   text-align: left;
   min-width: 150px;
@@ -105,10 +104,10 @@ export default {
   },
   mounted() {
     console.log(this.data)
-    const {title, options} = this.data.items[0].data
+    const {title, options,} = this.data.items[0].data
     this.title = title
     this.options = options
-    this.answerList = getCurrentPageAnswerList(this.data.page_id)
+    this.answerList = getCurrentPageAnswerList(this.data.page_id, this.data.items[0].type)
     console.log(this.answerList)
   },
   methods: {

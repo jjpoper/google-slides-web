@@ -1,6 +1,6 @@
 export enum SocketEventsEnum {
   GO_PAGE = 'GO_PAGE', // 教师端发控制
-  ANSWER_QUESTION = 'ANSWER_QUESTION', // 回答
+  ANSWER_QUESTION = 'choice', // 回答
   STUDENTS_COUNTS = 'STUDENTS_COUNTS', // 人数
   RENAME = 'RENAME', // 改名
   TEXT_INPUT = 'text', // 文本框输入
