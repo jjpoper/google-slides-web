@@ -323,7 +323,7 @@ export default {
         //   d.type
         // );
 
-        saveStudentsPageAnswerList(this.currentPageId, {user_id, content, user_name, item_id, key: item_id})
+        saveStudentsPageAnswerList(this.currentPageId, {user_id, content, user_name, item_id, key: `${item_id}_${user_id}`})
       }
 
       this.getResponeCount()
