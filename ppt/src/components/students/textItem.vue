@@ -58,17 +58,19 @@ import { SocketEventsEnum } from "../../socket/socketEvents";
 export default {
   props: {
     method: { type: Function },
-    pageId: {
-      type: String,
-      default: ""
-    }
+    data: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
   },
   data() {
     return {
       addDisable: false,
       maxCount: 3,
       inputCount: 0,
-      arrList: getStudentsDataList(this.pageId,SocketEventsEnum.TEXT_INPUT),
+      arrList: getStudentsDataList(this.data.page_id, SocketEventsEnum.TEXT_INPUT),
     };
   },
   created() {
@@ -87,7 +89,7 @@ export default {
     },
     send: function(index) {
       this.arrList[index].textSended = true
-      saveStudentsDataList(this.pageId,this.arrList, SocketEventsEnum.TEXT_INPUT);
+      saveStudentsDataList(this.data.page_id, this.arrList, SocketEventsEnum.TEXT_INPUT);
       var text = this.arrList[index].value;
       if (text) {
         this.method(index, text);
