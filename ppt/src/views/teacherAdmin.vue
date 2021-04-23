@@ -1,7 +1,10 @@
 <template>
   <el-container>
     <el-main v-show="!showResponse">
-      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+      <div
+        class="block"
+        v-if="currentItemData && currentItemData.thumbnail_url"
+      >
         <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
         <el-pagination
           style="line-height: 50px"
@@ -12,14 +15,35 @@
           :current-page="0"
           :page-count="slides.length"
         ></el-pagination>
-        <el-button type="primary" class="counts">当前人数：{{studentCounts}}</el-button>
-        <el-button type="primary" class="invite" @click="openShare">Share</el-button>
+        <el-button type="primary" class="counts"
+          >当前人数：{{ studentCounts }}</el-button
+        >
+        <el-button type="primary" class="invite" @click="openShare"
+          >Share</el-button
+        >
         <el-button type="primary" class="Presenting">Presenting</el-button>
-        <el-button type="primary" class="Show" @click="showres">Show Responses</el-button>
-        <el-button
-          type="primary"
-          class="noShow gray"
-        >{{ currentAnswerCount > 0 ? `${currentAnswerCount} Responses` : `no Responses`}}</el-button>
+        <el-button type="primary" class="Show" @click="showres"
+          >Show Responses</el-button
+        >
+        <el-button type="primary" class="noShow gray">{{
+          currentAnswerCount > 0
+            ? `${currentAnswerCount} Responses`
+            : `no Responses`
+        }}</el-button>
+
+        <svg
+          t="1619161258814"
+          class="dropdown-icon"
+          viewBox="0 0 20 30"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="6029"
+          @click="open"
+        >
+          <circle cx="10" cy="4" r="3" fill="#409EFF" />
+          <circle cx="10" cy="15" r="3" fill="#409EFF" />
+          <circle cx="10" cy="26" r="3" fill="#409EFF" />
+        </svg>
       </div>
     </el-main>
     <el-main v-if="showResponse">
@@ -43,16 +67,28 @@
         :currentAnswerCount="currentAnswerCount"
       />
     </el-main>
-    <commentModal/>
+    <commentModal />
   </el-container>
 </template>
 <style scoped>
+.dropdown-class {
+  position: absolute;
+  right: 10px;
+  bottom: 20px;
+}
+.dropdown-icon {
+  width: 20px;
+  height: 40px;
+  position: absolute;
+  right: 10px;
+  bottom: 20px;
+}
 .block {
   position: relative;
 }
 .invite {
   position: absolute;
-  right: 10px;
+  right: 50px;
   bottom: 20px;
 }
 .counts {
@@ -65,7 +101,7 @@
 }
 .Show {
   position: absolute;
-  right: 100px;
+  right: 150px;
   bottom: 20px;
 }
 .noShow {
@@ -116,9 +152,9 @@ import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
-  getCurrentPageAnswerList
-} from '@/model/store.teacher'
-import commentModal from '../components/teacher/commentModal'
+  getCurrentPageAnswerList,
+} from "@/model/store.teacher";
+import commentModal from "../components/teacher/commentModal";
 
 export default {
   data() {
@@ -131,15 +167,15 @@ export default {
       currentSo: null,
       uid: getTeacherUid(), // uid
       currentItemData: null,
-      currentAnswerCount: 0
+      currentAnswerCount: 0,
     };
   },
   mounted() {
     this.joinRoom();
     this.openShare();
     EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
-      this.sendComment(data)
-    })
+      this.sendComment(data);
+    });
   },
   computed: {
     currentPageId() {
@@ -149,38 +185,45 @@ export default {
   components: {
     pptcontent,
     teacherIndexItem,
-    commentModal
+    commentModal,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       vm.slide_id = to.query.slide_id;
       vm.getAllSlides();
     });
   },
   methods: {
+    open() {
+     // this.$router.push({ path: "/dashboard" });
+      window.open('/index.html#/dashboard?slide_id=1-oo7FBGrusK0UulTEA4OQpFo_rMWFsrq9cOEEMLNFzM')
+    },
     sendComment({
+      studentId,
+      pageId,
+      itemId,
+      title,
+      time,
+      value,
+      teacherName,
+    }) {
+      const itemData = JSON.stringify({
+        type: SocketEventsEnum.TEACHER_COMMENT,
         studentId,
         pageId,
         itemId,
         title,
         time,
         value,
-        teacherName
-    }) {
-      const itemData = JSON.stringify({
-          type: SocketEventsEnum.TEACHER_COMMENT, 
-          studentId,
-          pageId,
-          itemId,
-          title,
-          time,
-          value,
-          teacherName,
-          slideIndex: this.currentIndex + 1,
-          "room":this.slide_id
-      })
-      console.log(itemData)
-      this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": ${itemData}}`)
+        teacherName,
+        slideIndex: this.currentIndex + 1,
+        room: this.slide_id,
+      });
+      console.log(itemData);
+      this.currentSo.emit(
+        "comment",
+        `{"user_id":"${studentId}", "item": ${itemData}}`
+      );
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
       // this.emitSo(itemData)
     },
@@ -194,14 +237,16 @@ export default {
       // }else{
       //   return 0;
       // }
-      const list = getCurrentPageAnswerList(this.currentItemData.page_id, this.currentItemData.items[0].type)
-      console.log(list)
-      this.currentAnswerCount = list.length
-
+      const list = getCurrentPageAnswerList(
+        this.currentItemData.page_id,
+        this.currentItemData.items[0].type
+      );
+      console.log(list);
+      this.currentAnswerCount = list.length;
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then(list => {
+      getAllPPTS(this.slide_id).then((list) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -214,7 +259,7 @@ export default {
       // this.options = [];
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
-        this.getResponeCount()
+        this.getResponeCount();
         // if (choice && choice.data) {
         //   const { title, options } = choice.data;
         //   this.title = title;
@@ -237,7 +282,9 @@ export default {
     },
     copyUrl() {
       copy(
-        `${location.href.replace(/teacher/, "students")}&page=${this.currentIndex}`
+        `${location.href.replace(/teacher/, "students")}&page=${
+          this.currentIndex
+        }`
       );
       showToast("copy link success");
     },
@@ -253,7 +300,7 @@ export default {
       console.log(d);
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
-        console.log(d.student_count, 'd.student_count')
+        console.log(d.student_count, "d.student_count");
         this.studentCounts = d.student_count;
       } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
@@ -272,21 +319,22 @@ export default {
       // 回答问题
       const { room, page_id } = d;
       // 过滤非当前页面数据
-      if(room != this.slide_id || page_id !== this.currentPageId) return
+      if (room != this.slide_id || page_id !== this.currentPageId) return;
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
-        const { answer, user_id, type} = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, answer, key: user_id})
-      } else if (d.type == SocketEventsEnum.TEXT_INPUT || d.type === SocketEventsEnum.NUMBER_INPUT) {
-        //接收到text input或者number input的值
-        const {
-          content,
+        const { answer, user_id, type } = d;
+        saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
-          user_name,
-          item_id,
-          type
-        } = d;
-        
+          answer,
+          key: user_id,
+        });
+      } else if (
+        d.type == SocketEventsEnum.TEXT_INPUT ||
+        d.type === SocketEventsEnum.NUMBER_INPUT
+      ) {
+        //接收到text input或者number input的值
+        const { content, user_id, user_name, item_id, type } = d;
+
         // let textList = this.textList;
         // if (!textList || textList.length == 0) {
         //   textList.push({
@@ -324,10 +372,16 @@ export default {
         //   d.type
         // );
 
-        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, user_name, item_id, key: `${item_id}_${user_id}`})
+        saveStudentsPageAnswerList(this.currentPageId, type, {
+          user_id,
+          content,
+          user_name,
+          item_id,
+          key: `${item_id}_${user_id}`,
+        });
       }
 
-      this.getResponeCount()
+      this.getResponeCount();
     },
     // '{"type":"change_page", "params": {"page": 3}}'
     emitSo(message) {
@@ -344,19 +398,19 @@ export default {
       MessageBox.confirm(url, "Share this link with your students", {
         distinguishCancelAndClose: true,
         confirmButtonText: "copy",
-        cancelButtonText: "Enter classroom"
+        cancelButtonText: "Enter classroom",
       })
         .then(() => {
           this.copyUrl();
         })
-        .catch(action => {});
+        .catch((action) => {});
     },
     showres() {
       this.showResponse = true;
     },
     hideRes() {
       this.showResponse = false;
-    }
-  }
+    },
+  },
 };
 </script>
