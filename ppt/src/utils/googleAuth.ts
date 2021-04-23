@@ -80,30 +80,58 @@ function updateSigninStatus(isSignedIn: boolean, res: any, slideId: string) {
  *  Initializes the API client library and sets up sign-in state
  *  listeners.
  */
-function initClient(res: any, slideId: string) {
+function initClient(res: any, rej: any) {
   // console.log('===')
   gapi.client.init({
     apiKey: API_KEY,
     clientId: CLIENT_ID,
-    discoveryDocs: DISCOVERY_DOCS,
-    scope: SCOPES,
-  }).then(function () {
+    // discoveryDocs: DISCOVERY_DOCS,
+    scope: 'profile',
+  }).then(function(e: any) {
     // Listen for sign-in state changes.
     // gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-    // console.log('2')
+    console.log('2', e)
     // Handle the initial sign-in state.
-    gapi.auth2.getAuthInstance().signIn().then(() => {
-      updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get(), res, slideId);
-    });
-  }, function () { });
+    res(true)
+  }, function(e: any) {
+    console.log('2', e)
+    rej(false)
+  });
 }
 /**
  *  On load, called to load the auth2 library and API client library.
  */
-export const gotoGoogleAuth = (slideId: string) => {
-  return new Promise((res) => {
+export const gotoGoogleAuth = () => {
+  return gapi.auth2.getAuthInstance().signIn()
+};
+
+// 检查Google登录
+export const checkGoogleAuth = (): boolean => {
+  return gapi.auth2.getAuthInstance().isSignedIn.get()
+}
+
+// https://developers.google.com/identity/sign-in/web/reference#googleusergetbasicprofile
+export const getGoogleUserInfo = () => {
+  // const id = gapi.auth2.getAuthInstance().BasicProfile.getId()
+  const name = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getName()
+  return name
+}
+
+const loop = (res: any, rej: any) => {
+  // @ts-ignore
+  if(window.googleIsReady && window.gapi) {
     gapi.load('client:auth2', () => {
-      initClient(res, slideId);
+      initClient(res, rej);
     });
+  } else {
+    setTimeout(() => {
+      loop(res, rej)
+    }, 500)
+  }
+}
+
+export const initGoogleAuth = () => {
+  return new Promise((res, rej) => {
+    loop(res, rej)
   });
 };
