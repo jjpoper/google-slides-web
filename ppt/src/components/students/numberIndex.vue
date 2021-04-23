@@ -21,14 +21,16 @@ import { SocketEventsEnum } from "../../socket/socketEvents";
 export default {
   props: {
     method: { type: Function },
-    pageId: {
-      type: String,
-      default: ""
-    }
+    data: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
   },
   data() {
     return {
-      arrList: getNumberList(this.pageId,SocketEventsEnum.NUMBER_INPUT)
+      arrList: getNumberList(this.data.page_id, SocketEventsEnum.NUMBER_INPUT)
     };
   },
   created(){
@@ -39,9 +41,9 @@ export default {
   },
   methods: {
     send: function() {
-      console.log("pageid=="+this.pageId);
+      console.log("pageid==", this.data.page_id);
       saveStudentsDataList(
-        this.pageId,
+        this.data.page_id,
         this.arrList,
         SocketEventsEnum.NUMBER_INPUT
       );

@@ -26,7 +26,6 @@
         :type="currentItemData.items[0].type"
         :method="answerText"
         :answer="answerChoice"
-        :pageId="currentItemData.page_id"
       />
       <student-comment />
     </el-aside>
