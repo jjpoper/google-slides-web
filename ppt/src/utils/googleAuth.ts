@@ -12,8 +12,10 @@
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names */
 /* eslint-disable no-undef */
-const CLIENT_ID = '835066819585-e7kiq3qh054m58gcorlr3krnd06p004d.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyD6etM8BrhS3Y13N5W0cCvFEYi86aKgKhI';
+// const CLIENT_ID = '835066819585-e7kiq3qh054m58gcorlr3krnd06p004d.apps.googleusercontent.com';
+const CLIENT_ID = '1040108879273-ldfoennnk158t1p400hn2eok3atfll3i.apps.googleusercontent.com';
+// const API_KEY = 'AIzaSyD6etM8BrhS3Y13N5W0cCvFEYi86aKgKhI';
+const API_KEY = 'AIzaSyBzfqIuraxxIDUKeE9qx8LzkhfYRstiOO0';
 
 // Array of API discovery doc URLs for APIs used by the quickstart
 const DISCOVERY_DOCS = ["https://slides.googleapis.com/$discovery/rest?version=v1"];
