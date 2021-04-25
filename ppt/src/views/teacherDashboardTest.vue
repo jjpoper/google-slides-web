@@ -1,142 +1,114 @@
 <template>
-  <el-container>
-    <el-main v-show="!showResponse">
-      <div
-        class="block"
-        v-if="currentItemData && currentItemData.thumbnail_url"
-      >
-        <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
-        <el-pagination
-          style="line-height: 50px"
-          background
-          small
-          layout="prev, pager, next"
-          @current-change="pageChange"
-          :current-page="0"
-          :page-count="slides.length"
-        ></el-pagination>
-        <el-button type="primary" class="counts"
-          >当前人数：{{ studentCounts }}</el-button
-        >
-        <el-button type="primary" class="invite" @click="openShare"
-          >Share</el-button
-        >
-        <el-button type="primary" class="Presenting">Presenting</el-button>
-        <el-button type="primary" class="Show" @click="showres"
-          >Show Responses</el-button
-        >
-        <el-button type="primary" class="noShow gray">{{
-          currentAnswerCount > 0
-            ? `${currentAnswerCount} Responses`
-            : `no Responses`
-        }}</el-button>
+  <div class="page">
+    <div class="content">
+      <div class="left">
+        <div v-for="(item, index) in slides" :key="index" class="pptContent">
+          <div
+            v-bind:class="isFocus[index]?'image_parent image_parent_focus' :'image_parent '"
+            @click="giveFocus(index)"
+          >
+            <img :src="item.thumbnail_url" />
+          </div>
 
-        <svg
-          t="1619161258814"
-          class="dropdown-icon"
-          viewBox="0 0 20 30"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="6029"
-          @click="open"
-        >
-          <circle cx="10" cy="4" r="3" fill="#409EFF" />
-          <circle cx="10" cy="15" r="3" fill="#409EFF" />
-          <circle cx="10" cy="26" r="3" fill="#409EFF" />
-        </svg>
+          <div class="response_flag"></div>
+          <div class="top" :style="'width:'+responsePercentage[index]+'%'"></div>
+        </div>
       </div>
-    </el-main>
-    <el-main v-if="showResponse">
-      <el-button type="primary" @click="hideRes">hide Responses</el-button>
-      <!-- <template v-if="options&&options.length > 0">
-        <teacherItem
-          v-if="answerList.length > 0"
-          :options="options"
-          :title="title"
-          :answerList="answerList"
-          :pageId="currentPageId"
+
+      <div class="divider"></div>
+      <div class="response_content">
+        <teacherIndexItem
+          v-if="currentItemData && currentItemData.items[0]"
+          :data="currentItemData"
+          :type="currentItemData.items[0].type"
+          :currentAnswerCount="currentAnswerCount"
         />
-      </template>
-      <template v-else-if="textList.length>0">
-        <teacherTextItem  :textList="textList" />
-      </template> -->
-      <teacherIndexItem
-        v-if="currentItemData && currentItemData.items[0]"
-        :data="currentItemData"
-        :type="currentItemData.items[0].type"
-        :currentAnswerCount="currentAnswerCount"
-      />
-    </el-main>
-    <commentModal />
-  </el-container>
+      </div>
+    </div>
+    <div class="number_info">Class Roster {{ current }}/{{ totalNumber }}</div>
+  </div>
 </template>
 <style scoped>
-.dropdown-class {
+.page {
   position: absolute;
-  right: 10px;
-  bottom: 20px;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
 }
-.dropdown-icon {
-  width: 20px;
-  height: 40px;
-  position: absolute;
-  right: 10px;
-  bottom: 20px;
+.content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.block {
-  position: relative;
+.left {
+  display: flex;
+  width: 250px;
+  height: auto;
+  flex-direction: column;
+  background-color: #efefef;
+  overflow: hidden;
 }
-.invite {
-  position: absolute;
-  right: 50px;
-  bottom: 20px;
+.divider {
+  width: 1px;
+  height: auto;
+  background-color: #909090;
 }
-.counts {
-  position: absolute;
-  left: 10px;
-  bottom: 20px;
-  background-color: transparent !important;
-  border: none !important;
-  color: #333;
+.number_info {
+  position: fixed;
+  right: 30px;
+  top: 20px;
+  width: 150px;
+  height: 30px;
+  background-color: #409eff;
+  color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  text-align: center;
+  padding-top: 13px;
 }
-.Show {
-  position: absolute;
-  right: 150px;
-  bottom: 20px;
+
+.pptContent {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
-.noShow {
-  position: absolute;
-  right: 300px;
-  bottom: 20px;
+
+.image_parent {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid white;
+  width: 230px;
+  height: 130px;
 }
-.Presenting {
-  position: absolute;
-  left: 100px;
-  bottom: 20px;
-  background-color: transparent !important;
-  border: none !important;
-  color: #333;
+.image_parent_focus {
+  border: 1px solid #409eff;
 }
-.gray {
-  background-color: transparent !important;
-  border: none !important;
-  color: #333;
+image {
+  width: 228px;
+  height: auto;
+  display: block;
 }
-.modal {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-  background-color: rgba(0, 0, 0, 0.2);
+.response_flag {
+  width: 230px;
+  height: 6px;
+  background-color: white;
+  border: 1px solid #909090;
 }
-.shareBox {
-  width: 300px;
-  height: 200px;
-  background-color: #fff;
-  position: relative;
-  margin: 0 auto;
+.top {
+  background-color: #67c23a;
+  margin-top: -7px;
+  margin-left: 1px;
+  margin-right: 1px;
+  height: 6px;
+}
+.response_content {
+  position: fixed;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  margin-left: 251px;
 }
 </style>
 <script>
@@ -152,14 +124,14 @@ import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
-  getCurrentPageAnswerList,
+  getCurrentPageAnswerList
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 
 export default {
   data() {
     return {
-      showResponse: false, // 默认不展示老师的回答
+      showResponse: true, // 展示学生的回应
       studentCounts: 0,
       slides: [],
       currentIndex: 0,
@@ -168,36 +140,41 @@ export default {
       uid: getTeacherUid(), // uid
       currentItemData: null,
       currentAnswerCount: 0,
+      current: 2,
+      totalNumber: 4,
+      responsePercentage: [],
+      isFocus: [],
+      currentSo: null
     };
   },
   mounted() {
     this.joinRoom();
-    this.openShare();
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    //   this.openShare();
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   components: {
     pptcontent,
     teacherIndexItem,
-    commentModal,
+    commentModal
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       vm.slide_id = to.query.slide_id;
       vm.getAllSlides();
     });
   },
   methods: {
-    open() {
-     // this.$router.push({ path: "/dashboard" });
-      window.open('/index.html#/dashboard?slide_id='+this.slide_id)
-    },
+    // open() {
+    //   // this.$router.push({ path: "/dashboard" });
+    //   window.open("/index.html#/dashboard?slide_id=" + this.slide_id);
+    // },
     sendComment({
       studentId,
       pageId,
@@ -205,7 +182,7 @@ export default {
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -217,7 +194,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -246,12 +223,16 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
+        for (let i = 0; i < list.length; i++) {
+          this.responsePercentage[i] = 0;
+        }
         this.getItemData();
+        this.isFocus[0]=true;
         hideLoading();
       });
     },
@@ -288,6 +269,12 @@ export default {
       );
       showToast("copy link success");
     },
+    giveFocus(index) {
+      for (let i = 0; i < this.ppts.length; i++) {
+        this.isFocus[i] = i == index;
+      }
+      this.$forceUpdate();
+    },
     joinRoom() {
       this.currentSo = createSo(this.slide_id, this.uid, this.msgListener);
     },
@@ -306,14 +293,6 @@ export default {
         // 改名
         const { user_id, user_name_new } = d;
         saveStundentUidAndName(user_id, user_name_new);
-        // this.user_name = user_name_new;
-        // for (let i = 0; i < this.textList.length; i++) {
-        //   if (user_id === this.textList[i].user_id) {
-        //     let newVaule = this.textList[i];
-        //     newVaule.user_name = user_name_new;
-        //     //   Vue.set(this.textList, i, newValue);
-        //   }
-        // }
       }
 
       // 回答问题
@@ -326,7 +305,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
@@ -334,50 +313,12 @@ export default {
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-
-        // let textList = this.textList;
-        // if (!textList || textList.length == 0) {
-        //   textList.push({
-        //     content,
-        //     user_id,
-        //     user_name,
-        //     item_id
-        //   });
-        // } else {
-        //   let found = false;
-        //   for (let i = 0; i < textList.length; i++) {
-        //     if (
-        //       textList[i].user_id === user_id &&
-        //       textList[i].item_id === item_id
-        //     ) {
-        //       found = true;
-        //       textList[i].content = content;
-        //       textList[i].user_name = user_name;
-        //     }
-        //   }
-        //   if (!found) {
-        //     textList.push({
-        //       content,
-        //       user_id,
-        //       user_name,
-        //       item_id
-        //     });
-        //   }
-        // }
-        // this.user_name = user_name;
-        // this.textList = textList;
-        // saveTeacherDatalist(
-        //   currentPageId,
-        //   textList,
-        //   d.type
-        // );
-
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       }
 
@@ -390,27 +331,12 @@ export default {
         this.currentSo.emit("control", message);
       }
     },
-    openShare() {
-      // return
-      const url = `${location.href.replace(/teacher/, "students")}&page=${
-        this.current
-      }`;
-      MessageBox.confirm(url, "Share this link with your students", {
-        distinguishCancelAndClose: true,
-        confirmButtonText: "copy",
-        cancelButtonText: "Enter classroom",
-      })
-        .then(() => {
-          this.copyUrl();
-        })
-        .catch((action) => {});
-    },
     showres() {
       this.showResponse = true;
     },
     hideRes() {
       this.showResponse = false;
-    },
-  },
+    }
+  }
 };
 </script>
