@@ -64,6 +64,7 @@
         v-if="currentItemData && currentItemData.items[0]"
         :data="currentItemData"
         :type="currentItemData.items[0].type"
+        :flag="false"
         :currentAnswerCount="currentAnswerCount"
       />
     </el-main>
@@ -239,7 +240,7 @@ export default {
       // }
       const list = getCurrentPageAnswerList(
         this.currentItemData.page_id,
-        this.currentItemData.items[0].type
+        this.currentItemData.items[0].type,
       );
       console.log(list);
       this.currentAnswerCount = list.length;
@@ -259,6 +260,7 @@ export default {
       // this.options = [];
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
+        this.currentItemData.flag = false;
         this.getResponeCount();
         // if (choice && choice.data) {
         //   const { title, options } = choice.data;

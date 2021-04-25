@@ -5,10 +5,12 @@
 </template>
 
 <style lang="scss">
-html, body{
-  // width: 100%;
-  // height: 100%;
-  // overflow: hidden;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -17,8 +19,8 @@ html, body{
   text-align: center;
   color: #2c3e50;
   // width: 100%;
-  // height: 100%;
-  // overflow: hidden;
+  height: 100%;
+  overflow: auto;
 }
 
 #nav {
@@ -35,11 +37,11 @@ html, body{
 }
 </style>
 <script>
-import './utils/pptConfig'
+import "./utils/pptConfig";
 export default {
   mounted() {
-     window.winWidth = document.documentElement.clientWidth;
-     window.winHeight = document.documentElement.clientHeight;
-  }
-}
+    window.winWidth = document.documentElement.clientWidth;
+    window.winHeight = document.documentElement.clientHeight;
+  },
+};
 </script>

@@ -1,12 +1,22 @@
 <template>
-  <div class="parent" v-if="textList && textList.length>0">
+  <div class="parent" v-if="textList && textList.length > 0">
     <div class="parent_1">
-      <div class="parent_2" v-for="(item,index) in textList" :key="index">
+      <div class="parent_2" v-for="(item, index) in textList" :key="index">
         <div :id="item.user_id" class="grid-content">
-          {{item.content}}
-          <comment-icon :data="{pageId: data.page_id, itemId: item.item_id, studentId: item.user_id, title: item.content}"/>
+          {{ item.content }}
+          <comment-icon
+            v-if="data.flag"
+            :data="{
+              pageId: data.page_id,
+              itemId: item.item_id,
+              studentId: item.user_id,
+              title: item.content,
+            }"
+          />
         </div>
-        <p class="stduent_name">{{getUname(item.user_id)}}</p>
+        <p v-if="data.flag" class="stduent_name">
+          {{ getUname(item.user_id) }}
+        </p>
       </div>
     </div>
   </div>
@@ -16,6 +26,7 @@
 .parent {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 .parent_1 {
   display: flex;
@@ -55,33 +66,37 @@ p {
 </style>
 
 <script>
-import { getCurrentPageAnswerList, getStundentUidAndName } from '@/model/store.teacher';
-import commentIcon from './commentIcon.vue';
+import {
+  getCurrentPageAnswerList,
+  getStundentUidAndName,
+} from "@/model/store.teacher";
+import commentIcon from "./commentIcon.vue";
 export default {
   components: { commentIcon },
   props: {
     data: {
       type: Object,
       default: () => {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   data() {
     return {
-      textList: []
-    }
+      textList: [],
+    };
   },
   mounted() {
-    const {page_id, items} = this.data // 完整data
-    this.textList = getCurrentPageAnswerList(page_id, items[0].type)
+    const { page_id, items } = this.data; // 完整data
+    console.log("data flag==" + this.data);
+    this.textList = getCurrentPageAnswerList(page_id, items[0].type);
   },
   methods: {
     getUname(id) {
       console.log(getStundentUidAndName(id));
       const name = getStundentUidAndName(id);
       return name ? name : id;
-    }
-  }
+    },
+  },
 };
 </script>

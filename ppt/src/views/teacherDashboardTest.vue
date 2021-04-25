@@ -1,58 +1,92 @@
 <template>
   <div class="page">
-    <div class="content">
-      <div class="left">
-        <div v-for="(item, index) in slides" :key="index" class="pptContent">
-          <div
-            v-bind:class="isFocus[index]?'image_parent image_parent_focus' :'image_parent '"
-            @click="giveFocus(index)"
-          >
-            <img :src="item.thumbnail_url" />
-          </div>
-
-          <div class="response_flag"></div>
-          <div class="top" :style="'width:'+responsePercentage[index]+'%'"></div>
+    <div class="left">
+      <div v-for="(item, index) in slides" :key="index" class="ppt_content">
+        <div
+          v-bind:class="
+            isFocus[index] ? 'image_parent image_parent_focus' : 'image_parent '
+          "
+          @click="giveFocus(index)"
+        >
+          <img :src="item.thumbnail_url" />
         </div>
-      </div>
 
-      <div class="divider"></div>
-      <div class="response_content">
+        <div class="response_flag"></div>
+        <div
+          class="top"
+          :style="'width:' + responsePercentage[index] + '%'"
+        ></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="content_parent">
+      <div class="content_main">
         <teacherIndexItem
           v-if="currentItemData && currentItemData.items[0]"
           :data="currentItemData"
           :type="currentItemData.items[0].type"
+          :flag="true"
           :currentAnswerCount="currentAnswerCount"
         />
       </div>
     </div>
     <div class="number_info">Class Roster {{ current }}/{{ totalNumber }}</div>
+
+    <commentModal />
   </div>
 </template>
 <style scoped>
 .page {
-  position: absolute;
-  width: 100%;
-  height: auto;
-  min-height: 100%;
-}
-.content {
-  display: flex;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-}
-.left {
   display: flex;
-  width: 250px;
-  height: auto;
-  flex-direction: column;
-  background-color: #efefef;
-  overflow: hidden;
 }
+
+.left {
+  min-height: 100%;
+  width: 250px;
+  overflow: scroll;
+}
+
+.left::-webkit-scrollbar {
+  display: none;
+}
+.ppt_content {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  padding: 10px;
+}
+
 .divider {
-  width: 1px;
   height: auto;
+  min-height: 100%;
   background-color: #909090;
+  width: 1px;
+  position: fixed;
+  top: 0px;
+  left: 250px;
+}
+
+.content_parent {
+  display: flex;
+  flex: 1;
+  overflow-x: hidden;
+}
+
+.content_main {
+  height: auto;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 70px;
+  /* justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; */
 }
 .number_info {
   position: fixed;
@@ -66,12 +100,6 @@
   border-radius: 5px;
   text-align: center;
   padding-top: 13px;
-}
-
-.pptContent {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
 }
 
 .image_parent {
@@ -103,13 +131,6 @@ image {
   margin-right: 1px;
   height: 6px;
 }
-.response_content {
-  position: fixed;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  margin-left: 251px;
-}
 </style>
 <script>
 import { MessageBox } from "element-ui";
@@ -124,7 +145,7 @@ import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
-  getCurrentPageAnswerList
+  getCurrentPageAnswerList,
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 
@@ -144,37 +165,34 @@ export default {
       totalNumber: 4,
       responsePercentage: [],
       isFocus: [],
-      currentSo: null
+      currentSo: null,
     };
   },
   mounted() {
     this.joinRoom();
     //   this.openShare();
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+      console.log("send comment!!");
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    }
+    },
   },
   components: {
     pptcontent,
     teacherIndexItem,
-    commentModal
+    commentModal,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       vm.slide_id = to.query.slide_id;
       vm.getAllSlides();
     });
   },
   methods: {
-    // open() {
-    //   // this.$router.push({ path: "/dashboard" });
-    //   window.open("/index.html#/dashboard?slide_id=" + this.slide_id);
-    // },
     sendComment({
       studentId,
       pageId,
@@ -182,7 +200,7 @@ export default {
       title,
       time,
       value,
-      teacherName
+      teacherName,
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -194,7 +212,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id
+        room: this.slide_id,
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -205,15 +223,6 @@ export default {
       // this.emitSo(itemData)
     },
     getResponeCount() {
-      // console.log("getResponeCount=="+this.type)
-      // if(this.type == 'choice'){
-      //   return this.answerList.length
-      // }else if(this.type == SocketEventsEnum.TEXT_INPUT||this.type==SocketEventsEnum.NUMBER_INPUT){
-      //   console.log(this.textList.length)
-      //   return this.textList.length;
-      // }else{
-      //   return 0;
-      // }
       const list = getCurrentPageAnswerList(
         this.currentItemData.page_id,
         this.currentItemData.items[0].type
@@ -223,7 +232,7 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then(list => {
+      getAllPPTS(this.slide_id).then((list) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -232,7 +241,7 @@ export default {
           this.responsePercentage[i] = 0;
         }
         this.getItemData();
-        this.isFocus[0]=true;
+        this.isFocus[0] = true;
         hideLoading();
       });
     },
@@ -240,16 +249,8 @@ export default {
       // this.options = [];
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
+        this.currentItemData.flag = true;
         this.getResponeCount();
-        // if (choice && choice.data) {
-        //   const { title, options } = choice.data;
-        //   this.title = title;
-        //   this.type = choice.type;
-        //   console.log("item type =="+ this.type)
-        //   this.options = options;
-        //   this.textList = getTeacherDatalist(this.currentPageId,this.type)
-        //   this.answerList = getTeacherAlist(this.currentPageId);
-        // }
       });
     },
     pageChange(value) {
@@ -270,7 +271,7 @@ export default {
       showToast("copy link success");
     },
     giveFocus(index) {
-      for (let i = 0; i < this.ppts.length; i++) {
+      for (let i = 0; i < this.slides.length; i++) {
         this.isFocus[i] = i == index;
       }
       this.$forceUpdate();
@@ -305,7 +306,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id
+          key: user_id,
         });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
@@ -318,7 +319,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`
+          key: `${item_id}_${user_id}`,
         });
       }
 
@@ -336,7 +337,7 @@ export default {
     },
     hideRes() {
       this.showResponse = false;
-    }
-  }
+    },
+  },
 };
 </script>
