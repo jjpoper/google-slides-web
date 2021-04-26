@@ -11,11 +11,12 @@
           <img :src="item.thumbnail_url" />
         </div>
 
-        <div class="response_flag"></div>
-        <div
-          class="top"
-          :style="'width:' + responsePercentage[index] + '%'"
-        ></div>
+        <div class="response_flag">
+          <div
+            class="top"
+            :style="'width:' + responsePercentage[index] + '%'"
+          ></div>
+        </div>
       </div>
     </div>
 
@@ -32,7 +33,9 @@
         />
       </div>
     </div>
-    <div class="number_info">Class Roster {{ current }}/{{ totalNumber }}</div>
+    <div class="number_info">
+      Class Roster {{ currentResponseCount }}/{{ studentCounts }}
+    </div>
 
     <commentModal />
   </div>
@@ -48,6 +51,7 @@
   min-height: 100%;
   width: 250px;
   overflow: scroll;
+  padding: 10px;
 }
 
 .left::-webkit-scrollbar {
@@ -57,7 +61,8 @@
   display: flex;
   flex-direction: column;
   width: 250px;
-  padding: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .divider {
@@ -126,9 +131,6 @@ image {
 }
 .top {
   background-color: #67c23a;
-  margin-top: -7px;
-  margin-left: 1px;
-  margin-right: 1px;
   height: 6px;
 }
 </style>
@@ -161,8 +163,7 @@ export default {
       uid: getTeacherUid(), // uid
       currentItemData: null,
       currentAnswerCount: 0,
-      current: 2,
-      totalNumber: 4,
+      currentResponseCount: 0,
       responsePercentage: [],
       isFocus: [],
       currentSo: null,
@@ -229,6 +230,25 @@ export default {
       );
       console.log(list);
       this.currentAnswerCount = list.length;
+      let count = 0;
+      let id = "-1";
+      for (let i = 0; i < list.length; i++) {
+        if (id != list[i].user_id) {
+          count++;
+          id = list[i].user_id;
+        }
+      }
+      this.currentResponseCount = count;
+
+      if (this.studentCounts < count) {
+        this.studentCounts = count;
+      }
+      if (count == 0) {
+        this.responsePercentage[this.currentIndex] = 0;
+      } else {
+        this.responsePercentage[this.currentIndex] =
+          (count * 100) / this.studentCounts;
+      }
     },
     getAllSlides() {
       showLoading();
@@ -271,6 +291,8 @@ export default {
       showToast("copy link success");
     },
     giveFocus(index) {
+      this.currentIndex = index;
+      this.getItemData();
       for (let i = 0; i < this.slides.length; i++) {
         this.isFocus[i] = i == index;
       }
@@ -292,7 +314,7 @@ export default {
         this.studentCounts = d.student_count;
       } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
-        const { user_id, user_name_new } = d;
+        const { user_id, user_name_new, student_count } = d;
         saveStundentUidAndName(user_id, user_name_new);
       }
 
