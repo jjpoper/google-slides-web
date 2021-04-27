@@ -54,6 +54,7 @@ class Draw {
 
     init(ws, btn, outerWitdh, sendCanvas, initData) {
         // this.canvas.width = outerWitdh
+        console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
         this.sendCanvas = sendCanvas
         this.canvas.onmousedown = () => {
           this.drawBegin(event)
@@ -83,6 +84,7 @@ class Draw {
     changeColor(color) {
       this.strokeColor = color
       this.lineWidth = 2
+      this.cxt.globalCompositeOperation = 'source-over';
     }
 
     drawBegin(e, ws) {
@@ -151,8 +153,9 @@ class Draw {
         // }
     }
     earse() {
-        this.strokeColor = 'pink'
+        // this.strokeColor = 'pink'
         this.lineWidth = 20
+        this.cxt.globalCompositeOperation = 'destination-out';
     }
 }
 
