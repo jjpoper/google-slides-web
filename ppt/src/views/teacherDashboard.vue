@@ -1,65 +1,97 @@
 <template>
   <div class="page">
-    <div class="content">
-      <div class="left">
-        <div v-for="(item, index) in ppts" :key="index" class="pptContent">
-          <div
-            v-bind:class="isFocus[index]?'image_parent image_parent_focus' :'image_parent '"
-            @click="giveFocus(index)"
-          >
-            <img :src="item.thumbnail_url" />
-          </div>
+    <div class="left">
+      <div v-for="(item, index) in slides" :key="index" class="ppt_content">
+        <div
+          v-bind:class="
+            isFocus[index] ? 'image_parent image_parent_focus' : 'image_parent '
+          "
+          @click="giveFocus(index)"
+        >
+          <img :src="item.thumbnail_url" />
+        </div>
 
-          <div class="response_flag"></div>
-          <div class="top" :style="'width:'+responsePercentage[index]+'%'"></div>
+        <div class="response_flag">
+          <div
+            class="top"
+            :style="'width:' + responsePercentage[index] + '%'"
+          ></div>
         </div>
       </div>
-      <!-- v-if="currentItemData && currentItemData.items[0]"
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="content_parent">
+      <div class="content_main">
+        <teacherIndexItem
+          v-if="currentItemData && currentItemData.items[0]"
           :data="currentItemData"
           :type="currentItemData.items[0].type"
-      :currentAnswerCount="currentAnswerCount"-->
-      <div class="divider"></div>
-      <div class="response_content">
-        <teacherIndexItem />
+          :flag="true"
+          :currentAnswerCount="currentAnswerCount"
+        />
       </div>
     </div>
-    <div class="number_info">Class Roster {{ current }}/{{ totalNumber }}</div>
+    <div class="number_info">
+      Class Roster {{ currentResponseCount }}/{{ studentCounts }}
+    </div>
+
+    <commentModal />
   </div>
 </template>
-
-<!--
-  1 链接socket,准备接收用户的回应
-  2 获取当前所有ppt
-  3 获取选中页面的学生回应（默认第一张ppt被选中）
-  4
-
--->
-
 <style scoped>
 .page {
-  position: absolute;
-  width: 100%;
-  height: auto;
-  min-height: 100%;
-}
-.content {
-  display: flex;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-}
-.left {
   display: flex;
-  width: 250px;
-  height: auto;
-  flex-direction: column;
-  background-color: #efefef;
-  overflow: hidden;
 }
+
+.left {
+  min-height: 100%;
+  width: 250px;
+  overflow: scroll;
+  padding: 10px;
+}
+
+.left::-webkit-scrollbar {
+  display: none;
+}
+.ppt_content {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
 .divider {
-  width: 1px;
   height: auto;
+  min-height: 100%;
   background-color: #909090;
+  width: 1px;
+  position: fixed;
+  top: 0px;
+  left: 250px;
+}
+
+.content_parent {
+  display: flex;
+  flex: 1;
+  overflow-x: hidden;
+}
+
+.content_main {
+  height: auto;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 70px;
+  /* justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; */
 }
 .number_info {
   position: fixed;
@@ -73,12 +105,6 @@
   border-radius: 5px;
   text-align: center;
   padding-top: 13px;
-}
-
-.pptContent {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
 }
 
 .image_parent {
@@ -105,101 +131,97 @@ image {
 }
 .top {
   background-color: #67c23a;
-  margin-top: -7px;
-  margin-left: 1px;
-  margin-right: 1px;
   height: 6px;
 }
-.response_content {
-  position: fixed;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  margin-left: 251px;
-}
-/* 
-
-.response {
-  display: flex;
-  width: 100%;
-  height: 100%;
-} */
 </style>
-
-
 <script>
+import { MessageBox } from "element-ui";
+import copy from "copy-to-clipboard";
+import pptcontent from "../components/pptcontent";
 import { getAllPPTS } from "../model/index";
-import teacherIndexItem from "../components/teacher/Index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
+import teacherIndexItem from "../components/teacher/Index";
 import { createSo } from "../socket/socket.teacher";
+import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
 import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
-  getCurrentPageAnswerList
+  getCurrentPageAnswerList,
 } from "@/model/store.teacher";
+import commentModal from "../components/teacher/commentModal";
+
 export default {
   data() {
     return {
-      current: 2,
-      totalNumber: 4,
-      ppts: [],
-      slide_id: "",
+      showResponse: true, // 展示学生的回应
+      studentCounts: 0,
+      slides: [],
+      currentIndex: 0,
+      slide_id: 0,
+      currentSo: null,
+      uid: getTeacherUid(), // uid
+      currentItemData: null,
+      currentAnswerCount: 0,
+      currentResponseCount: 0,
       responsePercentage: [],
       isFocus: [],
-      currentSo:null,
-      // currentItemData: [],
-      // currentAnswerCount: 0
+      currentSo: null,
     };
-  },
-  components: {
-    teacherIndexItem
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.slide_id = to.query.slide_id;
-      vm.getAllSlides();
-    });
   },
   mounted() {
     this.joinRoom();
-    // EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
-    //   this.sendComment(data);
-    // });
+    //   this.openShare();
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+      console.log("send comment!!");
+      this.sendComment(data);
+    });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    }
+    },
+  },
+  components: {
+    pptcontent,
+    teacherIndexItem,
+    commentModal,
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.slide_id = to.query.slide_id;
+      vm.getAllSlides();
+    });
   },
   methods: {
-    joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener);
-    },
-    getAllSlides() {
-      getAllPPTS(this.slide_id).then(list => {
-        // this.contentUrl = d;
-        // hideLoading()
-        this.ppts = list;
-        for (let i = 0; i < list.length; i++) {
-          this.responsePercentage[i] = 0;
-        }
-        isFocus[0] = true;
-        this.getItemData();
+    sendComment({
+      studentId,
+      pageId,
+      itemId,
+      title,
+      time,
+      value,
+      teacherName,
+    }) {
+      const itemData = JSON.stringify({
+        type: SocketEventsEnum.TEACHER_COMMENT,
+        studentId,
+        pageId,
+        itemId,
+        title,
+        time,
+        value,
+        teacherName,
+        slideIndex: this.currentIndex + 1,
+        room: this.slide_id,
       });
-    },
-    giveFocus(index) {
-      for (let i = 0; i < this.ppts.length; i++) {
-        this.isFocus[i] = i == index;
-      }
-      this.$forceUpdate();
-    },
-    getItemData() {
-      // this.options = [];
-      this.$nextTick(() => {
-        this.currentItemData = this.slides[this.currentIndex];
-        this.getResponeCount();
-      });
+      console.log(itemData);
+      this.currentSo.emit(
+        "comment",
+        `{"user_id":"${studentId}", "item": ${itemData}}`
+      );
+      // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
+      // this.emitSo(itemData)
     },
     getResponeCount() {
       const list = getCurrentPageAnswerList(
@@ -208,7 +230,136 @@ export default {
       );
       console.log(list);
       this.currentAnswerCount = list.length;
-    }
-  }
+      let count = 0;
+      let id = "-1";
+      for (let i = 0; i < list.length; i++) {
+        if (id != list[i].user_id) {
+          count++;
+          id = list[i].user_id;
+        }
+      }
+      this.currentResponseCount = count;
+
+      if (this.studentCounts < count) {
+        this.studentCounts = count;
+      }
+      if (count == 0) {
+        this.responsePercentage[this.currentIndex] = 0;
+      } else {
+        this.responsePercentage[this.currentIndex] =
+          (count * 100) / this.studentCounts;
+      }
+    },
+    getAllSlides() {
+      showLoading();
+      getAllPPTS(this.slide_id).then((list) => {
+        console.log(list);
+        // this.contentUrl = d;
+        // hideLoading()
+        this.slides = list;
+        for (let i = 0; i < list.length; i++) {
+          this.responsePercentage[i] = 0;
+        }
+        this.getItemData();
+        this.isFocus[0] = true;
+        hideLoading();
+      });
+    },
+    getItemData() {
+      // this.options = [];
+      this.$nextTick(() => {
+        this.currentItemData = this.slides[this.currentIndex];
+        this.currentItemData.flag = true;
+        this.getResponeCount();
+      });
+    },
+    pageChange(value) {
+      this.currentIndex = value - 1;
+      this.getItemData();
+      // 换页命令
+      // '{"type":"change_page", "params": {"page": 3}}'
+      this.emitSo(
+        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+      );
+    },
+    copyUrl() {
+      copy(
+        `${location.href.replace(/teacher/, "students")}&page=${
+          this.currentIndex
+        }`
+      );
+      showToast("copy link success");
+    },
+    giveFocus(index) {
+      this.currentIndex = index;
+      this.getItemData();
+      for (let i = 0; i < this.slides.length; i++) {
+        this.isFocus[i] = i == index;
+      }
+      this.$forceUpdate();
+    },
+    joinRoom() {
+      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener);
+    },
+    msgListener(d = {}) {
+      // answer: "Lily"
+      // item_id: "item_1"
+      // page_id: "page_1"
+      // room: "1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg"
+      // user_id: "slidec3dcef92c1cf458c"
+      console.log(d);
+      if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
+        // 人数更新
+        console.log(d.student_count, "d.student_count");
+        this.studentCounts = d.student_count;
+      } else if (d.type === SocketEventsEnum.RENAME) {
+        // 改名
+        const { user_id, user_name_new, student_count } = d;
+        saveStundentUidAndName(user_id, user_name_new);
+      }
+
+      // 回答问题
+      const { room, page_id } = d;
+      // 过滤非当前页面数据
+      if (room != this.slide_id || page_id !== this.currentPageId) return;
+      // 回答choice
+      if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
+        const { answer, user_id, type } = d;
+        saveStudentsPageAnswerList(this.currentPageId, type, {
+          user_id,
+          answer,
+          key: user_id,
+        });
+      } else if (
+        d.type == SocketEventsEnum.TEXT_INPUT ||
+        d.type === SocketEventsEnum.NUMBER_INPUT
+      ) {
+        //接收到text input或者number input的值
+        const { content, user_id, user_name, item_id, type } = d;
+        saveStudentsPageAnswerList(this.currentPageId, type, {
+          user_id,
+          content,
+          user_name,
+          item_id,
+          key: `${item_id}_${user_id}`,
+        });
+      }
+
+      this.getResponeCount();
+    },
+    // '{"type":"change_page", "params": {"page": 3}}'
+    emitSo(message) {
+      if (this.currentSo) {
+        // this.currentSo.emit('control', JSON.stringify(data));
+        this.currentSo.emit("control", message);
+      }
+    },
+    showres() {
+      this.showResponse = true;
+    },
+    hideRes() {
+      this.showResponse = false;
+    },
+  },
 };
 </script>

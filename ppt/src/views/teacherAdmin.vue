@@ -218,7 +218,7 @@ export default {
   methods: {
     open(model) {
       // this.$router.push({ path: "/dashboard" });
-
+      console.log(model)
       if (model == 0) {
         var windowObjectReference;
         var strWindowFeatures =
