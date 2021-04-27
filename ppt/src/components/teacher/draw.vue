@@ -1,8 +1,13 @@
 <template>
   <div>
-    <div id="canvasouter" v-for="item in imgUrls" :key="item.user_id">
-      <img :src="item.content" />
-    </div>
+    <template v-for="item in imgUrls">
+      <div :key="item.user_id">
+        <p class="uname">{{item.user_name}}</p>
+        <div id="canvasouter" >
+          <img :src="item.content" />
+        </div>
+      </div> 
+    </template>
   </div>  
 </template>
 
@@ -32,21 +37,15 @@ export default {
       })
     },
     methods: {
-      draw({user_id, content}) {
+      draw({user_id, content, user_name}) {
         // console.log(data)
         // const cxt = this.cxt
         const index = this.imgUrls.findIndex((item) => item.user_id === user_id)
         if(index > -1) {
           this.imgUrls[index].content = content
         } else {
-          this.imgUrls.push({user_id, content})
+          this.imgUrls.shift({user_id, content, user_name})
         }
-
-        // let myCanvas = document.getElementById("canvas");
-        // const img = new Image();
-        //   img.src=base64Url;
-
-        // myCanvas.getContext('2d').drawImage(img,0,0);
       }
     }
 }
@@ -59,7 +58,11 @@ export default {
         height: 450px;
         position: relative;
         background: pink;
-        margin: 0 auto;
+        margin: 10px auto;
+    }
+    .uname{
+      line-height: 20px;
+      text-align: center;
     }
     #canvasouter>img {
       width: 100%;

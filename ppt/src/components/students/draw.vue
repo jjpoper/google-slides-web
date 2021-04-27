@@ -1,6 +1,6 @@
 <template>
     <div id="canvasouter" >
-      <canvas id="canvas" width="350" height="350" ></canvas>
+      <canvas id="canvas" width="400" height="400" ></canvas>
       <div class="canvasfooter">
         <div class="red-pencial" @click="changeColor('red')"></div>
         <div class="blue-pencial"  @click="changeColor('blue')"></div>
@@ -54,13 +54,8 @@ class Draw {
 
     init(ws, btn, outerWitdh, sendCanvas, initData) {
         // this.canvas.width = outerWitdh
+        console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
         this.sendCanvas = sendCanvas
-        if(initData && initData[0] && initData[0].content) {
-          console.log(initData[0].content)
-          const img = new Image();
-          img.src = initData[0].content;
-          this.cxt.drawImage(img, 0, 0);
-        }
         this.canvas.onmousedown = () => {
           this.drawBegin(event)
         }
@@ -75,11 +70,21 @@ class Draw {
             // ws.send('stop')
         }
         this.clearCanvas(ws, btn)
+
+        // 绘制缓存数据
+        if(initData && initData[0] && initData[0].content) {
+          const img = new Image();
+          img.src = initData[0].content;
+          img.onload = () => {
+            this.cxt.drawImage(img, 0, 0);
+          }
+        }
     }
 
     changeColor(color) {
       this.strokeColor = color
       this.lineWidth = 2
+      this.cxt.globalCompositeOperation = 'source-over';
     }
 
     drawBegin(e, ws) {
@@ -148,8 +153,9 @@ class Draw {
         // }
     }
     earse() {
-        this.strokeColor = 'pink'
+        // this.strokeColor = 'pink'
         this.lineWidth = 20
+        this.cxt.globalCompositeOperation = 'destination-out';
     }
 }
 
@@ -175,7 +181,9 @@ export default {
 
       const initData = getStudentCurrentPageAnswerList(this.data.page_id, this.data.items[0].type)
 
-      this.draw.init(()=> null, 1, outerWitdh, this.sendCanvas, initData)
+      this.$nextTick(() => {
+        this.draw.init(()=> null, 1, outerWitdh, this.sendCanvas, initData)
+      })
 
     },
     methods: {
@@ -193,7 +201,7 @@ export default {
     #canvasouter {
         cursor: default;
         width: 100%;
-        height: 450px;
+        height: 500px;
         position: relative;
     }
     #canvas{
@@ -207,7 +215,7 @@ export default {
       height: 100px;
       line-height: 50px;
       position: absolute;
-      top: 350px;
+      top: 400px;
       left: 0;
       display: flex;
       justify-content: center;
