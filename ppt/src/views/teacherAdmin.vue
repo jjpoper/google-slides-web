@@ -428,13 +428,12 @@ export default {
         //   d.type
         // );
 
-        saveStudentsPageAnswerList(this.currentPageId, type, {
-          user_id,
-          content,
-          user_name,
-          item_id,
-          key: `${item_id}_${user_id}`,
-        });
+        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, user_name, item_id, key: `${item_id}_${user_id}`})
+      } else if(d.type === SocketEventsEnum.DRAW_CANVAS) {
+        console.log(d)
+        const {content, type, user_id} = d
+        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, key: user_id})
+        EventBus.$emit('draw', content)
       }
 
       this.getResponeCount();

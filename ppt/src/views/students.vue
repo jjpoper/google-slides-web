@@ -19,12 +19,13 @@
         <i class="el-icon-chat-dot-round readchat" @click="showStudentModal" :style="{color: unread ? 'red' : '#333'}"/>
       </div>
     </el-main>
-    <el-aside width="30%" style="position: relative" v-if="currentItemData && currentItemData.items[0]">
+    <el-aside width="40%" style="position: relative" v-if="currentItemData && currentItemData.items[0]">
       <StudentsIndexItem
         :data="currentItemData"
         :type="currentItemData.items[0].type"
         :method="answerText"
         :answer="answerChoice"
+        :sendCanvas="sendCanvas"
       />
       <student-comment />
     </el-aside>
@@ -170,7 +171,19 @@ export default {
         hideLoading();
       });
     },
-    //发送text
+    sendCanvas(base64Url) {
+      const {page_id, items} = this.currentItemData;
+      const {type} = items[0]
+      saveStudentsCurrentPageAnswerList(page_id, type, {
+        key: 'item_1_canvas',
+        content: base64Url
+      })
+      this.emitSo(
+        "response",
+        `{"room": "${this.slide_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}"}`
+      );
+    },
+    // 发送text
     answerText(index, msg) {
       console.log("index==" + index + "  msg==" + msg);
       const {page_id, items} = this.currentItemData;
@@ -306,7 +319,7 @@ export default {
     emitSo(action, message) {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        console.log(action);
+        console.log(action, message);
         this.currentSo.emit(action, message);
       }
     },
