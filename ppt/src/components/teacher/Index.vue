@@ -1,6 +1,6 @@
 <template>
   <div v-if="currentAnswerCount > 0" class="page">
-    <radioItem v-if="type === 'choice'" v-bind="$attrs" />
+    <choiceItem v-if="type === 'choice'" v-bind="$attrs" />
     <textItem
       v-else-if="type === 'text' || type === 'number'"
       v-bind="$attrs"
@@ -20,6 +20,7 @@
 <script>
 import textItem from "./textItem";
 import radioItem from "./radioItem";
+import choiceItem from "./choiceItem";
 export default {
   props: {
     type: {
@@ -34,6 +35,7 @@ export default {
   components: {
     textItem,
     radioItem,
+    choiceItem,
   },
 };
 </script>
