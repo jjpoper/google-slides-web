@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentAnswerCount > 0 || type === 'draw'">
+  <div v-if="currentAnswerCount > 0 || type === 'draw'" class="page">
     <choiceItem v-if="type === 'choice'" v-bind="$attrs"/>
     <textItem v-else-if="type === 'text' || type === 'number'" v-bind="$attrs"/>
     <draw v-else-if="type === 'draw'"  v-bind="$attrs"/>
