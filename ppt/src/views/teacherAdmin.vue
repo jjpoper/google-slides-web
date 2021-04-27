@@ -1,10 +1,7 @@
 <template>
   <el-container>
     <el-main v-show="!showResponse">
-      <div
-        class="block"
-        v-if="currentItemData && currentItemData.thumbnail_url"
-      >
+      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
         <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
         <el-pagination
           style="line-height: 50px"
@@ -15,21 +12,18 @@
           :current-page="0"
           :page-count="slides.length"
         ></el-pagination>
-        <el-button type="primary" class="counts"
-          >当前人数：{{ studentCounts }}</el-button
-        >
-        <el-button type="primary" class="invite" @click="openShare"
-          >Share</el-button
-        >
+        <el-button type="primary" class="counts">Current student count:{{ studentCounts }}</el-button>
+        <el-button type="primary" class="invite" @click="openShare">Share</el-button>
         <el-button type="primary" class="Presenting">Presenting</el-button>
-        <el-button type="primary" class="Show" @click="showres"
-          >Show Responses</el-button
-        >
-        <el-button type="primary" class="noShow gray">{{
+        <el-button type="primary" class="Show" @click="showres">Show Responses</el-button>
+        <el-button type="primary" class="show_student" @click="showStudents">Students</el-button>
+        <el-button type="primary" class="noShow gray">
+          {{
           currentAnswerCount > 0
-            ? `${currentAnswerCount} Responses`
-            : `no Responses`
-        }}</el-button>
+          ? `${currentAnswerCount} Responses`
+          : `no Responses`
+          }}
+        </el-button>
 
         <svg
           t="1619161258814"
@@ -59,7 +53,7 @@
       </template>
       <template v-else-if="textList.length>0">
         <teacherTextItem  :textList="textList" />
-      </template> -->
+      </template>-->
       <teacherIndexItem
         v-if="currentItemData && currentItemData.items[0]"
         :data="currentItemData"
@@ -69,6 +63,9 @@
       />
     </el-main>
     <commentModal />
+    <el-dialog title="Classroom Roster" :visible.sync="dialogTableVisible">
+      <studentList :teacherList="[]" :studentList="[]" />
+    </el-dialog>
   </el-container>
 </template>
 <style scoped>
@@ -89,7 +86,7 @@
 }
 .invite {
   position: absolute;
-  right: 50px;
+  right: 160px;
   bottom: 20px;
 }
 .counts {
@@ -100,19 +97,24 @@
   border: none !important;
   color: #333;
 }
+.show_student {
+  position: absolute;
+  right: 50px;
+  bottom: 20px;
+}
 .Show {
   position: absolute;
-  right: 150px;
+  right: 270px;
   bottom: 20px;
 }
 .noShow {
   position: absolute;
-  right: 300px;
+  left: 280px;
   bottom: 20px;
 }
 .Presenting {
   position: absolute;
-  left: 100px;
+  left: 180px;
   bottom: 20px;
   background-color: transparent !important;
   border: none !important;
@@ -147,6 +149,7 @@ import pptcontent from "../components/pptcontent";
 import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
+import studentList from "../components/teacher/studentList";
 import { createSo } from "../socket/socket.teacher";
 import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
 import {
@@ -154,14 +157,14 @@ import {
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList,
-  saveTeacherUserName,
+  saveTeacherUserName
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import {
   checkGoogleAuth,
   gotoGoogleAuth,
   initGoogleAuth,
-  getGoogleUserInfo,
+  getGoogleUserInfo
 } from "@/utils/googleAuth";
 
 export default {
@@ -178,6 +181,7 @@ export default {
       currentAnswerCount: 0,
       name: "",
       googleLoginStatus: 0, // 0 未知， -1 登录， 1 登录
+      dialogTableVisible: false
     };
   },
   mounted() {
@@ -195,22 +199,23 @@ export default {
       .catch(() => {
         this.startConnectRoom();
       });
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   components: {
     pptcontent,
     teacherIndexItem,
     commentModal,
+    studentList
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       vm.slide_id = to.query.slide_id;
       vm.getAllSlides();
     });
@@ -218,18 +223,20 @@ export default {
   methods: {
     open(model) {
       // this.$router.push({ path: "/dashboard" });
-      console.log(model)
+
       if (model == 0) {
+        console.log(0 + "_blank");
         var windowObjectReference;
         var strWindowFeatures =
-          "width=1200,height=800,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+          "width=800,height=600,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
 
         windowObjectReference = window.open(
           "/index.html#/dashboard?slide_id=" + this.slide_id,
-          "Dashboard",
+          "_blank",
           strWindowFeatures
         );
       } else if (model == 1) {
+        console.log(1);
         window.open("/index.html#/dashboard?slide_id=" + this.slide_id);
       }
     },
@@ -252,7 +259,7 @@ export default {
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -264,7 +271,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -297,7 +304,7 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -338,6 +345,10 @@ export default {
         }`
       );
       showToast("copy link success");
+    },
+    //显示当前的学生
+    showStudents() {
+      this.dialogTableVisible = true;
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -382,7 +393,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
@@ -428,12 +439,23 @@ export default {
         //   d.type
         // );
 
-        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, user_name, item_id, key: `${item_id}_${user_id}`})
-      } else if(d.type === SocketEventsEnum.DRAW_CANVAS) {
-        console.log(d)
-        const {content, type, user_id, user_name} = d
-        saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, key: user_id, user_name})
-        EventBus.$emit('draw', {user_id, content, user_name})
+        saveStudentsPageAnswerList(this.currentPageId, type, {
+          user_id,
+          content,
+          user_name,
+          item_id,
+          key: `${item_id}_${user_id}`
+        });
+      } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
+        console.log(d);
+        const { content, type, user_id, user_name } = d;
+        saveStudentsPageAnswerList(this.currentPageId, type, {
+          user_id,
+          content,
+          key: user_id,
+          user_name
+        });
+        EventBus.$emit("draw", { user_id, content, user_name });
       }
 
       this.getResponeCount();
@@ -453,12 +475,12 @@ export default {
       MessageBox.confirm(url, "Share this link with your students", {
         distinguishCancelAndClose: true,
         confirmButtonText: "copy",
-        cancelButtonText: "Enter classroom",
+        cancelButtonText: "Enter classroom"
       })
         .then(() => {
           this.copyUrl();
         })
-        .catch((action) => {});
+        .catch(action => {});
     },
     showres() {
       this.showResponse = true;
@@ -471,7 +493,7 @@ export default {
         distinguishCancelAndClose: true,
         confirmButtonText: "Login",
         center: true,
-        showClose: false,
+        showClose: false
       })
         .then(() => {
           // this.copyUrl();
@@ -484,8 +506,8 @@ export default {
               this.showLoginModal();
             });
         })
-        .catch((action) => {});
-    },
-  },
+        .catch(action => {});
+    }
+  }
 };
 </script>

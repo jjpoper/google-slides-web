@@ -1,7 +1,7 @@
 <template>
   <div v-if="currentAnswerCount > 0 || type === 'draw'" class="page">
     <choiceItem v-if="type === 'choice'" v-bind="$attrs"/>
-    <textItem v-else-if="type === 'text' || type === 'number'" v-bind="$attrs"/>
+    <textItem v-else-if="type === 'text' || type === 'number'" v-bind="$attrs" :textList="textList"/>
     <draw v-else-if="type === 'draw'"  v-bind="$attrs"/>
   </div>
   <div v-else>Waiting For Responses</div>
@@ -29,6 +29,10 @@ export default {
     currentAnswerCount: {
       type: Number,
       default: 0,
+    },
+    textList:{
+        type:Array,
+        default:[],
     },
   },
   components: {
