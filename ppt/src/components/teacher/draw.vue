@@ -2,7 +2,7 @@
   <div>
     <template v-for="item in imgUrls">
       <div :key="item.user_id">
-        <p class="uname">{{item.user_name}}</p>
+        <p class="uname" v-if="data.flag">{{item.user_name}}</p>
         <div id="canvasouter" >
           <img :src="item.content" />
         </div>
