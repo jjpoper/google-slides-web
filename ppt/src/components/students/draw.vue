@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { getStudentCurrentPageAnswerList } from '@/model/store.student'
 'use strict'
 
 class Draw {
@@ -34,6 +35,7 @@ class Draw {
             endX: 0,
             endY: 0
         }
+
         // console.log(this.stage_info.left, this.stage_info.top)
     }
 
@@ -50,22 +52,21 @@ class Draw {
         }
     }
 
-    init(ws, btn, outerWitdh, sendCanvas) {
-        this.canvas.width = outerWitdh
+    init(ws, btn, outerWitdh, sendCanvas, initData) {
+        // this.canvas.width = outerWitdh
         this.sendCanvas = sendCanvas
+        if(initData && initData[0] && initData[0].content) {
+          console.log(initData[0].content)
+          const img = new Image();
+          img.src = initData[0].content;
+          this.cxt.drawImage(img, 0, 0);
+        }
         this.canvas.onmousedown = () => {
           this.drawBegin(event)
         }
         this.canvas.onmouseup = () => {
             console.log('========= 1')
             this.drawEnd()
-            // ws.send('stop')
-        }
-        this.canvas.onmouseout = () => {
-            setTimeout(() => {
-              console.log('========= 1')
-              this.drawEnd()
-            }, 100)
             // ws.send('stop')
         }
         document.onmouseup = () => {
@@ -105,6 +106,15 @@ class Draw {
         // this.canvas.onmousemove = () => {
         //     console.log('onmousemove')
         // }
+
+
+        this.canvas.onmouseout = () => {
+            setTimeout(() => {
+              console.log('========= 1')
+              this.drawEnd()
+            }, 100)
+            // ws.send('stop')
+        }
     }
     drawing(e) {
         this.cxt.lineTo(
@@ -145,7 +155,13 @@ class Draw {
 
 export default {
     props: {
-      sendCanvas: {type: Function }
+      sendCanvas: {type: Function },
+      data: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
     },
     data() {
       return {
@@ -156,7 +172,11 @@ export default {
       let outer = document.getElementById('canvasouter')
       let outerWitdh = outer.clientWidth
       this.draw = new Draw('canvas')
-      this.draw.init(()=> null, 1, outerWitdh, this.sendCanvas)
+
+      const initData = getStudentCurrentPageAnswerList(this.data.page_id, this.data.items[0].type)
+
+      this.draw.init(()=> null, 1, outerWitdh, this.sendCanvas, initData)
+
     },
     methods: {
       changeColor(color) {

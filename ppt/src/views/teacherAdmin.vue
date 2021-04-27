@@ -433,7 +433,7 @@ export default {
         console.log(d)
         const {content, type, user_id} = d
         saveStudentsPageAnswerList(this.currentPageId, type, {user_id, content, key: user_id})
-        EventBus.$emit('draw', content)
+        EventBus.$emit('draw', {user_id, content})
       }
 
       this.getResponeCount();
