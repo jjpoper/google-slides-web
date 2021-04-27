@@ -154,8 +154,10 @@ import {
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList,
-} from "@/model/store.teacher";
-import commentModal from "../components/teacher/commentModal";
+  saveTeacherUserName
+} from '@/model/store.teacher'
+import commentModal from '../components/teacher/commentModal'
+import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
   data() {
@@ -169,11 +171,23 @@ export default {
       uid: getTeacherUid(), // uid
       currentItemData: null,
       currentAnswerCount: 0,
+      name: '',
+      googleLoginStatus: 0, // 0 未知， -1 登录， 1 登录
     };
   },
   mounted() {
-    this.joinRoom();
-    this.openShare();
+    initGoogleAuth().then(() => {
+      const isLogin = checkGoogleAuth()
+      console.log(isLogin, 'isLogin')
+      if(isLogin) {
+        // this.afterLogin()
+        this.afterLogin()
+      } else {
+        this.showLoginModal()
+      }
+    }).catch(() => {
+      this.startConnectRoom()
+    })
     EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
       this.sendComment(data);
     });
@@ -198,6 +212,18 @@ export default {
     open() {
      // this.$router.push({ path: "/dashboard" });
       window.open('/index.html#/dashboard?slide_id='+this.slide_id)
+    },
+    afterLogin() {
+      const name = getGoogleUserInfo()
+      console.log(name)
+      this.name = name
+      saveTeacherUserName(name)
+      this.startConnectRoom()
+    },
+    startConnectRoom() {
+      this.joinRoom();
+      this.openShare();
+      hideLoading();
     },
     sendComment({
       studentId,
@@ -238,12 +264,14 @@ export default {
       // }else{
       //   return 0;
       // }
-      const list = getCurrentPageAnswerList(
-        this.currentItemData.page_id,
-        this.currentItemData.items[0].type,
-      );
-      console.log(list);
-      this.currentAnswerCount = list.length;
+      if(this.currentItemData.items[0]) {
+        const list = getCurrentPageAnswerList(this.currentItemData.page_id, this.currentItemData.items[0].type)
+        console.log(list)
+        this.currentAnswerCount = list.length
+      } else {
+        this.currentAnswerCount = 0
+      }
+
     },
     getAllSlides() {
       showLoading();
@@ -253,7 +281,6 @@ export default {
         // hideLoading()
         this.slides = list;
         this.getItemData();
-        hideLoading();
       });
     },
     getItemData() {
@@ -291,7 +318,7 @@ export default {
       showToast("copy link success");
     },
     joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener);
+      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener, this.name);
     },
     msgListener(d = {}) {
       // answer: "Lily"
@@ -413,6 +440,24 @@ export default {
     hideRes() {
       this.showResponse = false;
     },
-  },
+    showLoginModal() {
+      MessageBox.alert('press to login', "login", {
+        distinguishCancelAndClose: true,
+        confirmButtonText: "Login",
+        center: true,
+        showClose: false
+      })
+      .then(() => {
+        // this.copyUrl();
+        console.log('点击登录')
+        gotoGoogleAuth().then(() => {
+          this.afterLogin()
+        }).catch(() => {
+          this.showLoginModal()
+        })
+      })
+      .catch(action => {});
+    }
+  }
 };
 </script>

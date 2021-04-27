@@ -19,9 +19,8 @@
         <i class="el-icon-chat-dot-round readchat" @click="showStudentModal" :style="{color: unread ? 'red' : '#333'}"/>
       </div>
     </el-main>
-    <el-aside width="30%" style="position: relative">
+    <el-aside width="30%" style="position: relative" v-if="currentItemData && currentItemData.items[0]">
       <StudentsIndexItem
-        v-if="currentItemData && currentItemData.items[0]"
         :data="currentItemData"
         :type="currentItemData.items[0].type"
         :method="answerText"
@@ -100,6 +99,7 @@ import {
 } from '@/model/store.student'
 import { MessageBox } from "element-ui";
 import StudentComment from '@/components/students/studentComment.vue';
+import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
   data() {
@@ -123,7 +123,18 @@ export default {
     };
   },
   mounted() {
-    this.beforejoinRoom();
+    initGoogleAuth().then(() => {
+      const isLogin = checkGoogleAuth()
+      console.log(isLogin, 'isLogin')
+      if(isLogin) {
+        // this.afterLogin()
+        this.afterLogin();
+      } else {
+        this.showLoginModal()
+      }
+    }).catch(() => {
+      this.beforejoinRoom();
+    })
     this.unread = getStudentCommentUnReadStatus()
   },
   components: {
@@ -141,9 +152,14 @@ export default {
   methods: {
     checkCurrentAnswerd(){
       const {page_id, items} = this.currentItemData
-      const list = getStudentCurrentPageAnswerList(page_id, items[0].type);
-      console.log('list', list);
-      this.currentAnswerd = list.length > 0;
+      if(items[0]) {
+        const list = getStudentCurrentPageAnswerList(page_id, items[0].type);
+        console.log('list', list);
+        this.currentAnswerd = list.length > 0;
+      } else {
+        this.currentAnswerd = false
+      }
+      
     },
     getAllSlides() {
       showLoading();
@@ -192,6 +208,13 @@ export default {
       if(this.modalVisiable) {
         this.showStudentModal()
       }
+    },
+    afterLogin() {
+      const name = getGoogleUserInfo()
+      console.log(name)
+      this.uname = name
+      saveStudentUserName(name)
+      this.beforejoinRoom()
     },
     beforejoinRoom() {
       const uname = getStudentUserName(this.uid);
@@ -307,6 +330,24 @@ export default {
           }
         })
         .catch(() => {});
+    },
+    showLoginModal() {
+      MessageBox.alert('press to login', "login", {
+        distinguishCancelAndClose: true,
+        confirmButtonText: "Login",
+        center: true,
+        showClose: false
+      })
+      .then(() => {
+        // this.copyUrl();
+        console.log('点击登录')
+        gotoGoogleAuth().then(() => {
+          this.afterLogin()
+        }).catch(() => {
+          this.showLoginModal()
+        })
+      })
+      .catch(action => {});
     }
   }
 };
