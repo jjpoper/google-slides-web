@@ -4,7 +4,7 @@
       <el-input
         type="textarea"
         :autosize="{ minRows: 3}"
-        placeholder="请输入内容(按Ctrl+Enter键发送)"
+        placeholder="Please input somthing(Press Ctrl+Enter to send)"
         v-model="item.value"
         @keyup.ctrl.enter.native="send(index)">
         </el-input>
