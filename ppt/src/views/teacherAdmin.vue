@@ -38,7 +38,7 @@
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"
           p-id="6029"
-          @click="open"
+          @click="open(0)"
         >
           <circle cx="10" cy="4" r="3" fill="#409EFF" />
           <circle cx="10" cy="15" r="3" fill="#409EFF" />
