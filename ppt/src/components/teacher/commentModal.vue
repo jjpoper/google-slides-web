@@ -158,6 +158,7 @@ export default {
     },
     sendMessage() {
       const {year, hours, month, date, minutes} = getTimeValue(Date.now())
+      console.log(getTeacherUserName())
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
         value: this.commentValue,
