@@ -255,11 +255,14 @@ export default {
         var strWindowFeatures =
           "width=800,height=600,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
 
+        //"/index.html#/dashboard?slide_id=" + this.slide_id
         windowObjectReference = window.open(
-          "/index.html#/dashboard?slide_id=" + this.slide_id,
+          "about:blank",
           "_blank",
           strWindowFeatures
         );
+        windowObjectReference.location =
+          "/index.html#/dashboard?slide_id=" + this.slide_id;
       } else if (model == 1) {
         console.log(1);
         window.open("/index.html#/dashboard?slide_id=" + this.slide_id);
@@ -410,7 +413,7 @@ export default {
             for (let i = 0; i < this.studentList.length; i++) {
               if (this.studentList[i].user_id == student.user_id) {
                 this.studentList[i].count++;
-                this.studentList[i].state = "online"
+                this.studentList[i].state = "online";
                 findFlag = true;
               }
             }
@@ -421,7 +424,7 @@ export default {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == student.user_id) {
                 this.teacherList[i].count++;
-                this.teacherList.state="online"
+                this.teacherList.state = "online";
                 findFlag = true;
               }
             }
