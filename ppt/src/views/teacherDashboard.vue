@@ -30,6 +30,7 @@
           :type="currentItemData.items[0].type"
           :flag="true"
           :currentAnswerCount="currentAnswerCount"
+          :textList = responseContentList
         />
       </div>
     </div>
@@ -167,6 +168,7 @@ export default {
       responsePercentage: [],
       isFocus: [],
       currentSo: null,
+      responseContentList:[],
     };
   },
   mounted() {
@@ -228,6 +230,7 @@ export default {
         this.currentItemData.page_id,
         this.currentItemData.items[0].type
       );
+      this.responseContentList= list
       console.log(list);
       this.currentAnswerCount = list.length;
       let count = 0;
@@ -268,6 +271,7 @@ export default {
     getItemData() {
       // this.options = [];
       this.$nextTick(() => {
+        console.log(this.currentIndex)
         this.currentItemData = this.slides[this.currentIndex];
         this.currentItemData.flag = true;
         this.getResponeCount();
@@ -293,6 +297,7 @@ export default {
     giveFocus(index) {
       this.currentIndex = index;
       this.getItemData();
+      console.log(index)
       for (let i = 0; i < this.slides.length; i++) {
         this.isFocus[i] = i == index;
       }

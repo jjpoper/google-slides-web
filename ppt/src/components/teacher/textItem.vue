@@ -80,16 +80,20 @@ export default {
         return {};
       },
     },
+    textList:{
+      type:Array,
+      default:[]
+    }
   },
   data() {
     return {
-      textList: [],
+ //     textList: [],
     };
   },
   mounted() {
-    const { page_id, items } = this.data; // 完整data
-    console.log("data flag==" + this.data);
-    this.textList = getCurrentPageAnswerList(page_id, items[0].type);
+    const { page_id, items} = this.data; // 完整data
+    console.log("data flag==" + this.textList);
+  //  this.textList = getCurrentPageAnswerList(page_id, items[0].type);
   },
   methods: {
     getUname(id) {

@@ -14,17 +14,17 @@ const routes: Array<RouteConfig> = [
     name: 'students',
     component: () => import('../views/students.vue'),
   },
-  // {
-  //   path: '/dashboard',
-  //   name: 'dashboard',
-  //   component: () => import('../views/teacherDashboard.vue'),
-  // },
-
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: () => import('../views/teacherDashboardTest.vue'),
+    component: () => import('../views/teacherDashboard.vue'),
   },
+
+  // {
+  //   path: '/dashboard',
+  //   name: 'dashboard',
+  //   component: () => import('../views/teacherDashboardTest.vue'),
+  // },
 ];
 
 const router = new VueRouter({

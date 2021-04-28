@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Main, Aside, Container, Form, FormItem, Progress, Pagination, Radio, Button, Checkbox,Input,
-Row,Col,MessageBox,Alert,Tooltip} from 'element-ui';
+Row,Col,MessageBox,Alert,Tooltip,Dialog,Tabs,TabPane,Table,TableColumn} from 'element-ui';
 
 Vue.use(Main)
 Vue.use(Aside)
@@ -17,5 +17,10 @@ Vue.use(Row)
 Vue.use(Col)
 Vue.use(Alert)
 Vue.use(Tooltip)
+Vue.use(Dialog)
+Vue.use(Tabs)
+Vue.use(TabPane)
+Vue.use(TableColumn)
+Vue.use(Table)
 Vue.prototype.$alert = MessageBox
 
