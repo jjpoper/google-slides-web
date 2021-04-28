@@ -182,6 +182,7 @@ export default {
         "response",
         `{"room": "${this.slide_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}"}`
       );
+      this.currentAnswerd = true
     },
     // 发送text
     answerText(index, msg) {
