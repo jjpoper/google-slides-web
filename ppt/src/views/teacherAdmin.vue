@@ -404,12 +404,53 @@ export default {
           student.name = d.join_in.user_name;
           student.user_id = d.join_in.user_id;
           student.state = "online";
-          let tempList = this.studentList.filter(
-            (item) => item.user_id != d.join_in.user_id
-          );
-          console.log(tempList);
-          tempList.push(student);
-          this.studentList = tempList;
+          student.count = 1;
+          let findFlag = false;
+          if (d.join_in.role == "student") {
+            for (let i = 0; i < this.studentList.length; i++) {
+              if (this.studentList[i].user_id == student.user_id) {
+                this.studentList[i].count++;
+                this.studentList[i].state = "online"
+                findFlag = true;
+              }
+            }
+            if (!findFlag) {
+              this.studentList.push(student);
+            }
+          } else if (d.join_in.role == "teacher") {
+            for (let i = 0; i < this.teacherList.length; i++) {
+              if (this.teacherList[i].user_id == student.user_id) {
+                this.teacherList[i].count++;
+                this.teacherList.state="online"
+                findFlag = true;
+              }
+            }
+            if (!findFlag) {
+              this.teacherList.push(student);
+            }
+          }
+        } else if (d.quit) {
+          if (d.quit.role == "student") {
+            for (let i = 0; i < this.studentList.length; i++) {
+              if (this.studentList[i].user_id == d.quit.user_id) {
+                this.studentList[i].count--;
+                if (this.studentList[i].count < 1) {
+                  this.studentList[i].state = "offline";
+                }
+              }
+            }
+            console.log(this.studentList, "test quit");
+          } else if (d.quit.role == "teacher") {
+            for (let i = 0; i < this.teacherList.length; i++) {
+              if (this.teacherList[i].user_id == d.quit.user_id) {
+                this.teacherList[i].count--;
+                if (this.teacherList[i].count < 1) {
+                  this.teacherList[i].state = "offline";
+                }
+              }
+            }
+            console.log(this.teacherList, "test quit");
+          }
         }
       } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
@@ -429,7 +470,6 @@ export default {
         //     //   Vue.set(this.textList, i, newValue);
         //   }
         // }
-      } else if (d.type == "join-room") {
       }
 
       // 回答问题
