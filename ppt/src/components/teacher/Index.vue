@@ -32,7 +32,9 @@ export default {
     },
     textList:{
         type:Array,
-        default:[],
+        function() {
+          return []
+        },
     },
   },
   components: {

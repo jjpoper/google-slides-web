@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="drawlist">
     <template v-for="item in imgUrls">
       <div :key="item.user_id">
         <p class="uname" v-if="data.flag">{{item.user_name}}</p>
@@ -44,7 +44,7 @@ export default {
         if(index > -1) {
           this.imgUrls[index].content = content
         } else {
-          this.imgUrls.shift({user_id, content, user_name})
+          this.imgUrls.unshift({user_id, content, user_name})
         }
       }
     }
@@ -52,9 +52,14 @@ export default {
 </script>
 
 <style >
+    .drawlist{
+      width: 450px;
+      position: relative;
+      margin: 0 auto;
+    }
     #canvasouter {
         cursor: default;
-        width: 60%;
+        width: 450px;
         height: 450px;
         position: relative;
         background: pink;
