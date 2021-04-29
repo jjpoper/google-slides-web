@@ -6,7 +6,8 @@ export enum SocketEventsEnum {
   RENAME = 'RENAME', // 改名
   TEXT_INPUT = 'text', // 文本框输入
   NUMBER_INPUT = 'number', // 数字输入
-  TEACHER_COMMENT = 'TEACHER_COMMENT' // 教师端发评论
+  TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
+  CONTROL ="teacher_control",//教师端发送控制命令
 }
 
 export enum ModalEventsNameEnum {

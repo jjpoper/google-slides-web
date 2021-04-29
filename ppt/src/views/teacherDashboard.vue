@@ -30,7 +30,7 @@
           :type="currentItemData.items[0].type"
           :flag="true"
           :currentAnswerCount="currentAnswerCount"
-          :textList = responseContentList
+          :textList="responseContentList"
         />
       </div>
     </div>
@@ -168,7 +168,7 @@ export default {
       responsePercentage: [],
       isFocus: [],
       currentSo: null,
-      responseContentList:[],
+      responseContentList: [],
     };
   },
   mounted() {
@@ -192,6 +192,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.slide_id = to.query.slide_id;
+      vm.currentIndex = to.query.currentPage;
       vm.getAllSlides();
     });
   },
@@ -230,7 +231,7 @@ export default {
         this.currentItemData.page_id,
         this.currentItemData.items[0].type
       );
-      this.responseContentList= list
+      this.responseContentList = list;
       console.log(list);
       this.currentAnswerCount = list.length;
       let count = 0;
@@ -264,27 +265,18 @@ export default {
           this.responsePercentage[i] = 0;
         }
         this.getItemData();
-        this.isFocus[0] = true;
+        this.isFocus[this.currentIndex] = true;
         hideLoading();
       });
     },
     getItemData() {
       // this.options = [];
       this.$nextTick(() => {
-        console.log(this.currentIndex)
+        console.log(this.currentIndex);
         this.currentItemData = this.slides[this.currentIndex];
         this.currentItemData.flag = true;
         this.getResponeCount();
       });
-    },
-    pageChange(value) {
-      this.currentIndex = value - 1;
-      this.getItemData();
-      // 换页命令
-      // '{"type":"change_page", "params": {"page": 3}}'
-      this.emitSo(
-        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
-      );
     },
     copyUrl() {
       copy(
@@ -294,10 +286,15 @@ export default {
       );
       showToast("copy link success");
     },
-    giveFocus(index) {
+    giveFocus(index, notSend) {
       this.currentIndex = index;
       this.getItemData();
-      console.log(index)
+      if (!notSend) {
+        this.emitSo(
+          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+        );
+      }
+
       for (let i = 0; i < this.slides.length; i++) {
         this.isFocus[i] = i == index;
       }
@@ -321,6 +318,12 @@ export default {
         // 改名
         const { user_id, user_name_new, student_count } = d;
         saveStundentUidAndName(user_id, user_name_new);
+      } else if (d.type === SocketEventsEnum.GO_PAGE) {
+        if (d.room == this.slide_id) {
+          if (d.params) {
+            this.giveFocus(parseInt(d.params.page), true);
+          }
+        }
       }
 
       // 回答问题
