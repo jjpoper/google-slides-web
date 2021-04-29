@@ -408,13 +408,13 @@ export default {
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
     },
-    msgListener(d = {}) {
+    msgListener(d) {
       // answer: "Lily"
       // item_id: "item_1"
       // page_id: "page_1"
       // room: "1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg"
       // user_id: "slidec3dcef92c1cf458c"
-      console.log(d, d.type, "====收到消息命令");
+      console.log(d, d.mtype, "====收到消息命令");
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         console.log(d.student_count, "d.student_count");
