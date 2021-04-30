@@ -79,6 +79,7 @@
         :type="currentItemData.items[0].type"
         :flag="false"
         :currentAnswerCount="currentAnswerCount"
+        :textList="responseContentList"
       />
     </el-main>
     <commentModal />
@@ -211,6 +212,7 @@ export default {
       teacherList: [],
       studentList: [],
       current_page: 0,
+      responseContentList: [],
     };
   },
   mounted() {
@@ -339,9 +341,13 @@ export default {
         );
         console.log(list);
         this.currentAnswerCount = list.length;
+
+         this.responseContentList = list;
       } else {
         this.currentAnswerCount = 0;
       }
+
+     
     },
     getAllSlides() {
       showLoading();
@@ -512,50 +518,14 @@ export default {
           answer,
           key: user_id,
         });
+
+        EventBus.$emit("choice", { user_id, answer});
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
         d.type === SocketEventsEnum.NUMBER_INPUT
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-
-        // let textList = this.textList;
-        // if (!textList || textList.length == 0) {
-        //   textList.push({
-        //     content,
-        //     user_id,
-        //     user_name,
-        //     item_id
-        //   });
-        // } else {
-        //   let found = false;
-        //   for (let i = 0; i < textList.length; i++) {
-        //     if (
-        //       textList[i].user_id === user_id &&
-        //       textList[i].item_id === item_id
-        //     ) {
-        //       found = true;
-        //       textList[i].content = content;
-        //       textList[i].user_name = user_name;
-        //     }
-        //   }
-        //   if (!found) {
-        //     textList.push({
-        //       content,
-        //       user_id,
-        //       user_name,
-        //       item_id
-        //     });
-        //   }
-        // }
-        // this.user_name = user_name;
-        // this.textList = textList;
-        // saveTeacherDatalist(
-        //   currentPageId,
-        //   textList,
-        //   d.type
-        // );
-
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           content,

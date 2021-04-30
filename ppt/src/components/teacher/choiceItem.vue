@@ -179,6 +179,17 @@ export default {
       this.data.items[0].type
     );
     console.log(this.options);
+
+    EventBus.$on("choice", (data) => {
+      // 通知展示当前pageid，当前itemid的评论框
+      console.log(data);
+
+      const { user_id, answer, user_name } = data;
+      this.answerList = getCurrentPageAnswerList(
+        this.data.page_id,
+        this.data.items[0].type
+      );
+    });
   },
   methods: {
     counts(id) {
@@ -227,10 +238,10 @@ export default {
         }
       }
       console.log(count);
-      if(count){
-          return count;
-      }else{
-          return 0;
+      if (count) {
+        return count;
+      } else {
+        return 0;
       }
     },
   },
