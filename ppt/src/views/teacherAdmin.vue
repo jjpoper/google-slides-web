@@ -12,7 +12,7 @@
           small
           layout="prev, pager, next"
           @current-change="pageChange"
-          :current-page="0"
+          :current-page="current_page"
           :page-count="slides.length"
         ></el-pagination>
         <el-button type="primary" class="counts"
@@ -59,7 +59,7 @@
         </el-popover>
       </div>
     </el-main>
-    <el-main v-if="showResponse">
+    <el-main v-if="showResponse" class="response_page">
       <el-button type="primary" @click="hideRes">hide Responses</el-button>
       <!-- <template v-if="options&&options.length > 0">
         <teacherItem
@@ -88,6 +88,10 @@
   </el-container>
 </template>
 <style scoped>
+.response_page {
+  min-height: 200px;
+  height: 100%;
+}
 .dropdown-class {
   position: absolute;
   right: 10px;
@@ -206,6 +210,7 @@ export default {
       dialogTableVisible: false,
       teacherList: [],
       studentList: [],
+      current_page: 0,
     };
   },
   mounted() {
@@ -262,10 +267,18 @@ export default {
           strWindowFeatures
         );
         windowObjectReference.location =
-          "/index.html#/dashboard?slide_id=" + this.slide_id;
+          "/index.html#/dashboard?slide_id=" +
+          this.slide_id +
+          "&currentPage=" +
+          this.currentIndex;
       } else if (model == 1) {
         console.log(1);
-        window.open("/index.html#/dashboard?slide_id=" + this.slide_id);
+        window.open(
+          "/index.html#/dashboard?slide_id=" +
+            this.slide_id +
+            "&currentPage=" +
+            this.currentIndex
+        );
       }
     },
     afterLogin() {
@@ -357,14 +370,18 @@ export default {
         // }
       });
     },
-    pageChange(value) {
+    pageChange(value, notSend) {
+      console.log(value, notSend, "pageChage!!!");
       this.currentIndex = value - 1;
       this.getItemData();
       // 换页命令
       // '{"type":"change_page", "params": {"page": 3}}'
-      this.emitSo(
-        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
-      );
+
+      if (!notSend) {
+        this.emitSo(
+          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+        );
+      }
     },
     copyUrl() {
       copy(
@@ -391,13 +408,13 @@ export default {
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
     },
-    msgListener(d = {}) {
+    msgListener(d) {
       // answer: "Lily"
       // item_id: "item_1"
       // page_id: "page_1"
       // room: "1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg"
       // user_id: "slidec3dcef92c1cf458c"
-      console.log(d);
+      console.log(d, d.mtype, "====收到消息命令");
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         console.log(d.student_count, "d.student_count");
@@ -473,6 +490,14 @@ export default {
         //     //   Vue.set(this.textList, i, newValue);
         //   }
         // }
+      } else if (d.type === SocketEventsEnum.GO_PAGE) {
+        if (d.room == this.slide_id) {
+          if (d.params) {
+            // this.pageChange(d.params.page);
+            this.current_page = parseInt(d.params.page) + 1;
+            this.pageChange(this.current_page, true);
+          }
+        }
       }
 
       // 回答问题

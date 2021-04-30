@@ -27,9 +27,14 @@ export const createSo = (room: string, userId: string, callback: callback) => {
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-    // console.log("收到系统信息：" + data);
+    // 
     callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
   });
+
+  socket.on('control',(data:any)=>{
+    console.log("收到系统信息：" + data);
+    callback({mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data)})
+  })
 
   socket.on('rename', (data: any) => {
     callback({type: SocketEventsEnum.RENAME, ...JSON.parse(data)})
