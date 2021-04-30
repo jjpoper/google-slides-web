@@ -351,6 +351,16 @@ export default {
           item_id,
           key: `${item_id}_${user_id}`,
         });
+      } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
+        console.log(d);
+        const { content, type, user_id, user_name } = d;
+        saveStudentsPageAnswerList(this.currentPageId, type, {
+          user_id,
+          content,
+          key: user_id,
+          user_name,
+        });
+        EventBus.$emit("draw", { user_id, content, user_name });
       }
 
       this.getResponeCount();
