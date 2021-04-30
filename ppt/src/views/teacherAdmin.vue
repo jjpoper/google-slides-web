@@ -518,6 +518,8 @@ export default {
           answer,
           key: user_id,
         });
+
+        EventBus.$emit("choice", { user_id, answer});
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
         d.type === SocketEventsEnum.NUMBER_INPUT
