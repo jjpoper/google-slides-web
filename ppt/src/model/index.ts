@@ -29,3 +29,19 @@ export const getAllPPTS = async (slideid: string) => {
   }
   return list
 }
+
+// 获取授权登录
+// export const getTeacherToken = async (): Promise<string> => {
+//   const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_teacher`, {
+//     return_url: location.href,
+//   })
+//   let authUrl = ''
+//   // let list = data.data.data.pages
+//   // // console.log(data.data.data)
+//   try {
+//     authUrl = data.data.data.auth_url
+//   } catch(e) {
+//     // console.log(e)
+//   }
+//   return authUrl
+// }
