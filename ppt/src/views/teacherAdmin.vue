@@ -1,10 +1,7 @@
 <template>
   <el-container>
     <el-main v-show="!showResponse">
-      <div
-        class="block"
-        v-if="currentItemData && currentItemData.thumbnail_url"
-      >
+      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
         <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
         <el-pagination
           style="line-height: 50px"
@@ -15,34 +12,21 @@
           :current-page="current_page"
           :page-count="slides.length"
         ></el-pagination>
-        <el-button type="primary" class="counts"
-          >Current student count:{{ studentCounts }}</el-button
-        >
-        <el-button type="primary" class="invite" @click="openShare"
-          >Share</el-button
-        >
+        <el-button type="primary" class="counts">Current student count:{{ studentCounts }}</el-button>
+        <el-button type="primary" class="invite" @click="openShare">Share</el-button>
         <el-button type="primary" class="Presenting">Presenting</el-button>
-        <el-button type="primary" class="Show" @click="showres"
-          >Show Responses</el-button
-        >
-        <el-button type="primary" class="show_student" @click="showStudents"
-          >Students</el-button
-        >
+        <el-button type="primary" class="Show" @click="showres">Show Responses</el-button>
+        <el-button type="primary" class="show_student" @click="showStudents">Students</el-button>
         <el-button type="primary" class="noShow gray">
           {{
-            currentAnswerCount > 0
-              ? `${currentAnswerCount} Responses`
-              : `no Responses`
+          currentAnswerCount > 0
+          ? `${currentAnswerCount} Responses`
+          : `no Responses`
           }}
         </el-button>
         <!-- @click="open(1)" -->
-        <el-popover
-          placement="top"
-          width="400"
-          trigger="hover"
-          class="dropdown-icon"
-        >
-          <dashboardMenu :open="open" />
+        <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
+          <dashboardMenu :open="open" :current_model="page_model"  :turnModel="turnModel"/>
           <svg
             t="1619161258814"
             slot="reference"
@@ -178,20 +162,24 @@ import teacherIndexItem from "../components/teacher/Index";
 import studentList from "../components/teacher/studentList";
 import { createSo } from "../socket/socket.teacher";
 import dashboardMenu from "../components/teacher/teacherDashboardMenu";
-import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
+import {
+  ModalEventsNameEnum,
+  SocketEventsEnum,
+  ClassRoomModelEnum
+} from "../socket/socketEvents";
 import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList,
-  saveTeacherUserName,
+  saveTeacherUserName
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import {
   checkGoogleAuth,
   gotoGoogleAuth,
   initGoogleAuth,
-  getGoogleUserInfo,
+  getGoogleUserInfo
 } from "@/utils/googleAuth";
 
 export default {
@@ -213,6 +201,7 @@ export default {
       studentList: [],
       current_page: 0,
       responseContentList: [],
+      page_model: ClassRoomModelEnum.TEACHER_MODEL
     };
   },
   mounted() {
@@ -230,29 +219,39 @@ export default {
       .catch(() => {
         this.startConnectRoom();
       });
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   components: {
     pptcontent,
     teacherIndexItem,
     commentModal,
     studentList,
-    dashboardMenu,
+    dashboardMenu
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       vm.slide_id = to.query.slide_id;
+      vm.page_model = to.query.model;
       vm.getAllSlides();
     });
   },
   methods: {
+    turnModel() {
+      console.log(this.page_model,"before")
+      if (this.page_model === ClassRoomModelEnum.STUDENT_MODEL) {
+        this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+      } else {
+        this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+      }
+      console.log(this.page_model,"after")
+    },
     open(model) {
       // this.$router.push({ path: "/dashboard" });
 
@@ -272,14 +271,18 @@ export default {
           "/index.html#/dashboard?slide_id=" +
           this.slide_id +
           "&currentPage=" +
-          this.currentIndex;
+          this.currentIndex +
+          "&model=" +
+          this.page_model;
       } else if (model == 1) {
         console.log(1);
         window.open(
           "/index.html#/dashboard?slide_id=" +
             this.slide_id +
             "&currentPage=" +
-            this.currentIndex
+            this.currentIndex +
+            "&model=" +
+            this.page_model
         );
       }
     },
@@ -302,7 +305,7 @@ export default {
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -314,7 +317,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -342,16 +345,14 @@ export default {
         console.log(list);
         this.currentAnswerCount = list.length;
 
-         this.responseContentList = list;
+        this.responseContentList = list;
       } else {
         this.currentAnswerCount = 0;
       }
-
-     
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -516,10 +517,10 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
 
-        EventBus.$emit("choice", { user_id, answer});
+        EventBus.$emit("choice", { user_id, answer });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
         d.type === SocketEventsEnum.NUMBER_INPUT
@@ -531,7 +532,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -540,7 +541,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -562,12 +563,12 @@ export default {
       MessageBox.confirm(url, "Share this link with your students", {
         distinguishCancelAndClose: true,
         confirmButtonText: "copy",
-        cancelButtonText: "Enter classroom",
+        cancelButtonText: "Enter classroom"
       })
         .then(() => {
           this.copyUrl();
         })
-        .catch((action) => {});
+        .catch(action => {});
     },
     showres() {
       this.showResponse = true;
@@ -580,7 +581,7 @@ export default {
         distinguishCancelAndClose: true,
         confirmButtonText: "Login",
         center: true,
-        showClose: false,
+        showClose: false
       })
         .then(() => {
           // this.copyUrl();
@@ -593,8 +594,8 @@ export default {
               this.showLoginModal();
             });
         })
-        .catch((action) => {});
-    },
-  },
+        .catch(action => {});
+    }
+  }
 };
 </script>

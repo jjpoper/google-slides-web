@@ -8,18 +8,36 @@
       <div class="sfooter" v-if="slides.length > 0">
         <div>
           {{uname}}
-          <el-button type="primary" @click="enterUname(false)">改名</el-button>
+          <el-button type="primary" @click="enterUname(false)">Change name</el-button>
         </div>
-        <div class="checkboxs">
-          <el-checkbox
-            :value="currentAnswerd"
-          >slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
-          <div class="scroll-mask"></div>
+
+        <el-pagination
+          class="page_index"
+          style="line-height: 50px"
+          background
+          small
+          layout="prev, pager, next"
+          @current-change="pageChange"
+          :current-page="parseInt(currentIndex)+1"
+          :page-count="slides.length"
+          v-if="currentModel=='student-paced'"
+        ></el-pagination>
+        <div class = "checkboxs">
+          <el-checkbox :value="currentAnswerd">slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
+          <!-- <div class="scroll-mask"></div> -->
         </div>
-        <i class="el-icon-chat-dot-round readchat" @click="showStudentModal" :style="{color: unread ? 'red' : '#333'}"/>
+        <i
+          class="el-icon-chat-dot-round readchat"
+          @click="showStudentModal"
+          :style="{color: unread ? 'red' : '#333'}"
+        />
       </div>
     </el-main>
-    <el-aside width="40%" style="position: relative" v-if="currentItemData && currentItemData.items[0]">
+    <el-aside
+      width="40%"
+      style="position: relative"
+      v-if="currentItemData && currentItemData.items[0]"
+    >
       <StudentsIndexItem
         :data="currentItemData"
         :type="currentItemData.items[0].type"
@@ -67,15 +85,19 @@
   justify-content: center;
   align-items: center;
 }
-.checkboxs {
+.page_index{
   position: relative;
   flex: 1;
+  padding-top: 20px;
 }
-.website{
+.checkboxs {
+  margin-right: 10px;
+}
+.website {
   width: 90%;
   height: 100%;
 }
-.readchat{
+.readchat {
   font-size: 30px;
   cursor: pointer;
 }
@@ -86,7 +108,11 @@ import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
-import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
+import {
+  ModalEventsNameEnum,
+  SocketEventsEnum,
+  ClassRoomModelEnum
+} from "../socket/socketEvents";
 import {
   getStudentUid,
   saveStudentsCurrentPageAnswerList,
@@ -97,10 +123,15 @@ import {
   unreadStudentComment,
   getStudentCommentUnReadStatus,
   readStudentComment
-} from '@/model/store.student'
+} from "@/model/store.student";
 import { MessageBox } from "element-ui";
-import StudentComment from '@/components/students/studentComment.vue';
-import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
+import StudentComment from "@/components/students/studentComment.vue";
+import {
+  checkGoogleAuth,
+  gotoGoogleAuth,
+  initGoogleAuth,
+  getGoogleUserInfo
+} from "@/utils/googleAuth";
 
 export default {
   data() {
@@ -120,23 +151,26 @@ export default {
       currentAnswerd: false,
       unread: false,
       modalVisiable: false,
-      uid: getStudentUid() // uid
+      uid: getStudentUid(), // uid
+      currentModel: ClassRoomModelEnum.TEACHER_MODEL //课堂模式，学生自己能否切换页面
     };
   },
   mounted() {
-    initGoogleAuth().then(() => {
-      const isLogin = checkGoogleAuth()
-      console.log(isLogin, 'isLogin')
-      if(isLogin) {
-        // this.afterLogin()
-        this.afterLogin();
-      } else {
-        this.showLoginModal()
-      }
-    }).catch(() => {
-      this.beforejoinRoom();
-    })
-    this.unread = getStudentCommentUnReadStatus()
+    initGoogleAuth()
+      .then(() => {
+        const isLogin = checkGoogleAuth();
+        console.log(isLogin, "isLogin");
+        if (isLogin) {
+          // this.afterLogin()
+          this.afterLogin();
+        } else {
+          this.showLoginModal();
+        }
+      })
+      .catch(() => {
+        this.beforejoinRoom();
+      });
+    this.unread = getStudentCommentUnReadStatus();
   },
   components: {
     pptcontent,
@@ -148,19 +182,20 @@ export default {
       vm.slide_id = to.query.slide_id;
       vm.currentIndex = to.query.page || 0;
       vm.getAllSlides();
+      vm.currentModel = to.query.model;
+      console.log(vm.currentModel);
     });
   },
   methods: {
-    checkCurrentAnswerd(){
-      const {page_id, items} = this.currentItemData
-      if(items[0]) {
+    checkCurrentAnswerd() {
+      const { page_id, items } = this.currentItemData;
+      if (items[0]) {
         const list = getStudentCurrentPageAnswerList(page_id, items[0].type);
-        console.log('list', list);
+        console.log("list", list);
         this.currentAnswerd = list.length > 0;
       } else {
-        this.currentAnswerd = false
+        this.currentAnswerd = false;
       }
-      
     },
     getAllSlides() {
       showLoading();
@@ -172,23 +207,23 @@ export default {
       });
     },
     sendCanvas(base64Url) {
-      const {page_id, items} = this.currentItemData;
-      const {type} = items[0]
+      const { page_id, items } = this.currentItemData;
+      const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
-        key: 'item_1_canvas',
+        key: "item_1_canvas",
         content: base64Url
-      })
+      });
       this.emitSo(
         "response",
         `{"room": "${this.slide_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}"}`
       );
-      this.currentAnswerd = true
+      this.currentAnswerd = true;
     },
     // 发送text
     answerText(index, msg) {
       console.log("index==" + index + "  msg==" + msg);
-      const {page_id, items} = this.currentItemData;
-      const {type} = items[0]
+      const { page_id, items } = this.currentItemData;
+      const { type } = items[0];
       this.emitSo(
         "response",
         `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}"}`
@@ -197,11 +232,11 @@ export default {
         item_id: index,
         key: index,
         content: msg
-      })
-      this.currentAnswerd = true
+      });
+      this.currentAnswerd = true;
     },
     getItemData() {
-      this.currentItemData = null
+      this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
         this.checkCurrentAnswerd();
@@ -217,18 +252,18 @@ export default {
       });
     },
     pageChange(page) {
-      this.currentIndex = page;
+      this.currentIndex = page - 1;
       this.getItemData();
-      if(this.modalVisiable) {
-        this.showStudentModal()
+      if (this.modalVisiable) {
+        this.showStudentModal();
       }
     },
     afterLogin() {
-      const name = getGoogleUserInfo()
-      console.log(name)
-      this.uname = name
-      saveStudentUserName(name)
-      this.beforejoinRoom()
+      const name = getGoogleUserInfo();
+      console.log(name);
+      this.uname = name;
+      saveStudentUserName(name);
+      this.beforejoinRoom();
     },
     beforejoinRoom() {
       const uname = getStudentUserName(this.uid);
@@ -258,9 +293,9 @@ export default {
       console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
-        this.pageChange(d.params.page);
-      } else if(d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
-        this.onGetTeacherComment(d)
+        this.pageChange(d.params.page + 1);
+      } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
+        this.onGetTeacherComment(d);
       }
     },
     // 收到评论
@@ -277,41 +312,41 @@ export default {
           slideIndex
         },
         user_id
-      } = d
-      if(user_id === this.uid) {
+      } = d;
+      if (user_id === this.uid) {
         // 对比一下uid
-        addStudentComment(d.item)
-        unreadStudentComment()
-        this.unread = true
+        addStudentComment(d.item);
+        unreadStudentComment();
+        this.unread = true;
       }
     },
     showStudentModal() {
-      if(!this.modalVisiable) {
-        this.unread = false
-        readStudentComment()
-        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, true)
-      } else if(this.unread) {
+      if (!this.modalVisiable) {
+        this.unread = false;
+        readStudentComment();
+        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, true);
+      } else if (this.unread) {
         // 打开状态下有更新
-        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL_REFRESH)
+        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL_REFRESH);
       } else {
-        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false)
+        EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
       }
-      this.modalVisiable = !this.modalVisiable
+      this.modalVisiable = !this.modalVisiable;
     },
     answerChoice(v) {
       console.log("change answer==" + v, this.currentSo);
-      const {page_id, items} = this.currentItemData;
-      const {type} = items[0]
+      const { page_id, items } = this.currentItemData;
+      const { type } = items[0];
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
         `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
-        key: 'item_1',
+        key: "item_1",
         answer: v
-      })
-      this.currentAnswerd = true
+      });
+      this.currentAnswerd = true;
       // // this.allAnswers[pid] = v;
       // this.$set(this.allAnswers, pid, v);
       // // this.$forceUpdate()
@@ -346,22 +381,24 @@ export default {
         .catch(() => {});
     },
     showLoginModal() {
-      MessageBox.alert('press to login', "login", {
+      MessageBox.alert("press to login", "login", {
         distinguishCancelAndClose: true,
         confirmButtonText: "Login",
         center: true,
         showClose: false
       })
-      .then(() => {
-        // this.copyUrl();
-        console.log('点击登录')
-        gotoGoogleAuth().then(() => {
-          this.afterLogin()
-        }).catch(() => {
-          this.showLoginModal()
+        .then(() => {
+          // this.copyUrl();
+          console.log("点击登录");
+          gotoGoogleAuth()
+            .then(() => {
+              this.afterLogin();
+            })
+            .catch(() => {
+              this.showLoginModal();
+            });
         })
-      })
-      .catch(action => {});
+        .catch(action => {});
     }
   }
 };

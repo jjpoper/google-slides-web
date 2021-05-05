@@ -16,3 +16,8 @@ export enum ModalEventsNameEnum {
   SHOW_STUDENT_MODAL = 'SHOW_STUDENT_MODAL', // 打开学生端评论
   SHOW_STUDENT_MODAL_REFRESH = 'SHOW_STUDENT_MODAL_REFRESH', // 更新
 }
+
+export enum ClassRoomModelEnum{
+  TEACHER_MODEL = 'Insturctor-Paced',
+  STUDENT_MODEL = 'student-paced',
+}
