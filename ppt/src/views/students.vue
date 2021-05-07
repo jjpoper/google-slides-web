@@ -320,7 +320,7 @@ export default {
     emitSo(action, message) {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        console.log(action, message);
+        // console.log(action, message);
         this.currentSo.emit(action, message);
       }
     },
