@@ -8,6 +8,7 @@ export enum SocketEventsEnum {
   NUMBER_INPUT = 'number', // 数字输入
   TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
   CONTROL ="teacher_control",//教师端发送控制命令
+  MODEL_CHANGE = 'Model_Change',
 }
 
 export enum ModalEventsNameEnum {
@@ -19,5 +20,5 @@ export enum ModalEventsNameEnum {
 
 export enum ClassRoomModelEnum{
   TEACHER_MODEL = 'Insturctor-Paced',
-  STUDENT_MODEL = 'student-paced',
+  STUDENT_MODEL = 'Student-Paced',
 }

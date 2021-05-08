@@ -1,51 +1,63 @@
 <template>
-  <div class="page">
-    <div class="left">
-      <div v-for="(item, index) in slides" :key="index" class="ppt_content">
-        <div
-          v-bind:class="
-            isFocus[index] ? 'image_parent image_parent_focus' : 'image_parent '
-          "
-          @click="giveFocus(index)"
-        >
-          <img :src="item.thumbnail_url" />
-        </div>
-
-        <div class="response_flag">
+  <div class="dashboard">
+    <div class="page">
+      <div class="left">
+        <div v-for="(item, index) in slides" :key="index" class="ppt_content">
           <div
-            class="top"
-            :style="'width:' + responsePercentage[index] + '%'"
-          ></div>
+            v-bind:class="
+              isFocus[index]
+                ? 'image_parent image_parent_focus'
+                : 'image_parent '
+            "
+            @click="giveFocus(index)"
+          >
+            <img :src="item.thumbnail_url" />
+          </div>
+
+          <div class="response_flag">
+            <div
+              class="top"
+              :style="'width:' + responsePercentage[index] + '%'"
+            ></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="divider"></div>
+      <div class="divider"></div>
 
-    <div class="content_parent">
-      <div class="content_main">
-        <teacherIndexItem
-          v-if="currentItemData && currentItemData.items[0]"
-          :data="currentItemData"
-          :type="currentItemData.items[0].type"
-          :flag="true"
-          :currentAnswerCount="currentAnswerCount"
-          :textList="responseContentList"
-        />
+      <div class="content_parent">
+        <div class="content_main">
+          <teacherIndexItem
+            v-if="currentItemData && currentItemData.items[0]"
+            :data="currentItemData"
+            :type="currentItemData.items[0].type"
+            :flag="true"
+            :currentAnswerCount="currentAnswerCount"
+            :textList="responseContentList"
+          />
+        </div>
       </div>
-    </div>
-    <div class="number_info">
-      Class Roster {{ currentResponseCount }}/{{ studentCounts }}
-    </div>
+      <div class="number_info">
+        Class Roster {{ currentResponseCount }}/{{ studentCounts }}
+      </div>
 
-    <commentModal />
+      <commentModal />
+    </div>
+    <teacherControlPanel class="control_panel" />
   </div>
 </template>
 <style scoped>
-.page {
+.dashboard {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
+}
+.page {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 .left {
@@ -134,6 +146,10 @@ image {
   background-color: #67c23a;
   height: 6px;
 }
+
+.control_panel {
+  width: 100%;
+}
 </style>
 <script>
 import { MessageBox } from "element-ui";
@@ -151,6 +167,7 @@ import {
   getCurrentPageAnswerList,
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
+import teacherControlPanel from "../components/teacher/teacherControlPanel";
 
 export default {
   data() {
@@ -188,6 +205,7 @@ export default {
     pptcontent,
     teacherIndexItem,
     commentModal,
+    teacherControlPanel,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -279,12 +297,11 @@ export default {
       });
     },
     copyUrl() {
-      copy(
-        `${location.href.replace(/teacher/, "students")}&page=${
-          this.currentIndex
-        }`
-      );
-      showToast("copy link success");
+      let url = location.href;
+      url = url.substring(0, url.indexOf("&"));
+      console.log(url);
+      copy(`${url.replace(/teacher/, "students")}&page=${this.currentIndex}`);
+      showToast("copy link success" + url);
     },
     giveFocus(index, notSend) {
       this.currentIndex = index;
@@ -338,7 +355,7 @@ export default {
           answer,
           key: user_id,
         });
-        EventBus.$emit("choice", { user_id, answer});
+        EventBus.$emit("choice", { user_id, answer });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
         d.type === SocketEventsEnum.NUMBER_INPUT

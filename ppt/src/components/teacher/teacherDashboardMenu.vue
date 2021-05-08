@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="menu_line" @click="open(0)">
+    <div class="menu_line" @click="open(1)">
       <div class="v2pnav-option__icon mode-icon">
         <!--?xml version="1.0" encoding="utf-8"?-->
         <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -49,7 +49,7 @@
       <div class="v2pnav-option__label">Open Dashboard in New Device</div>
     </div>-->
 
-    <div class="menu_line" @click="_turnModel()">
+    <div class="menu_line" @click="turnModel()">
       <div class="v2pnav-option__icon mode-icon">
         <svg
           version="1.1"
@@ -138,14 +138,14 @@ export default {
     }
   },
   methods:{
-    _turnModel(){
-      // if(this.current_model == 'student-paced'){
-      //   this.current_model = 'Insturctor-Paced'
-      // }else{
-      //   this.current_model = 'student-paced'
-      // }
-      this.turnModel();
-    }
+    // _turnModel(){
+    //   // if(this.current_model == 'student-paced'){
+    //   //   this.current_model = 'Insturctor-Paced'
+    //   // }else{
+    //   //   this.current_model = 'student-paced'
+    //   // }
+    //   this.turnModel();
+    // }
   }
 };
 </script>

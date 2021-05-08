@@ -1,179 +1,3 @@
-<template>
-  <el-container>
-    <el-main v-show="!showResponse">
-      <div
-        class="block"
-        v-if="currentItemData && currentItemData.thumbnail_url"
-      >
-        <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
-        <el-pagination
-          style="line-height: 50px"
-          background
-          small
-          layout="prev, pager, next"
-          @current-change="pageChange"
-          :current-page="current_page"
-          :page-count="slides.length"
-        ></el-pagination>
-        <el-button type="primary" class="counts"
-          >Current student count:{{ studentCounts }}</el-button
-        >
-        <el-button type="primary" class="invite" @click="openShare"
-          >Share</el-button
-        >
-        <el-button type="primary" class="Presenting">{{
-          page_model === "Insturctor-Paced" ? "Presenting" : "Student-Paced"
-        }}</el-button>
-        <el-button type="primary" class="Show" @click="showres"
-          >Show Responses</el-button
-        >
-        <el-button type="primary" class="show_student" @click="showStudents"
-          >Students</el-button
-        >
-        <el-button type="primary" class="noShow gray">
-          {{
-            currentAnswerCount > 0
-              ? `${currentAnswerCount} Responses`
-              : `no Responses`
-          }}
-        </el-button>
-        <!-- @click="open(1)" -->
-        <el-popover
-          placement="top"
-          width="400"
-          trigger="hover"
-          class="dropdown-icon"
-        >
-          <dashboardMenu
-            :open="open"
-            :current_model="page_model"
-            :turnModel="turnModel"
-          />
-          <svg
-            t="1619161258814"
-            slot="reference"
-            viewBox="0 0 20 30"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="6029"
-            height="40px"
-          >
-            <circle cx="10" cy="4" r="3" fill="#409EFF" />
-            <circle cx="10" cy="15" r="3" fill="#409EFF" />
-            <circle cx="10" cy="26" r="3" fill="#409EFF" />
-          </svg>
-        </el-popover>
-      </div>
-    </el-main>
-    <el-main v-if="showResponse" class="response_page">
-      <el-button type="primary" @click="hideRes">hide Responses</el-button>
-      <!-- <template v-if="options&&options.length > 0">
-        <teacherItem
-          v-if="answerList.length > 0"
-          :options="options"
-          :title="title"
-          :answerList="answerList"
-          :pageId="currentPageId"
-        />
-      </template>
-      <template v-else-if="textList.length>0">
-        <teacherTextItem  :textList="textList" />
-      </template>-->
-      <teacherIndexItem
-        v-if="currentItemData && currentItemData.items[0]"
-        :data="currentItemData"
-        :type="currentItemData.items[0].type"
-        :flag="false"
-        :currentAnswerCount="currentAnswerCount"
-        :textList="responseContentList"
-      />
-    </el-main>
-    <commentModal />
-    <el-dialog title="Classroom Roster" :visible.sync="dialogTableVisible">
-      <studentList :teacherList="teacherList" :studentList="studentList" />
-    </el-dialog>
-  </el-container>
-</template>
-<style scoped>
-.response_page {
-  min-height: 200px;
-  height: 100%;
-}
-.dropdown-class {
-  position: absolute;
-  right: 10px;
-  bottom: 20px;
-}
-.dropdown-icon {
-  width: 20px;
-  height: 40px;
-  position: absolute;
-  right: 10px;
-  bottom: 20px;
-  line-height: 40px;
-  overflow: hidden;
-}
-.block {
-  position: relative;
-}
-.invite {
-  position: absolute;
-  right: 160px;
-  bottom: 20px;
-}
-.counts {
-  position: absolute;
-  left: 10px;
-  bottom: 20px;
-  background-color: transparent !important;
-  border: none !important;
-  color: #333;
-}
-.show_student {
-  position: absolute;
-  right: 50px;
-  bottom: 20px;
-}
-.Show {
-  position: absolute;
-  right: 270px;
-  bottom: 20px;
-}
-.noShow {
-  position: absolute;
-  left: 280px;
-  bottom: 20px;
-}
-.Presenting {
-  position: absolute;
-  left: 180px;
-  bottom: 20px;
-  background-color: transparent !important;
-  border: none !important;
-  color: #333;
-}
-.gray {
-  background-color: transparent !important;
-  border: none !important;
-  color: #333;
-}
-.modal {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-  background-color: rgba(0, 0, 0, 0.2);
-}
-.shareBox {
-  width: 300px;
-  height: 200px;
-  background-color: #fff;
-  position: relative;
-  margin: 0 auto;
-}
-</style>
 <script>
 import { MessageBox } from "element-ui";
 import copy from "copy-to-clipboard";
@@ -224,6 +48,7 @@ export default {
       current_page: 0,
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
+      isDashboard:false,
     };
   },
   mounted() {
@@ -271,14 +96,12 @@ export default {
       } else {
         this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
       }
+     
 
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        console.log(this.page_model, "send message");
-        this.currentSo.emit(
-          SocketEventsEnum.MODEL_CHANGE,
-          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.page_model}"}}`
-        );
+         console.log(this.page_model, "send message");
+        this.currentSo.emit(SocketEventsEnum.MODEL_CHANGE, `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.page_model}"}}`);
       }
     },
     open(model) {
@@ -421,13 +244,8 @@ export default {
     },
     copyUrl() {
       let url = location.href;
-      let index = url.indexOf("&");
-      if (index > 0) {
-        url = url.substring(0, url.indexOf("&"));
-      }
-      if (!this.page_model) {
-        this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
-      }
+      url = url.substring(0, url.indexOf("&"));
+      console.log(url);
       copy(
         `${url.replace(/teacher/, "students")}&page=${
           this.currentIndex

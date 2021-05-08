@@ -20,7 +20,7 @@
           @current-change="pageChange"
           :current-page="parseInt(currentIndex)+1"
           :page-count="slides.length"
-          v-if="currentModel=='student-paced'"
+          v-if="currentModel=='Student-Paced'"
         ></el-pagination>
         <div class = "checkboxs">
           <el-checkbox :value="currentAnswerd">slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
@@ -296,6 +296,8 @@ export default {
         this.pageChange(d.params.page + 1);
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
+      }else if(d.mtype == SocketEventsEnum.MODEL_CHANGE){
+        this.currentModel = d.params.model;
       }
     },
     // 收到评论
