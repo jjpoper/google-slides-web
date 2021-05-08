@@ -73,7 +73,7 @@
 
       <div
         class="v2pnav-option__label"
-      >Turn {{current_model=='student-paced'?'Off':'On'}} Student-Paced</div>
+      >Turn {{current_model=='Student-Paced'?'Off':'On'}} Student-Paced</div>
     </div>
   </div>
 </template>

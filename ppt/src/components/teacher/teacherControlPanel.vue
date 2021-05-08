@@ -68,7 +68,7 @@
 
     <div
       class="button_area"
-      v-if="current_response > 0"
+      v-if="current_response > 0 && !isDashboard"
       @click="showResponse()"
       style="margin-right: 20px"
     >
@@ -143,6 +143,76 @@
     </el-popover>
   </div>
 </template>
+
+
+<script>
+import { ClassRoomModelEnum } from "@/socket/socketEvents";
+import dashboardMenu from "./teacherDashboardMenu";
+export default {
+  props: {
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPage: {
+      type: Number,
+      default: 3,
+    },
+
+    current_model: {
+      type: String,
+      default: "Insturctor-Paced",
+    },
+
+    current_response: {
+      type: Number,
+      default: 1,
+    },
+
+    open: {
+      type: Function,
+    },
+    turnModel: {
+      type: Function,
+    },
+    isDashboard: {
+      type: Boolean,
+      default: false,
+    },
+    changePage: {
+      type: Function,
+    },
+
+    turnOff: {
+      type: Function,
+    },
+  },
+  components: {
+    dashboardMenu,
+  },
+  methods: {
+    lastPage() {
+      console.log(this.currentPage);
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.changePage(this.currentPage - 1);
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPage) {
+        this.currentPage++;
+        this.changePage(this.currentPage - 1);
+      }
+    },
+    closeStudentPaced() {
+      console.log("colse student");
+      this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
+      this.turnOff();
+    },
+    showResponse() {},
+  },
+};
+</script>
 
 <style scoped>
 strong {
@@ -256,53 +326,3 @@ strong {
   color: #ffffff;
 }
 </style>
-
-<script>
-import dashboardMenu from "./teacherDashboardMenu";
-export default {
-  props: {
-    currentPage: {
-      type: Number,
-      default: 1,
-    },
-    totalPage: {
-      type: Number,
-      default: 3,
-    },
-
-    current_model: {
-      type: String,
-      default: "Insturctor-Paced",
-    },
-
-    current_response: {
-      type: Number,
-      default: 0,
-    },
-
-    open: {
-      type: Function,
-    },
-    turnModel: {
-      type: Function,
-    },
-  },
-  components: {
-    dashboardMenu,
-  },
-  methods: {
-    lastPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPage) {
-        this.currentPage++;
-      }
-    },
-    closeStudentPaced() {},
-    showResponse() {},
-  },
-};
-</script>

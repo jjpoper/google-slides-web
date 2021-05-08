@@ -43,7 +43,16 @@
 
       <commentModal />
     </div>
-    <teacherControlPanel class="control_panel" />
+    <teacherControlPanel
+      class="control_panel"
+      :current_response="currentResponseCount"
+      :current_model="currentModel"
+      :currentPage="parseInt(currentIndex) + 1"
+      :totalPage="slides.length"
+      :isDashboard="true"
+      :changePage="giveFocus"
+      :turnOff="turnModel"
+    />
   </div>
 </template>
 <style scoped>
@@ -159,7 +168,11 @@ import { getAllPPTS } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
 import { createSo } from "../socket/socket.teacher";
-import { ModalEventsNameEnum, SocketEventsEnum } from "../socket/socketEvents";
+import {
+  ClassRoomModelEnum,
+  ModalEventsNameEnum,
+  SocketEventsEnum,
+} from "../socket/socketEvents";
 import {
   getTeacherUid,
   saveStundentUidAndName,
@@ -186,6 +199,7 @@ export default {
       isFocus: [],
       currentSo: null,
       responseContentList: [],
+      currentModel: ClassRoomModelEnum.TEACHER_MODEL,
     };
   },
   mounted() {
@@ -211,10 +225,26 @@ export default {
     next((vm) => {
       vm.slide_id = to.query.slide_id;
       vm.currentIndex = to.query.currentPage;
+      vm.currentModel = to.query.model;
       vm.getAllSlides();
     });
   },
   methods: {
+    turnModel() {
+      if (this.currentModel === ClassRoomModelEnum.STUDENT_MODEL) {
+        this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
+      } else {
+        this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
+      }
+      if (this.currentSo) {
+        // this.currentSo.emit('control', JSON.stringify(data));
+        console.log(this.currentModel, "send message");
+        this.currentSo.emit(
+          SocketEventsEnum.MODEL_CHANGE,
+          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.currentModel}"}}`
+        );
+      }
+    },
     sendComment({
       studentId,
       pageId,

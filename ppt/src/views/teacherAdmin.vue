@@ -296,6 +296,9 @@ export default {
           "_blank",
           strWindowFeatures
         );
+        if (!this.page_model) {
+          this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+        }
         windowObjectReference.location =
           "/index.html#/dashboard?slide_id=" +
           this.slide_id +
@@ -541,6 +544,11 @@ export default {
             this.current_page = parseInt(d.params.page) + 1;
             this.pageChange(this.current_page, true);
           }
+        }
+      } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
+        if (d.room == this.slide_id) {
+          this.page_model = d.params.model;
+          console.log(this.page_model, "model change!!!");
         }
       }
 
