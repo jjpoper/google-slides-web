@@ -178,7 +178,7 @@
 import { MessageBox } from "element-ui";
 import copy from "copy-to-clipboard";
 import pptcontent from "../components/pptcontent";
-import { getAllPPTS } from "../model/index";
+import { getAllPPTS, getTeacherLoginUrl, getUserProfile } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
 import studentList from "../components/teacher/studentList";
@@ -195,14 +195,17 @@ import {
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList,
   saveTeacherUserName,
+  getTeacherUserName,
+  getTeacherStoreToken,
+  saveTeacherStoreToken
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
-import {
-  checkGoogleAuth,
-  gotoGoogleAuth,
-  initGoogleAuth,
-  getGoogleUserInfo,
-} from "@/utils/googleAuth";
+// import {
+//   checkGoogleAuth,
+//   gotoGoogleAuth,
+//   initGoogleAuth,
+//   getGoogleUserInfo,
+// } from "@/utils/googleAuth";
 
 export default {
   data() {
@@ -213,7 +216,7 @@ export default {
       currentIndex: 0,
       slide_id: 0,
       currentSo: null,
-      uid: getTeacherUid(), // uid
+      uid: '', // uid
       currentItemData: null,
       currentAnswerCount: 0,
       name: "",
@@ -224,23 +227,24 @@ export default {
       current_page: 0,
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
+      token: ''
     };
   },
   mounted() {
-    initGoogleAuth()
-      .then(() => {
-        const isLogin = checkGoogleAuth();
-        console.log(isLogin, "isLogin");
-        if (isLogin) {
-          // this.afterLogin()
-          this.afterLogin();
-        } else {
-          this.showLoginModal();
-        }
-      })
-      .catch(() => {
-        this.startConnectRoom();
-      });
+    // initGoogleAuth()
+    //   .then(() => {
+    //     const isLogin = checkGoogleAuth();
+    //     console.log(isLogin, "isLogin");
+    //     if (isLogin) {
+    //       // this.afterLogin()
+    //       this.afterLogin();
+    //     } else {
+    //       this.showLoginModal();
+    //     }
+    //   })
+    //   .catch(() => {
+    //     this.startConnectRoom();
+    //   });
     EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
       this.sendComment(data);
     });
@@ -259,9 +263,15 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.slide_id = to.query.slide_id;
-      vm.page_model = to.query.model;
-      vm.getAllSlides();
+      const {slide_id, token} = to.query
+      vm.slide_id = slide_id;
+      if(token) {
+        vm.token = token
+        saveTeacherStoreToken(token)
+      } else {
+        vm.token = getTeacherStoreToken()
+      }
+      vm.initWithToken()
     });
   },
   methods: {
@@ -280,6 +290,32 @@ export default {
           `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.page_model}"}}`
         );
       }
+    },
+    // 检查token
+    initWithToken() {
+      showLoading();
+      if(!this.token) {
+        this.goToLogin()
+      } else {
+        getUserProfile(this.token)
+        .then(({logout, profile}) => {
+          if(logout) {
+            this.goToLogin()
+          } else {
+            this.afterLogin(profile);
+            this.getAllSlides();
+          }
+        })
+      }
+    },
+    goToLogin() {
+      getTeacherLoginUrl()
+      .then((url) => {
+        console.log(url)
+        if(url) {
+          location.href = url
+        }
+      })
     },
     open(model) {
       // this.$router.push({ path: "/dashboard" });
@@ -318,11 +354,10 @@ export default {
         );
       }
     },
-    afterLogin() {
-      const name = getGoogleUserInfo();
-      console.log(name);
-      this.name = name;
-      saveTeacherUserName(name);
+    afterLogin({user_name, email}) {
+      this.name = user_name;
+      this.uid = email
+      // saveTeacherUserName(name);
       this.startConnectRoom();
     },
     startConnectRoom() {
@@ -383,7 +418,6 @@ export default {
       }
     },
     getAllSlides() {
-      showLoading();
       getAllPPTS(this.slide_id).then((list) => {
         console.log(list);
         // this.contentUrl = d;
@@ -423,19 +457,11 @@ export default {
       }
     },
     copyUrl() {
-      let url = location.href;
-      let index = url.indexOf("&");
-      if (index > 0) {
-        url = url.substring(0, url.indexOf("&"));
-      }
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      copy(
-        `${url.replace(/teacher/, "students")}&page=${
-          this.currentIndex
-        }&model=${this.page_model}`
-      );
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&model=${this.page_model}`;
+      copy(url);
       showToast("copy link success");
     },
     //显示当前的学生
@@ -445,9 +471,8 @@ export default {
     joinRoom() {
       this.currentSo = createSo(
         this.slide_id,
-        this.uid,
-        this.msgListener,
-        this.name
+        this.token,
+        this.msgListener
       );
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
@@ -602,9 +627,8 @@ export default {
     },
     openShare() {
       // return
-      const url = `${location.href.replace(/teacher/, "students")}&page=${
-        this.current
-      }`;
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}`;
+      console.log(url)
       MessageBox.confirm(url, "Share this link with your students", {
         distinguishCancelAndClose: true,
         confirmButtonText: "copy",
@@ -621,26 +645,26 @@ export default {
     hideRes() {
       this.showResponse = false;
     },
-    showLoginModal() {
-      MessageBox.alert("press to login", "login", {
-        distinguishCancelAndClose: true,
-        confirmButtonText: "Login",
-        center: true,
-        showClose: false,
-      })
-        .then(() => {
-          // this.copyUrl();
-          console.log("点击登录");
-          gotoGoogleAuth()
-            .then(() => {
-              this.afterLogin();
-            })
-            .catch(() => {
-              this.showLoginModal();
-            });
-        })
-        .catch((action) => {});
-    },
+    // showLoginModal() {
+    //   MessageBox.alert("press to login", "login", {
+    //     distinguishCancelAndClose: true,
+    //     confirmButtonText: "Login",
+    //     center: true,
+    //     showClose: false,
+    //   })
+    //     .then(() => {
+    //       // this.copyUrl();
+    //       console.log("点击登录");
+    //       gotoGoogleAuth()
+    //         .then(() => {
+    //           this.afterLogin();
+    //         })
+    //         .catch(() => {
+    //           this.showLoginModal();
+    //         });
+    //     })
+    //     .catch((action) => {});
+    // },
   },
 };
 </script>

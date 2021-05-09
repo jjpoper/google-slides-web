@@ -104,7 +104,7 @@
 </style>
 <script>
 import pptcontent from "../components/pptcontent";
-import { getAllPPTS } from "../model/index";
+import { getAllPPTS, getStudentLoginUrl, getUserProfile } from "../model/index";
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
@@ -122,16 +122,13 @@ import {
   addStudentComment,
   unreadStudentComment,
   getStudentCommentUnReadStatus,
-  readStudentComment
-} from "@/model/store.student";
+  readStudentComment,
+  getStudentStoreToken,
+  saveStudentStoreToken
+} from '@/model/store.student'
 import { MessageBox } from "element-ui";
-import StudentComment from "@/components/students/studentComment.vue";
-import {
-  checkGoogleAuth,
-  gotoGoogleAuth,
-  initGoogleAuth,
-  getGoogleUserInfo
-} from "@/utils/googleAuth";
+import StudentComment from '@/components/students/studentComment.vue';
+// import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
   data() {
@@ -151,26 +148,24 @@ export default {
       currentAnswerd: false,
       unread: false,
       modalVisiable: false,
-      uid: getStudentUid(), // uid
       currentModel: ClassRoomModelEnum.TEACHER_MODEL //课堂模式，学生自己能否切换页面
+      uid: '' // uid
     };
   },
   mounted() {
-    initGoogleAuth()
-      .then(() => {
-        const isLogin = checkGoogleAuth();
-        console.log(isLogin, "isLogin");
-        if (isLogin) {
-          // this.afterLogin()
-          this.afterLogin();
-        } else {
-          this.showLoginModal();
-        }
-      })
-      .catch(() => {
-        this.beforejoinRoom();
-      });
-    this.unread = getStudentCommentUnReadStatus();
+    // initGoogleAuth().then(() => {
+    //   const isLogin = checkGoogleAuth()
+    //   console.log(isLogin, 'isLogin')
+    //   if(isLogin) {
+    //     // this.afterLogin()
+    //     this.afterLogin();
+    //   } else {
+    //     this.showLoginModal()
+    //   }
+    // }).catch(() => {
+    //   this.beforejoinRoom();
+    // })
+    this.unread = getStudentCommentUnReadStatus()
   },
   components: {
     pptcontent,
@@ -179,17 +174,47 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.slide_id = to.query.slide_id;
-      vm.currentIndex = to.query.page || 0;
-      vm.getAllSlides();
-      vm.currentModel = to.query.model;
-      console.log(vm.currentModel);
+      const {slide_id, token, page} = to.query
+      vm.slide_id = slide_id;
+      vm.currentIndex = page && page !== 'undefined' ? page : 0;
+      if(token) {
+        vm.token = token
+        saveStudentStoreToken(token)
+      } else {
+        vm.token = getStudentStoreToken()
+      }
+      vm.initWithToken()
     });
   },
   methods: {
-    checkCurrentAnswerd() {
-      const { page_id, items } = this.currentItemData;
-      if (items[0]) {
+    initWithToken() {
+      showLoading();
+      if(!this.token) {
+        this.goToLogin()
+      } else {
+        getUserProfile(this.token)
+        .then(({logout, profile}) => {
+          if(logout) {
+            this.goToLogin()
+          } else {
+            this.afterLogin(profile);
+            this.getAllSlides();
+          }
+        })
+      }
+    },
+    goToLogin() {
+      getStudentLoginUrl()
+      .then((url) => {
+        console.log(url)
+        if(url) {
+          location.href = url
+        }
+      })
+    },
+    checkCurrentAnswerd(){
+      const {page_id, items} = this.currentItemData
+      if(items[0]) {
         const list = getStudentCurrentPageAnswerList(page_id, items[0].type);
         console.log("list", list);
         this.currentAnswerd = list.length > 0;
@@ -198,7 +223,6 @@ export default {
       }
     },
     getAllSlides() {
-      showLoading();
       getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         this.slides = list;
@@ -258,28 +282,27 @@ export default {
         this.showStudentModal();
       }
     },
-    afterLogin() {
-      const name = getGoogleUserInfo();
-      console.log(name);
-      this.uname = name;
-      saveStudentUserName(name);
-      this.beforejoinRoom();
+    afterLogin({user_name, email}) {
+      this.uname = user_name
+      this.uid = email
+      saveStudentUserName(name)
+      this.beforejoinRoom()
     },
     beforejoinRoom() {
-      const uname = getStudentUserName(this.uid);
-      console.log(uname, "uname");
-      this.uname = uname != "null" && uname != undefined ? uname : "";
-      if (!this.uname) {
-        this.enterUname(true);
-      } else {
-        this.joinRoom();
-      }
+      // const uname = getStudentUserName(this.uid);
+      // console.log(uname, "uname");
+      // this.uname = uname != "null" && uname != undefined ? uname : "";
+      // if (!this.uname) {
+      //   this.enterUname(true);
+      // } else {
+      //   this.joinRoom();
+      // }
+      this.joinRoom();
     },
     joinRoom() {
       this.currentSo = createSo(
         this.slide_id,
-        this.uid,
-        this.uname,
+        this.token,
         this.msgListener,
         () => {
           this.emitSo(

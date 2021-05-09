@@ -7,6 +7,14 @@ const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_tid`
 let teacherId = ''
 
+export const getTeacherStoreToken = (): string => {
+  return getStore('teacher_token')
+}
+
+export const saveTeacherStoreToken = (token: string) => {
+  saveStore('teacher_token', token)
+}
+
 // 拼接url 参数
 const saveTeacherStore = (key: string, value: any) => {
   const uniqueKey = `${slideId}_t_${teacherId}_${key}`
