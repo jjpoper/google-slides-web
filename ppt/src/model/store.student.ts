@@ -20,6 +20,14 @@ let studentId = ''
 //     }
 //   ]
 // }
+
+export const getStudentStoreToken = (): string => {
+  return getStore('student_token')
+}
+
+export const saveStudentStoreToken = (token: string) => {
+  saveStore('student_token', token)
+}
 // 拼接url 参数
 const saveStudentStore = (key: string, value: any) => {
   const uniqueKey = `${slideId}_s_${studentId}_${key}`

@@ -31,17 +31,63 @@ export const getAllPPTS = async (slideid: string) => {
 }
 
 // 获取授权登录
-// export const getTeacherToken = async (): Promise<string> => {
-//   const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_teacher`, {
-//     return_url: location.href,
-//   })
-//   let authUrl = ''
-//   // let list = data.data.data.pages
-//   // // console.log(data.data.data)
-//   try {
-//     authUrl = data.data.data.auth_url
-//   } catch(e) {
-//     // console.log(e)
-//   }
-//   return authUrl
-// }
+export const getTeacherLoginUrl = async (): Promise<string> => {
+  const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_teacher`, {
+    return_url: location.href,
+  })
+  let authUrl = ''
+  // let list = data.data.data.pages
+  // // console.log(data.data.data)
+  try {
+    authUrl = data.data.data.auth_url
+  } catch(e) {
+    // console.log(e)
+  }
+  return authUrl
+}
+
+interface Profile {
+  profile: {
+    email: string
+    user_name: string
+  }
+  logout: boolean
+}
+
+// 获取个人信息 account/profile
+export const getUserProfile = async (token: string): Promise<Profile> => {
+  const data = await axios.post(`${PPT.requestUrl}account/profile`, {
+    token,
+  })
+  let result = {
+    profile: {
+      email: '',
+      user_name: ''
+    },
+    logout: false
+  }
+  // let list = data.data.data.pages
+  // // console.log(data.data.data)
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result
+}
+
+// 获取学生授权登录
+export const getStudentLoginUrl = async (): Promise<string> => {
+  const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_student`, {
+    return_url: location.href,
+  })
+  let authUrl = ''
+  // let list = data.data.data.pages
+  // // console.log(data.data.data)
+  try {
+    authUrl = data.data.data.auth_url
+  } catch(e) {
+    // console.log(e)
+  }
+  return authUrl
+}

@@ -5,11 +5,11 @@ import { SocketEventsEnum } from "./socketEvents";
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, userId: string, callback: callback) => {
+export const createSo = (room: string, token: string, callback: callback) => {
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
   socket.on('connect', () => {
-    // 加入房间，room是slide_id，user_id 是老师的名称，role必须是teacher
-    socket.emit('join-room', `{"room":"${room}", "user_id": "${userId}", "role":"teacher"}`, () => {
+    // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
+    socket.emit('join-room', `{"room":"${room}", "token": "${token}", "role":"teacher"}`, () => {
       console.log("老师加入房间")
     });
 
@@ -27,11 +27,11 @@ export const createSo = (room: string, userId: string, callback: callback) => {
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-    // 
+    //
     callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
   });
 
-  socket.on('control',(data:any)=>{
+  socket.on('control', (data: any) => {
     console.log("收到系统信息：" + data);
     callback({mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data)})
   })
