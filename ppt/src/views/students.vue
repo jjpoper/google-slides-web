@@ -148,7 +148,8 @@ export default {
       currentAnswerd: false,
       unread: false,
       modalVisiable: false,
-      currentModel: ClassRoomModelEnum.TEACHER_MODEL //课堂模式，学生自己能否切换页面
+      oken: '',
+      currentModel: ClassRoomModelEnum.TEACHER_MODEL, //课堂模式，学生自己能否切换页面
       uid: '' // uid
     };
   },
@@ -316,7 +317,7 @@ export default {
       console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
-        this.pageChange(d.params.page + 1);
+        this.pageChange(parseInt(d.params.page) + 1);
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
       }else if(d.mtype == SocketEventsEnum.MODEL_CHANGE){
