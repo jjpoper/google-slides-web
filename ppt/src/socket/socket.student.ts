@@ -32,12 +32,6 @@ export const createSo = (room: string, token: string, callback: callback, joinCa
   socket.on('comment', (data: string) => {
     console.log("老师发来了消息反馈。详细数据：" + data);
     callback({ mtype: SocketEventsEnum.TEACHER_COMMENT, ...JSON.parse(data) })
-  })
-
-  socket.on(SocketEventsEnum.MODEL_CHANGE, (data: string) => {
-    console.log("老师发来了消息反馈。详细数据：" + data);
-    callback({ mtype: SocketEventsEnum.MODEL_CHANGE, ...JSON.parse(data) })
-  })
-
+  });
   return socket
 }

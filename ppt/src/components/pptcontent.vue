@@ -1,12 +1,16 @@
 <template>
   <div class="ppt">
-    <img width="100%" :src='url'>
+    <img  :src='url'>
   </div>
 </template>
 <style scoped>
 .ppt{
   width: 100%;
-  /* height: 90%; */
+  height: 100%;
+}
+img{
+  max-width: 1000px;
+  max-height: 1000px;
 }
 </style>
 

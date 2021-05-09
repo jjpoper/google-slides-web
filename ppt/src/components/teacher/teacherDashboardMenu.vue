@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="menu_line" @click="open(1)">
+    <div class="menu_line" @click="open(1)" v-if="!isDashboard">
       <div class="v2pnav-option__icon mode-icon">
         <!--?xml version="1.0" encoding="utf-8"?-->
         <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -135,6 +135,10 @@ export default {
     current_model: {
       type: String,
       default: 'student-paced'
+    },
+    isDashboard:{
+      type:Boolean,
+      default:false,
     }
   },
   methods:{
