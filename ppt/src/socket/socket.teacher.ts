@@ -22,22 +22,26 @@ export const createSo = (room: string, token: string, callback: callback) => {
   // 老师端接收到学生发来的答案
   socket.on('response', (data: any) => {
     // console.log("收到学生发来的答案：" + data);
-    callback({type: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data)})
+    callback({ type: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
   });
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-    //
-    callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
+callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
   });
 
   socket.on('control', (data: any) => {
     console.log("收到系统信息：" + data);
-    callback({mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data)})
+    callback({ mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data) })
   })
 
   socket.on('rename', (data: any) => {
-    callback({type: SocketEventsEnum.RENAME, ...JSON.parse(data)})
+    callback({ type: SocketEventsEnum.RENAME, ...JSON.parse(data) })
+  });
+
+  socket.on(SocketEventsEnum.MODEL_CHANGE, (data: string) => {
+    console.log("老师发来了消息反馈。详细数据：" + data);
+    callback({ mtype: SocketEventsEnum.MODEL_CHANGE, ...JSON.parse(data) })
   });
 
   return socket
