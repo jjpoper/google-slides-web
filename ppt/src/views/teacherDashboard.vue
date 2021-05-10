@@ -15,7 +15,10 @@
           </div>
 
           <div class="response_flag">
-            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
+            <div
+              class="top"
+              :style="'width:' + responsePercentage[index] + '%'"
+            ></div>
           </div>
         </div>
       </div>
@@ -34,7 +37,9 @@
           />
         </div>
       </div>
-      <div class="number_info" @click="showStudents()">Class Roster {{ currentResponseCount }}/{{ studentCounts }}</div>
+      <div class="number_info" @click="showStudents()">
+        Class Roster {{ currentResponseCount }}/{{ studentCounts }}
+      </div>
 
       <commentModal />
     </div>
@@ -49,6 +54,7 @@
       :turnModel="turnModel"
     />
 
+    <div class="share_room" @click="copyUrl()">Share Class</div>
     <el-dialog title="Classroom Roster" :visible.sync="dialogTableVisible">
       <studentList :teacherList="teacherList" :studentList="studentList" />
     </el-dialog>
@@ -159,6 +165,21 @@ image {
 .control_panel {
   width: 100%;
 }
+
+.share_room {
+  width: 100px;
+  height: 30px;
+  position: fixed;
+  text-align: center;
+  right: 200px;
+  top: 20px;
+  font-size: 14px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 5px;
+  padding-top: 13px;
+  cursor: pointer;
+}
 </style>
 <script>
 import { MessageBox } from "element-ui";
@@ -172,7 +193,7 @@ import { createSo } from "../socket/socket.teacher";
 import {
   ClassRoomModelEnum,
   ModalEventsNameEnum,
-  SocketEventsEnum
+  SocketEventsEnum,
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
@@ -182,7 +203,7 @@ import {
   saveTeacherUserName,
   getTeacherUserName,
   getTeacherStoreToken,
-  saveTeacherStoreToken
+  saveTeacherStoreToken,
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
@@ -196,7 +217,7 @@ export default {
       currentIndex: 0,
       slide_id: 0,
       currentSo: null,
-      uid: getTeacherUid(), // uid
+      uid: "", // uid
       currentItemData: null,
       currentAnswerCount: 0,
       currentResponseCount: 0,
@@ -209,13 +230,13 @@ export default {
       name: "",
       dialogTableVisible: false,
       teacherList: [],
-      studentList: []
+      studentList: [],
     };
   },
   mounted() {
     this.joinRoom();
     //   this.openShare();
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
       console.log("send comment!!");
       this.sendComment(data);
     });
@@ -223,17 +244,17 @@ export default {
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    }
+    },
   },
   components: {
     pptcontent,
     teacherIndexItem,
     commentModal,
     teacherControlPanel,
-    studentList
+    studentList,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { slide_id, token } = to.query;
       vm.slide_id = slide_id;
       if (token) {
@@ -271,7 +292,7 @@ export default {
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then(url => {
+      getTeacherLoginUrl().then((url) => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -282,6 +303,7 @@ export default {
     afterLogin({ user_name, email }) {
       this.name = user_name;
       this.uid = email;
+      console.log(this.name, this.uid, "get teacher info");
       // saveTeacherUserName(name);
       this.startConnectRoom();
     },
@@ -311,7 +333,7 @@ export default {
       title,
       time,
       value,
-      teacherName
+      teacherName,
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -323,7 +345,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id
+        room: this.slide_id,
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -367,7 +389,7 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then(list => {
+      getAllPPTS(this.slide_id).then((list) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -390,11 +412,12 @@ export default {
       });
     },
     copyUrl() {
-      let url = location.href;
-      url = url.substring(0, url.indexOf("&"));
-      console.log(url);
-      copy(`${url.replace(/teacher/, "students")}&page=${this.currentIndex}`);
-      showToast("copy link success" + url);
+      if (!this.currentModel) {
+        this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
+      }
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&model=${this.currentModel}`;
+      copy(url);
+      showToast("copy link success");
     },
     giveFocus(index, notSend) {
       this.currentIndex = index;
@@ -412,11 +435,11 @@ export default {
     },
     joinRoom() {
       this.currentSo = createSo(this.slide_id, this.token, this.msgListener);
-      let teacher = new Object();
-      teacher.name = this.name ? this.name : "A teacher";
-      teacher.state = "online";
-      teacher.user_id = this.uid;
-      this.teacherList.push(teacher);
+      // let teacher = new Object();
+      // teacher.name = this.name ? this.name : "A teacher";
+      // teacher.state = "online";
+      // teacher.user_id = this.uid;
+      // this.teacherList.push(teacher);
     },
     msgListener(d = {}) {
       // answer: "Lily"
@@ -516,7 +539,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id
+          key: user_id,
         });
         EventBus.$emit("choice", { user_id, answer });
       } else if (
@@ -530,7 +553,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`
+          key: `${item_id}_${user_id}`,
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -539,7 +562,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name
+          user_name,
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -562,7 +585,7 @@ export default {
     },
     hideRes() {
       this.showResponse = false;
-    }
-  }
+    },
+  },
 };
 </script>

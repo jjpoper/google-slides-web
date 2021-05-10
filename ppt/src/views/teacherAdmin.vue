@@ -1,17 +1,24 @@
 <template>
   <el-container>
     <el-main>
-      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-        <pptcontent v-if="!showResponse" :url="currentItemData.thumbnail_url" :teacher="true" />
+      <div
+        class="block"
+        v-if="currentItemData && currentItemData.thumbnail_url"
+      >
+        <pptcontent
+          v-if="!showResponse"
+          :url="currentItemData.thumbnail_url"
+          :teacher="true"
+        />
 
-        <!-- <teacherIndexItem
+        <teacherIndexItem
           v-else-if="currentItemData && currentItemData.items[0]"
           :data="currentItemData"
           :type="currentItemData.items[0].type"
           :flag="false"
           :currentAnswerCount="currentAnswerCount"
           :textList="responseContentList"
-        />-->
+        />
         <teacherControlPanel
           class="control_panel"
           :current_model="page_model"
@@ -25,25 +32,10 @@
           :current_response="currentAnswerCount"
           :isResponseShow="showResponse"
         />
-
-        <!--
-        <el-button type="primary" class="invite" @click="openShare"
-          >Share</el-button
-        >-->
       </div>
     </el-main>
-    <!-- <el-main v-if="showResponse" class="response_page">
-      <el-button type="primary" @click="hideRes">hide Responses</el-button>
-      <teacherIndexItem
-        v-if="currentItemData && currentItemData.items[0]"
-        :data="currentItemData"
-        :type="currentItemData.items[0].type"
-        :flag="false"
-        :currentAnswerCount="currentAnswerCount"
-        :textList="responseContentList"
-      />
-    </el-main>-->
     <commentModal />
+    <div class="share_room" @click="copyUrl()">Share Class</div>
   </el-container>
 </template>
 <style scoped>
@@ -133,6 +125,19 @@
   left: 0%;
   bottom: 0%;
 }
+.share_room {
+  width: 100px;
+  height: 30px;
+  position: fixed;
+  text-align: center;
+  right: 10%;
+  top: 6%;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 5px;
+  padding-top: 10px;
+  cursor: pointer;
+}
 </style>
 <script>
 import { MessageBox } from "element-ui";
@@ -147,7 +152,7 @@ import dashboardMenu from "../components/teacher/teacherDashboardMenu";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum
+  ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
@@ -157,7 +162,7 @@ import {
   saveTeacherUserName,
   getTeacherUserName,
   getTeacherStoreToken,
-  saveTeacherStoreToken
+  saveTeacherStoreToken,
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
@@ -188,7 +193,7 @@ export default {
       current_page: 0,
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
-      token: ""
+      token: "",
     };
   },
   mounted() {
@@ -206,14 +211,14 @@ export default {
     //   .catch(() => {
     //     this.startConnectRoom();
     //   });
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    }
+    },
   },
   components: {
     pptcontent,
@@ -221,10 +226,10 @@ export default {
     commentModal,
     studentList,
     dashboardMenu,
-    teacherControlPanel
+    teacherControlPanel,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { slide_id, token } = to.query;
       vm.slide_id = slide_id;
       if (token) {
@@ -269,7 +274,7 @@ export default {
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then(url => {
+      getTeacherLoginUrl().then((url) => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -331,7 +336,7 @@ export default {
       title,
       time,
       value,
-      teacherName
+      teacherName,
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -343,7 +348,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id
+        room: this.slide_id,
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -377,7 +382,7 @@ export default {
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then(list => {
+      getAllPPTS(this.slide_id).then((list) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -542,7 +547,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id
+          key: user_id,
         });
 
         EventBus.$emit("choice", { user_id, answer });
@@ -557,7 +562,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`
+          key: `${item_id}_${user_id}`,
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -566,7 +571,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name
+          user_name,
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -587,19 +592,19 @@ export default {
       MessageBox.confirm(url, "Share this link with your students", {
         distinguishCancelAndClose: true,
         confirmButtonText: "copy",
-        cancelButtonText: "Enter classroom"
+        cancelButtonText: "Enter classroom",
       })
         .then(() => {
           this.copyUrl();
         })
-        .catch(action => {});
+        .catch((action) => {});
     },
     showres() {
       this.showResponse = !this.showResponse;
       this.emitSo(
         `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": "${this.showResponse}"}}`
       );
-    }
+    },
     // hideRes() {
     //   this.showResponse = false;
     //   this.emitSo(
@@ -626,6 +631,6 @@ export default {
     //     })
     //     .catch((action) => {});
     // },
-  }
+  },
 };
 </script>
