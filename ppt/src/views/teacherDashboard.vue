@@ -15,10 +15,7 @@
           </div>
 
           <div class="response_flag">
-            <div
-              class="top"
-              :style="'width:' + responsePercentage[index] + '%'"
-            ></div>
+            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
           </div>
         </div>
       </div>
@@ -37,9 +34,10 @@
           />
         </div>
       </div>
-      <div class="number_info" @click="showStudents()">
-        Class Roster {{ currentResponseCount }}/{{ studentCounts }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}</div>
 
       <commentModal />
     </div>
@@ -52,11 +50,20 @@
       :isDashboard="true"
       :changePage="giveFocus"
       :turnModel="turnModel"
+      :openProject="openProject"
     />
 
     <div class="share_room" @click="copyUrl()">Share Class</div>
     <el-dialog title="Classroom Roster" :visible.sync="dialogTableVisible">
       <studentList :teacherList="teacherList" :studentList="studentList" />
+    </el-dialog>
+
+    <el-dialog title="Step One" :visible.sync="stepOneDialog" :close-on-click-modal="false" :show-close="false">
+      <stepOneView :openTwo="openTwo"/>
+    </el-dialog>
+
+    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
+      <stepTwoView/>
     </el-dialog>
   </div>
 </template>
@@ -185,7 +192,13 @@ image {
 import { MessageBox } from "element-ui";
 import copy from "copy-to-clipboard";
 import pptcontent from "../components/pptcontent";
-import { getAllPPTS, getTeacherLoginUrl, getUserProfile } from "../model/index";
+import {
+  getAllPPTS,
+  getTeacherLoginUrl,
+  getUserProfile,
+  requestRefreshPPT,
+  queryRefreshResult
+} from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
 import studentList from "../components/teacher/studentList";
@@ -193,7 +206,7 @@ import { createSo } from "../socket/socket.teacher";
 import {
   ClassRoomModelEnum,
   ModalEventsNameEnum,
-  SocketEventsEnum,
+  SocketEventsEnum
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
@@ -203,10 +216,12 @@ import {
   saveTeacherUserName,
   getTeacherUserName,
   getTeacherStoreToken,
-  saveTeacherStoreToken,
+  saveTeacherStoreToken
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
+import stepOneView from "../components/teacher/openDashboardStepOne";
+import stepTwoView from "../components/teacher/openDashboardStepTwo";
 
 export default {
   data() {
@@ -231,12 +246,14 @@ export default {
       dialogTableVisible: false,
       teacherList: [],
       studentList: [],
+      stepOneDialog: false,
+      stepTwoDialog: false
     };
   },
   mounted() {
     this.joinRoom();
     //   this.openShare();
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       console.log("send comment!!");
       this.sendComment(data);
     });
@@ -244,7 +261,7 @@ export default {
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   components: {
     pptcontent,
@@ -252,9 +269,11 @@ export default {
     commentModal,
     teacherControlPanel,
     studentList,
+    stepOneView,
+    stepTwoView
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token } = to.query;
       vm.slide_id = slide_id;
       if (token) {
@@ -266,6 +285,7 @@ export default {
       vm.initWithToken();
       vm.currentIndex = to.query.currentPage;
       vm.currentModel = to.query.model;
+      vm.stepOneDialog = to.query.direct;
     });
     // next(vm => {
     //   vm.slide_id = to.query.slide_id;
@@ -292,7 +312,7 @@ export default {
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then((url) => {
+      getTeacherLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -310,7 +330,27 @@ export default {
     startConnectRoom() {
       this.joinRoom();
       //    this.openShare();
-      hideLoading();
+      requestRefreshPPT(this.slide_id)
+        .then(res => {
+          // console.log(res);
+          if (res.success) {
+            let code = res.data.task_id;
+            var count = 0;
+            queryRefreshResult(code, this.token)
+              .then(res => {})
+              .catch(res => {});
+          } else {
+            this.getAllSlides();
+            hideLoading();
+          }
+        })
+        .catch(res => {
+          console.log(res, "net request error!!");
+          this.getAllSlides();
+          hideLoading();
+        });
+      //todo  检查更新完毕后，再获取ppt
+      //  hideLoading();
     },
     turnModel() {
       if (this.currentModel === ClassRoomModelEnum.STUDENT_MODEL) {
@@ -333,7 +373,7 @@ export default {
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -345,7 +385,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -354,6 +394,11 @@ export default {
       );
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
       // this.emitSo(itemData)
+    },
+    openProject() {
+      const url = `${location.origin}${location.pathname}#/teacher?slide_id=${this.slide_id}&page=${this.currentIndex}&model=${this.currentModel}`;
+
+      window.open(url);
     },
     getResponeCount() {
       if (!this.currentItemData.items[0]) {
@@ -389,7 +434,7 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -505,6 +550,7 @@ export default {
             console.log(this.teacherList, "test quit");
           }
         }
+        this.$forceUpdate();
       } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new } = d;
@@ -539,7 +585,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
         EventBus.$emit("choice", { user_id, answer });
       } else if (
@@ -553,7 +599,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -562,7 +608,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -586,6 +632,33 @@ export default {
     hideRes() {
       this.showResponse = false;
     },
-  },
+
+    getStudentOnLineCount() {
+      let i = 0;
+      let count = 0;
+      for (i = 0; i < this.studentList.length; i++) {
+        if ("online" == this.studentList[i].state) {
+          count++;
+        }
+      }
+
+      return count;
+    },
+    getTeacherOnLineCount() {
+      let i = 0;
+      let count = 0;
+      for (i = 0; i < this.teacherList.length; i++) {
+        if ("online" == this.teacherList[i].state) {
+          count++;
+        }
+      }
+
+      return count;
+    },
+    openTwo(){
+      this.stepOneDialog = false;
+      this.stepTwoDialog = true;
+    }
+  }
 };
 </script>

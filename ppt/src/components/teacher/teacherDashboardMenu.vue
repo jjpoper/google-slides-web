@@ -26,7 +26,7 @@
       <div class="v2pnav-option__label">Open Dashboard in New Window</div>
     </div>
 
-    <!-- <div class="menu_line" @click="open(0)">
+    <div class="menu_line" @click="openProject()" v-if="isDashboard">
       <div class="v2pnav-option__icon mode-icon">
         <svg
           version="1.1"
@@ -46,8 +46,8 @@
         </svg>
       </div>
 
-      <div class="v2pnav-option__label">Open Dashboard in New Device</div>
-    </div>-->
+      <div class="v2pnav-option__label">Open Project in new tab</div>
+    </div>
 
     <div class="menu_line" @click="turnModel()">
       <div class="v2pnav-option__icon mode-icon">
@@ -134,14 +134,17 @@ export default {
     },
     current_model: {
       type: String,
-      default: 'student-paced'
+      default: "student-paced"
     },
-    isDashboard:{
-      type:Boolean,
-      default:false,
+    isDashboard: {
+      type: Boolean,
+      default: false
+    },
+    openProject: {
+      type: Function
     }
   },
-  methods:{
+  methods: {
     // _turnModel(){
     //   // if(this.current_model == 'student-paced'){
     //   //   this.current_model = 'Insturctor-Paced'

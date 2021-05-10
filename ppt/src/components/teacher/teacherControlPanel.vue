@@ -114,6 +114,7 @@
         :turnModel="turnModel"
         :isDashboard="isDashboard"
         :open="open"
+        :openProject="openProject"
       />
       <svg
         t="1619161258814"
@@ -130,7 +131,9 @@
       </svg>
     </el-popover>
 
-    <div class="end_button" @click="endSession()"><b>END</b></div>
+    <div class="end_button" @click="endSession()">
+      <b>END</b>
+    </div>
   </div>
 </template>
 
@@ -176,23 +179,25 @@ export default {
     turnOff: {
       type: Function
     },
-    open:{
+    open: {
       type: Function
     },
-    showResponse:{
-       type: Function
+    showResponse: {
+      type: Function
     },
-    isResponseShow:{
-      type:Boolean,
-      default:false,
+    isResponseShow: {
+      type: Boolean,
+      default: false
+    },
+    openProject: {
+      type: Function
     }
   },
   components: {
     dashboardMenu
   },
-  data(){
-    return{
-    }
+  data() {
+    return {};
   },
   methods: {
     lastPage() {
@@ -200,8 +205,8 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage--;
         let page = this.currentPage;
-        if(this.isDashboard){
-          page = page -1;
+        if (this.isDashboard) {
+          page = page - 1;
         }
         this.changePage(page);
       }
@@ -210,8 +215,8 @@ export default {
       if (this.currentPage < this.totalPage) {
         this.currentPage++;
         let page = this.currentPage;
-        if(this.isDashboard){
-          page = page -1;
+        if (this.isDashboard) {
+          page = page - 1;
         }
         this.changePage(page);
       }
@@ -221,13 +226,11 @@ export default {
       this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
       this.turnOff();
     },
-    showRes(){
+    showRes() {
       this.showResponse();
-  //    this.isResponseShow = !this.isResponseShow;
+      //    this.isResponseShow = !this.isResponseShow;
     },
-    endSession(){
-
-    },
+    endSession() {}
   }
 };
 </script>
@@ -326,8 +329,7 @@ strong {
   margin-right: 10px;
   margin-left: 20px;
 }
-.end_button{
-
+.end_button {
   width: 40px;
   height: 40px;
   display: flex;
@@ -337,7 +339,6 @@ strong {
   margin-right: 20px;
   color: white;
   cursor: pointer;
-
 }
 
 .info_area {
@@ -357,7 +358,7 @@ strong {
   color: #ffffff;
   overflow: hidden;
 }
-.back_red{
+.back_red {
   background-color: red;
 }
 .button_text {

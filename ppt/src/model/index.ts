@@ -30,6 +30,34 @@ export const getAllPPTS = async (slideid: string) => {
   return list
 }
 
+
+//请求后台进行ppt刷新
+export const requestRefreshPPT = async (slideid:string)=>{
+  const data = await axios.post(`${PPT.requestUrl}slide/download`,{
+    slide_id: slideid,
+  //  token:_token,
+  })
+  let res = data.data;
+  return res;
+
+}
+
+//slide/get_task_result
+
+
+//查询后台ppt更新状态
+export const queryRefreshResult = async (taskId:string,_token:string)=>{
+  const data = await axios.post(`${PPT.requestUrl}slide/get_task_result`,{
+    task_id: taskId,
+    token:_token,
+  })
+  let res = data;
+  return res;
+
+}
+
+
+
 // 获取授权登录
 export const getTeacherLoginUrl = async (): Promise<string> => {
   const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_teacher`, {
