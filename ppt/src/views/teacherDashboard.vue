@@ -51,6 +51,7 @@
       :changePage="giveFocus"
       :turnModel="turnModel"
       :openProject="openProject"
+      :sile_id="slide_id"
     />
 
     <div class="share_room" @click="copyUrl()">Share Class</div>
@@ -58,12 +59,17 @@
       <studentList :teacherList="teacherList" :studentList="studentList" />
     </el-dialog>
 
-    <el-dialog title="Step One" :visible.sync="stepOneDialog" :close-on-click-modal="false" :show-close="false">
-      <stepOneView :openTwo="openTwo"/>
+    <el-dialog
+      title="Wellcom to the Teacher Dashboard!"
+      :visible.sync="stepOneDialog"
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
+      <stepOneView :openTwo="openTwo" />
     </el-dialog>
 
     <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
-      <stepTwoView/>
+      <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
     </el-dialog>
   </div>
 </template>
@@ -655,9 +661,13 @@ export default {
 
       return count;
     },
-    openTwo(){
+    openTwo() {
       this.stepOneDialog = false;
       this.stepTwoDialog = true;
+    },
+    closeTwo() {
+      this.stepOneDialog = false;
+      this.stepTwoDialog = false;
     }
   }
 };

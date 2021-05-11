@@ -24,7 +24,7 @@ export const getAllPPTS = async (slideid: string) => {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'
     // })
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return list
@@ -32,10 +32,10 @@ export const getAllPPTS = async (slideid: string) => {
 
 
 //请求后台进行ppt刷新
-export const requestRefreshPPT = async (slideid:string)=>{
-  const data = await axios.post(`${PPT.requestUrl}slide/download`,{
+export const requestRefreshPPT = async (slideid: string, _token: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/download`, {
     slide_id: slideid,
-  //  token:_token,
+    token: _token,
   })
   let res = data.data;
   return res;
@@ -46,12 +46,12 @@ export const requestRefreshPPT = async (slideid:string)=>{
 
 
 //查询后台ppt更新状态
-export const queryRefreshResult = async (taskId:string,_token:string)=>{
-  const data = await axios.post(`${PPT.requestUrl}slide/get_task_result`,{
+export const queryRefreshResult = async (taskId: string, _token: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/get_task_result`, {
     task_id: taskId,
-    token:_token,
+    token: _token,
   })
-  let res = data;
+  let res = data.data;
   return res;
 
 }
@@ -68,7 +68,7 @@ export const getTeacherLoginUrl = async (): Promise<string> => {
   // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return authUrl
@@ -98,7 +98,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
   // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result
@@ -114,7 +114,7 @@ export const getStudentLoginUrl = async (): Promise<string> => {
   // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return authUrl

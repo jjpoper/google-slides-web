@@ -115,6 +115,7 @@
         :isDashboard="isDashboard"
         :open="open"
         :openProject="openProject"
+        :slide_id="slide_id"
       />
       <svg
         t="1619161258814"
@@ -146,6 +147,10 @@ export default {
     currentPage: {
       type: Number,
       default: 1
+    },
+    slide_id:{
+      type:String,
+      default:'',
     },
     totalPage: {
       type: Number,

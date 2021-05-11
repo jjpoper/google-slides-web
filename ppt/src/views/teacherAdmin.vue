@@ -325,18 +325,12 @@ export default {
     startConnectRoom() {
       this.joinRoom();
       this.openShare();
-      requestRefreshPPT(this.slide_id)
+      requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
           // console.log(res);
-          if (res.success) {
+          if (res.data.task_id) {
             let code = res.data.task_id;
-            var count = 0;
-            queryRefreshResult(code, this.token).then(res => {
-
-            })
-            .catch(res=>{
-
-            });
+            this.queryResult(code, this.token, 0);
           } else {
             this.getAllSlides();
             hideLoading();
@@ -348,6 +342,30 @@ export default {
           hideLoading();
         });
       //todo  检查更新完毕后，再获取ppt
+    },
+
+    queryResult(code, token, count) {
+      let _this = this;
+      if (count < 19) {
+        queryRefreshResult(code, token)
+          .then(res => {
+            if (res.data.status === "processing") {
+              setTimeout(function() {
+                _this.queryResult(code, token, ++count);
+              }, 10000);
+            } else {
+              this.getAllSlides();
+              hideLoading();
+            }
+          })
+          .catch(res => {
+            this.getAllSlides();
+            hideLoading();
+          });
+      } else {
+        this.getAllSlides();
+        hideLoading();
+      }
     },
     sendComment({
       studentId,
