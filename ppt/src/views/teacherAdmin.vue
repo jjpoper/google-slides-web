@@ -3,7 +3,6 @@
     <el-main>
       <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
         <pptcontent v-if="!showResponse" :url="currentItemData.thumbnail_url" :teacher="true" />
-
         <teacherIndexItem
           v-else-if="currentItemData && currentItemData.items[0]"
           :data="currentItemData"
@@ -362,6 +361,9 @@ export default {
     startConnectRoom() {
       this.joinRoom();
       this.openShare();
+      this.getAllSlides();
+          hideLoading();
+          return
       requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
           // console.log(res);
