@@ -15,10 +15,7 @@
           </div>
 
           <div class="response_flag">
-            <div
-              class="top"
-              :style="'width:' + responsePercentage[index] + '%'"
-            ></div>
+            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
           </div>
         </div>
       </div>
@@ -37,9 +34,10 @@
           />
         </div>
       </div>
-      <div class="number_info">
-        Class Roster {{ currentResponseCount }}/{{ studentCounts }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}</div>
 
       <commentModal />
     </div>
@@ -51,8 +49,28 @@
       :totalPage="slides.length"
       :isDashboard="true"
       :changePage="giveFocus"
-      :turnOff="turnModel"
+      :turnModel="turnModel"
+      :openProject="openProject"
+      :sile_id="slide_id"
     />
+
+    <div class="share_room" @click="copyUrl()">Share Class</div>
+    <el-dialog title="Classroom Roster" :visible.sync="dialogTableVisible">
+      <studentList :teacherList="teacherList" :studentList="studentList" />
+    </el-dialog>
+
+    <el-dialog
+      title="Wellcom to the Teacher Dashboard!"
+      :visible.sync="stepOneDialog"
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
+      <stepOneView :openTwo="openTwo" />
+    </el-dialog>
+
+    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
+      <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
+    </el-dialog>
   </div>
 </template>
 <style scoped>
@@ -127,6 +145,7 @@
   border-radius: 5px;
   text-align: center;
   padding-top: 13px;
+  cursor: pointer;
 }
 
 .image_parent {
@@ -159,28 +178,56 @@ image {
 .control_panel {
   width: 100%;
 }
+
+.share_room {
+  width: 100px;
+  height: 30px;
+  position: fixed;
+  text-align: center;
+  right: 200px;
+  top: 20px;
+  font-size: 14px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 5px;
+  padding-top: 13px;
+  cursor: pointer;
+}
 </style>
 <script>
 import { MessageBox } from "element-ui";
 import copy from "copy-to-clipboard";
 import pptcontent from "../components/pptcontent";
-import { getAllPPTS } from "../model/index";
+import {
+  getAllPPTS,
+  getTeacherLoginUrl,
+  getUserProfile,
+  requestRefreshPPT,
+  queryRefreshResult
+} from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
+import studentList from "../components/teacher/studentList";
 import { createSo } from "../socket/socket.teacher";
 import {
   ClassRoomModelEnum,
   ModalEventsNameEnum,
-  SocketEventsEnum,
+  SocketEventsEnum
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList,
+  saveTeacherUserName,
+  getTeacherUserName,
+  getTeacherStoreToken,
+  saveTeacherStoreToken
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
+import stepOneView from "../components/teacher/openDashboardStepOne";
+import stepTwoView from "../components/teacher/openDashboardStepTwo";
 
 export default {
   data() {
@@ -191,7 +238,7 @@ export default {
       currentIndex: 0,
       slide_id: 0,
       currentSo: null,
-      uid: getTeacherUid(), // uid
+      uid: "", // uid
       currentItemData: null,
       currentAnswerCount: 0,
       currentResponseCount: 0,
@@ -200,12 +247,19 @@ export default {
       currentSo: null,
       responseContentList: [],
       currentModel: ClassRoomModelEnum.TEACHER_MODEL,
+      token: "",
+      name: "",
+      dialogTableVisible: false,
+      teacherList: [],
+      studentList: [],
+      stepOneDialog: false,
+      stepTwoDialog: false
     };
   },
   mounted() {
     this.joinRoom();
     //   this.openShare();
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       console.log("send comment!!");
       this.sendComment(data);
     });
@@ -213,23 +267,97 @@ export default {
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   components: {
     pptcontent,
     teacherIndexItem,
     commentModal,
     teacherControlPanel,
+    studentList,
+    stepOneView,
+    stepTwoView
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.slide_id = to.query.slide_id;
+    next(vm => {
+      const { slide_id, token } = to.query;
+      vm.slide_id = slide_id;
+      if (token) {
+        vm.token = token;
+        saveTeacherStoreToken(token);
+      } else {
+        vm.token = getTeacherStoreToken();
+      }
+      vm.initWithToken();
       vm.currentIndex = to.query.currentPage;
       vm.currentModel = to.query.model;
-      vm.getAllSlides();
+      vm.stepOneDialog = to.query.direct;
     });
+    // next(vm => {
+    //   vm.slide_id = to.query.slide_id;
+    //   vm.currentIndex = to.query.currentPage;
+    //   vm.currentModel = to.query.model;
+    //   vm.getAllSlides();
+    // });
   },
   methods: {
+    // 检查token
+    initWithToken() {
+      showLoading();
+      if (!this.token) {
+        this.goToLogin();
+      } else {
+        getUserProfile(this.token).then(({ logout, profile }) => {
+          if (logout) {
+            this.goToLogin();
+          } else {
+            this.afterLogin(profile);
+            this.getAllSlides();
+          }
+        });
+      }
+    },
+    goToLogin() {
+      getTeacherLoginUrl().then(url => {
+        console.log(url);
+        if (url) {
+          location.href = url;
+        }
+      });
+    },
+
+    afterLogin({ user_name, email }) {
+      this.name = user_name;
+      this.uid = email;
+      console.log(this.name, this.uid, "get teacher info");
+      // saveTeacherUserName(name);
+      this.startConnectRoom();
+    },
+    startConnectRoom() {
+      this.joinRoom();
+      //    this.openShare();
+      requestRefreshPPT(this.slide_id)
+        .then(res => {
+          // console.log(res);
+          if (res.success) {
+            let code = res.data.task_id;
+            var count = 0;
+            queryRefreshResult(code, this.token)
+              .then(res => {})
+              .catch(res => {});
+          } else {
+            this.getAllSlides();
+            hideLoading();
+          }
+        })
+        .catch(res => {
+          console.log(res, "net request error!!");
+          this.getAllSlides();
+          hideLoading();
+        });
+      //todo  检查更新完毕后，再获取ppt
+      //  hideLoading();
+    },
     turnModel() {
       if (this.currentModel === ClassRoomModelEnum.STUDENT_MODEL) {
         this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
@@ -239,8 +367,7 @@ export default {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         console.log(this.currentModel, "send message");
-        this.currentSo.emit(
-          SocketEventsEnum.MODEL_CHANGE,
+        this.emitSo(
           `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.currentModel}"}}`
         );
       }
@@ -252,7 +379,7 @@ export default {
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -264,7 +391,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -274,7 +401,16 @@ export default {
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
       // this.emitSo(itemData)
     },
+    openProject() {
+      const url = `${location.origin}${location.pathname}#/teacher?slide_id=${this.slide_id}&page=${this.currentIndex}&model=${this.currentModel}`;
+
+      window.open(url);
+    },
     getResponeCount() {
+      if (!this.currentItemData.items[0]) {
+        console.log(this.currentItemData);
+        return;
+      }
       const list = getCurrentPageAnswerList(
         this.currentItemData.page_id,
         this.currentItemData.items[0].type
@@ -304,7 +440,7 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -327,16 +463,17 @@ export default {
       });
     },
     copyUrl() {
-      let url = location.href;
-      url = url.substring(0, url.indexOf("&"));
-      console.log(url);
-      copy(`${url.replace(/teacher/, "students")}&page=${this.currentIndex}`);
-      showToast("copy link success" + url);
+      if (!this.currentModel) {
+        this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
+      }
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&model=${this.currentModel}`;
+      copy(url);
+      showToast("copy link success");
     },
     giveFocus(index, notSend) {
       this.currentIndex = index;
       this.getItemData();
-      if (!notSend) {
+      if (!notSend && this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
           `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
         );
@@ -348,7 +485,12 @@ export default {
       this.$forceUpdate();
     },
     joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.uid, this.msgListener);
+      this.currentSo = createSo(this.slide_id, this.token, this.msgListener);
+      // let teacher = new Object();
+      // teacher.name = this.name ? this.name : "A teacher";
+      // teacher.state = "online";
+      // teacher.user_id = this.uid;
+      // this.teacherList.push(teacher);
     },
     msgListener(d = {}) {
       // answer: "Lily"
@@ -361,6 +503,69 @@ export default {
         // 人数更新
         console.log(d.student_count, "d.student_count");
         this.studentCounts = d.student_count;
+        if (d.join_in) {
+          let student = new Object();
+          student.name = d.join_in.user_name;
+          student.user_id = d.join_in.user_id;
+          student.state = "online";
+          student.count = 1;
+          let findFlag = false;
+          if (d.join_in.role == "student") {
+            for (let i = 0; i < this.studentList.length; i++) {
+              if (this.studentList[i].user_id == student.user_id) {
+                this.studentList[i].count++;
+                this.studentList[i].state = "online";
+                findFlag = true;
+              }
+            }
+            if (!findFlag) {
+              this.studentList.push(student);
+            }
+          } else if (d.join_in.role == "teacher") {
+            for (let i = 0; i < this.teacherList.length; i++) {
+              if (this.teacherList[i].user_id == student.user_id) {
+                this.teacherList[i].count++;
+                this.teacherList.state = "online";
+                findFlag = true;
+              }
+            }
+            if (!findFlag) {
+              this.teacherList.push(student);
+            }
+          }
+        } else if (d.quit) {
+          if (d.quit.role == "student") {
+            for (let i = 0; i < this.studentList.length; i++) {
+              if (this.studentList[i].user_id == d.quit.user_id) {
+                this.studentList[i].count--;
+                if (this.studentList[i].count < 1) {
+                  this.studentList[i].state = "offline";
+                }
+              }
+            }
+            console.log(this.studentList, "test quit");
+          } else if (d.quit.role == "teacher") {
+            for (let i = 0; i < this.teacherList.length; i++) {
+              if (this.teacherList[i].user_id == d.quit.user_id) {
+                this.teacherList[i].count--;
+                if (this.teacherList[i].count < 1) {
+                  this.teacherList[i].state = "offline";
+                }
+              }
+            }
+            console.log(this.teacherList, "test quit");
+          }
+        }
+        this.$forceUpdate();
+      } else if (d.type === SocketEventsEnum.RENAME) {
+        // 改名
+        const { user_id, user_name_new } = d;
+        for (let i = 0; i < this.studentList.length; i++) {
+          if (this.studentList[i].user_id == user_id) {
+            this.studentList[i].name = user_name_new;
+            break;
+          }
+        }
       } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new, student_count } = d;
@@ -371,6 +576,9 @@ export default {
             this.giveFocus(parseInt(d.params.page), true);
           }
         }
+      } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
+        this.currentModel = d.params.model;
+        this.$forceUpdate();
       }
 
       // 回答问题
@@ -383,7 +591,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
         EventBus.$emit("choice", { user_id, answer });
       } else if (
@@ -397,7 +605,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -406,7 +614,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -423,9 +631,44 @@ export default {
     showres() {
       this.showResponse = true;
     },
+    //显示当前的学生
+    showStudents() {
+      this.dialogTableVisible = true;
+    },
     hideRes() {
       this.showResponse = false;
     },
-  },
+
+    getStudentOnLineCount() {
+      let i = 0;
+      let count = 0;
+      for (i = 0; i < this.studentList.length; i++) {
+        if ("online" == this.studentList[i].state) {
+          count++;
+        }
+      }
+
+      return count;
+    },
+    getTeacherOnLineCount() {
+      let i = 0;
+      let count = 0;
+      for (i = 0; i < this.teacherList.length; i++) {
+        if ("online" == this.teacherList[i].state) {
+          count++;
+        }
+      }
+
+      return count;
+    },
+    openTwo() {
+      this.stepOneDialog = false;
+      this.stepTwoDialog = true;
+    },
+    closeTwo() {
+      this.stepOneDialog = false;
+      this.stepTwoDialog = false;
+    }
+  }
 };
 </script>

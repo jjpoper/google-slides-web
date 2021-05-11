@@ -33,15 +33,10 @@ callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
   socket.on('control', (data: any) => {
     console.log("收到系统信息：" + data);
     callback({ mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data) })
-  })
+  });
 
   socket.on('rename', (data: any) => {
     callback({ type: SocketEventsEnum.RENAME, ...JSON.parse(data) })
-  });
-
-  socket.on(SocketEventsEnum.MODEL_CHANGE, (data: string) => {
-    console.log("老师发来了消息反馈。详细数据：" + data);
-    callback({ mtype: SocketEventsEnum.MODEL_CHANGE, ...JSON.parse(data) })
   });
 
   return socket

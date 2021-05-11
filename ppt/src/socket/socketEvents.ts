@@ -9,6 +9,7 @@ export enum SocketEventsEnum {
   TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
   CONTROL ="teacher_control",//教师端发送控制命令
   MODEL_CHANGE = 'Model_Change',
+  SHOW_RESPONSE = 'show_response',
 }
 
 export enum ModalEventsNameEnum {

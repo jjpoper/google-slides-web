@@ -317,11 +317,13 @@ export default {
       console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
-        this.pageChange(parseInt(d.params.page) + 1);
+        if(d.type== SocketEventsEnum.GO_PAGE){
+          this.pageChange(parseInt(d.params.page) + 1);
+        }else if(d.type == SocketEventsEnum.MODEL_CHANGE){
+          this.currentModel = d.params.model;
+        }
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
-      }else if(d.mtype == SocketEventsEnum.MODEL_CHANGE){
-        this.currentModel = d.params.model;
       }
     },
     // 收到评论
