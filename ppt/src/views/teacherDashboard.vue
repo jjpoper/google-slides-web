@@ -51,7 +51,9 @@
       :changePage="giveFocus"
       :turnModel="turnModel"
       :openProject="openProject"
-      :sile_id="slide_id"
+      :slide_id="slide_id"
+      :endLesson="endLesson"
+      :turnOff="turnModel"
     />
 
     <div class="share_room" @click="copyUrl()">Share Class</div>
@@ -70,6 +72,22 @@
 
     <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
       <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
+    </el-dialog>
+
+    <el-dialog title="Ending Session" class="Ending Session" :visible.sync="dialogVisible">
+      <div class="dialog_page">
+        <strong>Your session is currently in Student-Paced Mode. Are you sure you want to end your session?</strong>
+
+        <div class="opts">
+          <el-button type="danger" @click="leavePage()" class="leave_btn">
+            <b>Leave and Allow Students To Keep Working</b>
+          </el-button>
+
+          <el-button class="confirm_btn" @click="endLesson(true)">
+            <b>Yes,I'm sure!</b>
+          </el-button>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -193,6 +211,24 @@ image {
   padding-top: 13px;
   cursor: pointer;
 }
+
+.dialog_page {
+  display: flex;
+  flex-direction: column;
+}
+
+.opts {
+  display: flex;
+  flex-direction: row-reverse;
+  padding-top: 20px;
+}
+.leave_btn {
+  color: #ffffff;
+}
+.confirm_btn {
+  color: #000000;
+  margin-right: 20px;
+}
 </style>
 <script>
 import { MessageBox } from "element-ui";
@@ -253,7 +289,8 @@ export default {
       teacherList: [],
       studentList: [],
       stepOneDialog: false,
-      stepTwoDialog: false
+      stepTwoDialog: false,
+      dialogVisible: false
     };
   },
   mounted() {
@@ -668,6 +705,20 @@ export default {
     closeTwo() {
       this.stepOneDialog = false;
       this.stepTwoDialog = false;
+    },
+    endLesson(confirm) {
+      if (!confirm && this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
+        this.dialogVisible = true;
+      } else {
+        //离开
+      }
+    },
+    leavePage() {
+      let url = "https://docs.google.com/presentation/d/" + this.slide_id;
+      console.log(this.slide_id);
+      if (this.slide_id) {
+        window.location = url;
+      }
     }
   }
 };

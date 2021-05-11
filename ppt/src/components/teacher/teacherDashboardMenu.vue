@@ -76,7 +76,7 @@
       >Turn {{current_model=='Student-Paced'?'Off':'On'}} Student-Paced</div>
     </div>
 
-    <a class="menu_line">
+    <a class="menu_line" @click="endLesson()">
       <div class="v2pnav-option__icon mode-icon">
         <!--?xml version="1.0" encoding="utf-8"?-->
         <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -190,37 +190,6 @@
   margin-left: 0.9em;
   line-height: 1;
 }
-
-/*
-.v2pnav-option,
-a.v2pnav-option {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  color: #ffffff;
-  padding: 0.65em;
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
-.mode-icon,
-.mode-icon--dark-blue,
-.mode-icon--dark-green-blue,
-.mode-icon--live,
-.mode-icon--student-paced,
-.mode-icon--ended,
-.mode-icon--off {
-  width: 1em;
-  height: 1em;
-  position: relative;
-  fill: #29abe2;
-}
-
-.v2pnav-option__icon {
-  width: 1em;
-  height: 1em;
-  fill: #29abe2;
-} */
 </style>
 
 <script>
@@ -235,7 +204,7 @@ export default {
     },
     current_model: {
       type: String,
-      default: "student-paced"
+      default: "Insturctor-Paced"
     },
     isDashboard: {
       type: Boolean,
@@ -243,15 +212,28 @@ export default {
     },
     openProject: {
       type: Function
+    },
+    slide_id: {
+      type: String,
+      default: ""
+    },
+    endLesson:{
+      type:Function,
     }
   },
   methods: {
-   leavePage(){
-     if(this.isDashboard){
-       let url = "https://docs.google.com/presentation/d/"+this.slide_id;
-       window.location = url;
-     }
-   }
+    leavePage() {
+      if (this.isDashboard) {
+        let url = "https://docs.google.com/presentation/d/" + this.slide_id;
+        console.log(this.slide_id);
+        if (this.slide_id) {
+          window.location = url;
+        }
+      } else {
+        let url = "https://dev.classcipe.com/";
+        window.location = url;
+      }
+    },
   }
 };
 </script>

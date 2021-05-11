@@ -24,11 +24,30 @@
           :showResponse="showres"
           :current_response="currentAnswerCount"
           :isResponseShow="showResponse"
+          :slide_id="slide_id"
+          :endLesson="endLesson"
+          :turnOff="turnModel"
         />
       </div>
     </el-main>
     <commentModal />
     <div class="share_room" @click="copyUrl()">Share Class</div>
+
+    <el-dialog title="Ending Session" :visible.sync="dialogVisible">
+      <div class="dialog_page">
+        <strong>Your session is currently in Student-Paced Mode. Are you sure you want to end your session?</strong>
+
+        <div class="opts">
+          <el-button type="danger" @click="leavePage()" class="leave_btn">
+            <b>Leave and Allow Students To Keep Working</b>
+          </el-button>
+
+          <el-button class="confirm_btn" @click="endLesson(true)">
+            <b>Yes,I'm sure!</b>
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 <style scoped>
@@ -131,6 +150,23 @@
   padding-top: 10px;
   cursor: pointer;
 }
+.dialog_page {
+  display: flex;
+  flex-direction: column;
+}
+
+.opts {
+  display: flex;
+  flex-direction: row-reverse;
+  padding-top: 20px;
+}
+.leave_btn {
+  color: #ffffff;
+}
+.confirm_btn {
+  color: #000000;
+  margin-right: 20px;
+}
 </style>
 <script>
 import { MessageBox } from "element-ui";
@@ -192,7 +228,8 @@ export default {
       current_page: 0,
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
-      token: ""
+      token: "",
+      dialogVisible: false
     };
   },
   mounted() {
@@ -346,13 +383,13 @@ export default {
 
     queryResult(code, token, count) {
       let _this = this;
-      if (count < 19) {
+      if (count < 2) {
         queryRefreshResult(code, token)
           .then(res => {
             if (res.data.status === "processing") {
               setTimeout(function() {
                 _this.queryResult(code, token, ++count);
-              }, 10000);
+              }, 2000);
             } else {
               this.getAllSlides();
               hideLoading();
@@ -642,6 +679,20 @@ export default {
       this.emitSo(
         `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": "${this.showResponse}"}}`
       );
+    },
+    endLesson(confirm) {
+      if (!confirm && this.page_model == ClassRoomModelEnum.STUDENT_MODEL) {
+        this.dialogVisible = true;
+      } else {
+        //离开
+      }
+    },
+    leavePage() {
+      let url = "https://dev.classcipe.com/";
+      console.log(this.slide_id);
+      if (this.slide_id) {
+        window.location = url;
+      }
     }
     // hideRes() {
     //   this.showResponse = false;

@@ -116,6 +116,7 @@
         :open="open"
         :openProject="openProject"
         :slide_id="slide_id"
+        :endLesson="endLesson"
       />
       <svg
         t="1619161258814"
@@ -196,13 +197,18 @@ export default {
     },
     openProject: {
       type: Function
+    },
+    endLesson:{
+      type:Function
     }
   },
   components: {
     dashboardMenu
   },
   data() {
-    return {};
+    return {
+      dialogVisible:false,
+    };
   },
   methods: {
     lastPage() {
