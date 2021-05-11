@@ -53,7 +53,9 @@
       :openProject="openProject"
       :slide_id="slide_id"
       :endLesson="endLesson"
+      :showResponse="showres"
       :turnOff="turnModel"
+      :isResponseShow="showResponse"
     />
 
     <div class="share_room" @click="copyUrl()">Share Class</div>
@@ -268,7 +270,7 @@ import stepTwoView from "../components/teacher/openDashboardStepTwo";
 export default {
   data() {
     return {
-      showResponse: true, // 展示学生的回应
+      showResponse: false, // 展示学生的回应
       studentCounts: 0,
       slides: [],
       currentIndex: 0,
@@ -535,7 +537,7 @@ export default {
       // page_id: "page_1"
       // room: "1KxKT-_j8Z1L4ag4waifI9hnDRm0C9yNnFt7VKwVVqCg"
       // user_id: "slidec3dcef92c1cf458c"
-      console.log(d);
+      console.log(d.type);
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         console.log(d.student_count, "d.student_count");
@@ -616,6 +618,11 @@ export default {
       } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
         this.currentModel = d.params.model;
         this.$forceUpdate();
+      } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
+        if (d.room == this.slide_id) {
+          this.showResponse = d.params.response;
+          console.log(this.showResponse, "show res change!!!");
+        }
       }
 
       // 回答问题
@@ -665,15 +672,9 @@ export default {
         this.currentSo.emit("control", message);
       }
     },
-    showres() {
-      this.showResponse = true;
-    },
     //显示当前的学生
     showStudents() {
       this.dialogTableVisible = true;
-    },
-    hideRes() {
-      this.showResponse = false;
     },
 
     getStudentOnLineCount() {
@@ -705,6 +706,12 @@ export default {
     closeTwo() {
       this.stepOneDialog = false;
       this.stepTwoDialog = false;
+    },
+    showres() {
+      this.showResponse = !this.showResponse;
+      this.emitSo(
+        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": ${this.showResponse}}}`
+      );
     },
     endLesson(confirm) {
       if (!confirm && this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {

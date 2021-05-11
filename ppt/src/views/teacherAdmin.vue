@@ -610,6 +610,11 @@ export default {
           this.page_model = d.params.model;
           console.log(this.page_model, "model change!!!");
         }
+      } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
+        if (d.room == this.slide_id) {
+          this.showResponse = d.params.response;
+          console.log(this.showResponse, "show res change!!!");
+        }
       }
 
       // 回答问题
@@ -677,7 +682,7 @@ export default {
     showres() {
       this.showResponse = !this.showResponse;
       this.emitSo(
-        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": "${this.showResponse}"}}`
+        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": ${this.showResponse}}}`
       );
     },
     endLesson(confirm) {

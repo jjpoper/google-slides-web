@@ -66,6 +66,7 @@
       :class="isResponseShow?'button_area back_red':'button_area'"
       @click="showRes()"
       style="margin-right: 20px"
+      v-if="!isDashboard||current_model=='Insturctor-Paced'"
     >
       <svg
         t="1620464720996"
@@ -84,7 +85,7 @@
         />
       </svg>
 
-      <strong class="button_text">{{response_show?'Hide ':'Show '}} Response</strong>
+      <strong class="button_text">{{isResponseShow?'Hide ':'Show '}} Response</strong>
     </div>
 
     <div class="button_area" v-if="current_model === 'Student-Paced'" @click="closeStudentPaced()">
@@ -133,7 +134,7 @@
       </svg>
     </el-popover>
 
-    <div class="end_button" @click="endSession()">
+    <div class="end_button" @click="endLesson()">
       <b>END</b>
     </div>
   </div>
@@ -241,7 +242,6 @@ export default {
       this.showResponse();
       //    this.isResponseShow = !this.isResponseShow;
     },
-    endSession() {}
   }
 };
 </script>
