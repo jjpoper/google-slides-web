@@ -2,13 +2,13 @@
   <el-container>
     <el-main>
       <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-        <pptcontent :url="currentItemData.thumbnail_url" :teacher="true" />
+        <pptcontent :url="currentItemData.thumbnail_url"/>
       </div>
 
       <div class="sfooter" v-if="slides.length > 0">
         <div>
           {{uname}}
-          <el-button type="primary" @click="enterUname(false)">Change name</el-button>
+          <el-button type="primary" @click="enterUname(false)" style="margin-left: 20px">Change name</el-button>
         </div>
 
         <el-pagination
@@ -22,14 +22,14 @@
           :page-count="slides.length"
           v-if="currentModel=='Student-Paced'"
         ></el-pagination>
-        <div class = "checkboxs">
-          <el-checkbox :value="currentAnswerd">slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
+        <div class="checkboxs">
+          <el-checkbox :value="currentAnswerd" style="color: #fff">slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
           <!-- <div class="scroll-mask"></div> -->
         </div>
         <i
           class="el-icon-chat-dot-round readchat"
           @click="showStudentModal"
-          :style="{color: unread ? 'red' : '#333'}"
+          :style="{color: unread ? 'red' : '#fff'}"
         />
       </div>
     </el-main>
@@ -64,6 +64,10 @@
   </el-container>
 </template>
 <style>
+.block{
+  width: 100%;
+  height: 100%;
+}
 .scroll-student {
   max-height: 700px;
   background-color: #999;
@@ -80,10 +84,19 @@
 }
 .sfooter {
   height: 50px;
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background: #000000aa;
+  color: #fff;
+  z-index: 9999;
+}
+.sfooter div{
+  margin: 0 20px;
 }
 .page_index{
   position: relative;
