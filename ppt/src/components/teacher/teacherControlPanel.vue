@@ -84,7 +84,7 @@
         />
       </svg>
 
-      <strong class="button_text">{{response_show?'Hide ':'Show '}} Response</strong>
+      <!-- <strong class="button_text">{{response_show?'Hide ':'Show '}} Response</strong> -->
     </div>
 
     <div class="button_area" v-if="current_model === 'Student-Paced'" @click="closeStudentPaced()">

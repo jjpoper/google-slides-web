@@ -4,7 +4,7 @@
       <div :key="item.user_id">
         <p class="uname" v-if="data.flag">{{item.user_name}}</p>
         <div id="canvasouter" >
-          <img :src="item.content" />
+          <img :src="item.content" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`"/>
         </div>
       </div> 
     </template>
@@ -26,7 +26,9 @@ export default {
     },
     data() {
       return {
-        imgUrls: []
+        imgUrls: [],
+        width: 0,
+        height: 0
       }
     },
     mounted() {
@@ -35,6 +37,9 @@ export default {
         // 通知展示当前pageid，当前itemid的评论框
         this.draw(data)
       })
+      // let outer = document.getElementById('canvasouter')
+      this.width = document.documentElement.clientWidth - 40;
+      this.height = document.documentElement.clientHeight - 40 ;
     },
     methods: {
       draw({user_id, content, user_name}) {
@@ -53,9 +58,9 @@ export default {
 
 <style >
     .drawlist{
-      width: 450px;
+      width: 100%;
       position: relative;
-      margin: 0 auto;
+      margin: 20px;
     }
     #canvasouter {
         cursor: default;

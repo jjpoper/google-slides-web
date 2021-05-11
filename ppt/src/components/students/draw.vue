@@ -1,6 +1,6 @@
 <template>
     <div id="canvasouter" >
-      <canvas id="canvas" width="400" height="400" ></canvas>
+      <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
       <div class="canvasfooter">
         <div class="red-pencial" @click="changeColor('red')"></div>
         <div class="blue-pencial"  @click="changeColor('blue')"></div>
@@ -31,12 +31,12 @@ class Draw {
         this.canvas = document.getElementById(this.el)
         this.cxt = this.canvas.getContext('2d')
         // // console.log(canvas.getBoundingClientRect())
-        this.stage_info = canvas.getBoundingClientRect()
+        // this.stage_info = canvas.getBoundingClientRect()
         this.canvasPool = []
-        // this.stage_info = {
-        //   left: 0,
-        //   top: 0
-        // }
+        this.stage_info = {
+          left: 20,
+          top: 20
+        }
         this.path = {
             beginX: 0,
             beginY: 0,
@@ -61,7 +61,8 @@ class Draw {
     }
 
     init(ws, btn, outerWitdh, sendCanvas, initData) {
-        // this.canvas.width = outerWitdh
+        this.canvas.width = document.documentElement.clientWidth - 40;
+        this.canvas.height = document.documentElement.clientHeight - 40;
         // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
         this.sendCanvas = sendCanvas
         this.canvas.onmousedown = () => {
@@ -198,6 +199,10 @@ export default {
           return {}
         }
       },
+      url: {
+        type: String,
+        default: '',
+      },
     },
     data() {
       return {
@@ -206,6 +211,8 @@ export default {
     },
     mounted() {
       let outer = document.getElementById('canvasouter')
+      outer.style.width = document.documentElement.clientWidth - 40 + 'px';
+      outer.style.height = document.documentElement.clientHeight - 40 + 'px';
       let outerWitdh = outer.clientWidth
       this.draw = new Draw('canvas')
 
@@ -237,21 +244,20 @@ export default {
     #canvasouter {
         cursor: default;
         width: 100%;
-        height: 500px;
         position: relative;
+        margin: 20px;
     }
     #canvas{
-      /* position: absolute; */
-      background: pink;
-      /* left: 0;
-      top:0 */
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center
     }
     .canvasfooter{
       width: 100%;
       height: 100px;
       line-height: 50px;
       position: absolute;
-      top: 400px;
+      bottom: 10px;
       left: 0;
       display: flex;
       justify-content: center;

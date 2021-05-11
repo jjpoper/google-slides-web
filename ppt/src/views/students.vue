@@ -1,40 +1,12 @@
 <template>
   <el-container>
-    <el-main>
-      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+    <el-main v-if="currentItemData && currentItemData.thumbnail_url && currentItemData.items[0].type !== 'draw'">
+      <div class="block">
         <pptcontent :url="currentItemData.thumbnail_url"/>
-      </div>
-
-      <div class="sfooter" v-if="slides.length > 0">
-        <div>
-          {{uname}}
-          <el-button type="primary" @click="enterUname(false)" style="margin-left: 20px">Change name</el-button>
-        </div>
-
-        <el-pagination
-          class="page_index"
-          style="line-height: 50px"
-          background
-          small
-          layout="prev, pager, next"
-          @current-change="pageChange"
-          :current-page="parseInt(currentIndex)+1"
-          :page-count="slides.length"
-          v-if="currentModel=='Student-Paced'"
-        ></el-pagination>
-        <div class="checkboxs">
-          <el-checkbox :value="currentAnswerd" style="color: #fff">slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
-          <!-- <div class="scroll-mask"></div> -->
-        </div>
-        <i
-          class="el-icon-chat-dot-round readchat"
-          @click="showStudentModal"
-          :style="{color: unread ? 'red' : '#fff'}"
-        />
       </div>
     </el-main>
     <el-aside
-      width="40%"
+      :width="`${currentItemData.items[0].type !== 'draw' ? '40%' : '100%'}`"
       style="position: relative"
       v-if="currentItemData && currentItemData.items[0]"
     >
@@ -44,6 +16,7 @@
         :method="answerText"
         :answer="answerChoice"
         :sendCanvas="sendCanvas"
+        :url="currentItemData.thumbnail_url"
       />
       <student-comment />
     </el-aside>
@@ -61,6 +34,33 @@
         </studentsItem>
       </template>
     </el-aside>-->
+    <div class="sfooter" v-if="slides.length > 0">
+      <div>
+        {{uname}}
+        <el-button type="primary" @click="enterUname(false)" style="margin-left: 20px">Change name</el-button>
+      </div>
+
+      <el-pagination
+        class="page_index"
+        style="line-height: 50px"
+        background
+        small
+        layout="prev, pager, next"
+        @current-change="pageChange"
+        :current-page="parseInt(currentIndex)+1"
+        :page-count="slides.length"
+        v-if="currentModel=='Student-Paced'"
+      ></el-pagination>
+      <div class="checkboxs">
+        <el-checkbox :value="currentAnswerd" style="color: #fff">slide {{parseInt(currentIndex)+1}}/{{slides.length}}</el-checkbox>
+        <!-- <div class="scroll-mask"></div> -->
+      </div>
+      <i
+        class="el-icon-chat-dot-round readchat"
+        @click="showStudentModal"
+        :style="{color: unread ? 'red' : '#fff'}"
+      />
+    </div>
   </el-container>
 </template>
 <style>
