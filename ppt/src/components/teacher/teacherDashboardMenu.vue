@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="menu_line" @click="open(1)" v-if="!isDashboard">
+    <div class="menu_line" @click="open(0)" v-if="!isDashboard">
       <div class="v2pnav-option__icon mode-icon">
         <!--?xml version="1.0" encoding="utf-8"?-->
         <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -49,7 +49,7 @@
       <div class="v2pnav-option__label">Open Project in new tab</div>
     </div>
 
-    <div class="menu_line" @click="turnModel()">
+    <div class="menu_line" @click="turnModel()" v-if="!isClosed">
       <div class="v2pnav-option__icon mode-icon">
         <svg
           version="1.1"
@@ -71,12 +71,38 @@
         </svg>
       </div>
 
-      <div
-        class="v2pnav-option__label"
-      >Turn {{current_model=='Student-Paced'?'Off':'On'}} Student-Paced</div>
+      <div class="v2pnav-option__label">
+        Turn {{ current_model == "Student-Paced" ? "Off" : "On" }} Student-Paced
+      </div>
     </div>
 
-    <a class="menu_line" @click="endLesson()">
+    <a class="menu_line" v-if="isClosed" @click="reStartClassRoom()"
+      ><div class="v2pnav-option__icon mode-icon">
+        <!--?xml version="1.0" encoding="utf-8"?-->
+        <!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+        <svg
+          version="1.1"
+          id="Layer_1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          x="0px"
+          y="0px"
+          viewBox="0 0 64 64"
+          enable-background="new 0 0 64 64"
+          xml:space="preserve"
+        >
+          <path
+            d="M60,4H42.5c0-2.2-1.8-4-4-4h-13c-2.2,0-4,1.8-4,4H4C1.8,4,0,5.8,0,8c0,2.2,1.8,4,4,4h1v35c0,2.8,2.2,5,5,5h11.2l-5.8,5
+	c-1.7,1.4-1.9,4-0.4,5.6c0.8,0.9,1.9,1.4,3,1.4c0.9,0,1.8-0.3,2.6-1L32,53.3L43.4,63c0.8,0.6,1.7,1,2.6,1c1.1,0,2.2-0.5,3-1.4
+	c1.4-1.7,1.2-4.2-0.4-5.6l-5.8-5H54c2.8,0,5-2.2,5-5V12h1c2.2,0,4-1.8,4-4C64,5.8,62.2,4,60,4z M51,44H13V12h38V44z"
+          ></path>
+        </svg>
+      </div>
+      <div class="v2pnav-option__label">Reopen Session</div></a
+    >
+
+    <a class="menu_line" @click="endLesson()" v-if="!isClosed">
       <div class="v2pnav-option__icon mode-icon">
         <!--?xml version="1.0" encoding="utf-8"?-->
         <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -111,7 +137,11 @@
       <div class="v2pnav-option__label">End This Session</div>
     </a>
 
-    <a class="menu_line" v-if="current_model=='Student-Paced'" @click="leavePage()">
+    <a
+      class="menu_line"
+      v-if="isClosed || current_model == 'Student-Paced'"
+      @click="leavePage()"
+    >
       <div class="v2pnav-option__icon mode-icon">
         <!--?xml version="1.0" encoding="utf-8"?-->
         <!-- Generator: Adobe Illustrator 20.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -123,7 +153,7 @@
           x="0px"
           y="0px"
           viewBox="0 0 64 64"
-          style="enable-background:new 0 0 64 64;"
+          style="enable-background: new 0 0 64 64"
           xml:space="preserve"
         >
           <g>
@@ -193,33 +223,43 @@
 </style>
 
 <script>
+import { ClassRoomModelEnum } from "@/socket/socketEvents";
+import { startClassRoomReq } from "../../model/index";
 export default {
   props: {
     open: {
-      type: Function
+      type: Function,
+    },
+    isClosed: {
+      type: Boolean,
+      default: false,
     },
 
     turnModel: {
-      type: Function
+      type: Function,
     },
     current_model: {
       type: String,
-      default: "Insturctor-Paced"
+      default: "Insturctor-Paced",
     },
     isDashboard: {
       type: Boolean,
-      default: false
+      default: false,
     },
     openProject: {
-      type: Function
+      type: Function,
     },
     slide_id: {
       type: String,
-      default: ""
+      default: "",
     },
-    endLesson:{
-      type:Function,
-    }
+    endLesson: {
+      type: Function,
+    },
+    classRoomInfo: {
+      type: Object,
+      default: null,
+    },
   },
   methods: {
     leavePage() {
@@ -234,6 +274,22 @@ export default {
         window.location = url;
       }
     },
-  }
+
+    reStartClassRoom() {
+      startClassRoomReq(
+        this.classRoomInfo.author,
+        this.classRoomInfo.slide_id,
+        this.classRoomInfo.file_name,
+        "live"
+      )
+        .then((res) => {
+          console.log(res);
+          this.classRoomInfo = res;
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
+  },
 };
 </script>

@@ -22,7 +22,11 @@
 
     <button class="control-bar__button">
       <div class="control-bar__icon" @click="nextPage()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82" class="svg_right">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 35.12 60.82"
+          class="svg_right"
+        >
           <title>icon-control-btn__arrow</title>
           <path
             d="M14.44,31.91A8.54,8.54,0,0,0,17,38l8.93,9L39.47,60.67a5.64,5.64,0,0,0,8.15,0,6.58,6.58,0,0,0,0-8.93l-6.59-7-6.41-7-5.81-5.88,5.81-5.68,6.6-7,6.59-7a6.57,6.57,0,0,0,0-8.92,5.65,5.65,0,0,0-4.07-1.73,5.75,5.75,0,0,0-4.08,1.74L26.1,16.75l-8.93,8.93A8.71,8.71,0,0,0,14.44,31.91Z"
@@ -32,7 +36,7 @@
       </div>
     </button>
 
-    <div class="info_area">
+    <div :class="isClosed ? 'info_area' : 'info_area'">
       <svg
         t="1619161258814"
         slot="reference"
@@ -44,9 +48,9 @@
         <circle cx="10" cy="20" r="5" fill="#ffffff" />
       </svg>
 
-      <strong
-        style="margin-right: 20px"
-      >{{ current_response == 0 ? "No" : current_response }} Response</strong>
+      <strong style="margin-right: 20px"
+        >{{ current_response == 0 ? "No" : current_response }} Response</strong
+      >
 
       <svg
         t="1619161258814"
@@ -59,14 +63,14 @@
         <circle cx="10" cy="20" r="5" fill="#ffffff" />
       </svg>
 
-      <strong>{{ current_model }}</strong>
+      <strong>{{ isClosed ? "Closed" : current_model }}</strong>
     </div>
 
     <div
-      :class="isResponseShow?'button_area back_red':'button_area'"
+      :class="isResponseShow ? 'button_area back_red' : 'button_area'"
       @click="showRes()"
       style="margin-right: 20px"
-      v-if="!isDashboard||current_model=='Insturctor-Paced'"
+      v-if="!isClosed && (!isDashboard || current_model == 'Insturctor-Paced')"
     >
       <svg
         t="1620464720996"
@@ -85,10 +89,16 @@
         />
       </svg>
 
-      <strong class="button_text">{{isResponseShow?'Hide ':'Show '}} Response</strong>
+      <strong class="button_text"
+        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
+      >
     </div>
 
-    <div class="button_area" v-if="current_model === 'Student-Paced'" @click="closeStudentPaced()">
+    <div
+      class="button_area"
+      v-if="!isClosed && current_model === 'Student-Paced'"
+      @click="closeStudentPaced()"
+    >
       <svg
         t="1620464177484"
         class="icon"
@@ -109,7 +119,12 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
+    <el-popover
+      placement="top"
+      width="400"
+      trigger="hover"
+      class="dropdown-icon"
+    >
       <dashboardMenu
         :current_model="current_model"
         :turnModel="turnModel"
@@ -118,6 +133,8 @@
         :openProject="openProject"
         :slide_id="slide_id"
         :endLesson="endLesson"
+        :isClosed="isClosed"
+        :classRoomInfo="classRoomInfo"
       />
       <svg
         t="1619161258814"
@@ -135,7 +152,7 @@
     </el-popover>
 
     <div class="end_button" @click="endLesson()">
-      <b>END</b>
+      <b>{{ isClosed ? "EXIT" : "END" }}</b>
     </div>
   </div>
 </template>
@@ -148,67 +165,74 @@ export default {
   props: {
     currentPage: {
       type: Number,
-      default: 1
+      default: 1,
     },
-    slide_id:{
-      type:String,
-      default:'',
+    slide_id: {
+      type: String,
+      default: "",
+    },
+    classRoomInfo: {
+      type: Object,
+      default: null,
     },
     totalPage: {
       type: Number,
-      default: 3
+      default: 3,
     },
-
+    isClosed: {
+      type: Boolean,
+      default: false,
+    },
     current_model: {
       type: String,
-      default: "Insturctor-Paced"
+      default: "Insturctor-Paced",
     },
 
     current_response: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     open: {
-      type: Function
+      type: Function,
     },
     turnModel: {
-      type: Function
+      type: Function,
     },
     isDashboard: {
       type: Boolean,
-      default: false
+      default: false,
     },
     changePage: {
-      type: Function
+      type: Function,
     },
 
     turnOff: {
-      type: Function
+      type: Function,
     },
     open: {
-      type: Function
+      type: Function,
     },
     showResponse: {
-      type: Function
+      type: Function,
     },
     isResponseShow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     openProject: {
-      type: Function
+      type: Function,
     },
-    endLesson:{
-      type:Function
-    }
+    endLesson: {
+      type: Function,
+    },
   },
   components: {
-    dashboardMenu
+    dashboardMenu,
   },
   data() {
     return {
-      dialogVisible:false,
+      dialogVisible: false,
     };
   },
   methods: {
@@ -242,7 +266,7 @@ export default {
       this.showResponse();
       //    this.isResponseShow = !this.isResponseShow;
     },
-  }
+  },
 };
 </script>
 
@@ -359,6 +383,9 @@ strong {
   align-items: center;
   flex: 1;
   justify-content: center;
+}
+.hide_area {
+  visibility: hidden;
 }
 .button_area {
   height: 60px;

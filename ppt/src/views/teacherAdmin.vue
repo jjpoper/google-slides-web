@@ -33,6 +33,8 @@
           :slide_id="slide_id"
           :endLesson="endLesson"
           :turnOff="turnModel"
+          :isClosed="classRoomInfo.status == 'close'"
+          :classRoomInfo="classRoomInfo"
         />
       </div>
     </el-main>
@@ -56,6 +58,18 @@
           </el-button>
         </div>
       </div>
+    </el-dialog>
+
+    <el-dialog
+      title="End This Session"
+      :visible.sync="confirmCloseDialogVisible"
+    >
+      <ConfirmEndDialog
+        :class_name="classRoomInfo.class_name"
+        :room_name="room_name"
+        :cancelEndClass="cancelEndClass"
+        :endClassroom="endClassroom"
+      />
     </el-dialog>
   </el-container>
 </template>
@@ -188,6 +202,7 @@ import {
   requestRefreshPPT,
   queryRefreshResult,
   queryClassStatus,
+  endClassRoomReq,
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
@@ -211,6 +226,7 @@ import {
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
+import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
 // import {
 //   checkGoogleAuth,
 //   gotoGoogleAuth,
@@ -242,6 +258,7 @@ export default {
       dialogVisible: false,
       class_id: "",
       classRoomInfo: null,
+      room_name: "",
       /*author: "yujj085@gmail.com"
 class_id: "6260a74965e66dbb"
 class_name: "unnamed"
@@ -252,6 +269,7 @@ lock_page: null
 slide_id: "1-oo7FBGrusK0UulTEA4OQpFo_rMWFsrq9cOEEMLNFzM"
 status: "live"
 type: "slide"*/
+      confirmCloseDialogVisible: false,
     };
   },
   mounted() {
@@ -285,6 +303,7 @@ type: "slide"*/
     studentList,
     dashboardMenu,
     teacherControlPanel,
+    ConfirmEndDialog,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -354,7 +373,7 @@ type: "slide"*/
         console.log(0 + "_blank");
         var windowObjectReference;
         var strWindowFeatures =
-          "width=800,height=600,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+          "width=900,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
 
         //"/index.html#/dashboard?slide_id=" + this.slide_id
         windowObjectReference = window.open(
@@ -741,19 +760,65 @@ type: "slide"*/
         `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${this.token}","class_id":"${this.class_id}","params": {"response": ${this.showResponse}}}`
       );
     },
-    endLesson(confirm) {
-      if (!confirm && this.page_model == ClassRoomModelEnum.STUDENT_MODEL) {
-        this.dialogVisible = true;
-      } else {
-        //离开
-      }
-    },
+
     leavePage() {
       let url = "https://dev.classcipe.com/";
       console.log(this.slide_id);
       if (this.slide_id) {
         window.location = url;
       }
+    },
+    endLesson(confirm) {
+      if (this.classRoomInfo.status == "close") {
+        let url = "https://docs.google.com/presentation/d/" + this.slide_id;
+        window.location.href = url;
+        return;
+      }
+      if (!confirm && this.page_model == ClassRoomModelEnum.STUDENT_MODEL) {
+        this.dialogVisible = true;
+      } else {
+        //离开
+        this.dialogVisible = false;
+        this.confirmCloseDialogVisible = true;
+      }
+    },
+
+    cancelEndClass() {
+      this.confirmCloseDialogVisible = false;
+    },
+    endClassroom(name) {
+      console.log(name);
+      if (!name) {
+        name = this.classRoomInfo.class_name;
+      }
+      showLoading();
+
+      endClassRoomReq(this.token, name, this.class_id)
+        .then((res) => {
+          console.log(res);
+          this.confirmCloseDialogVisible = false;
+          if (res.code == "ok") {
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${
+                SocketEventsEnum.END_SESSION
+              }", "token": "${this.token}","class_id":"${
+                this.class_id
+              }","params": {"close": ${true}}}`
+            );
+            setTimeout(function () {
+              hideLoading();
+              let url =
+                "https://docs.google.com/presentation/d/" + this.slide_id;
+              window.location.href = url;
+            }, 2000);
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+          this.$message("error", "Close Session error");
+          hideLoading();
+        });
+      //结束课程
     },
     // hideRes() {
     //   this.showResponse = false;

@@ -10,6 +10,7 @@ export enum SocketEventsEnum {
   CONTROL ="teacher_control",//教师端发送控制命令
   MODEL_CHANGE = 'Mode_Change',
   SHOW_RESPONSE = 'show_response',
+  END_SESSION = 'end_session',
 }
 
 export enum ModalEventsNameEnum {

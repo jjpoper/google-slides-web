@@ -58,6 +58,8 @@
       :showResponse="showres"
       :turnOff="turnModel"
       :isResponseShow="showResponse"
+      :isClosed="classRoomInfo.status == 'close'"
+      :classRoomInfo="classRoomInfo"
     />
 
     <div class="share_room" @click="copyUrl()">Share Class</div>
@@ -102,6 +104,17 @@
           </el-button>
         </div>
       </div>
+    </el-dialog>
+    <el-dialog
+      title="End This Session"
+      :visible.sync="confirmCloseDialogVisible"
+    >
+      <ConfirmEndDialog
+        :class_name="classRoomInfo.class_name"
+        :room_name="room_name"
+        :cancelEndClass="cancelEndClass"
+        :endClassroom="endClassroom"
+      />
     </el-dialog>
   </div>
 </template>
@@ -279,6 +292,7 @@ import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import stepOneView from "../components/teacher/openDashboardStepOne";
 import stepTwoView from "../components/teacher/openDashboardStepTwo";
+import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
 
 export default {
   data() {
@@ -308,6 +322,8 @@ export default {
       dialogVisible: false,
       class_id: "",
       classRoomInfo: null,
+      confirmCloseDialogVisible: false,
+      room_name: "",
     };
   },
   mounted() {
@@ -331,6 +347,7 @@ export default {
     studentList,
     stepOneView,
     stepTwoView,
+    ConfirmEndDialog,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -779,11 +796,55 @@ export default {
       );
     },
     endLesson(confirm) {
-      if (!confirm && this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
+      if (this.classRoomInfo.status == "close") {
+        let url = "https://docs.google.com/presentation/d/" + this.slide_id;
+        window.location.href = url;
+        return;
+      }
+      if (!confirm && this.page_model == ClassRoomModelEnum.STUDENT_MODEL) {
         this.dialogVisible = true;
       } else {
         //离开
+        this.dialogVisible = false;
+        this.confirmCloseDialogVisible = true;
       }
+    },
+
+    cancelEndClass() {
+      this.confirmCloseDialogVisible = false;
+    },
+    endClassroom(name) {
+      console.log(name);
+      if (!name) {
+        name = this.classRoomInfo.class_name;
+      }
+      showLoading();
+
+      endClassRoomReq(this.token, name, this.class_id)
+        .then((res) => {
+          console.log(res);
+          this.confirmCloseDialogVisible = false;
+          if (res.code == "ok") {
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${
+                SocketEventsEnum.END_SESSION
+              }", "token": "${this.token}","class_id":"${
+                this.class_id
+              }","params": {"close": ${true}}}`
+            );
+            setTimeout(function () {
+              hideLoading();
+              let url =
+                "https://docs.google.com/presentation/d/" + this.slide_id;
+              window.location.href = url;
+            }, 2000);
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+          this.$message("error", "Close Session error");
+          hideLoading();
+        });
     },
     leavePage() {
       let url = "https://docs.google.com/presentation/d/" + this.slide_id;
