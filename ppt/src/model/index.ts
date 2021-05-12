@@ -90,6 +90,27 @@ export const startClassRoomReq = async (author: string, slide_id: string, file_n
   return res;
 }
 
+//评价课堂
+
+export const reopenClass = async (token: string, class_id: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/reopen_class`, {
+    tolen: token,
+    class_id: class_id,
+  })
+  let res = data.data.data;
+  return res;
+}
+
+export const feedbackClass = async (token: string, class_id: string, feed: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/reopen_class`, {
+    token: token,
+    class_id: class_id,
+    feel: feed,
+  })
+  let res = data.data.data;
+  return res;
+}
+
 
 
 // 获取授权登录

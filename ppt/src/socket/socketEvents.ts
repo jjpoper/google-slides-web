@@ -7,10 +7,11 @@ export enum SocketEventsEnum {
   TEXT_INPUT = 'text', // 文本框输入
   NUMBER_INPUT = 'number', // 数字输入
   TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
-  CONTROL ="teacher_control",//教师端发送控制命令
+  CONTROL = "teacher_control",//教师端发送控制命令
   MODEL_CHANGE = 'Mode_Change',
   SHOW_RESPONSE = 'show_response',
   END_SESSION = 'end_session',
+  LOCK_PAGE = 'lock_page',
 }
 
 export enum ModalEventsNameEnum {
@@ -20,7 +21,7 @@ export enum ModalEventsNameEnum {
   SHOW_STUDENT_MODAL_REFRESH = 'SHOW_STUDENT_MODAL_REFRESH', // 更新
 }
 
-export enum ClassRoomModelEnum{
+export enum ClassRoomModelEnum {
   TEACHER_MODEL = 'Insturctor-Paced',
   STUDENT_MODEL = 'Student-Paced',
 }

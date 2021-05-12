@@ -15,10 +15,7 @@
           </div>
 
           <div class="response_flag">
-            <div
-              class="top"
-              :style="'width:' + responsePercentage[index] + '%'"
-            ></div>
+            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
           </div>
         </div>
       </div>
@@ -37,9 +34,10 @@
           />
         </div>
       </div>
-      <div class="number_info" @click="showStudents()">
-        Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}</div>
 
       <commentModal />
     </div>
@@ -60,6 +58,8 @@
       :isResponseShow="showResponse"
       :isClosed="classRoomInfo.status == 'close'"
       :classRoomInfo="classRoomInfo"
+      :lockPage="lockPage"
+      :slides="slides"
     />
 
     <div class="share_room" @click="copyUrl()">Share Class</div>
@@ -76,23 +76,16 @@
       <stepOneView :openTwo="openTwo" />
     </el-dialog>
 
-    <el-dialog
-      title="This Session is in Student-Paced Mode"
-      :visible.sync="stepTwoDialog"
-    >
+    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
       <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
     </el-dialog>
 
-    <el-dialog
-      title="Ending Session"
-      class="Ending Session"
-      :visible.sync="dialogVisible"
-    >
+    <el-dialog title="Ending Session" class="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
-        <strong
-          >Your session is currently in Student-Paced Mode. Are you sure you
-          want to end your session?</strong
-        >
+        <strong>
+          Your session is currently in Student-Paced Mode. Are you sure you
+          want to end your session?
+        </strong>
 
         <div class="opts">
           <el-button type="danger" @click="leavePage()" class="leave_btn">
@@ -105,10 +98,7 @@
         </div>
       </div>
     </el-dialog>
-    <el-dialog
-      title="End This Session"
-      :visible.sync="confirmCloseDialogVisible"
-    >
+    <el-dialog title="End This Session" :visible.sync="confirmCloseDialogVisible">
       <ConfirmEndDialog
         :class_name="classRoomInfo.class_name"
         :room_name="room_name"
@@ -268,6 +258,7 @@ import {
   requestRefreshPPT,
   queryRefreshResult,
   queryClassStatus,
+  endClassRoomReq
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
@@ -276,7 +267,7 @@ import { createSo } from "../socket/socket.teacher";
 import {
   ClassRoomModelEnum,
   ModalEventsNameEnum,
-  SocketEventsEnum,
+  SocketEventsEnum
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
@@ -286,7 +277,7 @@ import {
   saveTeacherUserName,
   getTeacherUserName,
   getTeacherStoreToken,
-  saveTeacherStoreToken,
+  saveTeacherStoreToken
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
@@ -323,13 +314,13 @@ export default {
       class_id: "",
       classRoomInfo: null,
       confirmCloseDialogVisible: false,
-      room_name: "",
+      room_name: ""
     };
   },
   mounted() {
     this.joinRoom();
     //   this.openShare();
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       console.log("send comment!!");
       this.sendComment(data);
     });
@@ -337,7 +328,7 @@ export default {
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   components: {
     pptcontent,
@@ -347,10 +338,10 @@ export default {
     studentList,
     stepOneView,
     stepTwoView,
-    ConfirmEndDialog,
+    ConfirmEndDialog
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token } = to.query;
       vm.slide_id = slide_id;
       if (token) {
@@ -389,7 +380,7 @@ export default {
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then((url) => {
+      getTeacherLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -409,7 +400,7 @@ export default {
       //    this.openShare();
 
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           if (this.classRoomInfo.status == "live") {
             this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
@@ -424,11 +415,11 @@ export default {
           }
           console.log(this.classRoomInfo);
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
       requestRefreshPPT(this.slide_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -438,7 +429,7 @@ export default {
             hideLoading();
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
@@ -450,9 +441,9 @@ export default {
       let _this = this;
       if (count < 20) {
         queryRefreshResult(code, token)
-          .then((res) => {
+          .then(res => {
             if (res.data.status === "processing") {
-              setTimeout(function () {
+              setTimeout(function() {
                 _this.queryResult(code, token, ++count);
               }, 1000);
             } else {
@@ -460,7 +451,7 @@ export default {
               hideLoading();
             }
           })
-          .catch((res) => {
+          .catch(res => {
             this.getAllSlides();
             hideLoading();
           });
@@ -498,7 +489,7 @@ export default {
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -510,12 +501,12 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
         "comment",
-        `{"user_id":"${studentId}", "item": ${itemData}}`
+        `{"user_id":"${studentId}","token": "${this.token}","class_id":"${this.class_id}", "item": ${itemData}}`
       );
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
       // this.emitSo(itemData)
@@ -559,7 +550,7 @@ export default {
     },
     getAllSlides() {
       showLoading();
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -711,6 +702,22 @@ export default {
           this.showResponse = d.params.response;
           console.log(this.showResponse, "show res change!!!");
         }
+      } else if (d.type == SocketEventsEnum.END_SESSION) {
+        this.classRoomInfo.status = "close";
+        this.$forceUpdate();
+      } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
+        let locked = d.params.lock;
+        let page = d.params.page;
+        if (!this.classRoomInfo.lock_page) {
+          this.classRoomInfo.lock_page = new Array();
+        }
+        if (locked) {
+          this.classRoomInfo.lock_page.push(page);
+        } else {
+          this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
+            item => item != page
+          );
+        }
       }
 
       // 回答问题
@@ -723,7 +730,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
         EventBus.$emit("choice", { user_id, answer });
       } else if (
@@ -737,7 +744,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -746,7 +753,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -827,8 +834,9 @@ export default {
       showLoading();
 
       endClassRoomReq(this.token, name, this.class_id)
-        .then((res) => {
+        .then(res => {
           console.log(res);
+          let _this = this;
           this.confirmCloseDialogVisible = false;
           if (res.code == "ok") {
             this.emitSo(
@@ -838,15 +846,15 @@ export default {
                 this.class_id
               }","params": {"close": ${true}}}`
             );
-            setTimeout(function () {
+            setTimeout(function() {
               hideLoading();
               let url =
-                "https://docs.google.com/presentation/d/" + this.slide_id;
+                "https://docs.google.com/presentation/d/" + _this.slide_id;
               window.location.href = url;
             }, 2000);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
           this.$message("error", "Close Session error");
           hideLoading();
@@ -859,6 +867,40 @@ export default {
         window.location = url;
       }
     },
-  },
+    lockPage() {
+      let islocked = true;
+      let page_id = this.slides[this.currentIndex].page_id;
+      console.log(this.classRoomInfo.lock_page);
+      if (!this.classRoomInfo.lock_page) {
+        islocked = true;
+        this.classRoomInfo.lock_page = new Array();
+        this.classRoomInfo.lock_page.push(page_id);
+      } else {
+        let pages = this.classRoomInfo.lock_page.filter(
+          item => item != page_id
+        );
+        islocked = this.classRoomInfo.lock_page.length == pages.length;
+        if (islocked) {
+          this.classRoomInfo.lock_page.push(page_id);
+        } else {
+          this.classRoomInfo.lock_page = pages;
+        }
+      }
+      this.$forceUpdate();
+      console.log(this.classRoomInfo.lock_page, "锁定页面");
+      if (this.currentSo) {
+        // this.currentSo.emit('control', JSON.stringify(data));
+        this.emitSo(
+          `{"room":"${this.slide_id}", "type": "${
+            SocketEventsEnum.LOCK_PAGE
+          }", "token": "${this.token}","class_id":"${
+            this.class_id
+          }","params": {"lock": ${islocked},"page":"${
+            this.slides[this.currentIndex].page_id
+          }"}}`
+        );
+      }
+    }
+  }
 };
 </script>
