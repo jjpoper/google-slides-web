@@ -8,7 +8,9 @@
     <br />
     <div class="v2screen-lock__sub-text">Your Current Answer</div>
 
-    <div></div>
+    <div>
+        
+    </div>
   </div>
 </template>
 
