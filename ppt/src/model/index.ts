@@ -42,6 +42,18 @@ export const requestRefreshPPT = async (slideid: string, _token: string) => {
 
 }
 
+//查询当前课程状态
+
+export const queryClassStatus = async(classId:string,_token:string)=>{
+  console.log(classId)
+  const data = await axios.post(`${PPT.requestUrl}slide/get_class`,{
+    class_id:classId,
+    token:_token,
+  })
+  let res = data.data.data;
+  return res;
+}
+
 //slide/get_task_result
 
 

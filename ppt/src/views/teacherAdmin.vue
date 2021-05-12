@@ -1,8 +1,15 @@
 <template>
   <el-container>
     <el-main>
-      <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-        <pptcontent v-if="!showResponse" :url="currentItemData.thumbnail_url" :teacher="true" />
+      <div
+        class="block"
+        v-if="currentItemData && currentItemData.thumbnail_url"
+      >
+        <pptcontent
+          v-if="!showResponse"
+          :url="currentItemData.thumbnail_url"
+          :teacher="true"
+        />
         <teacherIndexItem
           v-else-if="currentItemData && currentItemData.items[0]"
           :data="currentItemData"
@@ -34,7 +41,10 @@
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
-        <strong>Your session is currently in Student-Paced Mode. Are you sure you want to end your session?</strong>
+        <strong
+          >Your session is currently in Student-Paced Mode. Are you sure you
+          want to end your session?</strong
+        >
 
         <div class="opts">
           <el-button type="danger" @click="leavePage()" class="leave_btn">
@@ -176,7 +186,8 @@ import {
   getTeacherLoginUrl,
   getUserProfile,
   requestRefreshPPT,
-  queryRefreshResult
+  queryRefreshResult,
+  queryClassStatus,
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
@@ -186,7 +197,7 @@ import dashboardMenu from "../components/teacher/teacherDashboardMenu";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum
+  ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
@@ -196,7 +207,7 @@ import {
   saveTeacherUserName,
   getTeacherUserName,
   getTeacherStoreToken,
-  saveTeacherStoreToken
+  saveTeacherStoreToken,
 } from "@/model/store.teacher";
 import commentModal from "../components/teacher/commentModal";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
@@ -228,7 +239,19 @@ export default {
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
       token: "",
-      dialogVisible: false
+      dialogVisible: false,
+      class_id: "",
+      classRoomInfo: null,
+      /*author: "yujj085@gmail.com"
+class_id: "6260a74965e66dbb"
+class_name: "unnamed"
+date: 1620784378
+file_name: "ClasscipeDev"
+id: 10
+lock_page: null
+slide_id: "1-oo7FBGrusK0UulTEA4OQpFo_rMWFsrq9cOEEMLNFzM"
+status: "live"
+type: "slide"*/
     };
   },
   mounted() {
@@ -246,14 +269,14 @@ export default {
     //   .catch(() => {
     //     this.startConnectRoom();
     //   });
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    }
+    },
   },
   components: {
     pptcontent,
@@ -261,12 +284,13 @@ export default {
     commentModal,
     studentList,
     dashboardMenu,
-    teacherControlPanel
+    teacherControlPanel,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { slide_id, token } = to.query;
       vm.slide_id = slide_id;
+      vm.class_id = to.query.class_id;
       if (token) {
         vm.token = token;
         saveTeacherStoreToken(token);
@@ -288,7 +312,15 @@ export default {
         // this.currentSo.emit('control', JSON.stringify(data));
         console.log(this.page_model, "send message");
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.page_model}"}}`
+          `{"room":"${this.slide_id}", "type": "${
+            SocketEventsEnum.MODEL_CHANGE
+          }", "token": "${this.token}","class_id":"${
+            this.class_id
+          }","params": {"mode": "${
+            this.page_model === ClassRoomModelEnum.TEACHER_MODEL
+              ? "insturctor-paced"
+              : "student-paced"
+          }"}}`
         );
       }
     },
@@ -308,7 +340,7 @@ export default {
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then(url => {
+      getTeacherLoginUrl().then((url) => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -338,8 +370,8 @@ export default {
           this.slide_id +
           "&currentPage=" +
           this.currentIndex +
-          "&model=" +
-          this.page_model;
+          "&class_id=" +
+          this.class_id;
       } else if (model == 1) {
         console.log(1);
         window.open(
@@ -347,8 +379,8 @@ export default {
             this.slide_id +
             "&currentPage=" +
             this.currentIndex +
-            "&model=" +
-            this.page_model
+            "&class_id=" +
+            this.class_id
         );
       }
     },
@@ -360,12 +392,26 @@ export default {
     },
     startConnectRoom() {
       this.joinRoom();
-      this.openShare();
-      this.getAllSlides();
-          hideLoading();
-          return
+      //     this.openShare();
+      // this.getAllSlides();
+      //     hideLoading();
+      //     return
+      queryClassStatus(this.class_id, this.token)
+        .then((res) => {
+          this.classRoomInfo = res;
+          if (this.classRoomInfo.status == "live") {
+            this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+          } else if (this.classRoomInfo.status == "student-paced") {
+            this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+          }
+          console.log(this.classRoomInfo);
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+
       requestRefreshPPT(this.slide_id, this.token)
-        .then(res => {
+        .then((res) => {
           // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -375,7 +421,7 @@ export default {
             hideLoading();
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
@@ -385,19 +431,19 @@ export default {
 
     queryResult(code, token, count) {
       let _this = this;
-      if (count < 2) {
+      if (count < 20) {
         queryRefreshResult(code, token)
-          .then(res => {
+          .then((res) => {
             if (res.data.status === "processing") {
-              setTimeout(function() {
+              setTimeout(function () {
                 _this.queryResult(code, token, ++count);
-              }, 2000);
+              }, 1000);
             } else {
               this.getAllSlides();
               hideLoading();
             }
           })
-          .catch(res => {
+          .catch((res) => {
             this.getAllSlides();
             hideLoading();
           });
@@ -413,7 +459,7 @@ export default {
       title,
       time,
       value,
-      teacherName
+      teacherName,
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -425,7 +471,7 @@ export default {
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id
+        room: this.slide_id,
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -459,7 +505,7 @@ export default {
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then(list => {
+      getAllPPTS(this.slide_id).then((list) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -493,7 +539,7 @@ export default {
 
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+          `{"room":"${this.slide_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
         );
       }
     },
@@ -501,7 +547,7 @@ export default {
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&model=${this.page_model}`;
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
       copy(url);
       showToast("copy link success");
     },
@@ -510,7 +556,12 @@ export default {
       this.dialogTableVisible = true;
     },
     joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.token, this.msgListener);
+      this.currentSo = createSo(
+        this.slide_id,
+        this.token,
+        this.class_id,
+        this.msgListener
+      );
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
       teacher.state = "online";
@@ -609,7 +660,10 @@ export default {
         }
       } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
         if (d.room == this.slide_id) {
-          this.page_model = d.params.model;
+          this.page_model =
+            d.params.mode == "student-paced"
+              ? ClassRoomModelEnum.STUDENT_MODEL
+              : ClassRoomModelEnum.TEACHER_MODEL;
           console.log(this.page_model, "model change!!!");
         }
       } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
@@ -629,7 +683,7 @@ export default {
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id
+          key: user_id,
         });
 
         EventBus.$emit("choice", { user_id, answer });
@@ -644,7 +698,7 @@ export default {
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`
+          key: `${item_id}_${user_id}`,
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -653,7 +707,7 @@ export default {
           user_id,
           content,
           key: user_id,
-          user_name
+          user_name,
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -674,17 +728,17 @@ export default {
       MessageBox.confirm(url, "Share this link with your students", {
         distinguishCancelAndClose: true,
         confirmButtonText: "copy",
-        cancelButtonText: "Enter classroom"
+        cancelButtonText: "Enter classroom",
       })
         .then(() => {
           this.copyUrl();
         })
-        .catch(action => {});
+        .catch((action) => {});
     },
     showres() {
       this.showResponse = !this.showResponse;
       this.emitSo(
-        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": ${this.showResponse}}}`
+        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${this.token}","class_id":"${this.class_id}","params": {"response": ${this.showResponse}}}`
       );
     },
     endLesson(confirm) {
@@ -700,7 +754,7 @@ export default {
       if (this.slide_id) {
         window.location = url;
       }
-    }
+    },
     // hideRes() {
     //   this.showResponse = false;
     //   this.emitSo(
@@ -727,6 +781,6 @@ export default {
     //     })
     //     .catch((action) => {});
     // },
-  }
+  },
 };
 </script>
