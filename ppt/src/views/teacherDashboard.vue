@@ -416,6 +416,12 @@ export default {
           } else if (this.classRoomInfo.status == "student-paced") {
             this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
           }
+          if (this.stepOneDialog) {
+            this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"mode": "student-paced"}}`
+            );
+          }
           console.log(this.classRoomInfo);
         })
         .catch((res) => {

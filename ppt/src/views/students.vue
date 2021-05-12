@@ -1,65 +1,67 @@
 <template>
-  <el-container>
-    <el-main>
-      <div
-        class="block"
-        v-if="currentItemData && currentItemData.thumbnail_url"
+  <div class="page">
+    <class-room-closed v-if="true" />
+    <el-container v-else>
+      <el-main>
+        <div
+          class="block"
+          v-if="currentItemData && currentItemData.thumbnail_url"
+        >
+          <pptcontent :url="currentItemData.thumbnail_url" />
+        </div>
+
+        <div class="sfooter" v-if="slides.length > 0">
+          <div>
+            {{ uname }}
+            <el-button
+              type="primary"
+              @click="enterUname(false)"
+              style="margin-left: 20px"
+              >Change name</el-button
+            >
+          </div>
+
+          <el-pagination
+            class="page_index"
+            style="line-height: 50px"
+            background
+            small
+            layout="prev, pager, next"
+            @current-change="pageChange"
+            :current-page="parseInt(currentIndex) + 1"
+            :page-count="slides.length"
+            v-if="currentModel == 'Student-Paced'"
+          ></el-pagination>
+          <div class="checkboxs">
+            <el-checkbox :value="currentAnswerd" style="color: #fff"
+              >slide {{ parseInt(currentIndex) + 1 }}/{{
+                slides.length
+              }}</el-checkbox
+            >
+            <!-- <div class="scroll-mask"></div> -->
+          </div>
+          <i
+            class="el-icon-chat-dot-round readchat"
+            @click="showStudentModal"
+            :style="{ color: unread ? 'red' : '#fff' }"
+          />
+        </div>
+      </el-main>
+      <el-aside
+        width="40%"
+        style="position: relative"
+        v-if="currentItemData && currentItemData.items[0]"
       >
-        <pptcontent :url="currentItemData.thumbnail_url" />
-      </div>
-
-      <div class="sfooter" v-if="slides.length > 0">
-        <div>
-          {{ uname }}
-          <el-button
-            type="primary"
-            @click="enterUname(false)"
-            style="margin-left: 20px"
-            >Change name</el-button
-          >
-        </div>
-
-        <el-pagination
-          class="page_index"
-          style="line-height: 50px"
-          background
-          small
-          layout="prev, pager, next"
-          @current-change="pageChange"
-          :current-page="parseInt(currentIndex) + 1"
-          :page-count="slides.length"
-          v-if="currentModel == 'Student-Paced'"
-        ></el-pagination>
-        <div class="checkboxs">
-          <el-checkbox :value="currentAnswerd" style="color: #fff"
-            >slide {{ parseInt(currentIndex) + 1 }}/{{
-              slides.length
-            }}</el-checkbox
-          >
-          <!-- <div class="scroll-mask"></div> -->
-        </div>
-        <i
-          class="el-icon-chat-dot-round readchat"
-          @click="showStudentModal"
-          :style="{ color: unread ? 'red' : '#fff' }"
+        <StudentsIndexItem
+          :data="currentItemData"
+          :type="currentItemData.items[0].type"
+          :method="answerText"
+          :answer="answerChoice"
+          :sendCanvas="sendCanvas"
         />
-      </div>
-    </el-main>
-    <el-aside
-      width="40%"
-      style="position: relative"
-      v-if="currentItemData && currentItemData.items[0]"
-    >
-      <StudentsIndexItem
-        :data="currentItemData"
-        :type="currentItemData.items[0].type"
-        :method="answerText"
-        :answer="answerChoice"
-        :sendCanvas="sendCanvas"
-      />
-      <student-comment />
-    </el-aside>
-    <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
+        <student-comment />
+      </el-aside>
+      <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
       <template v-for="(slideItem, index) in slides">
         <studentsItem
           v-if="slideItem.items.data"
@@ -73,9 +75,14 @@
         </studentsItem>
       </template>
     </el-aside>-->
-  </el-container>
+    </el-container>
+  </div>
 </template>
-<style>
+<style scoped>
+.page {
+  width: 100%;
+  height: 100%;
+}
 .block {
   width: 100%;
   height: 100%;
@@ -158,6 +165,7 @@ import {
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
+import ClassRoomClosed from "@/components/students/classRoomClosed.vue";
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
@@ -204,6 +212,7 @@ export default {
     pptcontent,
     StudentsIndexItem,
     StudentComment,
+    ClassRoomClosed,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
