@@ -12,13 +12,6 @@ html {
   height: 100%;
   overflow: auto;
 }
-
-html, button, input, select, textarea {
-    font-family: ProximaNovaSoft-Medium, sans-serif;
-    font-weight: normal;
-    font-style: normal;
-    color: #7a9494;
-}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

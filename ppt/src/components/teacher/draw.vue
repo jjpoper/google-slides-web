@@ -3,9 +3,9 @@
     <template v-for="item in imgUrls">
       <div :key="item.user_id">
         <p class="uname" v-if="data.flag">{{item.user_name}}</p>
-        <div id="canvasouter" >
-          <img :src="item.content" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`"/>
-        </div>
+        <div id="canvasouter" class="canvasouterimg" :style="`width: ${width}px; height: ${height}px; background-image:url(${pptUrl})`" >
+          <div class="canvasouterimg" :style="`width: ${width}px; height: ${height}px; background-image:url(${item.content})`"></div>
+        </div> 
       </div> 
     </template>
   </div>  
@@ -22,6 +22,10 @@ export default {
         default: () => {
           return {}
         }
+      },
+      pptUrl: {
+        type: String,
+        default: ''
       }
     },
     data() {
@@ -60,23 +64,19 @@ export default {
     .drawlist{
       width: 100%;
       position: relative;
-      margin: 20px;
     }
     #canvasouter {
-        cursor: default;
-        width: 450px;
-        height: 450px;
         position: relative;
-        background: pink;
-        margin: 10px auto;
+        margin-bottom: 10px;
     }
     .uname{
       line-height: 20px;
       text-align: center;
     }
-    #canvasouter>img {
-      width: 100%;
-      height: 100%;
+    .canvasouterimg {
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
     }
     #canvas{
       background-color: blue;

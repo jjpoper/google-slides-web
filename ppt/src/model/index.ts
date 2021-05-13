@@ -42,18 +42,6 @@ export const requestRefreshPPT = async (slideid: string, _token: string) => {
 
 }
 
-//查询当前课程状态
-
-export const queryClassStatus = async (classId: string, _token: string) => {
-  console.log(classId)
-  const data = await axios.post(`${PPT.requestUrl}slide/get_class`, {
-    class_id: classId,
-    token: _token,
-  })
-  let res = data.data.data;
-  return res;
-}
-
 //slide/get_task_result
 
 
@@ -66,49 +54,6 @@ export const queryRefreshResult = async (taskId: string, _token: string) => {
   let res = data.data;
   return res;
 
-}
-
-//结束课程
-export const endClassRoomReq = async (_token: string, name: string, class_id: string) => {
-  const data = await axios.post(`${PPT.requestUrl}slide/close_class`, {
-    class_name: name,
-    class_id: class_id,
-    token: _token,
-  })
-  let res = data.data;
-  return res;
-}
-
-export const startClassRoomReq = async (author: string, slide_id: string, file_name: string, status: string) => {
-  const data = await axios.post(`${PPT.requestUrl}slide/start_lesson`, {
-    author: author,
-    slide_id: slide_id,
-    file_name: file_name,
-    status: status,
-  })
-  let res = data.data.data;
-  return res;
-}
-
-//评价课堂
-
-export const reopenClass = async (token: string, class_id: string) => {
-  const data = await axios.post(`${PPT.requestUrl}slide/reopen_class`, {
-    tolen: token,
-    class_id: class_id,
-  })
-  let res = data.data.data;
-  return res;
-}
-
-export const feedbackClass = async (token: string, class_id: string, feed: string) => {
-  const data = await axios.post(`${PPT.requestUrl}slide/reopen_class`, {
-    token: token,
-    class_id: class_id,
-    feel: feed,
-  })
-  let res = data.data.data;
-  return res;
 }
 
 
@@ -174,5 +119,3 @@ export const getStudentLoginUrl = async (): Promise<string> => {
   }
   return authUrl
 }
-
-
