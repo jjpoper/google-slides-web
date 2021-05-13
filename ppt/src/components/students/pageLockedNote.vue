@@ -33,7 +33,15 @@
           {{ getAnser(item.answer)[0] }}:{{ getAnser(item.answer)[1] }}
         </div>
       </div>
-      <div v-if="data.items[0].type == 'draw'">draw answer</div>
+      <div v-if="data.items[0].type == 'draw'" class="answerArea">
+        <div
+          v-for="(item, index) in answerList"
+          :key="index"
+          class="darwAnswer"
+        >
+          <img :src="item.content" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -96,6 +104,19 @@
   color: cadetblue;
   font-size: 1.2rem;
   margin-top: 15px;
+}
+.darwAnswer {
+  width: 50%;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: white;
+}
+img {
+  width: 90%;
+  height: 500px;
 }
 </style>
 

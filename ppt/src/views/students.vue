@@ -10,8 +10,9 @@
       :data="currentItemData"
       :answerList="answerList"
     />
-    <el-container v-else>
-      <el-main>
+
+    <!-- <div v-else class="content_area">
+      <div class="class_area">
         <div
           class="block"
           v-if="currentItemData && currentItemData.thumbnail_url"
@@ -19,55 +20,48 @@
           <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
 
-        <div class="sfooter" v-if="slides.length > 0">
-          <!-- :currentPage="parseInt(currentIndex)+ 1"
-          :totalPage="slides.length"-->
-
-          <student-control-panel
-            :lastPage="lastPage"
-            :nextPage="nextPage"
-            :currentPage="parseInt(currentIndex) + 1"
-            :totalPage="slides.length"
-            :currentModel="currentModel"
-            :currentAnswerd="currentAnswerd"
+        <div class="alside" v-if="currentItemData && currentItemData.items[0]">
+          <StudentsIndexItem
+            :data="currentItemData"
+            :type="currentItemData.items[0].type"
+            :method="answerText"
+            :answer="answerChoice"
+            :sendCanvas="sendCanvas"
           />
-          <!-- <div>
-            {{ uname }}
-            <el-button
-              type="primary"
-              @click="enterUname(false)"
-              style="margin-left: 20px"
-              >Change name</el-button
-            >
-          </div>
+          <student-comment />
+        </div>
+      </div>
 
-          <el-pagination
-            class="page_index"
-            style="line-height: 50px"
-            background
-            small
-            layout="prev, pager, next"
-            @current-change="pageChange"
-            :current-page="parseInt(currentIndex) + 1"
-            :page-count="slides.length"
-            v-if="currentModel == 'Student-Paced'"
-          ></el-pagination>
-          <div class="checkboxs">
-            <el-checkbox :value="currentAnswerd" style="color: #fff"
-              >slide {{ parseInt(currentIndex) + 1 }}/{{
-                slides.length
-              }}</el-checkbox
-            >
-          </div>
-          <i
-            class="el-icon-chat-dot-round readchat"
-            @click="showStudentModal"
-            :style="{ color: unread ? 'red' : '#fff' }"
-          />-->
+      <div class="sfooter">
+        <student-control-panel
+          :lastPage="lastPage"
+          :nextPage="nextPage"
+          :currentPage="parseInt(currentIndex) + 1"
+          :totalPage="slides.length"
+          :currentModel="currentModel"
+          :currentAnswerd="currentAnswerd"
+          :unread="unread"
+          :showStudentModal="showStudentModal"
+        />
+      </div>
+    </div> -->
+    <el-container v-else>
+      <el-main
+        v-if="
+          currentItemData &&
+          currentItemData.thumbnail_url &&
+          currentItemData.items[0].type !== 'draw'
+        "
+      >
+        <div
+          class="block"
+          v-if="currentItemData && currentItemData.thumbnail_url"
+        >
+          <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
       </el-main>
       <el-aside
-        width="40%"
+        :width="`${currentItemData.items[0].type !== 'draw' ? '40%' : '100%'}`"
         style="position: relative"
         v-if="currentItemData && currentItemData.items[0]"
       >
@@ -77,31 +71,27 @@
           :method="answerText"
           :answer="answerChoice"
           :sendCanvas="sendCanvas"
+          :url="currentItemData.thumbnail_url"
         />
         <student-comment />
       </el-aside>
-      <!--   options.length > 0 <el-aside width="400px" class="scroll-student">
-      <template v-for="(slideItem, index) in slides">
-        <studentsItem
-          v-if="slideItem.items.data"
-          :key="index"
-          :options="slideItem.items.data.options"
-          :title="slideItem.items.data.title"
-          :currentAnswer="allAnswers[slideItem.page_id]"
-          :readonly="true"
-          :pageId="slideItem.page_id">
-          <div class="scroll-mask"></div>
-        </studentsItem>
-      </template>
-      </el-aside>-->
+
+      <div class="sfooter" v-if="slides.length > 0">
+        <student-control-panel
+          :lastPage="lastPage"
+          :nextPage="nextPage"
+          :currentPage="parseInt(currentIndex) + 1"
+          :totalPage="slides.length"
+          :currentModel="currentModel"
+          :currentAnswerd="currentAnswerd"
+          :unread="unread"
+          :showStudentModal="showStudentModal"
+        />
+      </div>
     </el-container>
   </div>
 </template>
 <style scoped>
-.page {
-  width: 100%;
-  height: 100%;
-}
 .block {
   width: 100%;
   height: 100%;
@@ -241,6 +231,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       const { slide_id, token, page } = to.query;
+      console.log(page, "currentIndex");
       vm.slide_id = slide_id;
       vm.class_id = to.query.class_id;
       vm.currentIndex = page && page !== "undefined" ? page : 0;
@@ -363,6 +354,7 @@ export default {
       });
     },
     pageChange(page) {
+      console.log(page, "pageChange");
       this.currentIndex = page - 1;
       this.getItemData();
       // if (this.modalVisiable) {
@@ -556,8 +548,9 @@ export default {
       }
     },
     nextPage() {
+      console.log(this.currentIndex, this.currentIndex + 2, "nextpage");
       if (this.currentIndex < this.slides.length - 1) {
-        this.pageChange(this.currentIndex + 2);
+        this.pageChange(parseInt(this.currentIndex) + 2);
       }
     },
   },
