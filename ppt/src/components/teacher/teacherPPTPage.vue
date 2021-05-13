@@ -59,7 +59,7 @@ export default {
   },
 
   created() {
-    console.log(currentItemData.thumbnail_url);
+    
   },
 };
 </script>

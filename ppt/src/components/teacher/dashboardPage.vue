@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="page">
-      <div class="left">
+      <div class="left" v-if="slides">
         <div v-for="(item, index) in slides" :key="index" class="ppt_content">
           <div
             v-bind:class="
@@ -9,16 +9,13 @@
                 ? 'image_parent image_parent_focus'
                 : 'image_parent '
             "
-            @click="pageChage(index + 1)"
+            @click="giveFocus(index)"
           >
             <img :src="item.thumbnail_url" />
           </div>
 
           <div class="response_flag">
-            <div
-              class="top"
-              :style="'width:' + responsePercentage[index] + '%'"
-            ></div>
+            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
           </div>
         </div>
       </div>
@@ -31,7 +28,7 @@
             v-if="currentItemData && currentItemData.items[0]"
             :data="currentItemData"
             :type="currentItemData.items[0].type"
-            :flag="true"
+            :flag_1="true"
             :currentAnswerCount="currentAnswerCount"
             :textList="responseContentList"
           />
@@ -76,7 +73,7 @@
 .divider {
   height: auto;
   min-height: 100%;
-  background-color: #909090;
+  background-color: #e0e0e0;
   width: 1px;
   position: fixed;
   top: 0px;
@@ -94,9 +91,8 @@
   width: 100%;
   background-color: white;
   display: flex;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 70px;
+  padding-left: 5px;
+  padding-right: 10px;
   /* justify-content: center;
   align-items: center;
   flex-wrap: wrap; */
@@ -144,41 +140,50 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     slides: {
       type: Array,
       function() {
         return [];
-      },
+      }
     },
     showResponse: {
       type: Boolean,
-      default: false,
+      default: false
     },
     currentAnswerCount: {
       type: Number,
-      default: 0,
+      default: 0
     },
     responseContentList: {
       type: Array,
       function() {
         return [];
-      },
+      }
+    },
+    giveFocus: {
+      type: Function
     },
     responsePercentage: {
       type: Array,
       function() {
         return [];
-      },
-      pageChage: {
-        type: Function,
-      },
+      }
     },
+    isFocus: {
+      type: Array,
+      function() {
+        return [];
+      }
+    }
   },
-
-  created() {
-    console.log(currentItemData.thumbnail_url);
+  data() {
+    return {};
   },
+  created() {},
+  mounted() {
+    console.log(this.currentItemData)
+  }
 };
 </script>

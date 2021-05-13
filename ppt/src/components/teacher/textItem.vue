@@ -5,7 +5,7 @@
         <div :id="item.user_id" class="grid-content">
           {{ item.content }}
           <comment-icon
-            v-if="data.flag"
+            v-if="flag_1"
             :data="{
               pageId: data.page_id,
               itemId: item.item_id,
@@ -14,7 +14,7 @@
             }"
           />
         </div>
-        <p v-if="data.flag" class="stduent_name">
+        <p v-if="flag_1" class="stduent_name">
           {{ getUname(item.user_id) }}
         </p>
       </div>
@@ -83,6 +83,10 @@ export default {
     textList:{
       type:Array,
       default:[]
+    },
+    flag_1:{
+      type:Boolean,
+      default:true,
     }
   },
   data() {
@@ -91,8 +95,6 @@ export default {
     };
   },
   mounted() {
-    const { page_id, items} = this.data; // 完整data
-    console.log("data flag==" + this.textList);
   //  this.textList = getCurrentPageAnswerList(page_id, items[0].type);
   },
   methods: {

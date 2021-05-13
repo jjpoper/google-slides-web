@@ -1,8 +1,8 @@
 <template>
   <div class="page">
-    <div class="content">
+    <div class="content" v-if="currentItemData">
       <TeacherPPTPage
-        v-if="!isDashboard"
+        v-if="!isDashboard&&currentItemData"
         class="pptContent"
         :currentItemData="currentItemData"
         :showResponse="showResponse"
@@ -19,13 +19,15 @@
         :responsePercentage="responsePercentage"
         :isFocus="isFocus"
         :slides="slides"
-        v-else
+        :giveFocus="giveFocus"
+        v-else-if="currentItemData&&slides"
       />
     </div>
 
     <!-- :changePage="giveFocus" -->
     <div class="control">
       <teacher-control-panel
+        v-if="classRoomInfo"
         :current_model="page_model"
         :currentPage="parseInt(currentIndex) + 1"
         :totalPage="slides.length"
@@ -51,9 +53,10 @@
     <div class="top_btn">
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
-      <div class="number_info" @click="showStudents()">
-        Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}</div>
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -75,11 +78,9 @@
       </div>
     </el-dialog>
 
-    <el-dialog
-      title="End This Session"
-      :visible.sync="confirmCloseDialogVisible"
-    >
+    <el-dialog title="End This Session" :visible.sync="confirmCloseDialogVisible">
       <confirm-end-dialog
+        v-if="classRoomInfo"
         :class_name="classRoomInfo.class_name"
         :room_name="room_name"
         :cancelEndClass="cancelEndClass"
@@ -100,10 +101,7 @@
       <stepOneView :openTwo="openTwo" />
     </el-dialog>
 
-    <el-dialog
-      title="This Session is in Student-Paced Mode"
-      :visible.sync="stepTwoDialog"
-    >
+    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
       <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
     </el-dialog>
   </div>
@@ -193,14 +191,14 @@ import {
   requestRefreshPPT,
   queryRefreshResult,
   queryClassStatus,
-  endClassRoomReq,
+  endClassRoomReq
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   getTeacherUid,
@@ -210,7 +208,7 @@ import {
   saveTeacherUserName,
   getTeacherUserName,
   getTeacherStoreToken,
-  saveTeacherStoreToken,
+  saveTeacherStoreToken
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -219,6 +217,7 @@ import TeacherPPTPage from "@/components/teacher/teacherPPTPage.vue";
 import DashboardPage from "@/components/teacher/dashboardPage.vue";
 import stepOneView from "../components/teacher/openDashboardStepOne";
 import stepTwoView from "../components/teacher/openDashboardStepTwo";
+import studentList from "../components/teacher/studentList";
 export default {
   components: {
     teacherControlPanel,
@@ -228,6 +227,7 @@ export default {
     DashboardPage,
     stepOneView,
     stepTwoView,
+    studentList
   },
 
   /*author: "yujj085@gmail.com"
@@ -272,21 +272,21 @@ type: "slide"*/
       responsePercentage: [],
       isFocus: [],
       stepOneDialog: false,
-      stepTwoDialog: false,
+      stepTwoDialog: false
     };
   },
   mounted() {
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
   },
   computed: {
     currentPageId() {
       return this.slides[this.currentIndex].page_id;
-    },
+    }
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
@@ -309,7 +309,7 @@ type: "slide"*/
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -321,7 +321,7 @@ type: "slide"*/
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -348,7 +348,7 @@ type: "slide"*/
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then((url) => {
+      getTeacherLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -364,7 +364,7 @@ type: "slide"*/
     startConnectRoom() {
       this.joinRoom();
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           if (this.classRoomInfo.status == "live") {
             this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
@@ -373,12 +373,12 @@ type: "slide"*/
           }
           console.log(this.classRoomInfo);
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
 
       requestRefreshPPT(this.slide_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -388,7 +388,7 @@ type: "slide"*/
             hideLoading();
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
@@ -500,7 +500,6 @@ type: "slide"*/
             d.params.mode == "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
-          console.log(this.page_model, "model change!!!");
         }
       } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
         if (d.room == this.slide_id) {
@@ -508,9 +507,11 @@ type: "slide"*/
           console.log(this.showResponse, "show res change!!!");
         }
       } else if (d.type == SocketEventsEnum.END_SESSION) {
+        if (!this.classRoomInfo) return;
         this.classRoomInfo.status = "close";
         this.$forceUpdate();
       } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
+        if (!this.classRoomInfo) return;
         let locked = d.params.lock;
         let page = d.params.page;
         if (!this.classRoomInfo.lock_page) {
@@ -520,7 +521,7 @@ type: "slide"*/
           this.classRoomInfo.lock_page.push(page);
         } else {
           this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-            (item) => item != page
+            item => item != page
           );
         }
       }
@@ -535,7 +536,7 @@ type: "slide"*/
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
-          key: user_id,
+          key: user_id
         });
 
         EventBus.$emit("choice", { user_id, answer });
@@ -550,7 +551,7 @@ type: "slide"*/
           content,
           user_name,
           item_id,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -559,7 +560,7 @@ type: "slide"*/
           user_id,
           content,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -582,9 +583,9 @@ type: "slide"*/
       let _this = this;
       if (count < 20) {
         queryRefreshResult(code, token)
-          .then((res) => {
+          .then(res => {
             if (res.data.status === "processing") {
-              setTimeout(function () {
+              setTimeout(function() {
                 _this.queryResult(code, token, ++count);
               }, 1000);
             } else {
@@ -592,7 +593,7 @@ type: "slide"*/
               hideLoading();
             }
           })
-          .catch((res) => {
+          .catch(res => {
             this.getAllSlides();
             hideLoading();
           });
@@ -602,12 +603,16 @@ type: "slide"*/
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
         this.getItemData();
+        for (let i = 0; i < list.length; i++) {
+          this.responsePercentage[i] = 0;
+        }
+        this.isFocus[this.currentIndex] = true;
       });
     },
     getItemData() {
@@ -628,6 +633,25 @@ type: "slide"*/
         this.currentAnswerCount = list.length;
 
         this.responseContentList = list;
+
+        let count = 0;
+        let id = "-1";
+        for (let i = 0; i < list.length; i++) {
+          if (id != list[i].user_id) {
+            count++;
+            id = list[i].user_id;
+          }
+        }
+
+        if (this.studentCounts < count) {
+          this.studentCounts = count;
+        }
+        if (count == 0) {
+          this.responsePercentage[this.currentIndex] = 0;
+        } else {
+          this.responsePercentage[this.currentIndex] =
+            (count * 100) / this.studentCounts;
+        }
       } else {
         this.currentAnswerCount = 0;
       }
@@ -717,7 +741,7 @@ type: "slide"*/
       showLoading();
 
       endClassRoomReq(this.token, name, this.class_id)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           let _this = this;
           this.confirmCloseDialogVisible = false;
@@ -729,7 +753,7 @@ type: "slide"*/
                 this.class_id
               }","params": {"close": ${true}}}`
             );
-            setTimeout(function () {
+            setTimeout(function() {
               hideLoading();
               let url =
                 "https://docs.google.com/presentation/d/" + _this.slide_id;
@@ -737,7 +761,7 @@ type: "slide"*/
             }, 2000);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
           this.$message("error", "Close Session error");
           hideLoading();
@@ -747,14 +771,13 @@ type: "slide"*/
     lockPage() {
       let islocked = true;
       let page_id = this.slides[this.currentIndex].page_id;
-      console.log(this.classRoomInfo.lock_page);
       if (!this.classRoomInfo.lock_page) {
         islocked = true;
         this.classRoomInfo.lock_page = new Array();
         this.classRoomInfo.lock_page.push(page_id);
       } else {
         let pages = this.classRoomInfo.lock_page.filter(
-          (item) => item != page_id
+          item => item != page_id
         );
         islocked = this.classRoomInfo.lock_page.length == pages.length;
         if (islocked) {
@@ -850,7 +873,29 @@ type: "slide"*/
 
       return count;
     },
-  },
+    openTwo() {
+      this.stepOneDialog = false;
+      this.stepTwoDialog = true;
+    },
+    closeTwo() {
+      this.stepOneDialog = false;
+      this.stepTwoDialog = false;
+    },
+    giveFocus(index, notSend) {
+      this.currentIndex = index;
+      this.getItemData();
+      if (!notSend && this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
+        this.emitSo(
+          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentIndex}"}}`
+        );
+      }
+
+      for (let i = 0; i < this.slides.length; i++) {
+        this.isFocus[i] = i == index;
+      }
+      this.$forceUpdate();
+    }
+  }
 };
 </script>,
     

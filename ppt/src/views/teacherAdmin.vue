@@ -1,4 +1,4 @@
-<template>
+  <template>
   <el-container>
     <el-main>
       <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
@@ -11,10 +11,31 @@
           :currentAnswerCount="currentAnswerCount"
           :textList="responseContentList"
         />
+        <teacherControlPanel
+         v-if="classRoomInfo"
+          class="control_panel"
+          :current_model="page_model"
+          :currentPage="parseInt(currentIndex) + 1"
+          :totalPage="slides.length"
+          :isDashboard="false"
+          :changePage="pageChange"
+          :turnModel="turnModel"
+          :open="open"
+          :showResponse="showres"
+          :current_response="currentAnswerCount"
+          :isResponseShow="showResponse"
+          :slide_id="slide_id"
+          :endLesson="endLesson"
+          :turnOff="turnModel"
+          :isClosed="classRoomInfo&&classRoomInfo.status == 'close'"
+          :classRoomInfo="classRoomInfo"
+          :lockPage="lockPage"
+          :slides="slides"
+        />
       </div>
     </el-main>
     <commentModal />
-    <!-- <div class="share_room" @click="copyUrl()">Share Class</div>
+    <div class="share_room" @click="copyUrl()">Share Class</div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
@@ -37,12 +58,13 @@
 
     <el-dialog title="End This Session" :visible.sync="confirmCloseDialogVisible">
       <ConfirmEndDialog
+        v-if="classRoomInfo"
         :class_name="classRoomInfo.class_name"
         :room_name="room_name"
         :cancelEndClass="cancelEndClass"
         :endClassroom="endClassroom"
       />
-    </el-dialog> -->
+    </el-dialog>
   </el-container>
 </template>
 <style scoped>
@@ -149,7 +171,6 @@
   display: flex;
   flex-direction: column;
 }
-
 .opts {
   display: flex;
   flex-direction: row-reverse;
@@ -205,7 +226,6 @@ import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
 //   initGoogleAuth,
 //   getGoogleUserInfo,
 // } from "@/utils/googleAuth";
-
 export default {
   data() {
     return {
@@ -299,7 +319,6 @@ type: "slide"*/
       } else {
         this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
       }
-
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         console.log(this.page_model, "send message");
@@ -341,13 +360,11 @@ type: "slide"*/
     },
     open(model) {
       // this.$router.push({ path: "/dashboard" });
-
       if (model == 0) {
         console.log(0 + "_blank");
         var windowObjectReference;
         var strWindowFeatures =
           "width=900,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
-
         //"/index.html#/dashboard?slide_id=" + this.slide_id
         windowObjectReference = window.open(
           "about:blank",
@@ -401,7 +418,6 @@ type: "slide"*/
         .catch(res => {
           console.log(res);
         });
-
       requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
           // console.log(res);
@@ -420,7 +436,6 @@ type: "slide"*/
         });
       //todo  检查更新完毕后，再获取ppt
     },
-
     queryResult(code, token, count) {
       let _this = this;
       if (count < 20) {
@@ -490,7 +505,6 @@ type: "slide"*/
         );
         console.log(list);
         this.currentAnswerCount = list.length;
-
         this.responseContentList = list;
       } else {
         this.currentAnswerCount = 0;
@@ -528,7 +542,6 @@ type: "slide"*/
       this.getItemData();
       // 换页命令
       // '{"type":"change_page", "params": {"page": 3}}'
-
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
           `{"room":"${this.slide_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
@@ -680,7 +693,6 @@ type: "slide"*/
           );
         }
       }
-
       // 回答问题
       const { room, page_id } = d;
       // 过滤非当前页面数据
@@ -693,7 +705,6 @@ type: "slide"*/
           answer,
           key: user_id
         });
-
         EventBus.$emit("choice", { user_id, answer });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
@@ -719,7 +730,6 @@ type: "slide"*/
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
-
       this.getResponeCount();
     },
     // '{"type":"change_page", "params": {"page": 3}}'
@@ -749,7 +759,6 @@ type: "slide"*/
         `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${this.token}","class_id":"${this.class_id}","params": {"response": ${this.showResponse}}}`
       );
     },
-
     leavePage() {
       let url = "https://dev.classcipe.com/";
       console.log(this.slide_id);
@@ -771,7 +780,6 @@ type: "slide"*/
         this.confirmCloseDialogVisible = true;
       }
     },
-
     cancelEndClass() {
       this.confirmCloseDialogVisible = false;
     },
@@ -781,7 +789,6 @@ type: "slide"*/
         name = this.classRoomInfo.class_name;
       }
       showLoading();
-
       endClassRoomReq(this.token, name, this.class_id)
         .then(res => {
           console.log(res);

@@ -138,6 +138,7 @@
 
     <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
       <dashboardMenu
+        v-if="classRoomInfo"
         :current_model="current_model"
         :turnModel="turnModel"
         :isDashboard="isDashboard"
@@ -185,9 +186,9 @@ export default {
     },
     classRoomInfo: {
       type: Object,
-       default: () => {
-          return {}
-        }
+      default: () => {
+        return {};
+      }
     },
     totalPage: {
       type: Number,
@@ -260,16 +261,16 @@ export default {
     lastPage() {
       console.log(this.currentPage);
       if (this.currentPage > 1) {
-        this.currentPage--;
-        let page = this.currentPage;
-        if (this.isDashboard) {
-          page = page - 1;
-        }
+        let page = this.currentPage-1;
         this.changePage(page);
       }
     },
     isLoked() {
-      if (!this.classRoomInfo.lock_page) {
+      if (
+        !this.classRoomInfo.lock_page ||
+        !this.slides ||
+        !this.slides[this.currentPage - 1]
+      ) {
         return false;
       } else {
         for (let i = 0; i < this.classRoomInfo.lock_page.length; i++) {
@@ -285,17 +286,13 @@ export default {
     },
     nextPage() {
       if (this.currentPage < this.totalPage) {
-        this.currentPage++;
-        let page = this.currentPage;
-        if (this.isDashboard) {
-          page = page - 1;
-        }
+        let page = this.currentPage + 1;
         this.changePage(page);
       }
     },
     closeStudentPaced() {
       console.log("colse student");
-      this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
+      // this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
       this.turnOff();
     },
     showRes() {
