@@ -20,11 +20,6 @@ const routes: Array<RouteConfig> = [
     component: () => import('../views/teacherDashboard.vue'),
   },
 
-  {
-    path: '/class',
-    name: 'class',
-    component: () => import('../views/teacherPage.vue'),
-  },
   // {
   //   path: '/dashboard',
   //   name: 'dashboard',

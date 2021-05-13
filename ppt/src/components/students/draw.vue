@@ -30,6 +30,7 @@ class Draw {
         this.lineWidth = 2
         this.canvas = document.getElementById(this.el)
         this.cxt = this.canvas.getContext('2d')
+        // this.cxt.fillStyle = 'rgba(0, 0, 255, 0)';
         // // console.log(canvas.getBoundingClientRect())
         // this.stage_info = canvas.getBoundingClientRect()
         this.canvasPool = []
