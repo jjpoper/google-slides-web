@@ -1,12 +1,13 @@
 <template>
   <div v-if="currentAnswerCount > 0" class="page">
-    <choiceItem v-if="type === 'choice'" v-bind="$attrs" />
+    <choiceItem v-if="type === 'choice'" v-bind="$attrs" :flag_1="flag_1"/>
     <textItem
       v-else-if="type === 'text' || type === 'number'"
       v-bind="$attrs"
       :textList="textList"
+      :flag_1="flag_1"
     />
-    <draw v-else-if="type === 'draw'" v-bind="$attrs" />
+    <draw v-else-if="type === 'draw'" v-bind="$attrs" :flag_1="flag_1"/>
   </div>
   <div class="page center" v-else>
     <div class="loadEffect">
@@ -18,8 +19,7 @@
       <span></span>
       <span></span>
       <span></span>
-    </div>
-    Waiting For Responses
+    </div>Waiting For Responses
   </div>
 </template>
 
@@ -28,6 +28,7 @@
   display: flex;
   width: 100%;
   height: auto;
+  margin-top: 70px;
 }
 .center {
   height: 100%;
@@ -39,14 +40,13 @@
   height: 60px;
   margin-right: 10px;
   position: relative;
- 
 }
 .loadEffect span {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #409EFF;
+  background: #409eff;
   position: absolute;
   -webkit-animation: load 1.04s ease infinite;
 }
@@ -115,24 +115,28 @@ export default {
   props: {
     type: {
       type: String,
-      default: "",
+      default: ""
     },
     currentAnswerCount: {
       type: Number,
-      default: 0,
+      default: 0
     },
     textList: {
       type: Array,
       function() {
         return [];
-      },
+      }
     },
+    flag_1: {
+      type: Boolean,
+      default: false
+    }
   },
   components: {
     textItem,
     radioItem,
     choiceItem,
-    draw,
-  },
+    draw
+  }
 };
 </script>

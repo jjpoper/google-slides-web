@@ -5,11 +5,12 @@ import { SocketEventsEnum } from "./socketEvents";
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, token: string, callback: callback, class_id: string) => {
+export const createSo = (room: string, token: string, classId:string,callback: callback) => {
+  console.log(classId,"create ws socket")
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
   socket.on('connect', () => {
     // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
-    socket.emit('join-room', `{"room":"${room}", "token": "${token}", "class_id": "${class_id}", "role":"teacher"}`, () => {
+    socket.emit('join-room', `{"room":"${room}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
       console.log("老师加入房间")
     });
 
@@ -27,7 +28,7 @@ export const createSo = (room: string, token: string, callback: callback, class_
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
+    callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
   });
 
   socket.on('control', (data: any) => {

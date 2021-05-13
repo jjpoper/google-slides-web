@@ -32,7 +32,7 @@
       </div>
     </button>
 
-    <div class="info_area">
+    <div :class="isClosed ? 'info_area' : 'info_area'">
       <svg
         t="1619161258814"
         slot="reference"
@@ -59,13 +59,14 @@
         <circle cx="10" cy="20" r="5" fill="#ffffff" />
       </svg>
 
-      <strong>{{ current_model }}</strong>
+      <strong>{{ isClosed ? "Closed" : current_model }}</strong>
     </div>
 
     <div
-      :class="isResponseShow?'button_area back_red':'button_area'"
+      :class="isResponseShow ? 'button_area back_red' : 'button_area'"
       @click="showRes()"
       style="margin-right: 20px"
+      v-if="!isClosed && (!isDashboard || current_model == 'Insturctor-Paced')"
     >
       <svg
         t="1620464720996"
@@ -84,10 +85,37 @@
         />
       </svg>
 
-      <!-- <strong class="button_text">{{response_show?'Hide ':'Show '}} Response</strong> -->
+      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
     </div>
 
-    <div class="button_area" v-if="current_model === 'Student-Paced'" @click="closeStudentPaced()">
+    <div
+      :class="isLoked() ? 'button_area back_red' : 'button_area'"
+      v-if="!isClosed && current_model != 'Student-Paced'"
+      @click="lockPage()"
+    >
+      <svg
+        t="1620829350317"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="1431"
+        width="25"
+        height="25"
+      >
+        <path
+          d="M216.1664 438.852267V292.5568C216.1664 131.003733 348.603733 0 512 0c163.362133 0 295.8336 131.003733 295.8336 292.5568v146.295467h1.604267A146.295467 146.295467 0 0 1 955.733333 585.147733v292.5568A146.295467 146.295467 0 0 1 809.437867 1024H214.562133A146.295467 146.295467 0 0 1 68.266667 877.704533v-292.5568a146.295467 146.295467 0 0 1 146.295466-146.295466h1.604267z m73.966933 0h443.733334V292.5568c0-121.173333-99.328-219.409067-221.866667-219.409067S290.133333 171.349333 290.133333 292.522667v146.295466z m221.047467 219.4432a73.147733 73.147733 0 1 0 0 146.261333h1.6384a73.147733 73.147733 0 0 0 0-146.261333h-1.6384z"
+          p-id="1432"
+          fill="#ffffff"
+        />
+      </svg>
+      <strong class="button_text">{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong>
+    </div>
+    <div
+      class="button_area"
+      v-if="!isClosed && current_model === 'Student-Paced'"
+      @click="closeStudentPaced()"
+    >
       <svg
         t="1620464177484"
         class="icon"
@@ -110,12 +138,16 @@
 
     <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
       <dashboardMenu
+        v-if="classRoomInfo"
         :current_model="current_model"
         :turnModel="turnModel"
         :isDashboard="isDashboard"
         :open="open"
         :openProject="openProject"
         :slide_id="slide_id"
+        :endLesson="endLesson"
+        :isClosed="isClosed"
+        :classRoomInfo="classRoomInfo"
       />
       <svg
         t="1619161258814"
@@ -132,8 +164,8 @@
       </svg>
     </el-popover>
 
-    <div class="end_button" @click="endSession()">
-      <b>END</b>
+    <div class="end_button" @click="endLesson()">
+      <b>{{ isClosed ? "EXIT" : "END" }}</b>
     </div>
   </div>
 </template>
@@ -148,15 +180,24 @@ export default {
       type: Number,
       default: 1
     },
-    slide_id:{
-      type:String,
-      default:'',
+    slide_id: {
+      type: String,
+      default: ""
+    },
+    classRoomInfo: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     },
     totalPage: {
       type: Number,
       default: 3
     },
-
+    isClosed: {
+      type: Boolean,
+      default: false
+    },
     current_model: {
       type: String,
       default: "Insturctor-Paced"
@@ -196,46 +237,68 @@ export default {
     },
     openProject: {
       type: Function
+    },
+    endLesson: {
+      type: Function
+    },
+    lockPage: {
+      type: Function
+    },
+    slides: {
+      type: Array,
+      default: []
     }
   },
   components: {
     dashboardMenu
   },
   data() {
-    return {};
+    return {
+      dialogVisible: false
+    };
   },
   methods: {
     lastPage() {
       console.log(this.currentPage);
       if (this.currentPage > 1) {
-        this.currentPage--;
-        let page = this.currentPage;
-        if (this.isDashboard) {
-          page = page - 1;
-        }
+        let page = this.currentPage-1;
         this.changePage(page);
       }
     },
+    isLoked() {
+      if (
+        !this.classRoomInfo.lock_page ||
+        !this.slides ||
+        !this.slides[this.currentPage - 1]
+      ) {
+        return false;
+      } else {
+        for (let i = 0; i < this.classRoomInfo.lock_page.length; i++) {
+          if (
+            this.classRoomInfo.lock_page[i] ===
+            this.slides[this.currentPage - 1].page_id
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
     nextPage() {
       if (this.currentPage < this.totalPage) {
-        this.currentPage++;
-        let page = this.currentPage;
-        if (this.isDashboard) {
-          page = page - 1;
-        }
+        let page = this.currentPage + 1;
         this.changePage(page);
       }
     },
     closeStudentPaced() {
       console.log("colse student");
-      this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
+      // this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
       this.turnOff();
     },
     showRes() {
       this.showResponse();
       //    this.isResponseShow = !this.isResponseShow;
-    },
-    endSession() {}
+    }
   }
 };
 </script>
@@ -353,6 +416,9 @@ strong {
   align-items: center;
   flex: 1;
   justify-content: center;
+}
+.hide_area {
+  visibility: hidden;
 }
 .button_area {
   height: 60px;
