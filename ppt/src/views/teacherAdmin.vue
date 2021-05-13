@@ -10,6 +10,7 @@
           :flag="false"
           :currentAnswerCount="currentAnswerCount"
           :textList="responseContentList"
+          :pptUrl="currentItemData.thumbnail_url"
         />
         <teacherControlPanel
           class="control_panel"
