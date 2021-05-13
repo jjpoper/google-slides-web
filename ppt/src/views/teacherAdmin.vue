@@ -11,30 +11,10 @@
           :currentAnswerCount="currentAnswerCount"
           :textList="responseContentList"
         />
-        <teacherControlPanel
-          class="control_panel"
-          :current_model="page_model"
-          :currentPage="parseInt(currentIndex) + 1"
-          :totalPage="slides.length"
-          :isDashboard="false"
-          :changePage="pageChange"
-          :turnModel="turnModel"
-          :open="open"
-          :showResponse="showres"
-          :current_response="currentAnswerCount"
-          :isResponseShow="showResponse"
-          :slide_id="slide_id"
-          :endLesson="endLesson"
-          :turnOff="turnModel"
-          :isClosed="classRoomInfo.status == 'close'"
-          :classRoomInfo="classRoomInfo"
-          :lockPage="lockPage"
-          :slides="slides"
-        />
       </div>
     </el-main>
     <commentModal />
-    <div class="share_room" @click="copyUrl()">Share Class</div>
+    <!-- <div class="share_room" @click="copyUrl()">Share Class</div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
@@ -62,7 +42,7 @@
         :cancelEndClass="cancelEndClass"
         :endClassroom="endClassroom"
       />
-    </el-dialog>
+    </el-dialog> -->
   </el-container>
 </template>
 <style scoped>

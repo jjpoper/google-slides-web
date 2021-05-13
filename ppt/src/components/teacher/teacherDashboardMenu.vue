@@ -258,7 +258,9 @@ export default {
     },
     classRoomInfo: {
       type: Object,
-      default: null,
+      default: () => {
+        return {};
+      },
     },
   },
   methods: {

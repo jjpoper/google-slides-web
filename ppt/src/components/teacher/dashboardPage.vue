@@ -1,0 +1,184 @@
+<template>
+  <div class="dashboard">
+    <div class="page">
+      <div class="left">
+        <div v-for="(item, index) in slides" :key="index" class="ppt_content">
+          <div
+            v-bind:class="
+              isFocus[index]
+                ? 'image_parent image_parent_focus'
+                : 'image_parent '
+            "
+            @click="pageChage(index + 1)"
+          >
+            <img :src="item.thumbnail_url" />
+          </div>
+
+          <div class="response_flag">
+            <div
+              class="top"
+              :style="'width:' + responsePercentage[index] + '%'"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="content_parent">
+        <div class="content_main">
+          <teacherIndexItem
+            v-if="currentItemData && currentItemData.items[0]"
+            :data="currentItemData"
+            :type="currentItemData.items[0].type"
+            :flag="true"
+            :currentAnswerCount="currentAnswerCount"
+            :textList="responseContentList"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.dashboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.page {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.left {
+  min-height: 100%;
+  width: 250px;
+  overflow: scroll;
+  padding: 10px;
+}
+
+.left::-webkit-scrollbar {
+  display: none;
+}
+.ppt_content {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.divider {
+  height: auto;
+  min-height: 100%;
+  background-color: #909090;
+  width: 1px;
+  position: fixed;
+  top: 0px;
+  left: 250px;
+}
+
+.content_parent {
+  display: flex;
+  flex: 1;
+  overflow-x: hidden;
+}
+
+.content_main {
+  height: auto;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 70px;
+  /* justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; */
+}
+
+.image_parent {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid white;
+  width: 230px;
+  height: 130px;
+}
+.image_parent_focus {
+  border: 1px solid #409eff;
+}
+image {
+  width: 228px;
+  height: auto;
+  display: block;
+}
+.response_flag {
+  width: 230px;
+  height: 6px;
+  background-color: white;
+  border: 1px solid #909090;
+}
+.top {
+  background-color: #67c23a;
+  height: 6px;
+}
+
+.control_panel {
+  width: 100%;
+}
+</style>
+
+<script>
+import pptcontent from "../pptcontent.vue";
+import teacherIndexItem from "./Index.vue";
+export default {
+  components: { pptcontent, teacherIndexItem },
+  props: {
+    currentItemData: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
+    slides: {
+      type: Array,
+      function() {
+        return [];
+      },
+    },
+    showResponse: {
+      type: Boolean,
+      default: false,
+    },
+    currentAnswerCount: {
+      type: Number,
+      default: 0,
+    },
+    responseContentList: {
+      type: Array,
+      function() {
+        return [];
+      },
+    },
+    responsePercentage: {
+      type: Array,
+      function() {
+        return [];
+      },
+      pageChage: {
+        type: Function,
+      },
+    },
+  },
+
+  created() {
+    console.log(currentItemData.thumbnail_url);
+  },
+};
+</script>

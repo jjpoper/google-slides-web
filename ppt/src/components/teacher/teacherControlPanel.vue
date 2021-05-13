@@ -185,7 +185,9 @@ export default {
     },
     classRoomInfo: {
       type: Object,
-      default: null
+       default: () => {
+          return {}
+        }
     },
     totalPage: {
       type: Number,
