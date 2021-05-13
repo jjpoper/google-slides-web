@@ -73,6 +73,7 @@ export default {
 .drawlist {
   width: 100%;
   position: relative;
+  margin-top: -70px;
 }
 #canvasouter {
   position: relative;
