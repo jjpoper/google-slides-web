@@ -152,6 +152,7 @@ export default {
       slides: [],
       currentIndex: 0,
       slide_id: 0,
+      class_id: 0,
       currentSo: null,
       allAnswers: {},
       uname: "",
@@ -163,7 +164,8 @@ export default {
       modalVisiable: false,
       oken: '',
       currentModel: ClassRoomModelEnum.TEACHER_MODEL, //课堂模式，学生自己能否切换页面
-      uid: '' // uid
+      uid: '', // uid
+      token: ''
     };
   },
   mounted() {
@@ -188,8 +190,9 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      const {slide_id, token, page} = to.query
+      const {slide_id, token, page, class_id} = to.query
       vm.slide_id = slide_id;
+      vm.class_id = class_id
       vm.currentIndex = page && page !== 'undefined' ? page : 0;
       if(token) {
         vm.token = token
@@ -253,7 +256,7 @@ export default {
       });
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}"}`
+        `{"room": "${this.slide_id}","class_id":"${this.class_id}", "token": "${this.token}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}"}`
       );
       this.currentAnswerd = true;
     },
@@ -264,7 +267,7 @@ export default {
       const { type } = items[0];
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}"}`
+        `{"room": "${this.slide_id}","class_id":"${this.class_id}", "token": "${this.token}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}", "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
@@ -321,9 +324,10 @@ export default {
         () => {
           this.emitSo(
             "rename",
-            `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${this.uname}"}`
+            `{"room": "${this.slide_id}","class_id":"${this.class_id}",  "token": "${this.token}", "user_id": "${this.uid}", "user_name_new": "${this.uname}"}`
           );
-        }
+        },
+        this.class_id
       );
     },
     msgListener(d) {
@@ -381,7 +385,7 @@ export default {
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
-        `{"room": "${this.slide_id}", "type":"${type}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
+        `{"room": "${this.slide_id}","class_id":"${this.class_id}", "token": "${this.token}", "type":"${type}", "user_id": "${this.uid}", "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
@@ -415,7 +419,7 @@ export default {
           } else {
             this.emitSo(
               "rename",
-              `{"room": "${this.slide_id}", "user_id": "${this.uid}", "user_name_new": "${value}"}`
+              `{"room": "${this.slide_id}","class_id":"${this.class_id}", "token": "${this.token}", "user_id": "${this.uid}", "user_name_new": "${value}"}`
             );
           }
         })

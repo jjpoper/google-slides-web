@@ -179,6 +179,7 @@ export default {
       slides: [],
       currentIndex: 0,
       slide_id: 0,
+      class_id: 0,
       currentSo: null,
       uid: "", // uid
       currentItemData: null,
@@ -228,8 +229,9 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      const { slide_id, token } = to.query;
+      const { slide_id, token, class_id } = to.query;
       vm.slide_id = slide_id;
+      vm.class_id = class_id
       if (token) {
         vm.token = token;
         saveTeacherStoreToken(token);
@@ -251,7 +253,7 @@ export default {
         // this.currentSo.emit('control', JSON.stringify(data));
         console.log(this.page_model, "send message");
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.page_model}"}}`
+          `{"room":"${this.slide_id}", "class_id":"${this.class_id}","token": "${this.token}","token": "${this.token}", "type": "${SocketEventsEnum.MODEL_CHANGE}", "params": {"model": "${this.page_model}"}}`
         );
       }
     },
@@ -393,7 +395,7 @@ export default {
       console.log(itemData);
       this.currentSo.emit(
         "comment",
-        `{"user_id":"${studentId}", "item": ${itemData}}`
+        `{"user_id":"${studentId}","token": "${this.token}","class_id":"${this.class_id}", "item": ${itemData}}`
       );
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {console.log("发送消息反馈")});
       // this.emitSo(itemData)
@@ -456,7 +458,7 @@ export default {
 
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+          `{"room":"${this.slide_id}","class_id":"${this.class_id}","token": "${this.token}", "type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
         );
       }
     },
@@ -473,7 +475,7 @@ export default {
       this.dialogTableVisible = true;
     },
     joinRoom() {
-      this.currentSo = createSo(this.slide_id, this.token, this.msgListener);
+      this.currentSo = createSo(this.slide_id, this.token, this.msgListener, this.class_id);
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
       teacher.state = "online";
@@ -642,7 +644,7 @@ export default {
     showres() {
       this.showResponse = !this.showResponse;
       this.emitSo(
-        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": "${this.showResponse}"}}`
+        `{"room":"${this.slide_id}","class_id":"${this.class_id}","token": "${this.token}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "params": {"response": "${this.showResponse}"}}`
       );
     }
     // hideRes() {
