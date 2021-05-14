@@ -11,6 +11,7 @@ export enum SocketEventsEnum {
   MODEL_CHANGE = 'Mode_Change',
   SHOW_RESPONSE = 'show_response',
   END_SESSION = 'end_session',
+  CHANGE_SESSION_STATUS = 'change_session_status',
   LOCK_PAGE = 'lock_page',
   STAR_OR_HIDE_ANSWER = 'STAR_OR_HIDE_ANSWER',
 }

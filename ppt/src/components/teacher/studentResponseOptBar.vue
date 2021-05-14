@@ -225,6 +225,7 @@ export default {
   },
   methods: {
     starAnswer() {
+      console.log("星标");
       const { pageId, itemId, studentId, title, isStar } = this.data;
       const nextStatus = !isStar;
       const type = "star";
@@ -248,6 +249,7 @@ export default {
       });
     },
     hideResponse() {
+      console.log("隐藏");
       const { pageId, itemId, studentId, title, isShowRes } = this.data;
       const nextStatus = !isShowRes;
       const type = "show";

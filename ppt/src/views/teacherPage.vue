@@ -46,6 +46,7 @@
         :lockPage="lockPage"
         :slides="slides"
         :openProject="openProject"
+        :reopenClass="_reopenClass"
       />
     </div>
 
@@ -78,13 +79,17 @@
     </el-dialog>
 
     <el-dialog
-      title="End This Session"
+      v-if="classRoomInfo"
+      :title="
+        classRoomInfo.class_name != 'unnamed'
+          ? 'End Session ' + classRoomInfo.class_name
+          : 'End This Session'
+      "
       :visible.sync="confirmCloseDialogVisible"
     >
       <confirm-end-dialog
         v-if="classRoomInfo"
         :class_name="classRoomInfo.class_name"
-        :room_name="room_name"
         :cancelEndClass="cancelEndClass"
         :endClassroom="endClassroom"
       />
@@ -197,6 +202,7 @@ import {
   queryRefreshResult,
   queryClassStatus,
   endClassRoomReq,
+  reopenClass,
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
@@ -269,7 +275,6 @@ type: "slide"*/
       dialogVisible: false,
       class_id: "",
       classRoomInfo: null,
-      room_name: "",
       isLocked: false,
       confirmCloseDialogVisible: false,
       isDashboard: false,
@@ -288,28 +293,15 @@ type: "slide"*/
     EventBus.$on(
       ModalEventsNameEnum.SHOW_STAR_ANSWER,
       ({ pageId, itemId, title, studentId, nextStatus, type }) => {
-        if (this.currentPageId != pageId) {
-          return;
-        }
-        let i = 0;
-        for (; i < this.responseContentList.length; i++) {
-          if (
-            this.responseContentList[i].item_id == itemId &&
-            this.responseContentList[i].user_id == studentId
-          ) {
-            if (type == "star") {
-              this.responseContentList[i].star = nextStatus;
-            } else if (type == "show") {
-              this.responseContentList[i].show = nextStatus;
-            }
-            //发送一个ws消息通知其他端，更新状态
-            this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
-              "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
-            );
-            break;
-          }
-        }
+        this.handleStarOrHide(
+          pageId,
+          itemId,
+          title,
+          studentId,
+          nextStatus,
+          type,
+          true
+        );
       }
     );
   },
@@ -339,6 +331,63 @@ type: "slide"*/
   },
 
   methods: {
+    handleStarOrHide(
+      pageId,
+      itemId,
+      title,
+      studentId,
+      nextStatus,
+      type,
+      sendWSMsg
+    ) {
+      if (this.currentPageId != pageId) {
+        return;
+      }
+
+      console.log(this.currentItemData.items[0].type, "star or hide!!!!");
+
+      let i = 0;
+      for (; i < this.responseContentList.length; i++) {
+        if (
+          (this.responseContentList[i].item_id == itemId ||
+            this.responseContentList[i].answer == itemId) &&
+          this.responseContentList[i].user_id == studentId
+        ) {
+          if (type == "star") {
+            this.responseContentList[i].star = nextStatus;
+          } else if (type == "show") {
+            this.responseContentList[i].show = nextStatus;
+          }
+
+          if (this.currentItemData.items[0]) {
+            if (this.currentItemData.items[0].type == "choice") {
+              const user_id = studentId;
+              const answer = itemId;
+              saveStudentsPageAnswerList(
+                this.currentPageId,
+                this.currentItemData.items[0].type,
+                {
+                  user_id,
+                  answer,
+                  star: this.responseContentList[i].star,
+                  show: this.responseContentList[i].show,
+                  key: user_id,
+                }
+              );
+              EventBus.$emit("choice", { user_id, answer });
+            }
+          }
+          //发送一个ws消息通知其他端，更新状态
+          if (sendWSMsg) {
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
+              "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
+            );
+          }
+          break;
+        }
+      }
+    },
     sendComment({
       studentId,
       pageId,
@@ -447,7 +496,7 @@ type: "slide"*/
       this.teacherList.push(teacher);
     },
     msgListener(d) {
-      console.log(d.type, "====收到消息命令");
+      console.log(d, "====收到消息命令");
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         console.log(d.student_count, "d.student_count");
@@ -543,9 +592,9 @@ type: "slide"*/
           this.showResponse = d.params.response;
           console.log(this.showResponse, "show res change!!!");
         }
-      } else if (d.type == SocketEventsEnum.END_SESSION) {
+      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
-        this.classRoomInfo.status = "close";
+        this.classRoomInfo.status = d.params.status;
         this.$forceUpdate();
       } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
@@ -571,23 +620,31 @@ type: "slide"*/
             nextStatus,
             type,
           } = d.params;
-
-          if (this.currentPageId != pageId) {
-            return;
-          }
-          let i = 0;
-          for (; i < this.responseContentList.length; i++) {
-            if (
-              this.responseContentList[i].item_id == itemId &&
-              this.responseContentList[i].user_id == studentId
-            ) {
-              if (type == "star") {
-                this.responseContentList[i].star = nextStatus;
-              } else if (type == "show") {
-                this.responseContentList[i].show = nextStatus;
-              }
-            }
-          }
+          this.handleStarOrHide(
+            pageId,
+            itemId,
+            title,
+            studentId,
+            nextStatus,
+            type,
+            false
+          );
+          // if (this.currentPageId != pageId) {
+          //   return;
+          // }
+          // let i = 0;
+          // for (; i < this.responseContentList.length; i++) {
+          //   if (
+          //     this.responseContentList[i].item_id == itemId &&
+          //     this.responseContentList[i].user_id == studentId
+          //   ) {
+          //     if (type == "star") {
+          //       this.responseContentList[i].star = nextStatus;
+          //     } else if (type == "show") {
+          //       this.responseContentList[i].show = nextStatus;
+          //     }
+          //   }
+          // }
         }
       }
 
@@ -601,6 +658,8 @@ type: "slide"*/
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
+          star: false,
+          show: true,
           key: user_id,
         });
 
@@ -626,6 +685,8 @@ type: "slide"*/
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           content,
+          star: false,
+          show: true,
           key: user_id,
           user_name,
         });
@@ -814,11 +875,7 @@ type: "slide"*/
           this.confirmCloseDialogVisible = false;
           if (res.code == "ok") {
             this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${
-                SocketEventsEnum.END_SESSION
-              }", "token": "${this.token}","class_id":"${
-                this.class_id
-              }","params": {"close": ${true}}}`
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
             setTimeout(function () {
               hideLoading();
@@ -918,6 +975,28 @@ type: "slide"*/
       this.dialogTableVisible = true;
     },
 
+    //重新开启课堂
+    _reopenClass() {
+      reopenClass(this.token, this.class_id)
+        .then((res) => {
+          console.log(res);
+          if (res.code == "ok") {
+            this.classRoomInfo.status = "live";
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "live"}}`
+            );
+          } else {
+            if (res.data) {
+              this.$message({ message: res.data.message, type: "error" });
+            } else if (res.message) {
+              this.$message({ message: res.message, type: "error" });
+            }
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
     getStudentOnLineCount() {
       let i = 0;
       let count = 0;

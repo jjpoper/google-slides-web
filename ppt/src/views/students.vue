@@ -388,8 +388,9 @@ export default {
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
           this.$forceUpdate();
-        } else if (d.type == SocketEventsEnum.END_SESSION) {
-          this.classRoomInfo.status = "close";
+        } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
+          if (!this.classRoomInfo) return;
+          this.classRoomInfo.status = d.params.status;
           this.$forceUpdate();
         } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
           let locked = d.params.lock;

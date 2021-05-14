@@ -94,15 +94,15 @@ export const startClassRoomReq = async (author: string, slide_id: string, file_n
 
 export const reopenClass = async (token: string, class_id: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/reopen_class`, {
-    tolen: token,
+    token: token,
     class_id: class_id,
   })
-  let res = data.data.data;
+  let res = data.data;
   return res;
 }
 
 export const feedbackClass = async (token: string, class_id: string, feed: string) => {
-  const data = await axios.post(`${PPT.requestUrl}slide/reopen_class`, {
+  const data = await axios.post(`${PPT.requestUrl}slide/student_feel`, {
     token: token,
     class_id: class_id,
     feel: feed,

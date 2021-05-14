@@ -223,8 +223,6 @@
 </style>
 
 <script>
-import { ClassRoomModelEnum } from "@/socket/socketEvents";
-import { startClassRoomReq } from "../../model/index";
 export default {
   props: {
     open: {
@@ -262,6 +260,9 @@ export default {
         return {};
       },
     },
+    reopenClass: {
+      type: Function,
+    },
   },
   methods: {
     leavePage() {
@@ -278,19 +279,8 @@ export default {
     },
 
     reStartClassRoom() {
-      startClassRoomReq(
-        this.classRoomInfo.author,
-        this.classRoomInfo.slide_id,
-        this.classRoomInfo.file_name,
-        "live"
-      )
-        .then((res) => {
-          console.log(res);
-          this.classRoomInfo = res;
-        })
-        .catch((res) => {
-          console.log(res);
-        });
+      console.log("reopen class!!");
+      this.reopenClass();
     },
   },
 };
