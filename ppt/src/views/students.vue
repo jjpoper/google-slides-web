@@ -119,6 +119,7 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
+  getStudentClassAnswers
 } from "../model/index";
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
@@ -129,10 +130,8 @@ import {
   ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
-  getStudentUid,
   saveStudentsCurrentPageAnswerList,
   getStudentCurrentPageAnswerList,
-  getStudentUserName,
   saveStudentUserName,
   addStudentComment,
   unreadStudentComment,
@@ -175,18 +174,6 @@ export default {
     };
   },
   mounted() {
-    // initGoogleAuth().then(() => {
-    //   const isLogin = checkGoogleAuth()
-    //   console.log(isLogin, 'isLogin')
-    //   if(isLogin) {
-    //     // this.afterLogin()
-    //     this.afterLogin();
-    //   } else {
-    //     this.showLoginModal()
-    //   }
-    // }).catch(() => {
-    //   this.beforejoinRoom();
-    // })
     this.unread = getStudentCommentUnReadStatus();
   },
   components: {
@@ -224,6 +211,7 @@ export default {
             this.goToLogin();
           } else {
             this.afterLogin(profile);
+            this.getAllAnswers()
             this.getAllSlides();
           }
         });
@@ -329,6 +317,9 @@ export default {
       // if (this.modalVisiable) {
       //   this.showStudentModal();
       //  }
+    },
+    getAllAnswers() {
+      getStudentClassAnswers(this.class_id, this.token)
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;
@@ -491,26 +482,6 @@ export default {
           }
         })
         .catch(() => {});
-    },
-    showLoginModal() {
-      MessageBox.alert("press to login", "login", {
-        distinguishCancelAndClose: true,
-        confirmButtonText: "Login",
-        center: true,
-        showClose: false,
-      })
-        .then(() => {
-          // this.copyUrl();
-          console.log("点击登录");
-          gotoGoogleAuth()
-            .then(() => {
-              this.afterLogin();
-            })
-            .catch(() => {
-              this.showLoginModal();
-            });
-        })
-        .catch((action) => {});
     },
     lastPage() {
       console.log(this.currentIndex);

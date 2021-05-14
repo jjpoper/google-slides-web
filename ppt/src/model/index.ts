@@ -175,4 +175,73 @@ export const getStudentLoginUrl = async (): Promise<string> => {
   return authUrl
 }
 
+// 获取学生的答案
+export const getTeacherClassAnswers = async (classId: string, token: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/get_student_response`, {
+    class_id: classId,
+    role: "teacher",
+    token
+  })
+  // let authUrl = ''
+  // // let list = data.data.data.pages
+  // // // console.log(data.data.data)
+  // try {
+  //   authUrl = data.data.data.auth_url
+  // } catch (e) {
+  //   // console.log(e)
+  // }
+  // return authUrl
+}
 
+// 获取学生的答案
+export const getStudentClassAnswers = async (classId: string, token: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/get_student_response`, {
+    class_id: classId,
+    role: "student",
+    token
+  })
+  // let authUrl = ''
+  // // let list = data.data.data.pages
+  // // // console.log(data.data.data)
+  // try {
+  //   authUrl = data.data.data.auth_url
+  // } catch (e) {
+  //   // console.log(e)
+  // }
+  // return authUrl
+}
+
+// 获取学生的答案
+export const getTeacherAllComments = async (classId: string, token: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/get_comments`, {
+    class_id: classId,
+    role: "teacher",
+    token
+  })
+  // let authUrl = ''
+  // // let list = data.data.data.pages
+  // // // console.log(data.data.data)
+  // try {
+  //   authUrl = data.data.data.auth_url
+  // } catch (e) {
+  //   // console.log(e)
+  // }
+  // return authUrl
+}
+// 获取学生的答案
+export const getStudentAllComments = async (classId: string, token: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/get_comments`, {
+    class_id: classId,
+    role: "student",
+    token
+  })
+  // let authUrl = ''
+  // // let list = data.data.data.pages
+  // // // console.log(data.data.data)
+  // try {
+  //   authUrl = data.data.data.auth_url
+  // } catch (e) {
+  //   // console.log(e)
+  // }
+  // return authUrl
+}

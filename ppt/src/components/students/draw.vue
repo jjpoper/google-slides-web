@@ -90,7 +90,7 @@ export default {
       this.data.items[0].type
     );
     this.$nextTick(() => {
-      this.draw.init(this.onDrawBack, initData ? initData[0].content : '');
+      this.draw.init(this.onDrawBack, initData && initData[0] ? initData[0].content : '');
     });
   },
   methods: {
