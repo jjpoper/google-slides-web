@@ -52,9 +52,9 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
   const filterData = teacherData.filter(item => item.page_id === pageId && item.type === type)
   const mapData = filterData.map((item) => {
     return {
-      ...JSON.parse(item.data),
       star: false,
-      show: true
+      show: true,
+      ...JSON.parse(item.data)
     }
   })
   // console.log(mapData, '=====')
