@@ -22,7 +22,11 @@
 
     <button class="control-bar__button">
       <div class="control-bar__icon" @click="nextPage()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82" class="svg_right">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 35.12 60.82"
+          class="svg_right"
+        >
           <title>icon-control-btn__arrow</title>
           <path
             d="M14.44,31.91A8.54,8.54,0,0,0,17,38l8.93,9L39.47,60.67a5.64,5.64,0,0,0,8.15,0,6.58,6.58,0,0,0,0-8.93l-6.59-7-6.41-7-5.81-5.88,5.81-5.68,6.6-7,6.59-7a6.57,6.57,0,0,0,0-8.92,5.65,5.65,0,0,0-4.07-1.73,5.75,5.75,0,0,0-4.08,1.74L26.1,16.75l-8.93,8.93A8.71,8.71,0,0,0,14.44,31.91Z"
@@ -44,9 +48,9 @@
         <circle cx="10" cy="20" r="5" fill="#ffffff" />
       </svg>
 
-      <strong
-        style="margin-right: 20px"
-      >{{ current_response == 0 ? "No" : current_response }} Response</strong>
+      <strong style="margin-right: 20px"
+        >{{ current_response == 0 ? "No" : current_response }} Response</strong
+      >
 
       <svg
         t="1619161258814"
@@ -85,7 +89,9 @@
         />
       </svg>
 
-      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
+      <strong class="button_text"
+        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
+      >
     </div>
 
     <div
@@ -109,7 +115,9 @@
           fill="#ffffff"
         />
       </svg>
-      <strong class="button_text">{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong>
+      <strong class="button_text"
+        >{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong
+      >
     </div>
     <div
       class="button_area"
@@ -136,7 +144,12 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
+    <el-popover
+      placement="top"
+      width="400"
+      trigger="hover"
+      class="dropdown-icon"
+    >
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
@@ -148,6 +161,7 @@
         :endLesson="endLesson"
         :isClosed="isClosed"
         :classRoomInfo="classRoomInfo"
+        :reopenClass="reopenClass"
       />
       <svg
         t="1619161258814"
@@ -178,90 +192,93 @@ export default {
   props: {
     currentPage: {
       type: Number,
-      default: 1
+      default: 1,
     },
     slide_id: {
       type: String,
-      default: ""
+      default: "",
+    },
+    reopenClass: {
+      type: Function,
     },
     classRoomInfo: {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     totalPage: {
       type: Number,
-      default: 3
+      default: 3,
     },
     isClosed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     current_model: {
       type: String,
-      default: "Insturctor-Paced"
+      default: "Insturctor-Paced",
     },
 
     current_response: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     open: {
-      type: Function
+      type: Function,
     },
     turnModel: {
-      type: Function
+      type: Function,
     },
     isDashboard: {
       type: Boolean,
-      default: false
+      default: false,
     },
     changePage: {
-      type: Function
+      type: Function,
     },
 
     turnOff: {
-      type: Function
+      type: Function,
     },
     open: {
-      type: Function
+      type: Function,
     },
     showResponse: {
-      type: Function
+      type: Function,
     },
     isResponseShow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     openProject: {
-      type: Function
+      type: Function,
     },
     endLesson: {
-      type: Function
+      type: Function,
     },
     lockPage: {
-      type: Function
+      type: Function,
     },
     slides: {
       type: Array,
-      default: []
-    }
+      default: [],
+    },
   },
   components: {
-    dashboardMenu
+    dashboardMenu,
   },
   data() {
     return {
-      dialogVisible: false
+      dialogVisible: false,
     };
   },
   methods: {
     lastPage() {
       console.log(this.currentPage);
       if (this.currentPage > 1) {
-        let page = this.currentPage-1;
+        let page = this.currentPage - 1;
         this.changePage(page);
       }
     },
@@ -298,8 +315,8 @@ export default {
     showRes() {
       this.showResponse();
       //    this.isResponseShow = !this.isResponseShow;
-    }
-  }
+    },
+  },
 };
 </script>
 

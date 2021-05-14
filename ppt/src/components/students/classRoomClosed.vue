@@ -1,14 +1,19 @@
 <template>
   <div class="page">
-    <img src="../../assets/logo.png" />
+    <img src="../../assets/class_logo.png" />
 
     <div v-if="showOpt">
-      <div class="climate-message__text--secondary">That’s it! Your teacher has ended this lesson.</div>
+      <div class="climate-message__text--secondary">
+        That’s it! Your teacher has ended this lesson.
+      </div>
 
       <div class="climate-message__text--primary">How did it go?</div>
 
       <div class="opt_area">
-        <button class="climate-button--thumbs-up is-showing" @click="feedback('good')">
+        <button
+          class="climate-button--thumbs-up is-showing"
+          @click="feedback('good')"
+        >
           <div class="u-icon">
             <!--?xml version="1.0" encoding="utf-8"?-->
             <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -47,7 +52,10 @@
           </div>
         </button>
 
-        <button class="climate-button--thumbs-down is-showing" @click="feedback('bad')">
+        <button
+          class="climate-button--thumbs-down is-showing"
+          @click="feedback('bad')"
+        >
           <div class="u-icon">
             <!--?xml version="1.0" encoding="utf-8"?-->
             <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -60,7 +68,7 @@
               x="0px"
               y="0px"
               viewBox="-20 22 22 22"
-              style="enable-background:new -20 22 22 22;"
+              style="enable-background: new -20 22 22 22"
               xml:space="preserve"
             >
               <g>
@@ -87,8 +95,12 @@
       </div>
     </div>
     <div class="end_note" v-else>
-      <div class="climate-message__text--primary ng-scope">Your teacher has ended this session.</div>
-      <div class="climate-message__text--secondary">Thanks for your feedback!</div>
+      <div class="climate-message__text--primary ng-scope">
+        Your teacher has ended this session.
+      </div>
+      <div class="climate-message__text--secondary">
+        Thanks for your feedback!
+      </div>
     </div>
   </div>
 </template>
@@ -108,6 +120,12 @@
 .climate-message__text--primary {
   color: #ffffff;
   font-size: 2.15em;
+}
+
+img {
+  width: 500px;
+  height: 131px;
+  margin-bottom: 20px;
 }
 
 .opt_area {
@@ -198,29 +216,29 @@
 <script>
 import { feedbackClass } from "../../model/index";
 export default {
-  props:{
-    token:{
-      type:String,
-      default:'',
+  props: {
+    token: {
+      type: String,
+      default: "",
     },
-    class_id:{
-      type:String,
-      default:'',
-    }
+    class_id: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
-      showOpt: true
+      showOpt: true,
     };
   },
   methods: {
     feedback(result) {
-      feedbackClass(this.token, this.class_id,result)
-        .then(res => {
+      feedbackClass(this.token, this.class_id, result)
+        .then((res) => {
           this.showOpt = false;
         })
-        .catch(res => {});
-    }
-  }
+        .catch((res) => {});
+    },
+  },
 };
 </script>
