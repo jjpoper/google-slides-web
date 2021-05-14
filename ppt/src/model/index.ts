@@ -182,15 +182,15 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
     role: "teacher",
     token
   })
-  // let authUrl = ''
+  let result = []
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
-  // try {
-  //   authUrl = data.data.data.auth_url
-  // } catch (e) {
-  //   // console.log(e)
-  // }
-  // return authUrl
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result
 }
 
 // 获取学生的答案
@@ -200,15 +200,15 @@ export const getStudentClassAnswers = async (classId: string, token: string) => 
     role: "student",
     token
   })
-  // let authUrl = ''
+  let result = []
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
-  // try {
-  //   authUrl = data.data.data.auth_url
-  // } catch (e) {
-  //   // console.log(e)
-  // }
-  // return authUrl
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result
 }
 
 // 获取学生的答案

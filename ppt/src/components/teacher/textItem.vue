@@ -63,7 +63,6 @@
 
 <script>
 import {
-  getCurrentPageAnswerList,
   getStundentUidAndName,
 } from "@/model/store.teacher";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";

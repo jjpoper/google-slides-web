@@ -201,8 +201,12 @@ import {
   queryClassStatus,
   endClassRoomReq,
   reopenClass,
-  getTeacherClassAnswers
 } from "../model/index";
+import {
+  initTeacherData,
+  getTeacherCurrentPageAnswerList,
+  addTeacherData
+} from '@/model/data.teacher'
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
 import {
@@ -212,8 +216,6 @@ import {
 } from "../socket/socketEvents";
 import {
   saveStundentUidAndName,
-  saveStudentsPageAnswerList,
-  getCurrentPageAnswerList,
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveAnswerList
@@ -316,6 +318,7 @@ type: "slide"*/
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
+      window.classId = class_id
       vm.isDashboard = type === "dashboard";
       if (token) {
         vm.token = token;
@@ -365,6 +368,17 @@ type: "slide"*/
             if (this.currentItemData.items[0].type == "choice") {
               const user_id = studentId;
               const answer = itemId;
+              addTeacherData(
+                this.currentPageId,
+                this.currentItemData.items[0].type,
+                {
+                  user_id,
+                  answer,
+                  star: this.responseContentList[i].star,
+                  show: this.responseContentList[i].show,
+                  key: user_id,
+                }
+              );
               EventBus.$emit("choice", { user_id, answer });
             } else if (this.currentItemData.items[0].type == "draw") {
               const user_id = studentId;
@@ -442,7 +456,6 @@ type: "slide"*/
       this.uid = email;
       // saveTeacherUserName(name);
       this.startConnectRoom();
-      this.getAllAnswers();
     },
     startConnectRoom() {
       this.joinRoom();
@@ -459,6 +472,7 @@ type: "slide"*/
         .catch(res => {
           console.log(res);
         });
+
 
       requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
@@ -490,9 +504,6 @@ type: "slide"*/
       teacher.state = "online";
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
-    },
-    getAllAnswers() {
-      getTeacherClassAnswers(this.class_id, this.token);
     },
     msgListener(d) {
       console.log(d, "====收到消息命令");
@@ -655,7 +666,7 @@ type: "slide"*/
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const { answer, user_id, type } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           answer,
           star: false,
@@ -669,7 +680,7 @@ type: "slide"*/
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           content,
           user_name,
@@ -681,7 +692,7 @@ type: "slide"*/
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
         const { content, type, user_id, user_name } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           content,
           star: false,
@@ -730,7 +741,8 @@ type: "slide"*/
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then(list => {
+      Promise.all([initTeacherData(this.class_id, this.token), getAllPPTS(this.slide_id)])
+      .then(([alldata, list]) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -752,11 +764,13 @@ type: "slide"*/
     },
     getResponeCount() {
       if (this.currentItemData.items[0]) {
-        const list = getCurrentPageAnswerList(
-          this.currentItemData.page_id,
-          this.currentItemData.items[0].type
-        );
-        console.log(list);
+        // const list = getCurrentPageAnswerList(
+        //   this.currentItemData.page_id,
+        //   this.currentItemData.items[0].type
+        // );
+        const list = getTeacherCurrentPageAnswerList(this.currentItemData.page_id,
+          this.currentItemData.items[0].type)
+        console.log(list, '=====');
         this.currentAnswerCount = list.length;
 
         this.responseContentList = list;

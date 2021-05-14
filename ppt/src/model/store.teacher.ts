@@ -2,6 +2,7 @@
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
+import {getTeacherCurrentPageAnswerList, getStudentsName} from './data.teacher'
 
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_tid`
@@ -54,7 +55,7 @@ export const saveStundentUidAndName = (uid: string, name: string) => {
 
 // 存储所有学生用户id和用户名关系表
 export const getStundentUidAndName = (uid: string) => {
-  return getTeacherStore(`t_and_s_${uid}`)
+  return getStudentsName(uid)
 }
 
 interface TeacherCommentItem {
@@ -80,8 +81,8 @@ export const addTeacherComment = ({ pageId, itemId, studentId }, data: TeacherCo
 
 // 获取学生端当前page的回答列表信息
 export const getCurrentPageAnswerList = (pageId: string, type: string) => {
-  const list = getTeacherStore(`c_p_a_${pageId}_${type}`)
-  return list && list.length > 0 ? list : []
+  // @ts-ignore
+  return getTeacherCurrentPageAnswerList(pageId, type)
 }
 
 interface SavaParams {

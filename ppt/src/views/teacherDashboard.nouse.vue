@@ -260,6 +260,11 @@ import {
   queryClassStatus,
   endClassRoomReq
 } from "../model/index";
+import {
+  initTeacherData,
+  getTeacherCurrentPageAnswerList,
+  addTeacherData
+} from '@/model/data.teacher'
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import teacherIndexItem from "../components/teacher/Index";
 import studentList from "../components/teacher/studentList";
@@ -270,12 +275,7 @@ import {
   SocketEventsEnum
 } from "../socket/socketEvents";
 import {
-  getTeacherUid,
   saveStundentUidAndName,
-  saveStudentsPageAnswerList,
-  getCurrentPageAnswerList,
-  saveTeacherUserName,
-  getTeacherUserName,
   getTeacherStoreToken,
   saveTeacherStoreToken
 } from "@/model/store.teacher";
@@ -521,7 +521,7 @@ export default {
         console.log(this.currentItemData);
         return;
       }
-      const list = getCurrentPageAnswerList(
+      const list = getTeacherCurrentPageAnswerList(
         this.currentItemData.page_id,
         this.currentItemData.items[0].type
       );
@@ -727,7 +727,7 @@ export default {
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const { answer, user_id, type } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           answer,
           key: user_id
@@ -739,7 +739,7 @@ export default {
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           content,
           user_name,
@@ -749,7 +749,7 @@ export default {
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
         const { content, type, user_id, user_name } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           content,
           key: user_id,
