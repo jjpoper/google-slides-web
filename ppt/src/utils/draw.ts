@@ -1,5 +1,8 @@
+/* eslint-disable no-lonely-if */
 /* 白板实例 */
 import { showToast } from "@/utils/loading";
+// @ts-ignore
+import Text from './drawText'
 
 export enum DrawTypeData {
   line = 'line',
@@ -32,15 +35,22 @@ export default class Draw {
   private canvasWidth = document.documentElement.clientWidth - 40;
   private canvasHeight = document.documentElement.clientHeight - 40;
 
-  private drawType: DrawType = 'line'
+  private drawType: DrawType = 'draw'
   private onDrawBack: onDrawBack = () => null
   private imageData: any
+  private canTextarea = true;
+  private canvasParant: any
+  private textPostion = {
+    x: 0,
+    y: 0
+  }
 
   constructor(el: string) {
     // // console.log(el)
     this.el = el;
     this.canvas = document.getElementById(this.el);
     this.cxt = this.canvas.getContext("2d");
+    this.canvasParant = this.canvas.parentNode
     // // console.log(this.stage_info.left, this.stage_info.top)
   }
 
@@ -79,6 +89,8 @@ export default class Draw {
     // 绘制缓存数据
     if(initUrl) {
       this.initByBase64(initUrl);
+    } else {
+      this.saveImageData()
     }
   }
 
@@ -88,11 +100,13 @@ export default class Draw {
     img.onload = () => {
       this.cxt.clearRect(0, 0, 400, 400);
       this.cxt.drawImage(img, 0, 0);
+      this.saveImageData()
     };
   }
 
   changeDrawType(drawType: DrawType) {
     this.drawType = drawType
+    this.cxt.globalCompositeOperation = "source-over";
   }
 
   changeLineWitdh(width: number) {
@@ -101,8 +115,20 @@ export default class Draw {
 
   changeColor(color: string) {
     this.strokeColor = color;
-    this.lineWidth = 2;
-    this.cxt.globalCompositeOperation = "source-over";
+    // this.cxt.globalCompositeOperation = "source-over";
+  }
+
+  createDom() {
+    const textarea = document.createElement('textarea');
+    textarea.id = 'textarea';
+    textarea.rows = 3;
+    textarea.autofocus = true;
+    textarea.placeholder = '请输入回车键换行..';
+    textarea.style.position = 'absolute';
+    textarea.style.left = `${this.pointer.beginX}px`;
+    textarea.style.top = `${this.pointer.beginY}px`;
+    textarea.style.zIndex = '11';
+    return textarea;
   }
 
   drawBegin(e: any) {
@@ -122,22 +148,22 @@ export default class Draw {
         this.pointer.beginY
       );
     }
-    // // console.log(this.path.beginX, this.path.beginY)
-    // console.log('drawBegin')
-    this.canvas.onmousemove = () => {
-      this.drawing(event)
+
+    if(this.drawType !== 'text') {
+      this.canvas.onmousemove = () => {
+        this.drawing(event)
+      }
+      this.canvas.onmouseout = () => {
+        setTimeout(() => {
+          // console.log('========= 1')
+          this.drawEnd();
+        }, 100);
+        // ws.send('stop')
+      };
+    } else {
+      this.drawText()
     }
-    // document.onmouseup = this.drawEnd
-    // this.canvas.onmousemove = () => {
-    //     // console.log('onmousemove')
-    // }
-    this.canvas.onmouseout = () => {
-      setTimeout(() => {
-        // console.log('========= 1')
-        this.drawEnd();
-      }, 100);
-      // ws.send('stop')
-    };
+
   }
 
   // 保留当前画布ImageData
@@ -148,6 +174,27 @@ export default class Draw {
   // 把上一步保留的ImageData绘制到画布上
   restoreImageData(imageData: string) {
     this.cxt.putImageData(imageData, 0, 0);
+  }
+
+  drawText() {
+    if(this.canTextarea) {
+      this.textPostion = {x: this.pointer.beginX, y: this.pointer.beginY}
+      // 添加textarea文本框
+      const textarea = this.createDom();
+      this.canvasParant.appendChild(textarea);
+      // @ts-ignore
+      document.getElementById('textarea').focus();
+      this.canTextarea = false;
+    } else {
+      // 绘制textarea文本
+      const textarea = document.getElementById('textarea');
+      // @ts-ignore
+      const text = new Text(this.textPostion, textarea.value, this.lineWidth, this.strokeColor);
+      text.draw(this.cxt);
+      this.canvasParant.removeChild(textarea);
+      this.canTextarea = true;
+      this.drawEnd()
+    }
   }
 
   drawing(e: any) {
@@ -162,6 +209,7 @@ export default class Draw {
 
   drawLine() {
     this.restoreImageData(this.imageData)
+    this.cxt.save();
     this.cxt.beginPath();
     this.cxt.moveTo(
       this.pointer.beginX,
@@ -174,15 +222,18 @@ export default class Draw {
 
     this.cxt.lineWidth = this.lineWidth;
     this.cxt.stroke();
+    this.cxt.restore();
   }
 
   drawPath() {
+    this.cxt.save();
     this.cxt.lineTo(
       this.pointer.endX,
       this.pointer.endY
     );
     this.cxt.lineWidth = this.lineWidth;
     this.cxt.stroke();
+    this.cxt.restore();
   }
 
   addHistory() {
@@ -211,7 +262,8 @@ export default class Draw {
 
   earse() {
     // this.strokeColor = 'pink'
-    this.lineWidth = 20;
+    // this.lineWidth = 20;
+    this.drawType = 'draw'
     this.cxt.globalCompositeOperation = "destination-out";
   }
 
