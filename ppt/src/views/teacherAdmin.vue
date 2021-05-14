@@ -10,6 +10,7 @@
           :flag="false"
           :currentAnswerCount="currentAnswerCount"
           :textList="responseContentList"
+          :pptUrl="currentItemData.thumbnail_url"
         />
       </div>
     </el-main>

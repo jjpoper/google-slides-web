@@ -240,19 +240,22 @@ export default {
 }
 .canvasfooter {
   width: 100%;
-  height: 100px;
+  height: 50px;
   line-height: 50px;
-  position: absolute;
-  bottom: 10px;
+  position: fixed;
+  bottom: 50px;
   left: 0;
   display: flex;
+  align-items: center;
   justify-content: center;
+  border:1px solid rgba(0, 0, 0, 0.5);
+  background-color: #fff;
 }
 .canvasfooter > div {
   width: 30px;
   height: 30px;
   border-radius: 15px;
-  margin: 30px;
+  margin: 0 30px;
   cursor: pointer;
   line-height: 30px;
 }
