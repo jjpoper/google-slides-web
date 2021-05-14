@@ -2,7 +2,7 @@
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
-import {getTeacherCurrentPageAnswerList, getStudentsName} from './data.teacher'
+import {getTeacherCurrentPageAnswerList, getStudentsName, addTeacherData} from './data.teacher'
 
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_tid`
@@ -92,12 +92,13 @@ interface SavaParams {
 
 // 存储老师端学生回答的信息
 export const saveStudentsPageAnswerList = (pageId: string, type: string, data: SavaParams) => {
-  const { key } = data
-  const storeList = getCurrentPageAnswerList(pageId, type)
-  // 筛选已有答案
-  const filterData = storeList.filter((item: any) => item.key !== key);
-  filterData.push(data);
-  saveTeacherStore(`c_p_a_${pageId}_${type}`, filterData);
+  // const { key } = data
+  // const storeList = getCurrentPageAnswerList(pageId, type)
+  // // 筛选已有答案
+  // const filterData = storeList.filter((item: any) => item.key !== key);
+  // filterData.push(data);
+  // saveTeacherStore(`c_p_a_${pageId}_${type}`, filterData);
+  addTeacherData(pageId, type, data)
 }
 
 export const saveAnswerList = (pageId: string, type: string, data: any) => {
