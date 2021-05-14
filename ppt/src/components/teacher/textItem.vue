@@ -1,5 +1,5 @@
 <template>
-  <div class="parent" v-if="textList && textList.length > 0">
+  <!-- <div class="parent" v-if="textList && textList.length > 0">
     <div class="parent_1">
       <div class="parent_2" v-for="(item, index) in textList" :key="index">
         <div :id="item.user_id" class="grid-content">
@@ -19,49 +19,67 @@
         </p>
       </div>
     </div>
+  </div> -->
+
+  <div class="parent" v-if="textList && textList.length > 0">
+    <div v-for="(item, index) in textList" :key="index">
+      <div
+        v-if="shouldShow(item)"
+        :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
+      >
+        <div class="text_content">{{ item.content }}</div>
+        <student-response-opt-bar
+          v-if="flag_1"
+          :data="{
+            pageId: data.page_id,
+            itemId: item.item_id,
+            studentId: item.user_id,
+            title: item.content,
+            isStar: item.star,
+            isShowRes: item.show,
+            name: item.user_name,
+          }"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .parent {
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  width: 90%;
+  flex-wrap: wrap;
+}
+/* 有星标时的bg */
+.star_bg {
+  border: 3px solid #f7d567;
+  background-color: #f8f1d3;
 }
 .parent_1 {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 100%;
+  justify-content: center;
+  width: 350px;
   flex-wrap: wrap;
+  height: 250px;
+  border-radius: 8px;
+  margin-right: 20px;
+  border: 1px solid #cfcfcf;
 }
-.parent_2 {
-  display: flex;
-  flex-direction: column;
-  width: 30%;
-  padding: 10px;
-}
-.stduent_name {
-  font-family: "PingFang SC";
-  line-height: 20px;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-}
-.grid-content {
-  border-radius: 4px;
-  min-height: 100px;
-  height: 100%;
-  padding: 10px;
+.text_content {
+  width: 80%;
+  height: 70%;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-left: 20px;
+  margin-right: 20px;
   background-color: white;
-  border: 1px solid #e5e9f2;
-  line-height: 20px;
-  text-align: left;
-  word-wrap: break-word;
-  position: relative;
-}
-p {
-  text-align: left;
+  color: cadetblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 
@@ -71,8 +89,9 @@ import {
   getStundentUidAndName,
 } from "@/model/store.teacher";
 import commentIcon from "./commentIcon.vue";
+import StudentResponseOptBar from "./studentResponseOptBar.vue";
 export default {
-  components: { commentIcon },
+  components: { commentIcon, StudentResponseOptBar },
   props: {
     data: {
       type: Object,
@@ -80,22 +99,22 @@ export default {
         return {};
       },
     },
-    textList:{
-      type:Array,
-      default:[]
+    textList: {
+      type: Array,
+      default: [],
     },
-    flag_1:{
-      type:Boolean,
-      default:true,
-    }
+    flag_1: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
- //     textList: [],
+      //     textList: [],
     };
   },
   mounted() {
-  //  this.textList = getCurrentPageAnswerList(page_id, items[0].type);
+    //  this.textList = getCurrentPageAnswerList(page_id, items[0].type);
   },
   methods: {
     getUname(id) {
@@ -103,6 +122,21 @@ export default {
       const name = getStundentUidAndName(id);
       return name ? name : id;
     },
+
+    //返回当前这个item是否应该show出来
+    shouldShow(item) {
+      console.log(item, this.flag_1, "text response!!");
+      if (this.flag_1) return true; //如果是dashboard 模式，则一定show
+      if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.star) return true; //如果是星标答案，则需要显示
+      for (let i = 0; i < this.textList.length; i++) {
+        if (this.textList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      }
+      return true;
+    },
+  },
+  hideThisItem(id) {
+    console.log(id);
   },
 };
 </script>
