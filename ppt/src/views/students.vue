@@ -15,7 +15,8 @@
         v-if="
           currentItemData &&
           currentItemData.thumbnail_url &&
-          currentItemData.items[0].type !== 'draw'
+          (!currentItemData.items[0] ||
+          currentItemData.items[0].type !== 'draw')  
         "
       >
         <div
@@ -121,6 +122,9 @@ import {
   queryClassStatus,
   getStudentClassAnswers
 } from "../model/index";
+import {
+  initStudentData
+} from '@/model/data.student'
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
@@ -211,7 +215,6 @@ export default {
             this.goToLogin();
           } else {
             this.afterLogin(profile);
-            this.getAllAnswers()
             this.getAllSlides();
           }
         });
@@ -257,8 +260,9 @@ export default {
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then((list) => {
-        console.log(list);
+      console.log('list', '========');
+      Promise.all([initStudentData(this.class_id, this.token), getAllPPTS(this.slide_id)]).then(([allA, list]) => {
+        console.log(list, '========');
         this.slides = list;
         this.getItemData();
         hideLoading();
@@ -317,9 +321,6 @@ export default {
       // if (this.modalVisiable) {
       //   this.showStudentModal();
       //  }
-    },
-    getAllAnswers() {
-      getStudentClassAnswers(this.class_id, this.token)
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;

@@ -1,6 +1,7 @@
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
+import {getCurrentPageStudentAnswerList, addStudentData} from './data.student'
 
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_sid`
@@ -60,8 +61,10 @@ export const saveStudentUserName = (uname: string) => {
 
 // 获取学生端当前page的回答列表信息
 export const getStudentCurrentPageAnswerList = (pageId: string, type: string) => {
-  const list = getStudentStore(`c_p_a_${pageId}_${type}`)
-  return list && list.length > 0 ? list : []
+  // const list = getStudentStore(`c_p_a_${pageId}_${type}`)
+  const newl = getCurrentPageStudentAnswerList(pageId, type)
+  console.log(newl, '=========')
+  return newl && newl.length > 0 ? newl : []
 }
 
 interface SavaParams {
@@ -71,13 +74,14 @@ interface SavaParams {
 
 // 存储学生回答的信息
 export const saveStudentsCurrentPageAnswerList = (pageId: string, type: string, data: SavaParams) => {
-  const {key} = data
-  const storeList = getStudentCurrentPageAnswerList(pageId, type)
-  // 筛选已有答案
-  const filterData = storeList.filter((item: any) => item.key !== key);
-  filterData.push(data);
-  console.log(filterData);
-  saveStudentStore(`c_p_a_${pageId}_${type}`, filterData);
+  // const {key} = data
+  // const storeList = getStudentCurrentPageAnswerList(pageId, type)
+  // // 筛选已有答案
+  // const filterData = storeList.filter((item: any) => item.key !== key);
+  // filterData.push(data);
+  // console.log(filterData);
+  // saveStudentStore(`c_p_a_${pageId}_${type}`, filterData);
+  addStudentData(pageId, type, {...data, user_id: studentId})
 }
 
 interface StudentCommentItem {

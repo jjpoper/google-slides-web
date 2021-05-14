@@ -195,6 +195,8 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
 
 // 获取学生的答案
 export const getStudentClassAnswers = async (classId: string, token: string) => {
+
+  console.log('=======', 'initStudentData')
   const data = await axios.post(`${PPT.requestUrl}slide/get_student_response`, {
     class_id: classId,
     role: "student",
