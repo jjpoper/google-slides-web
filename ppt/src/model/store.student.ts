@@ -62,8 +62,9 @@ export const saveStudentUserName = (uname: string) => {
 // 获取学生端当前page的回答列表信息
 export const getStudentCurrentPageAnswerList = (pageId: string, type: string) => {
   // const list = getStudentStore(`c_p_a_${pageId}_${type}`)
+  // @ts-ignore
   const newl = getCurrentPageStudentAnswerList(pageId, type)
-  console.log(newl, '=========')
+  // console.log(newl, '=========')
   return newl && newl.length > 0 ? newl : []
 }
 
