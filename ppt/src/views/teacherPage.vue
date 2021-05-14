@@ -46,6 +46,7 @@
         :lockPage="lockPage"
         :slides="slides"
         :openProject="openProject"
+        :reopenClass="_reopenClass"
       />
     </div>
 
@@ -78,13 +79,17 @@
     </el-dialog>
 
     <el-dialog
-      title="End This Session"
+      v-if="classRoomInfo"
+      :title="
+        classRoomInfo.class_name != 'unnamed'
+          ? 'End Session ' + classRoomInfo.class_name
+          : 'End This Session'
+      "
       :visible.sync="confirmCloseDialogVisible"
     >
       <confirm-end-dialog
         v-if="classRoomInfo"
         :class_name="classRoomInfo.class_name"
-        :room_name="room_name"
         :cancelEndClass="cancelEndClass"
         :endClassroom="endClassroom"
       />
@@ -197,6 +202,7 @@ import {
   queryRefreshResult,
   queryClassStatus,
   endClassRoomReq,
+  reopenClass,
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
@@ -269,7 +275,6 @@ type: "slide"*/
       dialogVisible: false,
       class_id: "",
       classRoomInfo: null,
-      room_name: "",
       isLocked: false,
       confirmCloseDialogVisible: false,
       isDashboard: false,
@@ -543,9 +548,9 @@ type: "slide"*/
           this.showResponse = d.params.response;
           console.log(this.showResponse, "show res change!!!");
         }
-      } else if (d.type == SocketEventsEnum.END_SESSION) {
+      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
-        this.classRoomInfo.status = "close";
+        this.classRoomInfo.status = d.params.status;
         this.$forceUpdate();
       } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
@@ -601,6 +606,8 @@ type: "slide"*/
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           answer,
+          star: false,
+          show: true,
           key: user_id,
         });
 
@@ -626,6 +633,8 @@ type: "slide"*/
         saveStudentsPageAnswerList(this.currentPageId, type, {
           user_id,
           content,
+          star: false,
+          show: true,
           key: user_id,
           user_name,
         });
@@ -814,11 +823,7 @@ type: "slide"*/
           this.confirmCloseDialogVisible = false;
           if (res.code == "ok") {
             this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${
-                SocketEventsEnum.END_SESSION
-              }", "token": "${this.token}","class_id":"${
-                this.class_id
-              }","params": {"close": ${true}}}`
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
             setTimeout(function () {
               hideLoading();
@@ -918,6 +923,28 @@ type: "slide"*/
       this.dialogTableVisible = true;
     },
 
+    //重新开启课堂
+    _reopenClass() {
+      reopenClass(this.token, this.class_id)
+        .then((res) => {
+          console.log(res);
+          if (res.code == "ok") {
+            this.classRoomInfo.status = "live";
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "live"}}`
+            );
+          } else {
+            if (res.data) {
+              this.$message({ message: res.data.message, type: "error" });
+            } else if (res.message) {
+              this.$message({ message: res.message, type: "error" });
+            }
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
     getStudentOnLineCount() {
       let i = 0;
       let count = 0;
