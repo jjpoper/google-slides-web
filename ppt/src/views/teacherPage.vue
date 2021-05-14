@@ -54,9 +54,10 @@
     <div class="top_btn">
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
-      <div class="number_info" @click="showStudents()">
-        Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}</div>
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -108,10 +109,7 @@
       <stepOneView :openTwo="openTwo" />
     </el-dialog>
 
-    <el-dialog
-      title="This Session is in Student-Paced Mode"
-      :visible.sync="stepTwoDialog"
-    >
+    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
       <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
     </el-dialog>
   </div>
@@ -210,7 +208,7 @@ import { createSo } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStundentUidAndName,
@@ -218,6 +216,7 @@ import {
   getCurrentPageAnswerList,
   getTeacherStoreToken,
   saveTeacherStoreToken,
+  saveAnswerList
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -236,7 +235,7 @@ export default {
     DashboardPage,
     stepOneView,
     stepTwoView,
-    studentList,
+    studentList
   },
 
   /*author: "yujj085@gmail.com"
@@ -280,11 +279,11 @@ type: "slide"*/
       responsePercentage: [],
       isFocus: [],
       stepOneDialog: false,
-      stepTwoDialog: false,
+      stepTwoDialog: false
     };
   },
   mounted() {
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
 
@@ -310,10 +309,10 @@ type: "slide"*/
       } else {
         return "p";
       }
-    },
+    }
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
@@ -341,14 +340,12 @@ type: "slide"*/
       if (this.currentPageId != pageId) {
         return;
       }
-
-      console.log(this.currentItemData.items[0].type, "star or hide!!!!");
-
       let i = 0;
       for (; i < this.responseContentList.length; i++) {
         if (
           (this.responseContentList[i].item_id == itemId ||
-            this.responseContentList[i].answer == itemId) &&
+            this.responseContentList[i].answer == itemId ||
+            this.responseContentList[i].key == itemId) &&
           this.responseContentList[i].user_id == studentId
         ) {
           if (type == "star") {
@@ -357,22 +354,23 @@ type: "slide"*/
             this.responseContentList[i].show = nextStatus;
           }
 
+          //
           if (this.currentItemData.items[0]) {
+            console.log(this.responseContentList[i].star, "star or hide!!!!");
+            saveAnswerList(
+              this.currentPageId,
+              this.currentItemData.items[0].type,
+              this.responseContentList
+            );
             if (this.currentItemData.items[0].type == "choice") {
               const user_id = studentId;
               const answer = itemId;
-              saveStudentsPageAnswerList(
-                this.currentPageId,
-                this.currentItemData.items[0].type,
-                {
-                  user_id,
-                  answer,
-                  star: this.responseContentList[i].star,
-                  show: this.responseContentList[i].show,
-                  key: user_id,
-                }
-              );
               EventBus.$emit("choice", { user_id, answer });
+            } else if (this.currentItemData.items[0].type == "draw") {
+              const user_id = studentId;
+              const content = this.responseContentList[i].content;
+              const user_name = this.responseContentList[i].user_name;
+              EventBus.$emit("draw", { user_id, content, user_name });
             }
           }
           //发送一个ws消息通知其他端，更新状态
@@ -393,7 +391,7 @@ type: "slide"*/
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -405,7 +403,7 @@ type: "slide"*/
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -432,7 +430,7 @@ type: "slide"*/
       }
     },
     goToLogin() {
-      getTeacherLoginUrl().then((url) => {
+      getTeacherLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -444,12 +442,12 @@ type: "slide"*/
       this.uid = email;
       // saveTeacherUserName(name);
       this.startConnectRoom();
-      this.getAllAnswers()
+      this.getAllAnswers();
     },
     startConnectRoom() {
       this.joinRoom();
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           if (this.classRoomInfo.status == "live") {
             this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
@@ -458,12 +456,12 @@ type: "slide"*/
           }
           console.log(this.classRoomInfo);
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
 
       requestRefreshPPT(this.slide_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -473,7 +471,7 @@ type: "slide"*/
             hideLoading();
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
@@ -494,7 +492,7 @@ type: "slide"*/
       this.teacherList.push(teacher);
     },
     getAllAnswers() {
-      getTeacherClassAnswers(this.class_id, this.token)
+      getTeacherClassAnswers(this.class_id, this.token);
     },
     msgListener(d) {
       console.log(d, "====收到消息命令");
@@ -608,9 +606,10 @@ type: "slide"*/
           this.classRoomInfo.lock_page.push(page);
         } else {
           this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-            (item) => item != page
+            item => item != page
           );
         }
+        console.log("refresh lockpage",this.classRoomInfo.lock_page)
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
           const {
@@ -619,7 +618,7 @@ type: "slide"*/
             title,
             studentId,
             nextStatus,
-            type,
+            type
           } = d.params;
           this.handleStarOrHide(
             pageId,
@@ -661,9 +660,8 @@ type: "slide"*/
           answer,
           star: false,
           show: true,
-          key: user_id,
+          key: user_id
         });
-
         EventBus.$emit("choice", { user_id, answer });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
@@ -678,7 +676,7 @@ type: "slide"*/
           item_id,
           star: false,
           show: true,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
@@ -689,7 +687,7 @@ type: "slide"*/
           star: false,
           show: true,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -712,9 +710,9 @@ type: "slide"*/
       let _this = this;
       if (count < 2) {
         queryRefreshResult(code, token)
-          .then((res) => {
+          .then(res => {
             if (res.data.status === "processing") {
-              setTimeout(function () {
+              setTimeout(function() {
                 _this.queryResult(code, token, ++count);
               }, 1000);
             } else {
@@ -722,7 +720,7 @@ type: "slide"*/
               hideLoading();
             }
           })
-          .catch((res) => {
+          .catch(res => {
             this.getAllSlides();
             hideLoading();
           });
@@ -732,7 +730,7 @@ type: "slide"*/
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then((list) => {
+      getAllPPTS(this.slide_id).then(list => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -870,7 +868,7 @@ type: "slide"*/
       showLoading();
 
       endClassRoomReq(this.token, name, this.class_id)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           let _this = this;
           this.confirmCloseDialogVisible = false;
@@ -878,7 +876,7 @@ type: "slide"*/
             this.emitSo(
               `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
-            setTimeout(function () {
+            setTimeout(function() {
               hideLoading();
               let url =
                 "https://docs.google.com/presentation/d/" + _this.slide_id;
@@ -886,7 +884,7 @@ type: "slide"*/
             }, 2000);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
           this.$message("error", "Close Session error");
           hideLoading();
@@ -902,7 +900,7 @@ type: "slide"*/
         this.classRoomInfo.lock_page.push(page_id);
       } else {
         let pages = this.classRoomInfo.lock_page.filter(
-          (item) => item != page_id
+          item => item != page_id
         );
         islocked = this.classRoomInfo.lock_page.length == pages.length;
         if (islocked) {
@@ -979,7 +977,7 @@ type: "slide"*/
     //重新开启课堂
     _reopenClass() {
       reopenClass(this.token, this.class_id)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
@@ -994,7 +992,7 @@ type: "slide"*/
             }
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
     },
@@ -1041,8 +1039,8 @@ type: "slide"*/
         this.isFocus[i] = i == index;
       }
       this.$forceUpdate();
-    },
-  },
+    }
+  }
 };
 </script>,
     
