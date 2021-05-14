@@ -203,6 +203,7 @@ import {
   queryClassStatus,
   endClassRoomReq,
   reopenClass,
+  getTeacherClassAnswers
 } from "../model/index";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
@@ -212,12 +213,9 @@ import {
   ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
-  getTeacherUid,
   saveStundentUidAndName,
   saveStudentsPageAnswerList,
   getCurrentPageAnswerList,
-  saveTeacherUserName,
-  getTeacherUserName,
   getTeacherStoreToken,
   saveTeacherStoreToken,
 } from "@/model/store.teacher";
@@ -446,6 +444,7 @@ type: "slide"*/
       this.uid = email;
       // saveTeacherUserName(name);
       this.startConnectRoom();
+      this.getAllAnswers()
     },
     startConnectRoom() {
       this.joinRoom();
@@ -481,7 +480,6 @@ type: "slide"*/
         });
       //todo  检查更新完毕后，再获取ppt
     },
-
     joinRoom() {
       this.currentSo = createSo(
         this.slide_id,
@@ -494,6 +492,9 @@ type: "slide"*/
       teacher.state = "online";
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
+    },
+    getAllAnswers() {
+      getTeacherClassAnswers(this.class_id, this.token)
     },
     msgListener(d) {
       console.log(d, "====收到消息命令");
