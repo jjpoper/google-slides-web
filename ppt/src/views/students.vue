@@ -367,7 +367,7 @@ export default {
         this.class_id,
         this.msgListener,
         () => {
-          if (this.classRoomInfo.status == "close") renturn;
+          if (this.classRoomInfo?.status == "close") renturn;
           this.emitSo(
             "rename",
             `{"room": "${this.slide_id}", "user_id": "${this.uid}", "token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${this.uname}"}`

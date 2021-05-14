@@ -37,7 +37,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "./typings", "src/utils/googleAuth.js",
+    "./typings", "src/utils/googleAuth.js", "src/utils/drawText.js",
   ],
   "exclude": [
     "node_modules"
