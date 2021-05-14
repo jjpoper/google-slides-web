@@ -12,6 +12,7 @@ export enum SocketEventsEnum {
   SHOW_RESPONSE = 'show_response',
   END_SESSION = 'end_session',
   LOCK_PAGE = 'lock_page',
+  STAR_OR_HIDE_ANSWER = 'STAR_OR_HIDE_ANSWER',
 }
 
 export enum ModalEventsNameEnum {
@@ -19,6 +20,7 @@ export enum ModalEventsNameEnum {
   TEACHER_SEND_COMMENT = 'TEACHER_SEND_COMMENT', // 教师发送评论数据
   SHOW_STUDENT_MODAL = 'SHOW_STUDENT_MODAL', // 打开学生端评论
   SHOW_STUDENT_MODAL_REFRESH = 'SHOW_STUDENT_MODAL_REFRESH', // 更新
+  SHOW_STAR_ANSWER = 'SHOW_STAR_ANSWER',//老师给答案点星星，或者取消星星,或者老师确定隐藏某个答案
 }
 
 export enum ClassRoomModelEnum {
