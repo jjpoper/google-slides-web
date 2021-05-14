@@ -1,26 +1,4 @@
 <template>
-  <!-- <div class="parent" v-if="textList && textList.length > 0">
-    <div class="parent_1">
-      <div class="parent_2" v-for="(item, index) in textList" :key="index">
-        <div :id="item.user_id" class="grid-content">
-          {{ item.content }}
-          <comment-icon
-            v-if="flag_1"
-            :data="{
-              pageId: data.page_id,
-              itemId: item.item_id,
-              studentId: item.user_id,
-              title: item.content,
-            }"
-          />
-        </div>
-        <p v-if="flag_1" class="stduent_name">
-          {{ getUname(item.user_id) }}
-        </p>
-      </div>
-    </div>
-  </div> -->
-
   <div class="parent" v-if="textList && textList.length > 0">
     <div v-for="(item, index) in textList" :key="index">
       <div
@@ -134,9 +112,6 @@ export default {
       }
       return true;
     },
-  },
-  hideThisItem(id) {
-    console.log(id);
   },
 };
 </script>

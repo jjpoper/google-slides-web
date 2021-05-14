@@ -15,7 +15,10 @@
           </div>
 
           <div class="response_flag">
-            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
+            <div
+              class="top"
+              :style="'width:' + responsePercentage[index] + '%'"
+            ></div>
           </div>
         </div>
       </div>
@@ -43,6 +46,7 @@
   width: 100%;
   height: 100%;
   display: flex;
+  background-color: #edf0f4;
   flex-direction: column;
 }
 .page {
@@ -140,50 +144,50 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     slides: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     showResponse: {
       type: Boolean,
-      default: false
+      default: false,
     },
     currentAnswerCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     responseContentList: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     giveFocus: {
-      type: Function
+      type: Function,
     },
     responsePercentage: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     isFocus: {
       type: Array,
       function() {
         return [];
-      }
-    }
+      },
+    },
   },
   data() {
     return {};
   },
   created() {},
   mounted() {
-    console.log(this.currentItemData)
-  }
+    console.log(this.currentItemData);
+  },
 };
 </script>

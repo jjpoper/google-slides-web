@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+    <div v-if="currentItemData && currentItemData.thumbnail_url">
       <pptcontent
         v-if="!showResponse"
         :url="currentItemData.thumbnail_url"
@@ -22,11 +22,6 @@
 .page {
   width: 100%;
   height: 100%;
-}
-.block {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
 }
 </style>
 

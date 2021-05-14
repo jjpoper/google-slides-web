@@ -293,28 +293,15 @@ type: "slide"*/
     EventBus.$on(
       ModalEventsNameEnum.SHOW_STAR_ANSWER,
       ({ pageId, itemId, title, studentId, nextStatus, type }) => {
-        if (this.currentPageId != pageId) {
-          return;
-        }
-        let i = 0;
-        for (; i < this.responseContentList.length; i++) {
-          if (
-            this.responseContentList[i].item_id == itemId &&
-            this.responseContentList[i].user_id == studentId
-          ) {
-            if (type == "star") {
-              this.responseContentList[i].star = nextStatus;
-            } else if (type == "show") {
-              this.responseContentList[i].show = nextStatus;
-            }
-            //发送一个ws消息通知其他端，更新状态
-            this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
-              "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
-            );
-            break;
-          }
-        }
+        this.handleStarOrHide(
+          pageId,
+          itemId,
+          title,
+          studentId,
+          nextStatus,
+          type,
+          true
+        );
       }
     );
   },
@@ -344,6 +331,63 @@ type: "slide"*/
   },
 
   methods: {
+    handleStarOrHide(
+      pageId,
+      itemId,
+      title,
+      studentId,
+      nextStatus,
+      type,
+      sendWSMsg
+    ) {
+      if (this.currentPageId != pageId) {
+        return;
+      }
+
+      console.log(this.currentItemData.items[0].type, "star or hide!!!!");
+
+      let i = 0;
+      for (; i < this.responseContentList.length; i++) {
+        if (
+          (this.responseContentList[i].item_id == itemId ||
+            this.responseContentList[i].answer == itemId) &&
+          this.responseContentList[i].user_id == studentId
+        ) {
+          if (type == "star") {
+            this.responseContentList[i].star = nextStatus;
+          } else if (type == "show") {
+            this.responseContentList[i].show = nextStatus;
+          }
+
+          if (this.currentItemData.items[0]) {
+            if (this.currentItemData.items[0].type == "choice") {
+              const user_id = studentId;
+              const answer = itemId;
+              saveStudentsPageAnswerList(
+                this.currentPageId,
+                this.currentItemData.items[0].type,
+                {
+                  user_id,
+                  answer,
+                  star: this.responseContentList[i].star,
+                  show: this.responseContentList[i].show,
+                  key: user_id,
+                }
+              );
+              EventBus.$emit("choice", { user_id, answer });
+            }
+          }
+          //发送一个ws消息通知其他端，更新状态
+          if (sendWSMsg) {
+            this.emitSo(
+              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
+              "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
+            );
+          }
+          break;
+        }
+      }
+    },
     sendComment({
       studentId,
       pageId,
@@ -452,7 +496,7 @@ type: "slide"*/
       this.teacherList.push(teacher);
     },
     msgListener(d) {
-      console.log(d.type, "====收到消息命令");
+      console.log(d, "====收到消息命令");
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         console.log(d.student_count, "d.student_count");
@@ -576,23 +620,31 @@ type: "slide"*/
             nextStatus,
             type,
           } = d.params;
-
-          if (this.currentPageId != pageId) {
-            return;
-          }
-          let i = 0;
-          for (; i < this.responseContentList.length; i++) {
-            if (
-              this.responseContentList[i].item_id == itemId &&
-              this.responseContentList[i].user_id == studentId
-            ) {
-              if (type == "star") {
-                this.responseContentList[i].star = nextStatus;
-              } else if (type == "show") {
-                this.responseContentList[i].show = nextStatus;
-              }
-            }
-          }
+          this.handleStarOrHide(
+            pageId,
+            itemId,
+            title,
+            studentId,
+            nextStatus,
+            type,
+            false
+          );
+          // if (this.currentPageId != pageId) {
+          //   return;
+          // }
+          // let i = 0;
+          // for (; i < this.responseContentList.length; i++) {
+          //   if (
+          //     this.responseContentList[i].item_id == itemId &&
+          //     this.responseContentList[i].user_id == studentId
+          //   ) {
+          //     if (type == "star") {
+          //       this.responseContentList[i].star = nextStatus;
+          //     } else if (type == "show") {
+          //       this.responseContentList[i].show = nextStatus;
+          //     }
+          //   }
+          // }
         }
       }
 

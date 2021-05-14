@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page_choice">
     <div class="flag_area">
       <svg
         t="1619507788646"
@@ -37,11 +37,10 @@
       {{ currentModel == 0 ? "Statistics" : "Personal" }}
     </span>
 
-    <!--  统计模式-->
     <div v-if="currentModel == 0" class="statistics">
       <el-tooltip
         placement="bottom"
-        :disabled="!data.flag || getAnswerCount(item.id) == 0"
+        :disabled="!flag_1 || getAnswerCount(item.id) == 0"
         v-for="item in options"
         :key="item.id"
       >
@@ -55,11 +54,33 @@
       </el-tooltip>
     </div>
 
-    <!--普通模式-->
     <div v-else class="personal">
-      <el-tooltip
+      <div v-for="(item, index) in answerList" :key="index">
+        <div
+          v-if="shouldShow(item)"
+          :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
+        >
+          <div class="text_content">
+            {{ optFlags[item.answer] + ": " + getAnswer(item.answer).text }}
+          </div>
+          <student-response-opt-bar
+            v-if="flag_1"
+            :data="{
+              pageId: data.page_id,
+              itemId: item.answer,
+              studentId: item.user_id,
+              title: getConent(item),
+              isStar: item.star,
+              isShowRes: item.show,
+              name: getUname(item.user_id),
+            }"
+          />
+        </div>
+      </div>
+
+      <!-- <el-tooltip
         placement="bottom"
-        :disabled="!data.flag"
+        :disabled="!flag_1"
         v-for="item in answerList"
         :key="item.id"
       >
@@ -69,17 +90,17 @@
             optFlags[item.answer] + ": " + getAnswer(item.answer).text
           }}</strong>
         </div>
-      </el-tooltip>
+      </el-tooltip> -->
     </div>
   </div>
 </template>
 <style scoped>
-.page {
-  min-height: 500px;
-  width: 100%;
+.page_choice {
   display: flex;
+  width: 100%;
+  height: auto;
+  padding-left: 20px;
   flex-direction: column;
-  padding: 10px;
 }
 .span_content {
   flex: 1;
@@ -89,6 +110,7 @@
 .flag_area {
   display: flex;
   height: 50px;
+  width: 80%;
   align-items: center;
 }
 .flag_text {
@@ -103,6 +125,11 @@
   cursor: pointer;
   fill: #aaaaaa;
 }
+/* 有星标时的bg */
+.star_bg {
+  border: 3px solid #f7d567;
+  background-color: #f8f1d3;
+}
 
 .icon_focus {
   fill: #404040;
@@ -111,17 +138,20 @@
 .statistics {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 90%;
   margin-top: 10px;
 }
 .static_item {
-  width: 100%;
-  border: 1px solid #404040;
-  border-radius: 4px;
-  height: 40px;
+  width: 90%;
+  border: 3px solid #cfcfcf;
+  border-radius: 8px;
+  height: 50px;
+  background-color: white;
+  color: cadetblue;
   margin-bottom: 10px;
   padding-left: 10px;
   padding-right: 10px;
+  font-size: 20px;
   display: flex;
   align-items: center;
 }
@@ -130,16 +160,31 @@
   flex-wrap: wrap;
   width: 100%;
 }
-.personal_item {
-  width: 200px;
-  height: 200px;
-  margin: 20px 20px 20px 20px;
+
+.parent_1 {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 350px;
+  flex-wrap: wrap;
+  height: 250px;
+  border-radius: 8px;
+  margin-right: 20px;
+  border: 1px solid #cfcfcf;
+}
+.text_content {
+  width: 80%;
+  height: 70%;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-left: 20px;
+  margin-right: 20px;
   background-color: white;
-  border-radius: 5px;
+  color: cadetblue;
+  display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #404040;
 }
 </style>
 
@@ -149,8 +194,10 @@ import {
   getStundentUidAndName,
 } from "@/model/store.teacher";
 import commentIcon from "./commentIcon.vue";
+import { ModalEventsNameEnum } from "../../socket/socketEvents";
+import StudentResponseOptBar from "./studentResponseOptBar.vue";
 export default {
-  components: { commentIcon },
+  components: { commentIcon, StudentResponseOptBar },
   props: {
     data: {
       type: Object,
@@ -158,19 +205,26 @@ export default {
         return {};
       },
     },
+    flag_1: {
+      type: Boolean,
+      default: false,
+    },
+    // answerList: {
+    //   type: Array,
+    //   default: [],
+    // },
   },
   data() {
     return {
       showStatistics: true,
-      answerList: [],
       options: [],
       title: "",
+      answerList: [],
       currentModel: 0,
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
     };
   },
   mounted() {
-    console.log(this.data);
     const { title, options } = this.data.items[0].data;
     this.title = title;
     this.options = options;
@@ -178,18 +232,39 @@ export default {
       this.data.page_id,
       this.data.items[0].type
     );
-    console.log(this.options);
-
     EventBus.$on("choice", (data) => {
-      // 通知展示当前pageid，当前itemid的评论框
-      console.log(data);
-
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
         this.data.page_id,
         this.data.items[0].type
       );
+
+      console.log(this.answerList, "refresh answer");
     });
+
+    // EventBus.$on(
+    //   ModalEventsNameEnum.SHOW_STAR_ANSWER,
+    //   ({ pageId, itemId, title, studentId, nextStatus, type }) => {
+    //     console.log(this.data.page_id, pageId);
+    //     if (this.data.page_id != pageId) {
+    //       return;
+    //     }
+    //     let i = 0;
+    //     for (; i < this.answerList.length; i++) {
+    //       if (
+    //         this.answerList[i].aswer == itemId &&
+    //         this.answerList[i].user_id == studentId
+    //       ) {
+    //         if (type == "star") {
+    //           this.answerList[i].star = nextStatus;
+    //         } else if (type == "show") {
+    //           this.answerList[i].show = nextStatus;
+    //         }
+    //         break;
+    //       }
+    //     }
+    //   }
+    // );
   },
   methods: {
     counts(id) {
@@ -199,6 +274,11 @@ export default {
       } else {
         return 0;
       }
+    },
+    getConent(item) {
+      return (
+        this.optFlags[item.answer] + ": " + this.getAnswer(item.answer).text
+      );
     },
     setModel(model) {
       this.currentModel = model;
@@ -228,6 +308,18 @@ export default {
       console.log(getStundentUidAndName(id));
       const name = getStundentUidAndName(id);
       return name ? name : id;
+    },
+
+    //返回当前这个item是否应该show出来
+    shouldShow(item) {
+      console.log(this.answerList);
+      if (this.flag_1) return true; //如果是dashboard 模式，则一定show
+      if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.star) return true; //如果是星标答案，则需要显示
+      for (let i = 0; i < this.answerList.length; i++) {
+        if (this.answerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      }
+      return true;
     },
 
     getUserNames(index) {
