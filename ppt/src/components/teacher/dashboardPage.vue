@@ -34,6 +34,7 @@
             :flag_1="true"
             :currentAnswerCount="currentAnswerCount"
             :textList="responseContentList"
+            :pptUrl="currentItemData.thumbnail_url"
           />
         </div>
       </div>

@@ -30,7 +30,7 @@
   display: flex;
   width: 100%;
   height: auto;
-  margin-top: 70px;
+  padding-top: 70px;
   justify-content: center;
 }
 .center {

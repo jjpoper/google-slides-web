@@ -30,7 +30,7 @@ const getTeacherStore = (key: string): any => {
 
 export const getTeacherUid = (): string => {
   let sid = getStore(UID_KEY)
-  if(!sid) {
+  if (!sid) {
     // 自动生成并存储
     sid = generateUuid("t_", 16);
     saveStore(UID_KEY, sid)
@@ -65,15 +65,15 @@ interface TeacherCommentItem {
 
 // 老师端评价列表 pageid_studentid_answerid 为key
 // @ts-ignore
-export const getTeacherCommentList = ({pageId, itemId, studentId}): TeacherCommentItem[] => {
+export const getTeacherCommentList = ({ pageId, itemId, studentId }): TeacherCommentItem[] => {
   const list = getTeacherStore(`comment_${pageId}_${itemId}_${studentId}`)
   return list && list.length > 0 ? list : []
 }
 
 // @ts-ignore
-export const addTeacherComment = ({pageId, itemId, studentId}, data: TeacherCommentItem) => {
+export const addTeacherComment = ({ pageId, itemId, studentId }, data: TeacherCommentItem) => {
   const key = `comment_${pageId}_${itemId}_${studentId}`
-  const list = getTeacherCommentList({pageId, itemId, studentId})
+  const list = getTeacherCommentList({ pageId, itemId, studentId })
   list.unshift(data)
   saveTeacherStore(key, list)
 }
@@ -91,11 +91,14 @@ interface SavaParams {
 
 // 存储老师端学生回答的信息
 export const saveStudentsPageAnswerList = (pageId: string, type: string, data: SavaParams) => {
-  const {key} = data
+  const { key } = data
   const storeList = getCurrentPageAnswerList(pageId, type)
   // 筛选已有答案
   const filterData = storeList.filter((item: any) => item.key !== key);
   filterData.push(data);
-  console.log(filterData);
   saveTeacherStore(`c_p_a_${pageId}_${type}`, filterData);
+}
+
+export const saveAnswerList = (pageId: string, type: string, data: any) => {
+  saveTeacherStore(`c_p_a_${pageId}_${type}`, data);
 }

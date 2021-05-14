@@ -66,10 +66,9 @@ import {
   getCurrentPageAnswerList,
   getStundentUidAndName,
 } from "@/model/store.teacher";
-import commentIcon from "./commentIcon.vue";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 export default {
-  components: { commentIcon, StudentResponseOptBar },
+  components: {StudentResponseOptBar },
   props: {
     data: {
       type: Object,
