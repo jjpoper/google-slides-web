@@ -176,8 +176,13 @@ export default {
       }
       const {pageId, itemId, studentId, title} = this.commentData
       addTeacherComment(
-        {pageId, itemId, studentId},
-        data
+        {
+          studentId,
+          pageId,
+          itemId,
+          title,
+          ...data
+        }
       )
       this.commentList.unshift(data)
       this.commentValue = ''

@@ -3,6 +3,7 @@
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
 import {getTeacherCurrentPageAnswerList, getStudentsName, addTeacherData} from './data.teacher'
+import {getTeacherCurrentItemCommentList, addTeacherCommentData} from './comment.teacher'
 
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_tid`
@@ -62,21 +63,26 @@ interface TeacherCommentItem {
   teacher: string
   time: string
   value: string
+  studentId: string
+  pageId: string
+  itemId: string
+  title: string
 }
 
 // 老师端评价列表 pageid_studentid_answerid 为key
 // @ts-ignore
 export const getTeacherCommentList = ({ pageId, itemId, studentId }): TeacherCommentItem[] => {
-  const list = getTeacherStore(`comment_${pageId}_${itemId}_${studentId}`)
+  const list = getTeacherCurrentItemCommentList(pageId, itemId, studentId)
   return list && list.length > 0 ? list : []
 }
 
 // @ts-ignore
-export const addTeacherComment = ({ pageId, itemId, studentId }, data: TeacherCommentItem) => {
-  const key = `comment_${pageId}_${itemId}_${studentId}`
-  const list = getTeacherCommentList({ pageId, itemId, studentId })
-  list.unshift(data)
-  saveTeacherStore(key, list)
+export const addTeacherComment = (data: ANY) => {
+  // const key = `comment_${pageId}_${itemId}_${studentId}`
+  // const list = addTeacherCommentData(data)
+  // list.unshift(data)
+  // saveTeacherStore(key, list)
+  addTeacherCommentData(data)
 }
 
 // 获取学生端当前page的回答列表信息

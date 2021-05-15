@@ -207,6 +207,9 @@ import {
   getTeacherCurrentPageAnswerList,
   addTeacherData
 } from '@/model/data.teacher'
+import {
+  initTeacherCommentData
+} from '@/model/comment.teacher'
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
 import {
@@ -453,6 +456,7 @@ type: "slide"*/
     },
     afterLogin({ user_name, email }) {
       this.name = user_name;
+      window.currentTeacherName = user_name
       this.uid = email;
       // saveTeacherUserName(name);
       this.startConnectRoom();
@@ -741,6 +745,8 @@ type: "slide"*/
       }
     },
     getAllSlides() {
+      // 初始化评论数据
+      initTeacherCommentData(this.class_id, this.token)
       Promise.all([initTeacherData(this.class_id, this.token), getAllPPTS(this.slide_id)])
       .then(([alldata, list]) => {
         console.log(list);
