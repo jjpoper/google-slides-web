@@ -463,6 +463,7 @@ export default {
       // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
     },
     emitSo(action, message) {
+      this.checkCurrentAnswerd()
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         // console.log(action, message);
