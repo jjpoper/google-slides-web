@@ -1,6 +1,6 @@
 <template>
   <div  style="width: 100%; height: 100%">
-    <iframe class="website" :src="`https://${data.items[0].data.url}`"/>
+    <iframe class="website" style="width: 100%; height: 100%" :src="`https://${data.items[0].data.url}`"/>
   </div>
 </template>
 <script>

@@ -10,7 +10,7 @@ export const createSo = (room: string, token: string, classId:string,callback: c
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
   socket.on('connect', () => {
     // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
-    socket.emit('join-room', `{"room":"${room}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
+    socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
       console.log("老师加入房间")
     });
 
