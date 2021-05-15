@@ -201,15 +201,14 @@ import {
   queryClassStatus,
   endClassRoomReq,
   reopenClass,
+  getOnlineUsers
 } from "../model/index";
 import {
   initTeacherData,
   getTeacherCurrentPageAnswerList,
   addTeacherData
-} from '@/model/data.teacher'
-import {
-  initTeacherCommentData
-} from '@/model/comment.teacher'
+} from "@/model/data.teacher";
+import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
 import {
@@ -320,7 +319,8 @@ type: "slide"*/
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
-      window.classId = class_id
+      window.classId = class_id;
+      vm.currentIndex = to.query.currentPage ? to.query.currentPage : 0;
       vm.isDashboard = type === "dashboard";
       if (token) {
         vm.token = token;
@@ -378,7 +378,7 @@ type: "slide"*/
                   answer,
                   star: this.responseContentList[i].star,
                   show: this.responseContentList[i].show,
-                  key: user_id,
+                  key: user_id
                 }
               );
               EventBus.$emit("choice", { user_id, answer });
@@ -455,7 +455,7 @@ type: "slide"*/
     },
     afterLogin({ user_name, email }) {
       this.name = user_name;
-      window.currentTeacherName = user_name
+      window.currentTeacherName = user_name;
       this.uid = email;
       this.startConnectRoom();
     },
@@ -475,7 +475,6 @@ type: "slide"*/
           console.log(res);
         });
 
-
       requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
           // console.log(res);
@@ -492,7 +491,13 @@ type: "slide"*/
           this.getAllSlides();
           hideLoading();
         });
-      //todo  检查更新完毕后，再获取ppt
+      getOnlineUsers(this.token, this.class_id)
+        .then(res => {
+
+        })
+        .catch(res => {
+
+        });
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -512,7 +517,7 @@ type: "slide"*/
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         console.log(d.student_count, "d.student_count");
-        this.studentCounts = d.student_count;
+        //  this.studentCounts = d.student_count;
         if (d.join_in) {
           let student = new Object();
           student.name = d.join_in.user_name;
@@ -531,6 +536,7 @@ type: "slide"*/
             if (!findFlag) {
               this.studentList.push(student);
             }
+            this.studentCounts = this.studentList.length;
           } else if (d.join_in.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == student.user_id) {
@@ -553,6 +559,7 @@ type: "slide"*/
                 }
               }
             }
+            this.studentCounts = this.studentList.length;
             console.log(this.studentList, "test quit");
           } else if (d.quit.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
@@ -621,7 +628,7 @@ type: "slide"*/
             item => item != page
           );
         }
-        console.log("refresh lockpage",this.classRoomInfo.lock_page)
+        console.log("refresh lockpage", this.classRoomInfo.lock_page);
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
           const {
@@ -720,7 +727,7 @@ type: "slide"*/
 
     queryResult(code, token, count) {
       let _this = this;
-      if (count < 2) {
+      if (count < 20) {
         queryRefreshResult(code, token)
           .then(res => {
             if (res.data.status === "processing") {
@@ -743,9 +750,11 @@ type: "slide"*/
     },
     getAllSlides() {
       // 初始化评论数据
-      initTeacherCommentData(this.class_id, this.token)
-      Promise.all([initTeacherData(this.class_id, this.token), getAllPPTS(this.slide_id)])
-      .then(([alldata, list]) => {
+      initTeacherCommentData(this.class_id, this.token);
+      Promise.all([
+        initTeacherData(this.class_id, this.token),
+        getAllPPTS(this.slide_id)
+      ]).then(([alldata, list]) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -771,9 +780,11 @@ type: "slide"*/
         //   this.currentItemData.page_id,
         //   this.currentItemData.items[0].type
         // );
-        const list = getTeacherCurrentPageAnswerList(this.currentItemData.page_id,
-          this.currentItemData.items[0].type)
-        console.log(list, '=====');
+        const list = getTeacherCurrentPageAnswerList(
+          this.currentItemData.page_id,
+          this.currentItemData.items[0].type
+        );
+        console.log(list, "=====");
         this.currentAnswerCount = list.length;
 
         this.responseContentList = list;

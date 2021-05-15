@@ -46,7 +46,7 @@
         </svg>
       </div>
 
-      <div class="v2pnav-option__label">Open Project in new tab</div>
+      <div class="v2pnav-option__label"> Open class in new window</div>
     </div>
 
     <div class="menu_line" @click="turnModel()" v-if="!isClosed">

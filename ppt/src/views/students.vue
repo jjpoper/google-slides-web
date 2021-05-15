@@ -226,6 +226,9 @@ export default {
       if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
         return false;
       }
+      if(!this.slides[this.currentIndex]){
+        return false;
+      }
       if (!this.classRoomInfo.lock_page) {
         return false;
       } else {

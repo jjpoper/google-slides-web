@@ -111,6 +111,16 @@ export const feedbackClass = async (token: string, class_id: string, feed: strin
   return res;
 }
 
+export const getOnlineUsers = async (token: string, class_id: string) => {
+  const data = await axios.post(`${PPT.requestUrl}slide/online_users`, {
+    token: token,
+    class_id: class_id,
+  })
+  let res = data.data.data;
+  return res;
+}
+
+
 
 
 // 获取授权登录
@@ -187,7 +197,7 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result
@@ -207,7 +217,7 @@ export const getStudentClassAnswers = async (classId: string, token: string) => 
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result
@@ -225,7 +235,7 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result.reverse()
@@ -242,7 +252,7 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result.reverse()
