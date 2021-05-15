@@ -228,9 +228,9 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   } catch(e) {
     // console.log(e)
   }
-  return result
+  return result.reverse()
 }
-// 获取学生的答案
+// 获取学生的评论
 export const getStudentAllComments = async (classId: string, token: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/get_comments`, {
     class_id: classId,
@@ -245,5 +245,5 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   } catch(e) {
     // console.log(e)
   }
-  return result
+  return result.reverse()
 }
