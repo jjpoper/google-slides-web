@@ -7,13 +7,19 @@
       </div>
       <div class="mbox" v-if="commentData.pageId">
         <div class="left">
-          <p class="mtitle">{{commentData.title}}</p>
+          <div class="mtitle" v-if="commentData.title.indexOf('data:image/') > -1">
+            <base64image :url="commentData.title"/>
+          </div>
+          <div class="mtitle" v-else>{{commentData.title}}</div>
           <textarea class="textarea" v-model="commentValue" placeholder="Leave a message for this response..."></textarea>
           <el-button type="primary" style="width: 100%" @click="sendMessage">send</el-button>
         </div>
         <div class="right" v-if="commentList && commentList.length > 0">
           <div v-for="(item, index) in commentList" :key="index.toString()">
-            <p class="rightmtitle">{{commentData.title}}</p>
+            <div class="rightmtitle" v-if="commentData.title.indexOf('data:image/') > -1">
+               <base64image :url="commentData.title"/>
+            </div>
+            <div class="rightmtitle" v-else>{{commentData.title}}</div>
             <div class="rightcomment">
               <p>{{item.teacherName}}  {{item.time}}</p>
               <p>{{item.value}}</p>
@@ -85,7 +91,8 @@
   border: 1px solid #999;
   box-sizing: border-box;
   padding: 20px;
-  word-wrap: break-word
+  word-wrap: break-word;
+  position: relative;
 }
 .textarea{
   background-color: #fff;
@@ -107,7 +114,8 @@
   border: 1px solid #999;
   box-sizing: border-box;
   padding: 10px;
-  word-wrap: break-word
+  word-wrap: break-word;
+  position: relative;
 }
 .rightcomment{
   min-height: 70px;
@@ -121,7 +129,9 @@
 import { ModalEventsNameEnum } from '@/socket/socketEvents'
 import { getTeacherUserName, addTeacherComment, getTeacherCommentList } from '@/model/store.teacher'
 import { getTimeValue } from '@/utils/help'
+import base64image from '../base64image.vue'
 export default {
+  components: { base64image },
   data() {
     return {
       commentValue: '',
