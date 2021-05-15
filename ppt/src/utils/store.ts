@@ -29,6 +29,7 @@ export const getStudentsDataList = (id: string, type: string) => {
   } catch (e) {
     // console.log(e)
   }
+  console.log(arr, '===========')
   return arr
 }
 export const getNumberList = function (pageId: string, type: string) {

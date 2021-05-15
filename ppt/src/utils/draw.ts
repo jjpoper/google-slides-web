@@ -45,6 +45,8 @@ export default class Draw {
     y: 0
   }
 
+  private isDrawing = false
+
   constructor(el: string) {
     // // console.log(el)
     this.el = el;
@@ -73,11 +75,11 @@ export default class Draw {
     // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
     this.onDrawBack = onDrawBack;
     this.canvas.onmousedown = () => {
-      this.addHistory();
       this.drawBegin(event);
     };
     this.canvas.onmouseup = () => {
       // console.log('========= 1')
+      this.isDrawing = false
       this.drawEnd();
       // ws.send('stop')
     };
@@ -98,7 +100,7 @@ export default class Draw {
     const img = new Image();
     img.src = base64Url;
     img.onload = () => {
-      this.cxt.clearRect(0, 0, 400, 400);
+      this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.cxt.drawImage(img, 0, 0);
       this.saveImageData()
     };
@@ -156,6 +158,7 @@ export default class Draw {
       this.canvas.onmouseout = () => {
         setTimeout(() => {
           // console.log('========= 1')
+          this.isDrawing = false
           this.drawEnd();
         }, 100);
         // ws.send('stop')
@@ -189,15 +192,23 @@ export default class Draw {
       // 绘制textarea文本
       const textarea = document.getElementById('textarea');
       // @ts-ignore
-      const text = new Text(this.textPostion, textarea.value, this.lineWidth, this.strokeColor);
-      text.draw(this.cxt);
+      const tValue = textarea.value
+      if(tValue) {
+        this.addHistory();
+        const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor);
+        text.draw(this.cxt);
+        this.drawEnd()
+      }
       this.canvasParant.removeChild(textarea);
       this.canTextarea = true;
-      this.drawEnd()
     }
   }
 
   drawing(e: any) {
+    if(!this.isDrawing) {
+      this.addHistory()
+    }
+    this.isDrawing = true
     this.pointer.endX = e.clientX - this.stage_info.left
     this.pointer.endY = e.clientY - this.stage_info.top
     if(this.drawType === 'draw') {
@@ -268,9 +279,9 @@ export default class Draw {
   }
 
   undo() {
+    console.log(this.canvasPool.length, '=========');
     if(this.canvasPool.length > 0) {
       const current = this.canvasPool.pop() || ''
-      console.log(current);
 
       this.initByBase64(current);
       this.callBackData(current)

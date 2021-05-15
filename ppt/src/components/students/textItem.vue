@@ -5,7 +5,7 @@
         type="textarea"
         :autosize="{ minRows: 3}"
         placeholder="Please input somthing(Press Ctrl+Enter to send)"
-        v-model="item.value"
+        v-model="item.content"
         @keyup.ctrl.enter.native="send(index)">
         </el-input>
         <div class="el-input__icon" v-if="item.textSended">
@@ -53,8 +53,8 @@ el-button {
 </style>
 
 <script>
-import { saveStudentsDataList, getStudentsDataList } from "../../utils/store";
 import { SocketEventsEnum } from "../../socket/socketEvents";
+import { getCurrentPageStudentAnswerList } from '@/model/data.student';
 export default {
   props: {
     method: { type: Function },
@@ -70,27 +70,26 @@ export default {
       addDisable: false,
       maxCount: 3,
       inputCount: 0,
-      arrList: getStudentsDataList(this.data.page_id, SocketEventsEnum.TEXT_INPUT),
+      arrList: getCurrentPageStudentAnswerList(this.data.page_id, SocketEventsEnum.TEXT_INPUT),
     };
   },
   created() {
     console.log("text template created!!"+this.arrList.length);
     if(!this.arrList||this.arrList.length==0){
-        this.arrList.push({value:''})
+        this.arrList.push({content:''})
     }
     this.inputCount = this.arrList.length;
   },
   methods: {
     addInput: function() {
       this.inputCount++;
-      var item = { value: "", id: this.inputCount ,textSended:false};
+      var item = { content: "", id: this.inputCount ,textSended:false};
       this.arrList.push(item);
       this.addDisable = this.inputCount >= this.maxCount;
     },
     send: function(index) {
       this.arrList[index].textSended = true
-      saveStudentsDataList(this.data.page_id, this.arrList, SocketEventsEnum.TEXT_INPUT);
-      var text = this.arrList[index].value;
+      var text = this.arrList[index].content;
       if (text) {
         this.method(index, text);
       } else {

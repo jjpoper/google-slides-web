@@ -76,6 +76,7 @@ export default {
     };
   },
   mounted() {
+    console.log('pptUrl', this.$attrs)
     this.imgUrls = getCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type

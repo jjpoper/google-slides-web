@@ -1,6 +1,6 @@
 <template>
   <div class="parent">
-    <el-input type="number" @keyup.ctrl.enter.native="send()" v-model="arrList[0].value"></el-input>
+    <el-input type="number" @keyup.ctrl.enter.native="send()" v-model="numberValue"></el-input>
   </div>
 </template>
 <style scoped>
@@ -16,8 +16,8 @@ el-input {
 }
 </style>
 <script>
-import { saveStudentsDataList, getStudentsDataList,getNumberList } from "../../utils/store";
 import { SocketEventsEnum } from "../../socket/socketEvents";
+import { getCurrentPageStudentAnswerList } from '@/model/data.student';
 export default {
   props: {
     method: { type: Function },
@@ -30,11 +30,14 @@ export default {
   },
   data() {
     return {
-      arrList: getNumberList(this.data.page_id, SocketEventsEnum.NUMBER_INPUT)
+      numberValue: ''
     };
   },
   created(){
-     
+     const list = getCurrentPageStudentAnswerList(this.data.page_id, SocketEventsEnum.NUMBER_INPUT) || []
+     if(list.length > 0) {
+       this.numberValue = list[0].content
+     }
   },
   computed: {
     
@@ -42,12 +45,12 @@ export default {
   methods: {
     send: function() {
       console.log("pageid==", this.data.page_id);
-      saveStudentsDataList(
-        this.data.page_id,
-        this.arrList,
-        SocketEventsEnum.NUMBER_INPUT
-      );
-      this.method(0, this.arrList[0].value);
+      // saveStudentsDataList(
+      //   this.data.page_id,
+      //   this.arrList,
+      //   SocketEventsEnum.NUMBER_INPUT
+      // );
+      this.method(0, this.numberValue);
     }
   }
 };

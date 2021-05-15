@@ -182,33 +182,35 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
     role: "teacher",
     token
   })
-  // let authUrl = ''
+  let result = []
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
-  // try {
-  //   authUrl = data.data.data.auth_url
-  // } catch (e) {
-  //   // console.log(e)
-  // }
-  // return authUrl
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result
 }
 
 // 获取学生的答案
 export const getStudentClassAnswers = async (classId: string, token: string) => {
+
+  console.log('=======', 'initStudentData')
   const data = await axios.post(`${PPT.requestUrl}slide/get_student_response`, {
     class_id: classId,
     role: "student",
     token
   })
-  // let authUrl = ''
+  let result = []
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
-  // try {
-  //   authUrl = data.data.data.auth_url
-  // } catch (e) {
-  //   // console.log(e)
-  // }
-  // return authUrl
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result
 }
 
 // 获取学生的答案
@@ -218,30 +220,30 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
     role: "teacher",
     token
   })
-  // let authUrl = ''
+  let result = []
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
-  // try {
-  //   authUrl = data.data.data.auth_url
-  // } catch (e) {
-  //   // console.log(e)
-  // }
-  // return authUrl
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result.reverse()
 }
-// 获取学生的答案
+// 获取学生的评论
 export const getStudentAllComments = async (classId: string, token: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/get_comments`, {
     class_id: classId,
     role: "student",
     token
   })
-  // let authUrl = ''
+  let result = []
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
-  // try {
-  //   authUrl = data.data.data.auth_url
-  // } catch (e) {
-  //   // console.log(e)
-  // }
-  // return authUrl
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result.reverse()
 }

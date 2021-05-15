@@ -201,8 +201,15 @@ import {
   queryClassStatus,
   endClassRoomReq,
   reopenClass,
-  getTeacherClassAnswers
 } from "../model/index";
+import {
+  initTeacherData,
+  getTeacherCurrentPageAnswerList,
+  addTeacherData
+} from '@/model/data.teacher'
+import {
+  initTeacherCommentData
+} from '@/model/comment.teacher'
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { createSo } from "../socket/socket.teacher";
 import {
@@ -211,9 +218,6 @@ import {
   ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
-  saveStundentUidAndName,
-  saveStudentsPageAnswerList,
-  getCurrentPageAnswerList,
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveAnswerList
@@ -316,6 +320,7 @@ type: "slide"*/
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
+      window.classId = class_id
       vm.isDashboard = type === "dashboard";
       if (token) {
         vm.token = token;
@@ -365,6 +370,17 @@ type: "slide"*/
             if (this.currentItemData.items[0].type == "choice") {
               const user_id = studentId;
               const answer = itemId;
+              addTeacherData(
+                this.currentPageId,
+                this.currentItemData.items[0].type,
+                {
+                  user_id,
+                  answer,
+                  star: this.responseContentList[i].star,
+                  show: this.responseContentList[i].show,
+                  key: user_id,
+                }
+              );
               EventBus.$emit("choice", { user_id, answer });
             } else if (this.currentItemData.items[0].type == "draw") {
               const user_id = studentId;
@@ -376,7 +392,7 @@ type: "slide"*/
           //发送一个ws消息通知其他端，更新状态
           if (sendWSMsg) {
             this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
+              `{"room":"${this.class_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
               "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
             );
           }
@@ -439,10 +455,9 @@ type: "slide"*/
     },
     afterLogin({ user_name, email }) {
       this.name = user_name;
+      window.currentTeacherName = user_name
       this.uid = email;
-      // saveTeacherUserName(name);
       this.startConnectRoom();
-      this.getAllAnswers();
     },
     startConnectRoom() {
       this.joinRoom();
@@ -459,6 +474,7 @@ type: "slide"*/
         .catch(res => {
           console.log(res);
         });
+
 
       requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
@@ -490,9 +506,6 @@ type: "slide"*/
       teacher.state = "online";
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
-    },
-    getAllAnswers() {
-      getTeacherClassAnswers(this.class_id, this.token);
     },
     msgListener(d) {
       console.log(d, "====收到消息命令");
@@ -562,7 +575,6 @@ type: "slide"*/
             break;
           }
         }
-        saveStundentUidAndName(user_id, user_name_new);
         // this.user_name = user_name_new;
         // for (let i = 0; i < this.textList.length; i++) {
         //   if (user_id === this.textList[i].user_id) {
@@ -572,7 +584,7 @@ type: "slide"*/
         //   }
         // }
       } else if (d.type === SocketEventsEnum.GO_PAGE) {
-        if (d.room == this.slide_id) {
+        if (d.room == this.class_id) {
           if (d.params) {
             // this.pageChange(d.params.page);
             this.current_page = parseInt(d.params.page) + 1;
@@ -580,14 +592,14 @@ type: "slide"*/
           }
         }
       } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
-        if (d.room == this.slide_id) {
+        if (d.room == this.class_id) {
           this.page_model =
             d.params.mode == "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
         }
       } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
-        if (d.room == this.slide_id) {
+        if (d.room == this.class_id) {
           this.showResponse = d.params.response;
           console.log(this.showResponse, "show res change!!!");
         }
@@ -651,11 +663,11 @@ type: "slide"*/
       // 回答问题
       const { room, page_id } = d;
       // 过滤非当前页面数据
-      if (room != this.slide_id || page_id !== this.currentPageId) return;
+      if (room != this.class_id || page_id !== this.currentPageId) return;
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const { answer, user_id, type } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           answer,
           star: false,
@@ -669,7 +681,7 @@ type: "slide"*/
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           content,
           user_name,
@@ -681,7 +693,7 @@ type: "slide"*/
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
         const { content, type, user_id, user_name } = d;
-        saveStudentsPageAnswerList(this.currentPageId, type, {
+        addTeacherData(this.currentPageId, type, {
           user_id,
           content,
           star: false,
@@ -701,7 +713,7 @@ type: "slide"*/
       this.getItemData();
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
-          `{"room":"${this.slide_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+          `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
         );
       }
     },
@@ -730,7 +742,10 @@ type: "slide"*/
       }
     },
     getAllSlides() {
-      getAllPPTS(this.slide_id).then(list => {
+      // 初始化评论数据
+      initTeacherCommentData(this.class_id, this.token)
+      Promise.all([initTeacherData(this.class_id, this.token), getAllPPTS(this.slide_id)])
+      .then(([alldata, list]) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
@@ -752,11 +767,13 @@ type: "slide"*/
     },
     getResponeCount() {
       if (this.currentItemData.items[0]) {
-        const list = getCurrentPageAnswerList(
-          this.currentItemData.page_id,
-          this.currentItemData.items[0].type
-        );
-        console.log(list);
+        // const list = getCurrentPageAnswerList(
+        //   this.currentItemData.page_id,
+        //   this.currentItemData.items[0].type
+        // );
+        const list = getTeacherCurrentPageAnswerList(this.currentItemData.page_id,
+          this.currentItemData.items[0].type)
+        console.log(list, '=====');
         this.currentAnswerCount = list.length;
 
         this.responseContentList = list;
@@ -811,7 +828,7 @@ type: "slide"*/
         // this.currentSo.emit('control', JSON.stringify(data));
         console.log(this.page_model, "send message");
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${
+          `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.MODEL_CHANGE
           }", "token": "${this.token}","class_id":"${
             this.class_id
@@ -827,7 +844,7 @@ type: "slide"*/
     showres() {
       this.showResponse = !this.showResponse;
       this.emitSo(
-        `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${this.token}","class_id":"${this.class_id}","params": {"response": ${this.showResponse}}}`
+        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${this.token}","class_id":"${this.class_id}","params": {"response": ${this.showResponse}}}`
       );
     },
     leavePage() {
@@ -874,7 +891,7 @@ type: "slide"*/
           this.confirmCloseDialogVisible = false;
           if (res.code == "ok") {
             this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
+              `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
             setTimeout(function() {
               hideLoading();
@@ -914,7 +931,7 @@ type: "slide"*/
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${
+          `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.LOCK_PAGE
           }", "token": "${this.token}","class_id":"${
             this.class_id
@@ -982,7 +999,7 @@ type: "slide"*/
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
             this.emitSo(
-              `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "live"}}`
+              `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "live"}}`
             );
           } else {
             if (res.data) {
@@ -1031,7 +1048,7 @@ type: "slide"*/
       this.getItemData();
       if (!notSend && this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
-          `{"room":"${this.slide_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentIndex}"}}`
+          `{"room":"${this.class_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentIndex}"}}`
         );
       }
 

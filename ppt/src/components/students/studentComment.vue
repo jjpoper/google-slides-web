@@ -4,7 +4,10 @@
       <div class="title">Teacher Feedback</div>
       <div v-for="(item, index) in commentList" :key="index.toString()">
         <p class="title">slide {{item.slideIndex}}</p>
-        <p class="rightmtitle">{{item.title}}</p>
+        <div class="rightmtitle" v-if="item.title.indexOf('data:image/') > -1">
+            <base64image :url="item.title"/>
+        </div>
+        <div class="rightmtitle" v-else>{{item.title}}</div>
         <div class="rightcomment">
           <div class="section">
             <p>{{item.teacherName}}</p>
@@ -44,6 +47,7 @@
   padding: 10px;
   word-wrap: break-word;
   line-height: 20px;
+  position: relative;
 }
 .rightcomment{
   width: 100%;
@@ -63,6 +67,7 @@
 import { ModalEventsNameEnum } from '@/socket/socketEvents'
 import { getStudentCommentList } from '@/model/store.student'
 import { showToast } from '@/utils/loading'
+import base64image from '../base64image.vue'
 export default {
   data() {
     return {
@@ -70,6 +75,7 @@ export default {
       commentList: []
     }
   },
+  components: { base64image },
   mounted() {
     // this.showStudentModal()
     EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL, (status) => {

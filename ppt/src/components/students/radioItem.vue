@@ -53,8 +53,10 @@ export default {
     this.optionData = this.data.items[0].data
     this.pageId = this.data.page_id
     const result = getStudentCurrentPageAnswerList(this.pageId, this.data.items[0].type)
+    console.log(result, 'result')
     if(result && result.length > 0) {
-      this.radio = result[0].answer
+      this.radio = parseInt(result[0].answer)
+      // console.log(this.radio, 'result')
     }
   },
   methods: {
