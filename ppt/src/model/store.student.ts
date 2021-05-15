@@ -2,6 +2,7 @@
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
 import {getCurrentPageStudentAnswerList, addStudentData} from './data.student'
+import {getStudentCurrentItemCommentList, addStudentCommentData} from './comment.student'
 
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_sid`
@@ -98,20 +99,21 @@ interface StudentCommentItem {
 
 // 学生端评论列表
 export const getStudentCommentList = (): StudentCommentItem[] => {
-  const list = getStudentStore(`commentList`)
+  const list = getStudentCurrentItemCommentList()
   return list && list.length > 0 ? list : []
 }
 // 存储学生端评论列表
 export const addStudentComment = (data: StudentCommentItem) => {
-  const list = getStudentCommentList()
-  // const {itemId} = data
-  // const idItem = list.filter(item => item.itemId === itemId)[0]
-  // if(idItem) {
-  //   // 已存在。push到 items
-  //   idItem.items.push(data.items)
-  // }
-  list.unshift(data)
-  saveStudentStore('commentList', list)
+  // const list = getStudentCommentList()
+  // // const {itemId} = data
+  // // const idItem = list.filter(item => item.itemId === itemId)[0]
+  // // if(idItem) {
+  // //   // 已存在。push到 items
+  // //   idItem.items.push(data.items)
+  // // }
+  // list.unshift(data)
+  // saveStudentStore('commentList', list)
+  addStudentCommentData(data)
 }
 
 // 已读状态 true 表示有未读 false 没有未读

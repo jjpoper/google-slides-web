@@ -32,7 +32,7 @@ const getTeacherStore = (key: string): any => {
 
 export const getTeacherUid = (): string => {
   let sid = getStore(UID_KEY)
-  if (!sid) {
+  if(!sid) {
     // 自动生成并存储
     sid = generateUuid("t_", 16);
     saveStore(UID_KEY, sid)
@@ -42,16 +42,8 @@ export const getTeacherUid = (): string => {
 }
 
 export const getTeacherUserName = (): string => {
-  return getTeacherStore(`uname`) || 'Mr Wang'
-}
-
-export const saveTeacherUserName = (uname: string) => {
-  saveTeacherStore(`uname`, uname)
-}
-
-// 存储所有学生用户id和用户名关系表
-export const saveStundentUidAndName = (uid: string, name: string) => {
-  saveTeacherStore(`t_and_s_${uid}`, name)
+  // @ts-ignore
+  return window.currentTeacherName
 }
 
 // 存储所有学生用户id和用户名关系表

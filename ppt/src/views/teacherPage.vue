@@ -218,7 +218,6 @@ import {
   ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
-  saveStundentUidAndName,
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveAnswerList
@@ -458,7 +457,6 @@ type: "slide"*/
       this.name = user_name;
       window.currentTeacherName = user_name
       this.uid = email;
-      // saveTeacherUserName(name);
       this.startConnectRoom();
     },
     startConnectRoom() {
@@ -577,7 +575,6 @@ type: "slide"*/
             break;
           }
         }
-        saveStundentUidAndName(user_id, user_name_new);
         // this.user_name = user_name_new;
         // for (let i = 0; i < this.textList.length; i++) {
         //   if (user_id === this.textList[i].user_id) {

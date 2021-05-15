@@ -120,11 +120,13 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
-  getStudentClassAnswers
 } from "../model/index";
 import {
   initStudentData
 } from '@/model/data.student'
+import {
+  initStudentCommentData
+} from '@/model/comment.student'
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
@@ -261,6 +263,7 @@ export default {
     },
     getAllSlides() {
       console.log('list', '========');
+      initStudentCommentData(this.class_id, this.token)
       Promise.all([initStudentData(this.class_id, this.token), getAllPPTS(this.slide_id)]).then(([allA, list]) => {
         console.log(list, '========');
         this.slides = list;
