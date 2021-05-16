@@ -282,7 +282,8 @@ type: "slide"*/
       responsePercentage: [],
       isFocus: [],
       stepOneDialog: false,
-      stepTwoDialog: false
+      stepTwoDialog: false,
+      directFromPlugin: false //是否是从插件直接打开的。
     };
   },
   mounted() {
@@ -322,6 +323,7 @@ type: "slide"*/
       window.classId = class_id;
       vm.currentIndex = to.query.currentPage ? to.query.currentPage : 0;
       vm.isDashboard = type === "dashboard";
+      vm.directFromPlugin = to.query.direct ? true : false;
       if (token) {
         vm.token = token;
         saveTeacherStoreToken(token);
@@ -466,9 +468,24 @@ type: "slide"*/
           this.classRoomInfo = res;
           if (this.classRoomInfo.status == "live") {
             this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+            if (this.directFromPlugin) {
+              this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+              this.emitSo(
+                `{"room":"${this.class_id}", "type": "${
+                  SocketEventsEnum.MODEL_CHANGE
+                }", "token": "${this.token}","class_id":"${
+                  this.class_id
+                }","params": {"mode": "${
+                  this.page_model === ClassRoomModelEnum.TEACHER_MODEL
+                    ? "insturctor-paced"
+                    : "student-paced"
+                }"}}`
+              );
+            }
           } else if (this.classRoomInfo.status == "student-paced") {
             this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
           }
+
           console.log(this.classRoomInfo);
         })
         .catch(res => {
@@ -492,12 +509,8 @@ type: "slide"*/
           hideLoading();
         });
       getOnlineUsers(this.token, this.class_id)
-        .then(res => {
-
-        })
-        .catch(res => {
-
-        });
+        .then(res => {})
+        .catch(res => {});
     },
     joinRoom() {
       this.currentSo = createSo(
