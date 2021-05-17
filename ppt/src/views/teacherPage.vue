@@ -283,6 +283,7 @@ type: "slide"*/
       isFocus: [],
       stepOneDialog: false,
       stepTwoDialog: false,
+      onLine: false, // 在线状态
       directFromPlugin: false //是否是从插件直接打开的。
     };
   },
@@ -335,6 +336,9 @@ type: "slide"*/
   },
 
   methods: {
+    onLineStatusChanged(status) {
+      this.onLine = status
+    },
     handleStarOrHide(
       pageId,
       itemId,
@@ -517,7 +521,8 @@ type: "slide"*/
         this.slide_id,
         this.token,
         this.class_id,
-        this.msgListener
+        this.msgListener,
+        this.onLineStatusChanged
       );
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
@@ -967,7 +972,6 @@ type: "slide"*/
     },
     openProject() {
       const url = `${location.origin}${location.pathname}#/class?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}&type=classroom`;
-
       window.open(url);
     },
     open(model) {
