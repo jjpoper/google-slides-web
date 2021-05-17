@@ -5,13 +5,14 @@ import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, token: string,classId:string, callback: callback, joinCallback: callback) => {
+export const createSo = (room: string, token: string,classId:string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
   socket.on('connect', () => {
+    onLineStatusChanged(true)
     // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
     socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`, () => {
       console.log("学生加入房间");
-      if (joinCallback) {
+      if(joinCallback) {
         // @ts-ignore
         joinCallback()
       }
@@ -20,6 +21,11 @@ export const createSo = (room: string, token: string,classId:string, callback: c
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
     //   console.log("学生提交答案。");
     // });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('connect 状态 断线')
+    onLineStatusChanged(false)
   });
 
   // 学端要响应老师发来的 control
