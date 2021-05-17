@@ -5,23 +5,23 @@
       <i class="el-icon-circle-close closemodal" style="font-size: 30px" @click="hideModal"></i>
       <div class="widthlist">
         <div class="item">
-          <span class="icon" :style="`width: 30px;height: 30px; background-color: ${widthValue === 30 ? 'red': color}`" @click="changeWidth(30)"></span>
+          <span class="icon" :style="`width: 30px;height: 30px; background-color: ${color}; border-color: ${widthValue === 30 ? 'red': color}`" @click="changeWidth(30)"></span>
           <span class="icontext">30</span>
         </div>
         <div class="item">
-          <span class="icon" :style="`width: 25px;height: 25px; background-color: ${widthValue === 20 ? 'red' : color}`" @click="changeWidth(20)"></span>
+          <span class="icon" :style="`width: 25px;height: 25px; background-color: ${color}; border-color: ${widthValue === 20 ? 'red' : color}`" @click="changeWidth(20)"></span>
           <span class="icontext">20</span>
         </div>
         <div class="item">
-          <span class="icon" :style="`width: 20px;height: 20px; background-color: ${widthValue === 10 ? 'red' : color}`" @click="changeWidth(10)"></span>
+          <span class="icon" :style="`width: 20px;height: 20px; background-color: ${color}; border-color: ${widthValue === 10 ? 'red' : color}`" @click="changeWidth(10)"></span>
           <span class="icontext">10</span>
         </div>
         <div class="item">
-          <span class="icon" :style="`width: 15px;height: 15px; background-color: ${widthValue === 5 ? 'red' : color}`" @click="changeWidth(5)"></span>
+          <span class="icon" :style="`width: 15px;height: 15px; background-color: ${color}; border-color: ${widthValue === 5 ? 'red' : color}`" @click="changeWidth(5)"></span>
           <span class="icontext">5</span>
         </div>
         <div class="item">
-          <span class="icon" :style="`width: 10px;height: 10px; background-color: ${widthValue === 3 ? 'red' : color}`" @click="changeWidth(3)"></span>
+          <span class="icon" :style="`width: 10px;height: 10px; background-color: ${color}; border-color: ${widthValue === 3 ? 'red' : color}`" @click="changeWidth(3)"></span>
           <span class="icontext">3</span>
         </div>
       </div>
@@ -32,16 +32,16 @@
     <div class="canvasfooter">
       <div class="red-pencial" :style="`background-color: ${color}`"  @click="showModal"></div>
       <div class="eraser" @click="drawPath">
-        <i class="el-icon-edit" :style="`font-size: 30px; color: ${currentTab == 1 ? 'red' : '#333'}`"></i>
+        <i class="el-icon-edit" :style="`font-size: 30px; color: ${currentTab == 1 ? color : 'rgb(212 208 208)'}`"></i>
       </div>
       <div class="eraser" @click="drawLine">
-        <i class="el-icon-minus" :style="`font-size: 30px; color: ${currentTab == 2 ? 'red' : '#333'}`"></i>
+        <i class="el-icon-minus" :style="`font-size: 30px; color: ${currentTab == 2 ? color : 'rgb(212 208 208)'}`"></i>
       </div>
       <div class="eraser" @click="edit">
-        <i class="el-icon-edit-outline" :style="`font-size: 30px; color: ${currentTab == 4 ? 'red' : '#333'}`"></i>
+        <i class="el-icon-edit-outline" :style="`font-size: 30px; color: ${currentTab == 4 ? color : 'rgb(212 208 208)'}`"></i>
       </div>
       <div class="eraser" @click="earse">
-        <i class="el-icon-circle-close" :style="`font-size: 30px; color: ${currentTab == 3 ? 'red' : '#333'}`"></i>
+        <i class="el-icon-circle-close" :style="`font-size: 30px; color: ${currentTab == 3 ? color : 'rgb(212 208 208)'}`"></i>
       </div>
       <div class="eraser" @click="undo">
         <i class="el-icon-refresh-left" style="font-size: 30px"></i>
