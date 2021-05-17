@@ -52,6 +52,7 @@
 
     <comment-modal />
     <div class="top_btn">
+      <div class="online_status" ><i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`"/> </div>
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
       <div
@@ -153,6 +154,16 @@
   cursor: pointer;
   margin-right: 20px;
   font-size: 14px;
+}
+.online_status{
+  width: 50px;
+  height: 43px;
+  font-size: 30px;
+  line-height: 43px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin-right: 20px;
 }
 
 .number_info {
