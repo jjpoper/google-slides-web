@@ -6,7 +6,7 @@
         :autosize="{ minRows: 3}"
         placeholder="Please input somthing(Press Ctrl+Enter to send)"
         v-model="item.content"
-        @keyup.ctrl.enter.native="send(index)">
+        @input="onInputText(index)">
         </el-input>
         <div class="el-input__icon" v-if="item.textSended">
           <i class="el-icon-edit-outline"></i>
@@ -71,6 +71,7 @@ export default {
       maxCount: 3,
       inputCount: 0,
       arrList: getCurrentPageStudentAnswerList(this.data.page_id, SocketEventsEnum.TEXT_INPUT),
+      sendDelay: null
     };
   },
   created() {
@@ -79,6 +80,9 @@ export default {
         this.arrList.push({content:''})
     }
     this.inputCount = this.arrList.length;
+  },
+  beforeDestroy() {
+    this.clearDelay()
   },
   methods: {
     addInput: function() {
@@ -90,14 +94,27 @@ export default {
     send: function(index) {
       this.arrList[index].textSended = true
       var text = this.arrList[index].content;
-      if (text) {
-        this.method(index, text);
-      } else {
-        this.$alert("Input some words!", "Note", {
-          confirmButtonText: "Ok",
-          callback: action => {}
-        });
+      this.method(index, text);
+      // if (text) {
+      //   this.method(index, text);
+      // } else {
+        // this.$alert("Input some words!", "Note", {
+        //   confirmButtonText: "Ok",
+        //   callback: action => {}
+        // });
+      // }
+    },
+    clearDelay() {
+      if(this.sendDelay) {
+        clearTimeout(this.sendDelay)
+        this.sendDelay = null
       }
+    },
+    onInputText(index) {
+      this.clearDelay()
+      this.sendDelay = setTimeout(() => {
+        this.send(index)
+      }, 200)
     }
   }
 };

@@ -55,9 +55,31 @@
         />
       </div>
     </el-container>
+
+    <div class="top_btn">
+      <div class="online_status" ><i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`"/></div>
+    </div>
   </div>
 </template>
 <style scoped>
+.top_btn {
+  height: 30px;
+  width: auto;
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  display: flex;
+}
+.online_status{
+  width: 50px;
+  height: 43px;
+  font-size: 30px;
+  line-height: 43px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin-right: 20px;
+}
 .page {
   width: 100%;
   height: 100%;
@@ -177,6 +199,7 @@ export default {
       class_id: "",
       classRoomInfo: null,
       answerList: [],
+      onLine: false, // 在线状态
     };
   },
   mounted() {
@@ -207,6 +230,9 @@ export default {
     });
   },
   methods: {
+    onLineStatusChanged(status) {
+      this.onLine = status
+    },
     initWithToken() {
       showLoading();
       if (!this.token) {
@@ -373,7 +399,8 @@ export default {
             "rename",
             `{"room": "${this.class_id}", "user_id": "${this.uid}", "token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${this.uname}"}`
           );
-        }
+        },
+        this.onLineStatusChanged
       );
     },
     msgListener(d) {

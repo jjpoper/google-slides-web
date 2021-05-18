@@ -52,6 +52,7 @@
 
     <comment-modal />
     <div class="top_btn">
+      <div class="online_status" ><i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`"/> </div>
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
       <div
@@ -153,6 +154,16 @@
   cursor: pointer;
   margin-right: 20px;
   font-size: 14px;
+}
+.online_status{
+  width: 50px;
+  height: 43px;
+  font-size: 30px;
+  line-height: 43px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin-right: 20px;
 }
 
 .number_info {
@@ -283,6 +294,7 @@ type: "slide"*/
       isFocus: [],
       stepOneDialog: false,
       stepTwoDialog: false,
+      onLine: false, // 在线状态
       directFromPlugin: false //是否是从插件直接打开的。
     };
   },
@@ -335,6 +347,9 @@ type: "slide"*/
   },
 
   methods: {
+    onLineStatusChanged(status) {
+      this.onLine = status
+    },
     handleStarOrHide(
       pageId,
       itemId,
@@ -517,7 +532,8 @@ type: "slide"*/
         this.slide_id,
         this.token,
         this.class_id,
-        this.msgListener
+        this.msgListener,
+        this.onLineStatusChanged
       );
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
@@ -967,7 +983,6 @@ type: "slide"*/
     },
     openProject() {
       const url = `${location.origin}${location.pathname}#/class?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}&type=classroom`;
-
       window.open(url);
     },
     open(model) {

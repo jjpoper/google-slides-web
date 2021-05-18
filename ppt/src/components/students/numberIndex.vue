@@ -1,6 +1,6 @@
 <template>
   <div class="parent">
-    <el-input type="number" @keyup.ctrl.enter.native="send()" v-model="numberValue"></el-input>
+    <el-input type="number" @input="onInputText"  v-model="numberValue"></el-input>
   </div>
 </template>
 <style scoped>
@@ -30,7 +30,8 @@ export default {
   },
   data() {
     return {
-      numberValue: ''
+      numberValue: '',
+      sendDelay: null
     };
   },
   created(){
@@ -38,6 +39,9 @@ export default {
      if(list.length > 0) {
        this.numberValue = list[0].content
      }
+  },
+  beforeDestroy() {
+    this.clearDelay()
   },
   computed: {
     
@@ -51,6 +55,18 @@ export default {
       //   SocketEventsEnum.NUMBER_INPUT
       // );
       this.method(0, this.numberValue);
+    },
+    clearDelay() {
+      if(this.sendDelay) {
+        clearTimeout(this.sendDelay)
+        this.sendDelay = null
+      }
+    },
+    onInputText() {
+      this.clearDelay()
+      this.sendDelay = setTimeout(() => {
+        this.send()
+      }, 200)
     }
   }
 };
