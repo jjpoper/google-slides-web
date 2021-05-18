@@ -375,8 +375,6 @@ type: "slide"*/
           } else if (type == "show") {
             this.responseContentList[i].show = nextStatus;
           }
-
-          //
           if (this.currentItemData.items[0]) {
             console.log(this.responseContentList[i].star, "star or hide!!!!");
             saveAnswerList(

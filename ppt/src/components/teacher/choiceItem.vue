@@ -288,7 +288,9 @@ export default {
       let count = 0;
       for (let i = 0; i < this.answerList.length; i++) {
         if (index == parseInt(this.answerList[i].answer)) {
-          count++;
+          if(this.answerList[i].show){
+              count++;
+          }
         }
       }
       return count;
