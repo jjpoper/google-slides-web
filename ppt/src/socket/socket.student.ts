@@ -5,12 +5,11 @@ import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, token: string,classId:string, callback: callback, joinCallback: callback) => {
-  const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
+export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback) => {
+  const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
   socket.on('connect', () => {
     // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
-    socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`, () => {
-      console.log("学生加入房间");
+    socket.emit('join-room', `{"room":"${classId}", "token": "${token}","role":"student","class_id":"${classId}"}`, () => {
       if (joinCallback) {
         // @ts-ignore
         joinCallback()

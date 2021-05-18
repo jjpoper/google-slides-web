@@ -20,6 +20,8 @@
         :isFocus="isFocus"
         :slides="slides"
         :giveFocus="giveFocus"
+        :getPageStudent="getPageStudent"
+        :getStudentName="getStudentName"
         v-else-if="currentItemData && slides"
       />
     </div>
@@ -219,7 +221,8 @@ import {
 import {
   getTeacherStoreToken,
   saveTeacherStoreToken,
-  saveAnswerList
+  saveAnswerList,
+  getStundentUidAndName
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -447,6 +450,7 @@ type: "slide"*/
         });
       }
     },
+
     goToLogin() {
       getTeacherLoginUrl().then(url => {
         console.log(url);
@@ -529,7 +533,6 @@ type: "slide"*/
       console.log(d, "====收到消息命令");
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
-        console.log(d.student_count, "d.student_count");
         //  this.studentCounts = d.student_count;
         if (d.join_in) {
           let student = new Object();
@@ -537,6 +540,8 @@ type: "slide"*/
           student.user_id = d.join_in.user_id;
           student.state = "online";
           student.count = 1;
+          student.page_id = d.page_id;
+          console.log(d);
           let findFlag = false;
           if (d.join_in.role == "student") {
             for (let i = 0; i < this.studentList.length; i++) {
@@ -588,7 +593,7 @@ type: "slide"*/
         }
       } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
-        const { user_id, user_name_new } = d;
+        const { user_id, user_name_new, page_id } = d;
         for (let i = 0; i < this.studentList.length; i++) {
           if (this.studentList[i].user_id == user_id) {
             this.studentList[i].name = user_name_new;
@@ -641,7 +646,6 @@ type: "slide"*/
             item => item != page
           );
         }
-        console.log("refresh lockpage", this.classRoomInfo.lock_page);
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
           const {
@@ -678,16 +682,30 @@ type: "slide"*/
           //   }
           // }
         }
+      } else if (d.type == "student_go_page") {
+        const { room, page_id, user_id } = d;
+        if (room != this.class_id) {
+          return;
+        }
+
+        for (let i = 0; i < this.studentList.length; i++) {
+          if (this.studentList[i].user_id == user_id) {
+            this.studentList[i].page_id = page_id;
+            this.$forceUpdate();
+            break;
+          }
+        }
+        console.log(this.studentList, "student_go_page");
       }
 
       // 回答问题
       const { room, page_id } = d;
-      // 过滤非当前页面数据
-      if (room != this.class_id || page_id !== this.currentPageId) return;
+      // 过滤非当前页面数据 是否需要过滤当前页面？？ page_id !== this.currentPageId
+      if (room != this.class_id) return;
       // 回答choice
       if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
         const { answer, user_id, type } = d;
-        addTeacherData(this.currentPageId, type, {
+        addTeacherData(page_id, type, {
           user_id,
           answer,
           star: false,
@@ -701,7 +719,7 @@ type: "slide"*/
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-        addTeacherData(this.currentPageId, type, {
+        addTeacherData(page_id, type, {
           user_id,
           content,
           user_name,
@@ -713,7 +731,7 @@ type: "slide"*/
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         console.log(d);
         const { content, type, user_id, user_name } = d;
-        addTeacherData(this.currentPageId, type, {
+        addTeacherData(page_id, type, {
           user_id,
           content,
           star: false,
@@ -728,7 +746,7 @@ type: "slide"*/
     },
 
     pageChange(value, notSend) {
-      console.log(value, "pageChage!!!");
+      console.log(value, "pageChage!!!" + this.page_model);
       this.currentIndex = value - 1;
       this.getItemData();
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
@@ -797,11 +815,8 @@ type: "slide"*/
           this.currentItemData.page_id,
           this.currentItemData.items[0].type
         );
-        console.log(list, "=====");
         this.currentAnswerCount = list.length;
-
         this.responseContentList = list;
-
         let count = 0;
         let id = "-1";
         for (let i = 0; i < list.length; i++) {
@@ -862,6 +877,13 @@ type: "slide"*/
               : "student-paced"
           }"}}`
         );
+
+        if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
+          //如果从学生模式切换到老师模式，则通知学生进行页面切换操作
+          this.emitSo(
+            `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+          );
+        }
       }
     },
 
@@ -1070,7 +1092,7 @@ type: "slide"*/
     giveFocus(index, notSend) {
       this.currentIndex = index;
       this.getItemData();
-      if (!notSend && this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
+      if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
           `{"room":"${this.class_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentIndex}"}}`
         );
@@ -1080,6 +1102,32 @@ type: "slide"*/
         this.isFocus[i] = i == index;
       }
       this.$forceUpdate();
+    },
+    getPageStudent(index) {
+      let count = 0;
+      if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) return 0;
+      for (let i = 0; i < this.studentList.length; i++) {
+        if (
+          this.studentList[i].state == "online" &&
+          this.studentList[i].page_id == this.slides[index].page_id
+        ) {
+          count++;
+        }
+        return count;
+      }
+    },
+    getStudentName(index) {
+      let result = "";
+      if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) return "";
+      for (let i = 0; i < this.studentList.length; i++) {
+        if (
+          this.studentList[i].state == "online" &&
+          this.studentList[i].page_id == this.slides[index].page_id
+        ) {
+          result += this.studentList[i].name + ",";
+        }
+        return result.substring(0, result.length - 1);
+      }
     }
   }
 };

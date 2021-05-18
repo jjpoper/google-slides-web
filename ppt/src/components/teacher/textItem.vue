@@ -101,7 +101,6 @@ export default {
 
     //返回当前这个item是否应该show出来
     shouldShow(item) {
-      console.log(item, this.flag_1, "text response!!");
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
       if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示
