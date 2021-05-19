@@ -4,7 +4,6 @@
     <textItem
       v-else-if="type === 'text' || type === 'number'"
       v-bind="$attrs"
-      :textList="textList"
       :flag_1="flag_1"
       class="item"
     />
@@ -128,12 +127,6 @@ export default {
     currentAnswerCount: {
       type: Number,
       default: 0,
-    },
-    textList: {
-      type: Array,
-      function() {
-        return [];
-      },
     },
     flag_1: {
       type: Boolean,

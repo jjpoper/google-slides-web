@@ -33,7 +33,7 @@
           v-if="flag_1"
           :data="{
             pageId: data.page_id,
-            itemId: item.key,
+            itemId: '0',
             studentId: item.user_id,
             title: item.content,
             isStar: item.star,
@@ -76,7 +76,6 @@ export default {
     };
   },
   mounted() {
-    console.log('pptUrl', this.$attrs)
     this.imgUrls = getCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type

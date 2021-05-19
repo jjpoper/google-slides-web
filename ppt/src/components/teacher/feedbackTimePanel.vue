@@ -189,6 +189,7 @@
 }
 .icon {
   cursor: pointer;
+  margin-right: 10px;
 }
 .item {
   display: flex;
@@ -226,6 +227,7 @@ export default {
     changeFeedbackTimeMode: {
       type: Function,
     },
+
   },
   data() {
     return {
@@ -243,9 +245,6 @@ export default {
   methods: {
     changeModel(index) {
       this.changeFeedbackTimeMode(index);
-    },
-    getTimeString(item) {
-      return item + "   min";
     },
   },
 };

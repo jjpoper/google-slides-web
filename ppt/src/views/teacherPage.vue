@@ -57,16 +57,14 @@
     <comment-modal />
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
-      <div class="number_info" @click="showStudents()">
-        Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentCounts }}</div>
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -118,24 +116,15 @@
       <stepOneView :openTwo="openTwo" />
     </el-dialog>
 
-    <el-dialog
-      title="This Session is in Student-Paced Mode"
-      :visible.sync="stepTwoDialog"
-    >
+    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
       <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
     </el-dialog>
 
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
-      <feedbackTimePanel
-        :mode="mode"
-        :changeFeedbackTimeMode="changeFeedbackTimeMode"
-      />
+      <feedbackTimePanel :mode="mode" :changeFeedbackTimeMode="changeFeedbackTimeMode" />
     </el-dialog>
 
-    <el-dialog
-      title="Share this link with your students"
-      :visible.sync="showCopyLinkDialog"
-    >
+    <el-dialog title="Share this link with your students" :visible.sync="showCopyLinkDialog">
       <copyLinkDialog
         v-if="classRoomInfo"
         :getStudentOnLineCount="getStudentOnLineCount"
@@ -143,6 +132,7 @@
         :copyLink="copyLink"
         :enterClassroom="enterClassroom"
         :setTimeDialogShow="setTimeDialogShow"
+        :currentMode="page_model"
       />
     </el-dialog>
   </div>
@@ -244,12 +234,12 @@ import {
   queryClassStatus,
   endClassRoomReq,
   reopenClass,
-  getOnlineUsers,
+  getOnlineUsers
 } from "../model/index";
 import {
   initTeacherData,
   getTeacherCurrentPageAnswerList,
-  addTeacherData,
+  addTeacherData
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
@@ -257,13 +247,13 @@ import { createSo } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveAnswerList,
-  getStundentUidAndName,
+  getStundentUidAndName
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -286,7 +276,7 @@ export default {
     stepTwoView,
     studentList,
     feedbackTimePanel,
-    copyLinkDialog,
+    copyLinkDialog
   },
 
   /*author: "yujj085@gmail.com"
@@ -334,11 +324,11 @@ type: "slide"*/
       directFromPlugin: false, //是否是从插件直接打开的。
       showTimeSetDialog: false,
       showCopyLinkDialog: false,
-      mode: 1,
+      mode: 1
     };
   },
   mounted() {
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
 
@@ -364,10 +354,10 @@ type: "slide"*/
       } else {
         return "p";
       }
-    },
+    }
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
@@ -398,60 +388,75 @@ type: "slide"*/
       type,
       sendWSMsg
     ) {
-      // if (this.currentPageId != pageId) {
-      //   return;
-      // }
       let i = 0;
-      for (; i < this.responseContentList.length; i++) {
+      let itemData = null;
+      for (let j = 0; j < this.slides.length; j++) {
+        if (this.slides[j].page_id == pageId) {
+          itemData = this.slides[j].items;
+        }
+      }
+      if (!itemData) {
+        return;
+      }
+      let responseList = getTeacherCurrentPageAnswerList(
+        pageId,
+        itemData[0].type
+      );
+      for (; i < responseList.length; i++) {
         if (
-          (this.responseContentList[i].item_id == itemId ||
-            this.responseContentList[i].answer == itemId ||
-            this.responseContentList[i].key == itemId) &&
-          this.responseContentList[i].user_id == studentId
+          (responseList[i].item_id == itemId ||
+            responseList[i].answer == itemId ||
+            responseList[i].key == studentId) &&
+          responseList[i].user_id == studentId
         ) {
           if (type == "star") {
-            this.responseContentList[i].star = nextStatus;
+            responseList[i].star = nextStatus;
           } else if (type == "show") {
-            this.responseContentList[i].show = nextStatus;
+            responseList[i].show = nextStatus;
           }
-          if (this.currentItemData.items[0]) {
-            // saveAnswerList(
-            //   this.currentPageId,
-            //   this.currentItemData.items[0].type,
-            //   this.responseContentList
-            // );
-            if (this.currentItemData.items[0].type == "choice") {
+          if (itemData[0]) {
+            if (itemData[0].type == "choice") {
               const user_id = studentId;
               const answer = itemId;
-              addTeacherData(
-                this.currentPageId,
-                this.currentItemData.items[0].type,
-                {
-                  user_id,
-                  answer,
-                  star: this.responseContentList[i].star,
-                  show: this.responseContentList[i].show,
-                  key: user_id,
-                }
-              );
+              addTeacherData(pageId, itemData[0].type, {
+                user_id,
+                answer,
+                star: responseList[i].star,
+                show: responseList[i].show,
+                key: user_id
+              });
               EventBus.$emit("choice", { user_id, answer });
-            } else if (this.currentItemData.items[0].type == "draw") {
+            } else if (itemData[0].type == "draw") {
               const user_id = studentId;
-              const content = this.responseContentList[i].content;
-              const user_name = this.responseContentList[i].user_name;
-              addTeacherData(
-                this.currentPageId,
-                this.currentItemData.items[0].type,
-                {
-                  user_id,
-                  content,
-                  user_name,
-                  star: this.responseContentList[i].star,
-                  show: this.responseContentList[i].show,
-                  key: user_id,
-                }
-              );
+              const content = responseList[i].content;
+              const user_name = responseList[i].user_name;
+              addTeacherData(pageId, itemData[0].type, {
+                user_id,
+                content,
+                user_name,
+                star: responseList[i].star,
+                show: responseList[i].show,
+                key: user_id
+              });
               EventBus.$emit("draw", { user_id, content, user_name });
+            } else if (
+              itemData[0].type == "text" ||
+              itemData[0].type == "number"
+            ) {
+              const user_id = studentId;
+              const content = responseList[i].content;
+              const user_name = responseList[i].user_name;
+              const item_id = responseList[i].item_id;
+              addTeacherData(pageId, itemData[0].type, {
+                user_id,
+                content,
+                user_name,
+                item_id,
+                star: responseList[i].star,
+                show: responseList[i].show,
+                key: `${item_id}_${user_id}`
+              });
+              EventBus.$emit(itemData[0].type, { user_id, pageId });
             }
           }
           //发送一个ws消息通知其他端，更新状态
@@ -472,7 +477,7 @@ type: "slide"*/
       title,
       time,
       value,
-      teacherName,
+      teacherName
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -484,7 +489,7 @@ type: "slide"*/
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id,
+        room: this.slide_id
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -512,7 +517,7 @@ type: "slide"*/
     },
 
     goToLogin() {
-      getTeacherLoginUrl().then((url) => {
+      getTeacherLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -528,7 +533,7 @@ type: "slide"*/
     startConnectRoom() {
       this.joinRoom();
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           this.classRoomInfo.showResponsePages = new Array();
           if (this.classRoomInfo.status == "live") {
@@ -551,12 +556,12 @@ type: "slide"*/
             this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
 
       requestRefreshPPT(this.slide_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -566,14 +571,14 @@ type: "slide"*/
             hideLoading();
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
         });
       getOnlineUsers(this.token, this.class_id)
-        .then((res) => {})
-        .catch((res) => {});
+        .then(res => {})
+        .catch(res => {});
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -637,7 +642,6 @@ type: "slide"*/
               }
             }
             this.studentCounts = this.studentList.length;
-            console.log(this.studentList, "test quit");
           } else if (d.quit.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == d.quit.user_id) {
@@ -647,7 +651,6 @@ type: "slide"*/
                 }
               }
             }
-            console.log(this.teacherList, "test quit");
           }
         }
       } else if (d.type === SocketEventsEnum.RENAME) {
@@ -693,7 +696,7 @@ type: "slide"*/
           this.classRoomInfo.lock_page.push(page);
         } else {
           this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-            (item) => item != page
+            item => item != page
           );
         }
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
@@ -704,7 +707,7 @@ type: "slide"*/
             title,
             studentId,
             nextStatus,
-            type,
+            type
           } = d.params;
           this.handleStarOrHide(
             pageId,
@@ -715,22 +718,6 @@ type: "slide"*/
             type,
             false
           );
-          // if (this.currentPageId != pageId) {
-          //   return;
-          // }
-          // let i = 0;
-          // for (; i < this.responseContentList.length; i++) {
-          //   if (
-          //     this.responseContentList[i].item_id == itemId &&
-          //     this.responseContentList[i].user_id == studentId
-          //   ) {
-          //     if (type == "star") {
-          //       this.responseContentList[i].star = nextStatus;
-          //     } else if (type == "show") {
-          //       this.responseContentList[i].show = nextStatus;
-          //     }
-          //   }
-          // }
         }
       } else if (d.type == "student_go_page") {
         const { room, page_id, user_id } = d;
@@ -760,7 +747,7 @@ type: "slide"*/
           answer,
           star: false,
           show: true,
-          key: user_id,
+          key: user_id
         });
         EventBus.$emit("choice", { user_id, answer });
       } else if (
@@ -776,10 +763,10 @@ type: "slide"*/
           item_id,
           star: false,
           show: true,
-          key: `${item_id}_${user_id}`,
+          key: `${item_id}_${user_id}`
         });
+        EventBus.$emit(d.type, { user_id, page_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
-        console.log(d);
         const { content, type, user_id, user_name } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -787,7 +774,7 @@ type: "slide"*/
           star: false,
           show: true,
           key: user_id,
-          user_name,
+          user_name
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -810,9 +797,9 @@ type: "slide"*/
       let _this = this;
       if (count < 20) {
         queryRefreshResult(code, token)
-          .then((res) => {
+          .then(res => {
             if (res.data.status === "processing") {
-              setTimeout(function () {
+              setTimeout(function() {
                 _this.queryResult(code, token, ++count);
               }, 1000);
             } else {
@@ -820,7 +807,7 @@ type: "slide"*/
               hideLoading();
             }
           })
-          .catch((res) => {
+          .catch(res => {
             this.getAllSlides();
             hideLoading();
           });
@@ -834,7 +821,7 @@ type: "slide"*/
       initTeacherCommentData(this.class_id, this.token);
       Promise.all([
         initTeacherData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([alldata, list]) => {
         console.log(list);
         // this.contentUrl = d;
@@ -904,8 +891,8 @@ type: "slide"*/
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      //slide_id=${this.slide_id}&
-      const url = `${location.origin}${location.pathname}#/students?page=${this.currentIndex}&class_id=${this.class_id}`;
+      //
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
       return url;
     },
 
@@ -997,7 +984,7 @@ type: "slide"*/
       showLoading();
 
       endClassRoomReq(this.token, name, this.class_id)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           let _this = this;
           this.confirmCloseDialogVisible = false;
@@ -1005,7 +992,7 @@ type: "slide"*/
             this.emitSo(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
-            setTimeout(function () {
+            setTimeout(function() {
               hideLoading();
               let url =
                 "https://docs.google.com/presentation/d/" + _this.slide_id;
@@ -1013,7 +1000,7 @@ type: "slide"*/
             }, 2000);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
           this.$message("error", "Close Session error");
           hideLoading();
@@ -1029,7 +1016,7 @@ type: "slide"*/
         this.classRoomInfo.lock_page.push(page_id);
       } else {
         let pages = this.classRoomInfo.lock_page.filter(
-          (item) => item != page_id
+          item => item != page_id
         );
         islocked = this.classRoomInfo.lock_page.length == pages.length;
         if (islocked) {
@@ -1108,7 +1095,7 @@ type: "slide"*/
     //重新开启课堂
     _reopenClass() {
       reopenClass(this.token, this.class_id)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
@@ -1123,7 +1110,7 @@ type: "slide"*/
             }
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
     },
@@ -1204,8 +1191,8 @@ type: "slide"*/
     },
     changeFeedbackTimeMode(index) {
       this.mode = index;
-    },
-  },
+    }
+  }
 };
 </script>,
     

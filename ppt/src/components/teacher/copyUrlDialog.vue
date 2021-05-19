@@ -9,13 +9,13 @@
     <div class="btn_class" @click="enterClassroom()">Enter classroom</div>
 
     <div class="bottom_div">
-      <div class="online_text">
-        {{ getStudentOnLineCount() }} student online
-      </div>
+      <div class="online_text">{{ getStudentOnLineCount() }} student online</div>
 
-      <div class="white_btn lengther" @click="setTimeDialogShow()">
-        Set feedback failure
-      </div>
+      <div
+        class="white_btn lengther"
+        @click="setTimeDialogShow()"
+        v-if="currentMode=='Student-Paced'"
+      >Set feedback failure</div>
     </div>
   </div>
 </template>
@@ -96,24 +96,28 @@
 export default {
   props: {
     getStudentOnLineCount: {
-      type: Function,
+      type: Function
     },
     url: {
       type: String,
-      default: "",
+      default: ""
     },
     copyLink: {
-      type: Function,
+      type: Function
     },
     enterClassroom: {
-      type: Function,
+      type: Function
     },
     setTimeDialogShow: {
-      type: Function,
+      type: Function
     },
+    currentMode: {
+      type: String,
+      default: ""
+    }
   },
   data() {
     return {};
-  },
+  }
 };
 </script>
