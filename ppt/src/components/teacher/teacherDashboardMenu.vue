@@ -46,7 +46,33 @@
         </svg>
       </div>
 
-      <div class="v2pnav-option__label"> Open class in new window</div>
+      <div class="v2pnav-option__label">Open class in new window</div>
+    </div>
+
+    <div
+      class="menu_line"
+      @click="setTimeDialogShow()"
+      v-if="!isClosed && current_model == 'Student-Paced'"
+    >
+      <div class="v2pnav-option__icon mode-icon">
+        <svg
+          t="1621407830727"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="3300"
+          width="20"
+          height="20"
+        >
+          <path
+            d="M480 64C215.04 64 0 279.04 0 544 0 808.96 215.04 1024 480 1024S960 808.96 960 544C960 279.04 744.96 64 480 64zM736 576l-256 0C462.08 576 448 561.92 448 544l0-256C448 270.08 462.08 256 480 256S512 270.08 512 288L512 512l224 0C753.92 512 768 526.08 768 544 768 561.92 753.92 576 736 576z"
+            p-id="3301"
+          ></path>
+        </svg>
+      </div>
+
+      <div class="v2pnav-option__label">Set feedback flailure</div>
     </div>
 
     <div class="menu_line" @click="turnModel()" v-if="!isClosed">
@@ -261,6 +287,9 @@ export default {
       },
     },
     reopenClass: {
+      type: Function,
+    },
+    setTimeDialogShow: {
       type: Function,
     },
   },

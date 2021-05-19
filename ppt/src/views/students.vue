@@ -16,7 +16,7 @@
           currentItemData &&
           currentItemData.thumbnail_url &&
           (!currentItemData.items[0] ||
-          currentItemData.items[0].type !== 'draw')  
+            currentItemData.items[0].type !== 'draw')
         "
       >
         <div
@@ -57,7 +57,12 @@
     </el-container>
 
     <div class="top_btn">
-      <div class="online_status" ><i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`"/></div>
+      <div class="online_status">
+        <i
+          class="el-icon-s-opportunity"
+          :style="`color: ${onLine ? 'green' : 'red'}`"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -70,7 +75,7 @@
   top: 20px;
   display: flex;
 }
-.online_status{
+.online_status {
   width: 50px;
   height: 43px;
   font-size: 30px;
@@ -143,12 +148,8 @@ import {
   getUserProfile,
   queryClassStatus,
 } from "../model/index";
-import {
-  initStudentData
-} from '@/model/data.student'
-import {
-  initStudentCommentData
-} from '@/model/comment.student'
+import { initStudentData } from "@/model/data.student";
+import { initStudentCommentData } from "@/model/comment.student";
 import { showLoading, hideLoading } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
@@ -231,7 +232,7 @@ export default {
   },
   methods: {
     onLineStatusChanged(status) {
-      this.onLine = status
+      this.onLine = status;
     },
     initWithToken() {
       showLoading();
@@ -252,7 +253,7 @@ export default {
       if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
         return false;
       }
-      if(!this.slides[this.currentIndex]){
+      if (!this.slides[this.currentIndex]) {
         return false;
       }
       if (!this.classRoomInfo.lock_page) {
@@ -278,7 +279,7 @@ export default {
       });
     },
     checkCurrentAnswerd() {
-      if(this.currentItemData) {
+      if (this.currentItemData) {
         const { page_id, items } = this.currentItemData;
         if (items[0]) {
           this.answerList = getStudentCurrentPageAnswerList(
@@ -291,13 +292,15 @@ export default {
           this.currentAnswerd = false;
         }
       }
-      
     },
     getAllSlides() {
-      console.log('list', '========');
-      initStudentCommentData(this.class_id, this.token)
-      Promise.all([initStudentData(this.class_id, this.token), getAllPPTS(this.slide_id)]).then(([allA, list]) => {
-        console.log(list, '========');
+      console.log("list", "========");
+      initStudentCommentData(this.class_id, this.token);
+      Promise.all([
+        initStudentData(this.class_id, this.token),
+        getAllPPTS(this.slide_id),
+      ]).then(([allA, list]) => {
+        console.log(list, "========");
         this.slides = list;
         this.getItemData();
         hideLoading();
@@ -335,27 +338,27 @@ export default {
     getItemData() {
       this.currentItemData = null;
       this.$nextTick(() => {
-        console.log(this.currentIndex, "getItemData");
         this.currentItemData = this.slides[this.currentIndex];
         this.checkCurrentAnswerd();
-        // this.currentItemData = choice
-        // if (choice && choice.data) {
-        //   this.type = choice.type;
-        //   console.log("currentType==" + this.type);
-        //   this.currentData = choice.data
-        //   const { title, options } = choice.data;
-        //   this.title = title;
-        //   this.options = options;
-        // }
+
+        if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
+          this.emitSo(
+            "response",
+            `{"room": "${
+              this.class_id
+            }", "type":"student_go_page", "user_name":"${
+              this.uname
+            }","user_id": "${this.uid}","token": "${this.token}","class_id":"${
+              this.class_id
+            }",  "page_id": "${this.slides[this.currentIndex].page_id}"}`
+          );
+        }
       });
     },
     pageChange(page) {
       console.log(page, "pageChange");
       this.currentIndex = page - 1;
       this.getItemData();
-      // if (this.modalVisiable) {
-      //   this.showStudentModal();
-      //  }
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;
@@ -480,7 +483,7 @@ export default {
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
+        `{"room": "${this.class_id}","user_name":"${this.uname}" "type":"${type}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
@@ -493,7 +496,7 @@ export default {
       // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
     },
     emitSo(action, message) {
-      this.checkCurrentAnswerd()
+      this.checkCurrentAnswerd();
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         // console.log(action, message);

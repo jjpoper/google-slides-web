@@ -70,7 +70,13 @@
       :class="isResponseShow ? 'button_area back_red' : 'button_area'"
       @click="showRes()"
       style="margin-right: 20px"
-      v-if="!isClosed && (!isDashboard || current_model == 'Insturctor-Paced')"
+      v-if="
+        currentItemData &&
+        currentItemData.items &&
+        currentItemData.items[0].type != 'website' &&
+        !isClosed &&
+        (!isDashboard || current_model == 'Insturctor-Paced')
+      "
     >
       <svg
         t="1620464720996"
@@ -150,18 +156,19 @@
       trigger="hover"
       class="dropdown-icon"
     >
+      <!-- :open="open"
+        :openProject="openProject" 
+        :reopenClass="reopenClass"-->
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
         :turnModel="turnModel"
         :isDashboard="isDashboard"
-        :open="open"
-        :openProject="openProject"
         :slide_id="slide_id"
         :endLesson="endLesson"
         :isClosed="isClosed"
         :classRoomInfo="classRoomInfo"
-        :reopenClass="reopenClass"
+        v-bind="$attrs"
       />
       <svg
         t="1619161258814"
@@ -198,9 +205,9 @@ export default {
       type: String,
       default: "",
     },
-    reopenClass: {
-      type: Function,
-    },
+    // reopenClass: {
+    //   type: Function,
+    // },
     classRoomInfo: {
       type: Object,
       default: () => {
@@ -225,9 +232,9 @@ export default {
       default: 0,
     },
 
-    open: {
-      type: Function,
-    },
+    // open: {
+    //   type: Function,
+    // },
     turnModel: {
       type: Function,
     },
@@ -242,9 +249,9 @@ export default {
     turnOff: {
       type: Function,
     },
-    open: {
-      type: Function,
-    },
+    // open: {
+    //   type: Function,
+    // },
     showResponse: {
       type: Function,
     },
@@ -252,9 +259,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    openProject: {
-      type: Function,
-    },
+    // openProject: {
+    //   type: Function,
+    // },
     endLesson: {
       type: Function,
     },
@@ -264,6 +271,12 @@ export default {
     slides: {
       type: Array,
       default: [],
+    },
+    currentItemData: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   components: {

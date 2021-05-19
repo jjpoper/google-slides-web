@@ -57,7 +57,7 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
       ...JSON.parse(item.data)
     }
   })
-  // console.log(mapData, '=====')
+  console.log(mapData, '=====')
   return mapData
 }
 

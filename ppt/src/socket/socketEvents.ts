@@ -14,6 +14,7 @@ export enum SocketEventsEnum {
   CHANGE_SESSION_STATUS = 'change_session_status',
   LOCK_PAGE = 'lock_page',
   STAR_OR_HIDE_ANSWER = 'STAR_OR_HIDE_ANSWER',
+  STUDETN_GO_PAGE ='STUDENT_GO_PAGE',
 }
 
 export enum ModalEventsNameEnum {
