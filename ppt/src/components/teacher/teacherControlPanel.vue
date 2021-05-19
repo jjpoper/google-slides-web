@@ -156,18 +156,18 @@
       trigger="hover"
       class="dropdown-icon"
     >
+      <!-- :open="open"
+        :openProject="openProject" 
+        :reopenClass="reopenClass"-->
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
         :turnModel="turnModel"
         :isDashboard="isDashboard"
-        :open="open"
-        :openProject="openProject"
         :slide_id="slide_id"
         :endLesson="endLesson"
         :isClosed="isClosed"
         :classRoomInfo="classRoomInfo"
-        :reopenClass="reopenClass"
         v-bind="$attrs"
       />
       <svg
@@ -205,9 +205,9 @@ export default {
       type: String,
       default: "",
     },
-    reopenClass: {
-      type: Function,
-    },
+    // reopenClass: {
+    //   type: Function,
+    // },
     classRoomInfo: {
       type: Object,
       default: () => {
@@ -232,9 +232,9 @@ export default {
       default: 0,
     },
 
-    open: {
-      type: Function,
-    },
+    // open: {
+    //   type: Function,
+    // },
     turnModel: {
       type: Function,
     },
@@ -249,9 +249,9 @@ export default {
     turnOff: {
       type: Function,
     },
-    open: {
-      type: Function,
-    },
+    // open: {
+    //   type: Function,
+    // },
     showResponse: {
       type: Function,
     },
@@ -259,9 +259,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    openProject: {
-      type: Function,
-    },
+    // openProject: {
+    //   type: Function,
+    // },
     endLesson: {
       type: Function,
     },

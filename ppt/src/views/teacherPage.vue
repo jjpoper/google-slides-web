@@ -131,6 +131,20 @@
         :changeFeedbackTimeMode="changeFeedbackTimeMode"
       />
     </el-dialog>
+
+    <el-dialog
+      title="Share this link with your students"
+      :visible.sync="showCopyLinkDialog"
+    >
+      <copyLinkDialog
+        v-if="classRoomInfo"
+        :getStudentOnLineCount="getStudentOnLineCount"
+        :url="getStudentUrl()"
+        :copyLink="copyLink"
+        :enterClassroom="enterClassroom"
+        :setTimeDialogShow="setTimeDialogShow"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -260,6 +274,7 @@ import stepOneView from "../components/teacher/openDashboardStepOne";
 import stepTwoView from "../components/teacher/openDashboardStepTwo";
 import studentList from "../components/teacher/studentList";
 import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
+import copyLinkDialog from "../components/teacher/copyUrlDialog";
 export default {
   components: {
     teacherControlPanel,
@@ -271,6 +286,7 @@ export default {
     stepTwoView,
     studentList,
     feedbackTimePanel,
+    copyLinkDialog,
   },
 
   /*author: "yujj085@gmail.com"
@@ -316,7 +332,8 @@ type: "slide"*/
       stepTwoDialog: false,
       onLine: false, // 在线状态
       directFromPlugin: false, //是否是从插件直接打开的。
-      showTimeSetDialog: true,
+      showTimeSetDialog: false,
+      showCopyLinkDialog: false,
       mode: 1,
     };
   },
@@ -874,12 +891,28 @@ type: "slide"*/
     },
 
     copyUrl() {
+      this.showCopyLinkDialog = true;
+      // if (!this.page_model) {
+      //   this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+      // }
+      // const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
+      // copy(url);
+      // showToast("copy link success");
+    },
+
+    getStudentUrl() {
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
-      copy(url);
+      //slide_id=${this.slide_id}&
+      const url = `${location.origin}${location.pathname}#/students?page=${this.currentIndex}&class_id=${this.class_id}`;
+      return url;
+    },
+
+    copyLink() {
+      copy(this.getStudentUrl());
       showToast("copy link success");
+      this.showCopyLinkDialog = false;
     },
 
     emitSo(message) {
@@ -1019,6 +1052,9 @@ type: "slide"*/
           }"}}`
         );
       }
+    },
+    enterClassroom() {
+      this.showCopyLinkDialog = false;
     },
     openProject() {
       const url = `${location.origin}${location.pathname}#/class?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}&type=classroom`;
@@ -1164,6 +1200,7 @@ type: "slide"*/
 
     setTimeDialogShow() {
       this.showTimeSetDialog = true;
+      this.showCopyLinkDialog = false;
     },
     changeFeedbackTimeMode(index) {
       this.mode = index;
