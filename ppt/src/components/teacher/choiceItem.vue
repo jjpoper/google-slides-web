@@ -238,33 +238,8 @@ export default {
         this.data.page_id,
         this.data.items[0].type
       );
-
       console.log(this.answerList, "refresh answer");
     });
-
-    // EventBus.$on(
-    //   ModalEventsNameEnum.SHOW_STAR_ANSWER,
-    //   ({ pageId, itemId, title, studentId, nextStatus, type }) => {
-    //     console.log(this.data.page_id, pageId);
-    //     if (this.data.page_id != pageId) {
-    //       return;
-    //     }
-    //     let i = 0;
-    //     for (; i < this.answerList.length; i++) {
-    //       if (
-    //         this.answerList[i].aswer == itemId &&
-    //         this.answerList[i].user_id == studentId
-    //       ) {
-    //         if (type == "star") {
-    //           this.answerList[i].star = nextStatus;
-    //         } else if (type == "show") {
-    //           this.answerList[i].show = nextStatus;
-    //         }
-    //         break;
-    //       }
-    //     }
-    //   }
-    // );
   },
   methods: {
     counts(id) {
@@ -288,7 +263,7 @@ export default {
       let count = 0;
       for (let i = 0; i < this.answerList.length; i++) {
         if (index == parseInt(this.answerList[i].answer)) {
-          if(this.answerList[i].show){
+          if(this.answerList[i].show||this.flag_1){
               count++;
           }
         }
@@ -307,14 +282,12 @@ export default {
       }
     },
     getUname(id) {
-      console.log(getStundentUidAndName(id));
       const name = getStundentUidAndName(id);
       return name ? name : id;
     },
 
     //返回当前这个item是否应该show出来
     shouldShow(item) {
-      console.log(this.answerList);
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
       if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示
@@ -325,17 +298,16 @@ export default {
     },
 
     getUserNames(index) {
-      let count = "";
+      let names = "";
       for (let i = 0; i < this.answerList.length; i++) {
         if (index == parseInt(this.answerList[i].answer)) {
-          count += this.getUname(this.answerList[i].user_id) + ",";
+          names += this.getUname(this.answerList[i].user_id) + ",";
         }
       }
-      console.log(count);
-      if (count) {
-        return count;
+      if (names) {
+        return names;
       } else {
-        return 0;
+        return "";
       }
     },
   },
