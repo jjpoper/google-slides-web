@@ -19,10 +19,7 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div
-          class="block"
-          v-if="currentItemData && currentItemData.thumbnail_url"
-        >
+        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
           <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
       </el-main>
@@ -58,10 +55,7 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
     </div>
   </div>
@@ -146,7 +140,7 @@ import {
   getAllPPTS,
   getStudentLoginUrl,
   getUserProfile,
-  queryClassStatus,
+  queryClassStatus
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -156,7 +150,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -167,7 +161,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken,
+  saveStudentStoreToken
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -200,7 +194,7 @@ export default {
       class_id: "",
       classRoomInfo: null,
       answerList: [],
-      onLine: false, // 在线状态
+      onLine: false // 在线状态
     };
   },
   mounted() {
@@ -212,10 +206,10 @@ export default {
     StudentComment,
     ClassRoomClosed,
     studentControlPanel,
-    pageLockedNote,
+    pageLockedNote
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -271,7 +265,7 @@ export default {
       return false;
     },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -298,7 +292,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -311,7 +305,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -331,7 +325,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.currentAnswerd = true;
     },
@@ -376,7 +370,7 @@ export default {
       //   this.joinRoom();
       // }
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           if (this.classRoomInfo.status == "live") {
             this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
@@ -385,7 +379,7 @@ export default {
           }
           console.log(this.classRoomInfo);
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
       this.joinRoom();
@@ -433,9 +427,11 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
+        } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
+          console.log(d.params, d.type);
         }
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
@@ -452,9 +448,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex,
+          slideIndex
         },
-        user_id,
+        user_id
       } = d;
       if (user_id === this.uid) {
         // 对比一下uid
@@ -487,7 +483,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v,
+        answer: v
       });
       this.currentAnswerd = true;
       // // this.allAnswers[pid] = v;
@@ -507,7 +503,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "确定",
         showCancelButton: false,
-        showClose: false,
+        showClose: false
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -535,7 +531,7 @@ export default {
       if (this.currentIndex < this.slides.length - 1) {
         this.pageChange(parseInt(this.currentIndex) + 2);
       }
-    },
-  },
+    }
+  }
 };
 </script>

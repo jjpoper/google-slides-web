@@ -121,7 +121,11 @@
     </el-dialog>
 
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
-      <feedbackTimePanel :mode="mode" :changeFeedbackTimeMode="changeFeedbackTimeMode" />
+      <feedbackTimePanel
+        :mode="mode"
+        :changeFeedbackTimeMode="changeFeedbackTimeMode"
+        :confirm="hindeTimeDialog"
+      />
     </el-dialog>
 
     <el-dialog title="Share this link with your students" :visible.sync="showCopyLinkDialog">
@@ -595,9 +599,10 @@ type: "slide"*/
       this.teacherList.push(teacher);
     },
     msgListener(d) {
+       console.log(d);
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
-        //  this.studentCounts = d.student_count;
+        //  this.studentCounts = d.student_count;    
         if (d.join_in) {
           let student = new Object();
           student.name = d.join_in.user_name;
@@ -605,7 +610,6 @@ type: "slide"*/
           student.state = "online";
           student.count = 1;
           student.page_id = d.page_id;
-          console.log(d);
           let findFlag = false;
           if (d.join_in.role == "student") {
             for (let i = 0; i < this.studentList.length; i++) {
@@ -733,6 +737,8 @@ type: "slide"*/
           }
         }
         console.log(this.studentList, "student_go_page");
+      } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
+        console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
       }
 
       // 回答问题
@@ -1184,7 +1190,21 @@ type: "slide"*/
         return result.substring(0, result.length - 1);
       }
     },
+    hindeTimeDialog(mode, deadline, countDownTime) {
+      this.showTimeSetDialog = false;
 
+      console.log(mode, deadline, countDownTime);
+
+      this.emitSo(
+        `{"room":"${this.class_id}", "type": "${
+          SocketEventsEnum.SET_DEADLINE_TIME
+        }","token": "${this.token}","class_id":"${
+          this.class_id
+        }", "params": {"page": "${
+          this.currentItemData.page_id
+        }","mode":${mode},"time":${mode == 2 ? deadline : countDownTime}}}`
+      );
+    },
     setTimeDialogShow() {
       this.showTimeSetDialog = true;
       this.showCopyLinkDialog = false;
