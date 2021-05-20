@@ -19,10 +19,7 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div
-          class="block"
-          v-if="currentItemData && currentItemData.thumbnail_url"
-        >
+        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
           <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
       </el-main>
@@ -58,12 +55,9 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="deadline_info">老师设置了回答时间，剩余：10分钟</div>
+      <div class="deadline_info" v-if="showRemainTime()">老师设置了回答时间，剩余：10分钟</div>
     </div>
   </div>
 </template>
@@ -152,7 +146,7 @@ import {
   getAllPPTS,
   getStudentLoginUrl,
   getUserProfile,
-  queryClassStatus,
+  queryClassStatus
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -162,7 +156,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -173,7 +167,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken,
+  saveStudentStoreToken
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -208,7 +202,7 @@ export default {
       answerList: [],
       onLine: false, // 在线状态
       deadLineTimer: null,
-      lock_all_pages: false,
+      lock_all_pages: false
     };
   },
   mounted() {
@@ -220,10 +214,10 @@ export default {
     StudentComment,
     ClassRoomClosed,
     studentControlPanel,
-    pageLockedNote,
+    pageLockedNote
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -278,8 +272,15 @@ export default {
       }
       return false;
     },
+    showRemainTime() {
+      if (this.lock_all_pages) return false;
+      if (this.isPageLocked()) return false;
+      if (this.currentModel == ClassRoomModelEnum.TEACHER_MODEL) return false;
+      if (this.classRoomInfo.mode == 0) return false;
+      return true;
+    },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -306,7 +307,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -319,7 +320,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -339,7 +340,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.currentAnswerd = true;
     },
@@ -376,7 +377,7 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           if (this.classRoomInfo.status == "live") {
             this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
@@ -400,7 +401,7 @@ export default {
             });
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
       this.joinRoom();
@@ -456,17 +457,18 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
           const { mode, time } = d.params;
-          console.log(mode, time, d.type);
           let timeSetted = 0;
           if (mode == 1) {
             //解除锁定
             this.lock_all_pages = false;
           } else if (mode == 2) {
+            let date = new Date(time);
+            console.log(date.toDateString());
           } else if (mode == 3) {
             timeSetted = time * 1000 * 60;
           }
@@ -476,7 +478,7 @@ export default {
               //触发deadline事件
               this.handleDeadLineEvent();
               clearInterval(this.deadLineTimer);
-            }, timeSetted / 60);
+            }, timeSetted);
             // 在beforeDestroy钩子触发时清除定时器
             this.$once("hook:beforeDestroy", () => {
               clearInterval(this.deadLineTimer);
@@ -498,9 +500,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex,
+          slideIndex
         },
-        user_id,
+        user_id
       } = d;
       if (user_id === this.uid) {
         // 对比一下uid
@@ -533,7 +535,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v,
+        answer: v
       });
       this.currentAnswerd = true;
       // // this.allAnswers[pid] = v;
@@ -553,7 +555,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "Confirm",
         showCancelButton: false,
-        showClose: false,
+        showClose: false
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -581,7 +583,7 @@ export default {
       if (this.currentIndex < this.slides.length - 1) {
         this.pageChange(parseInt(this.currentIndex) + 2);
       }
-    },
-  },
+    }
+  }
 };
 </script>

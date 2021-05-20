@@ -98,6 +98,7 @@
         format="yyyy-MM-dd HH:mm"
         placeholder="Set deadline"
         type="datetime"
+        :picker-options="pickerOptionsStart"
         :disabled="mode != 2"
       />
     </div>
@@ -229,13 +230,23 @@ export default {
         { value: 70, label: "70  min" }
       ],
       value: "",
-      deadline: ""
+      deadline: "",
+      pickerOptionsStart: {
+        disabledDate: time => {
+          let date = Date.now();
+          //- 8.64e7
+          return time.getTime() < Date.now() - 8.64e7; /*今天及以后*/
+          // return (
+          //   time.getTime() > Date.now() - 8.64e6
+          // ); /*今天及之前，注意数字不一样*/
+        }
+      }
     };
   },
   methods: {
     changeModel(index) {
       this.changeFeedbackTimeMode(index);
-    },
+    }
   }
 };
 </script>
