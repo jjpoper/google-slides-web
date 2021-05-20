@@ -857,7 +857,7 @@ type: "slide"*/
       });
     },
     getResponeCount() {
-      if (this.currentItemData.items[0]) {
+      if (this.currentItemData && this.currentItemData.items && this.currentItemData.items[0]) {
         // const list = getCurrentPageAnswerList(
         //   this.currentItemData.page_id,
         //   this.currentItemData.items[0].type

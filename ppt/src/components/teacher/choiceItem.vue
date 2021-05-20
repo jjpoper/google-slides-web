@@ -38,7 +38,7 @@
     </span>
 
     <div v-if="currentModel == 0" class="statistics">
-      <el-tooltip
+      <!-- <el-tooltip
         placement="bottom"
         :disabled="!flag_1 || getAnswerCount(item.id) == 0"
         v-for="item in options"
@@ -51,7 +51,15 @@
           }}</span>
           <span>{{ getAnswerCount(item.id) }}</span>
         </div>
-      </el-tooltip>
+      </el-tooltip> -->
+      <v-chart
+        style="height: 500px"
+        :option="bar"
+        :init-options="initOptions"
+        ref="bar"
+        theme="ovilia-green"
+        autoresize
+      />
     </div>
 
     <div v-else class="personal">
@@ -213,11 +221,11 @@ import {
   getCurrentPageAnswerList,
   getStundentUidAndName,
 } from "@/model/store.teacher";
+import ECharts from 'vue-echarts'
 import commentIcon from "./commentIcon.vue";
-import { ModalEventsNameEnum } from "../../socket/socketEvents";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 export default {
-  components: { commentIcon, StudentResponseOptBar },
+  components: { commentIcon, StudentResponseOptBar, 'v-chart': ECharts },
   props: {
     data: {
       type: Object,
@@ -242,8 +250,38 @@ export default {
       answerList: [],
       currentModel: 0,
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
-      isMulti: false
+      isMulti: false,
+      initOptions: {
+        renderer: "canvas"
+      },
     };
+  },
+  computed: {
+    'bar' () {
+      const names = this.options.map((item) => {
+        return this.optFlags[item.id] + ": " + item.text
+      })
+      const values = this.options.map((item) => {
+        return this.getAnswerCount(item.id)
+      })
+      return {
+        xAxis: {
+            type: 'category',
+            data: names
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: values,
+            type: 'bar',
+            label: {
+                show: true,
+                position: 'inside'
+            },
+        }]
+      }
+    }
   },
   created() {
     const { title, options, isMulti } = this.data.items[0].data;
