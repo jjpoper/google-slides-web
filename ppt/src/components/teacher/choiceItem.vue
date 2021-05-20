@@ -265,6 +265,10 @@ export default {
         return this.getAnswerCount(item.id)
       })
       return {
+        tooltip: {
+          trigger: 'item',
+          formatter:'{c}%'
+        },
         xAxis: {
             type: 'category',
             data: names
@@ -277,7 +281,17 @@ export default {
             type: 'bar',
             label: {
                 show: true,
-                position: 'inside'
+                position: 'inside',
+                formatter: (v) => {
+                  const val = v.data;
+                  const len = this.answerList.length
+                  if(len > 0 && val > 0) {
+                    const per = (val * 100 / len).toFixed(2)
+                    return `${val}（${per}/%）`;
+                  } else {
+                    return 0
+                  }
+                },
             },
         }]
       }
