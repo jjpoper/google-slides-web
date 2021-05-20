@@ -7,13 +7,21 @@
         </el-checkbox>
       </div>
     </el-checkbox-group>
-    <el-switch
-      v-model="showCorrect"
-      :disabled="showCorrect"
-      active-color="#13ce66"
-      inactive-color="#999"
-      @change="changeLocked"
-      active-text="show answers"/>
+    <template v-if="checkedValues.length > 0">
+      <div v-if="showCorrect" style="line-height: 25px; color: green">
+        正确答案：
+        <template v-for="item in optionData.options" >
+          <span :key="item.id" v-if="item.isAnswer">{{item.text}} </span>
+        </template>
+      </div>  
+      <el-switch
+        v-model="showCorrect"
+        :disabled="showCorrect"
+        active-color="#13ce66"
+        inactive-color="#999"
+        @change="changeLocked"
+        active-text="show answers"/>
+    </template>  
   </div>
 </template>
 <style scoped>

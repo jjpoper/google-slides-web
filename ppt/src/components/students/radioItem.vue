@@ -1,10 +1,25 @@
 <template>
   <div style="position: relative">
     <div class="item" v-for="item in optionData.options" :key="item.id">
-      <el-radio v-model="radio" :label="item.id"  class="ra" :value="item.id"  @change="changAnswer">
+      <el-radio v-model="radio" :disabled="showCorrect" :label="item.id"  class="ra" :value="item.id"  @change="changAnswer">
         {{item.text}}
       </el-radio>
     </div>
+    <template v-if="radio != -1">
+      <div v-if="showCorrect" style="line-height: 25px; color: green">
+        正确答案：
+        <template v-for="item in optionData.options" >
+          <span :key="item.id" v-if="item.isAnswer">{{item.text}} </span>
+        </template>
+      </div>  
+      <el-switch
+        v-model="showCorrect"
+        :disabled="showCorrect"
+        active-color="#13ce66"
+        inactive-color="#999"
+        @change="changeLocked"
+        active-text="show answer"/>
+    </template> 
   </div>
 </template>
 <style scoped>
@@ -46,7 +61,8 @@ export default {
     return {
       optionData: {},
       pageId: '',
-      radio: -1
+      radio: -1,
+      showCorrect: false
     }
   },
   created() {
@@ -55,13 +71,18 @@ export default {
     const result = getStudentCurrentPageAnswerList(this.pageId, this.data.items[0].type)
     console.log(result, 'result')
     if(result && result.length > 0) {
-      this.radio = parseInt(result[0].answer)
-      // console.log(this.radio, 'result')
+      const {answer, locked} = result[0]
+      this.radio = parseInt(answer)
+      this.showCorrect = locked === 'true' ? true : false
+      console.log(this.radio, 'result')
     }
   },
   methods: {
     changAnswer(value) {
-      this.answer(value)
+      this.answer(value, this.showCorrect)
+    },
+    changeLocked() {
+      this.answer(this.radio, true)
     }
   }
 };
