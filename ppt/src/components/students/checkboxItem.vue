@@ -1,11 +1,13 @@
 <template>
-  <div style="position: relative">
-    <div class="item" v-for="item in optionData.options" :key="item.id">
-      <el-radio v-model="radio" :disabled="showCorrect" :label="item.id"  class="ra" :value="item.id"  @change="changAnswer">
-        {{item.text}}
-      </el-radio>
-    </div>
-    <template v-if="radio != -1">
+  <div style="position: relative;">
+    <el-checkbox-group v-model="checkedValues" :disabled="showCorrect" @change="handleCheckedValueChange">
+      <div class="item" v-for="item in optionData.options" :key="item.id">
+        <el-checkbox :label="item.id" :value="item.id" style="width: 100%">
+          {{item.text}}
+        </el-checkbox>
+      </div>
+    </el-checkbox-group>
+    <template v-if="checkedValues.length > 0">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
         正确答案：
         <template v-for="item in optionData.options" >
@@ -18,8 +20,8 @@
         active-color="#13ce66"
         inactive-color="#999"
         @change="changeLocked"
-        active-text="show answer"/>
-    </template> 
+        active-text="show answers"/>
+    </template>  
   </div>
 </template>
 <style scoped>
@@ -61,7 +63,7 @@ export default {
     return {
       optionData: {},
       pageId: '',
-      radio: -1,
+      checkedValues: [],
       showCorrect: false
     }
   },
@@ -72,17 +74,18 @@ export default {
     console.log(result, 'result')
     if(result && result.length > 0) {
       const {answer, locked} = result[0]
-      this.radio = parseInt(answer)
+      this.checkedValues = JSON.parse(answer)
       this.showCorrect = locked === 'true' ? true : false
-      console.log(this.radio, 'result')
+      console.log(this.showCorrect, 'result')
     }
   },
   methods: {
-    changAnswer(value) {
-      this.answer(value, this.showCorrect)
+    handleCheckedValueChange(value) {
+      console.log(JSON.stringify(value), this.showCorrect)
+      this.answer(JSON.stringify(value), this.showCorrect)
     },
     changeLocked() {
-      this.answer(this.radio, true)
+      this.answer(JSON.stringify(this.checkedValues), true)
     }
   }
 };

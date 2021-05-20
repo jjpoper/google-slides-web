@@ -38,7 +38,7 @@
     </span>
 
     <div v-if="currentModel == 0" class="statistics">
-      <el-tooltip
+      <!-- <el-tooltip
         placement="bottom"
         :disabled="!flag_1 || getAnswerCount(item.id) == 0"
         v-for="item in options"
@@ -51,30 +51,58 @@
           }}</span>
           <span>{{ getAnswerCount(item.id) }}</span>
         </div>
-      </el-tooltip>
+      </el-tooltip> -->
+      <v-chart
+        style="height: 500px"
+        :option="bar"
+        :init-options="initOptions"
+        ref="bar"
+        theme="ovilia-green"
+        autoresize
+      />
     </div>
 
     <div v-else class="personal">
       <div v-for="(item, index) in answerList" :key="index">
-        <div
-          v-if="shouldShow(item)"
-          :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
-        >
-          <div class="text_content">
-            {{ optFlags[item.answer] + ": " + getAnswer(item.answer).text }}
-          </div>
-          <student-response-opt-bar
-            v-if="flag_1"
-            :data="{
-              pageId: data.page_id,
-              itemId: item.answer,
-              studentId: item.user_id,
-              title: getConent(item),
-              isStar: item.star,
-              isShowRes: item.show,
-              name: getUname(item.user_id),
-            }"
-          />
+        <div v-if="shouldShow(item)">
+          <template v-if="isMulti">
+            <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'" v-for="ans in JSON.parse(item.answer)" :key="ans">
+              <div class="text_content">
+                {{ optFlags[ans] + ": " + getAnswer(ans).text }}
+              </div>
+              <student-response-opt-bar
+                v-if="flag_1"
+                :data="{
+                  pageId: data.page_id,
+                  itemId: ans,
+                  studentId: item.user_id,
+                  title: getConent(ans),
+                  isStar: item.star,
+                  isShowRes: item.show,
+                  name: getUname(item.user_id),
+                }"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
+              <div class="text_content">
+                {{ optFlags[item.answer] + ": " + getAnswer(item.answer).text }}
+              </div>
+              <student-response-opt-bar
+                v-if="flag_1"
+                :data="{
+                  pageId: data.page_id,
+                  itemId: item.answer,
+                  studentId: item.user_id,
+                  title: getConent(item.answer),
+                  isStar: item.star,
+                  isShowRes: item.show,
+                  name: getUname(item.user_id),
+                }"
+              />
+            </div>
+          </template>
         </div>
       </div>
 
@@ -193,11 +221,11 @@ import {
   getCurrentPageAnswerList,
   getStundentUidAndName,
 } from "@/model/store.teacher";
+import ECharts from 'vue-echarts'
 import commentIcon from "./commentIcon.vue";
-import { ModalEventsNameEnum } from "../../socket/socketEvents";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 export default {
-  components: { commentIcon, StudentResponseOptBar },
+  components: { commentIcon, StudentResponseOptBar, 'v-chart': ECharts },
   props: {
     data: {
       type: Object,
@@ -222,16 +250,65 @@ export default {
       answerList: [],
       currentModel: 0,
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
+      isMulti: false,
+      initOptions: {
+        renderer: "canvas"
+      },
     };
   },
-  mounted() {
-    const { title, options } = this.data.items[0].data;
+  computed: {
+    'bar' () {
+      const names = this.options.map((item) => {
+        return this.optFlags[item.id] + ": " + item.text
+      })
+      const values = this.options.map((item) => {
+        return this.getAnswerCount(item.id)
+      })
+      return {
+        tooltip: {
+          trigger: 'item',
+          formatter:'{c}%'
+        },
+        xAxis: {
+            type: 'category',
+            data: names
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: values,
+            type: 'bar',
+            label: {
+                show: true,
+                position: 'inside',
+                formatter: (v) => {
+                  const val = v.data;
+                  const len = this.answerList.length
+                  if(len > 0 && val > 0) {
+                    const per = (val * 100 / len).toFixed(2)
+                    return `${val}（${per}/%）`;
+                  } else {
+                    return 0
+                  }
+                },
+            },
+        }]
+      }
+    }
+  },
+  created() {
+    const { title, options, isMulti } = this.data.items[0].data;
     this.title = title;
     this.options = options;
+    this.isMulti = isMulti
     this.answerList = getCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type
     );
+    console.log(this.answerList, 'getCurrentPageAnswerList')
+  },
+  mounted() {
     EventBus.$on("choice", (data) => {
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
@@ -250,20 +327,26 @@ export default {
         return 0;
       }
     },
-    getConent(item) {
+    getConent(answer) {
       return (
-        this.optFlags[item.answer] + ": " + this.getAnswer(item.answer).text
+        this.optFlags[answer] + ": " + this.getAnswer(answer).text
       );
     },
     setModel(model) {
       this.currentModel = model;
       this.$forceUpdate();
     },
-    getAnswerCount(index) {
+    getAnswerCount(value) {
       let count = 0;
+      const {isMulti} = this
       for (let i = 0; i < this.answerList.length; i++) {
-        if (index == parseInt(this.answerList[i].answer)) {
-          if(this.answerList[i].show||this.flag_1){
+        const {answer} = this.answerList[i]
+        if (
+          !!answer && 
+          (isMulti && JSON.parse(answer).indexOf(value) > -1) ||
+          (!isMulti && value == parseInt(answer))
+        ) {
+          if(this.answerList[i].show || this.flag_1){
               count++;
           }
         }

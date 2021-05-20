@@ -4,6 +4,20 @@ import router from './router/index';
 import './elementUse'
 import './assets/css/teacher.css'
 import { Message } from 'element-ui'
+import { use } from 'echarts/core'
+import {
+  CanvasRenderer
+} from 'echarts/renderers'
+import {
+  GridComponent,
+  TooltipComponent
+} from 'echarts/components'
+import {
+  BarChart
+} from 'echarts/charts'
+
+use([CanvasRenderer, BarChart, GridComponent, TooltipComponent])
+
 // 挂载到$message上
 Vue.prototype.$message = Message
 

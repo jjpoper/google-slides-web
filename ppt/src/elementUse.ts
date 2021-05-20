@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import {
     Main, Aside, Container, Form, FormItem, Progress, Pagination, Radio, Button, Checkbox, Input,
-    Row, Col, MessageBox, Alert, Tooltip, Dialog, Tabs, TabPane, Table, TableColumn, Popover, Slider, Select, Option, DatePicker
+    Row, Col, MessageBox, Alert, Tooltip, Dialog, Tabs, TabPane, Table, TableColumn, Popover, Slider, Select, Option, DatePicker,
+    CheckboxGroup,
+    Switch
 } from 'element-ui';
 
 Vue.use(Main)
@@ -29,4 +31,6 @@ Vue.use(Slider)
 Vue.use(Option)
 Vue.use(Select)
 Vue.use(DatePicker)
+Vue.use(CheckboxGroup)
+Vue.use(Switch)
 Vue.prototype.$alert = MessageBox
