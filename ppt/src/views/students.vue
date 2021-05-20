@@ -71,7 +71,7 @@
   height: 30px;
   width: auto;
   position: fixed;
-  right: 20px;
+  left: 20px;
   top: 20px;
   display: flex;
 }
@@ -476,14 +476,14 @@ export default {
       }
       this.modalVisiable = !this.modalVisiable;
     },
-    answerChoice(v) {
+    answerChoice(v, locked) {
       console.log("change answer==" + v, this.currentSo);
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}","user_name":"${this.uname}" "type":"${type}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}"}`
+        `{"room": "${this.class_id}","user_name":"${this.uname}", "type":"${type}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}", "locked": "${locked}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",

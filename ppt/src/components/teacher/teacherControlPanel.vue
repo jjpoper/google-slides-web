@@ -73,6 +73,7 @@
       v-if="
         currentItemData &&
         currentItemData.items &&
+        currentItemData.items[0] &&
         currentItemData.items[0].type != 'website' &&
         !isClosed &&
         (!isDashboard || current_model == 'Insturctor-Paced')
