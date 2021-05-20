@@ -56,25 +56,45 @@
 
     <div v-else class="personal">
       <div v-for="(item, index) in answerList" :key="index">
-        <div
-          v-if="shouldShow(item)"
-          :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
-        >
-          <div class="text_content">
-            {{ optFlags[item.answer] + ": " + getAnswer(item.answer).text }}
-          </div>
-          <student-response-opt-bar
-            v-if="flag_1"
-            :data="{
-              pageId: data.page_id,
-              itemId: item.answer,
-              studentId: item.user_id,
-              title: getConent(item),
-              isStar: item.star,
-              isShowRes: item.show,
-              name: getUname(item.user_id),
-            }"
-          />
+        <div v-if="shouldShow(item)">
+          <template v-if="isMulti">
+            <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'" v-for="ans in JSON.parse(item.answer)" :key="ans">
+              <div class="text_content">
+                {{ optFlags[ans] + ": " + getAnswer(ans).text }}
+              </div>
+              <student-response-opt-bar
+                v-if="flag_1"
+                :data="{
+                  pageId: data.page_id,
+                  itemId: ans,
+                  studentId: item.user_id,
+                  title: getConent(ans),
+                  isStar: item.star,
+                  isShowRes: item.show,
+                  name: getUname(item.user_id),
+                }"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
+              <div class="text_content">
+                {{ optFlags[item.answer] + ": " + getAnswer(item.answer).text }}
+              </div>
+              <student-response-opt-bar
+                v-if="flag_1"
+                :data="{
+                  pageId: data.page_id,
+                  itemId: item.answer,
+                  studentId: item.user_id,
+                  title: getConent(item.answer),
+                  isStar: item.star,
+                  isShowRes: item.show,
+                  name: getUname(item.user_id),
+                }"
+              />
+            </div>
+          </template>
         </div>
       </div>
 
@@ -222,16 +242,21 @@ export default {
       answerList: [],
       currentModel: 0,
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
+      isMulti: false
     };
   },
-  mounted() {
-    const { title, options } = this.data.items[0].data;
+  created() {
+    const { title, options, isMulti } = this.data.items[0].data;
     this.title = title;
     this.options = options;
+    this.isMulti = isMulti
     this.answerList = getCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type
     );
+    console.log(this.answerList, 'getCurrentPageAnswerList')
+  },
+  mounted() {
     EventBus.$on("choice", (data) => {
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
@@ -250,20 +275,26 @@ export default {
         return 0;
       }
     },
-    getConent(item) {
+    getConent(answer) {
       return (
-        this.optFlags[item.answer] + ": " + this.getAnswer(item.answer).text
+        this.optFlags[answer] + ": " + this.getAnswer(answer).text
       );
     },
     setModel(model) {
       this.currentModel = model;
       this.$forceUpdate();
     },
-    getAnswerCount(index) {
+    getAnswerCount(value) {
       let count = 0;
+      const {isMulti} = this
       for (let i = 0; i < this.answerList.length; i++) {
-        if (index == parseInt(this.answerList[i].answer)) {
-          if(this.answerList[i].show||this.flag_1){
+        const {answer} = this.answerList[i]
+        if (
+          !!answer && 
+          (isMulti && JSON.parse(answer).indexOf(value) > -1) ||
+          (!isMulti && value == parseInt(answer))
+        ) {
+          if(this.answerList[i].show || this.flag_1){
               count++;
           }
         }
