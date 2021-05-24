@@ -131,7 +131,7 @@ export default class Draw {
     textarea.id = 'textarea';
     textarea.rows = 3;
     textarea.autofocus = true;
-    textarea.placeholder = '请输入回车键换行..';
+    textarea.placeholder = 'Please insert text';
     textarea.style.position = 'absolute';
     textarea.style.left = `${this.pointer.beginX}px`;
     textarea.style.top = `${this.pointer.beginY}px`;
