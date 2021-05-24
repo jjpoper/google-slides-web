@@ -129,6 +129,7 @@
       <feedbackTimePanel
         :mode="mode"
         :changeFeedbackTimeMode="changeFeedbackTimeMode"
+        :confirm="hindeTimeDialog"
       />
     </el-dialog>
 
@@ -143,6 +144,7 @@
         :copyLink="copyLink"
         :enterClassroom="enterClassroom"
         :setTimeDialogShow="setTimeDialogShow"
+        :currentMode="page_model"
       />
     </el-dialog>
   </div>
@@ -372,7 +374,7 @@ type: "slide"*/
       vm.slide_id = slide_id;
       vm.class_id = class_id;
       window.classId = class_id;
-      vm.currentIndex = to.query.currentPage ? to.query.currentPage : 0;
+      vm.currentIndex = to.query.page ? to.query.page : 0;
       vm.isDashboard = type === "dashboard";
       vm.directFromPlugin = to.query.direct ? true : false;
       if (token) {
@@ -398,60 +400,75 @@ type: "slide"*/
       type,
       sendWSMsg
     ) {
-      // if (this.currentPageId != pageId) {
-      //   return;
-      // }
       let i = 0;
-      for (; i < this.responseContentList.length; i++) {
+      let itemData = null;
+      for (let j = 0; j < this.slides.length; j++) {
+        if (this.slides[j].page_id == pageId) {
+          itemData = this.slides[j].items;
+        }
+      }
+      if (!itemData) {
+        return;
+      }
+      let responseList = getTeacherCurrentPageAnswerList(
+        pageId,
+        itemData[0].type
+      );
+      for (; i < responseList.length; i++) {
         if (
-          (this.responseContentList[i].item_id == itemId ||
-            this.responseContentList[i].answer == itemId ||
-            this.responseContentList[i].key == itemId) &&
-          this.responseContentList[i].user_id == studentId
+          (responseList[i].item_id == itemId ||
+            responseList[i].answer == itemId ||
+            responseList[i].key == studentId) &&
+          responseList[i].user_id == studentId
         ) {
           if (type == "star") {
-            this.responseContentList[i].star = nextStatus;
+            responseList[i].star = nextStatus;
           } else if (type == "show") {
-            this.responseContentList[i].show = nextStatus;
+            responseList[i].show = nextStatus;
           }
-          if (this.currentItemData.items[0]) {
-            // saveAnswerList(
-            //   this.currentPageId,
-            //   this.currentItemData.items[0].type,
-            //   this.responseContentList
-            // );
-            if (this.currentItemData.items[0].type == "choice") {
+          if (itemData[0]) {
+            if (itemData[0].type == "choice") {
               const user_id = studentId;
               const answer = itemId;
-              addTeacherData(
-                this.currentPageId,
-                this.currentItemData.items[0].type,
-                {
-                  user_id,
-                  answer,
-                  star: this.responseContentList[i].star,
-                  show: this.responseContentList[i].show,
-                  key: user_id,
-                }
-              );
+              addTeacherData(pageId, itemData[0].type, {
+                user_id,
+                answer,
+                star: responseList[i].star,
+                show: responseList[i].show,
+                key: user_id,
+              });
               EventBus.$emit("choice", { user_id, answer });
-            } else if (this.currentItemData.items[0].type == "draw") {
+            } else if (itemData[0].type == "draw") {
               const user_id = studentId;
-              const content = this.responseContentList[i].content;
-              const user_name = this.responseContentList[i].user_name;
-              addTeacherData(
-                this.currentPageId,
-                this.currentItemData.items[0].type,
-                {
-                  user_id,
-                  content,
-                  user_name,
-                  star: this.responseContentList[i].star,
-                  show: this.responseContentList[i].show,
-                  key: user_id,
-                }
-              );
+              const content = responseList[i].content;
+              const user_name = responseList[i].user_name;
+              addTeacherData(pageId, itemData[0].type, {
+                user_id,
+                content,
+                user_name,
+                star: responseList[i].star,
+                show: responseList[i].show,
+                key: user_id,
+              });
               EventBus.$emit("draw", { user_id, content, user_name });
+            } else if (
+              itemData[0].type == "text" ||
+              itemData[0].type == "number"
+            ) {
+              const user_id = studentId;
+              const content = responseList[i].content;
+              const user_name = responseList[i].user_name;
+              const item_id = responseList[i].item_id;
+              addTeacherData(pageId, itemData[0].type, {
+                user_id,
+                content,
+                user_name,
+                item_id,
+                star: responseList[i].star,
+                show: responseList[i].show,
+                key: `${item_id}_${user_id}`,
+              });
+              EventBus.$emit(itemData[0].type, { user_id, pageId });
             }
           }
           //发送一个ws消息通知其他端，更新状态
@@ -590,6 +607,7 @@ type: "slide"*/
       this.teacherList.push(teacher);
     },
     msgListener(d) {
+      console.log(d);
       if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         //  this.studentCounts = d.student_count;
@@ -600,7 +618,6 @@ type: "slide"*/
           student.state = "online";
           student.count = 1;
           student.page_id = d.page_id;
-          console.log(d);
           let findFlag = false;
           if (d.join_in.role == "student") {
             for (let i = 0; i < this.studentList.length; i++) {
@@ -637,7 +654,6 @@ type: "slide"*/
               }
             }
             this.studentCounts = this.studentList.length;
-            console.log(this.studentList, "test quit");
           } else if (d.quit.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == d.quit.user_id) {
@@ -647,7 +663,6 @@ type: "slide"*/
                 }
               }
             }
-            console.log(this.teacherList, "test quit");
           }
         }
       } else if (d.type === SocketEventsEnum.RENAME) {
@@ -715,22 +730,6 @@ type: "slide"*/
             type,
             false
           );
-          // if (this.currentPageId != pageId) {
-          //   return;
-          // }
-          // let i = 0;
-          // for (; i < this.responseContentList.length; i++) {
-          //   if (
-          //     this.responseContentList[i].item_id == itemId &&
-          //     this.responseContentList[i].user_id == studentId
-          //   ) {
-          //     if (type == "star") {
-          //       this.responseContentList[i].star = nextStatus;
-          //     } else if (type == "show") {
-          //       this.responseContentList[i].show = nextStatus;
-          //     }
-          //   }
-          // }
         }
       } else if (d.type == "student_go_page") {
         const { room, page_id, user_id } = d;
@@ -745,7 +744,8 @@ type: "slide"*/
             break;
           }
         }
-        console.log(this.studentList, "student_go_page");
+      } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
+        console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
       }
 
       // 回答问题
@@ -778,8 +778,8 @@ type: "slide"*/
           show: true,
           key: `${item_id}_${user_id}`,
         });
+        EventBus.$emit(d.type, { user_id, page_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
-        console.log(d);
         const { content, type, user_id, user_name } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -849,7 +849,7 @@ type: "slide"*/
     },
     getItemData() {
       // this.options = [];
-      this.currentItemData = null
+      this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
         this.currentItemData.flag = false;
@@ -857,7 +857,11 @@ type: "slide"*/
       });
     },
     getResponeCount() {
-      if (this.currentItemData && this.currentItemData.items && this.currentItemData.items[0]) {
+      if (
+        this.currentItemData &&
+        this.currentItemData.items &&
+        this.currentItemData.items[0]
+      ) {
         // const list = getCurrentPageAnswerList(
         //   this.currentItemData.page_id,
         //   this.currentItemData.items[0].type
@@ -905,8 +909,8 @@ type: "slide"*/
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      //slide_id=${this.slide_id}&
-      const url = `${location.origin}${location.pathname}#/students?page=${this.currentIndex}&class_id=${this.class_id}`;
+      //
+      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
       return url;
     },
 
@@ -1039,7 +1043,6 @@ type: "slide"*/
           this.classRoomInfo.lock_page = pages;
         }
       }
-      console.log(this.classRoomInfo.lock_page, "锁定页面");
       this.$forceUpdate();
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
@@ -1082,7 +1085,7 @@ type: "slide"*/
         windowObjectReference.location =
           "/index.html#/class?slide_id=" +
           this.slide_id +
-          "&currentPage=" +
+          "&page=" +
           this.currentIndex +
           "&class_id=" +
           this.class_id +
@@ -1092,7 +1095,7 @@ type: "slide"*/
         window.open(
           "/index.html#/class?slide_id=" +
             this.slide_id +
-            "&currentPage=" +
+            "&page=" +
             this.currentIndex +
             "&class_id=" +
             this.class_id +
@@ -1198,7 +1201,25 @@ type: "slide"*/
         return result.substring(0, result.length - 1);
       }
     },
+    hindeTimeDialog(mode, deadline, countDownTime) {
+      this.showTimeSetDialog = false;
+      let value = 0;
+      console.log(mode, deadline.getTime(), countDownTime);
+      if (mode == 1) {
+        value = deadline.getTime();
+        let now = Date.now();
+        if (now > value) {
+          this.$message("error", "Please select right time");
+          return;
+        }
+      } else if (mode == 2) {
+        value = countDownTime;
+      }
 
+      this.emitSo(
+        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.SET_DEADLINE_TIME}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentItemData.page_id}","mode":${mode},"time":${value}}}`
+      );
+    },
     setTimeDialogShow() {
       this.showTimeSetDialog = true;
       this.showCopyLinkDialog = false;

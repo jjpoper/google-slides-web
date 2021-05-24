@@ -1,4 +1,4 @@
-import {getTeacherClassAnswers} from './index'
+import { getTeacherClassAnswers } from './index'
 
 type ItemType = "text" | "draw" | "choice" | 'number'
 
@@ -31,16 +31,16 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
     student_user_id: oldData.user_id,
     type
   }
-  const {item_id: itemId, student_user_id: sid} = data
+  const { item_id: itemId, student_user_id: sid } = data
+  console.log(itemId, sid, "addItem")
   let oldDataIndex = -1
-  if(type === 'choice' || type === 'number' || type === 'draw') {
+  if (type === 'choice' || type === 'number' || type === 'draw') {
     // 一条答案数据，去重
     oldDataIndex = teacherData.findIndex(item => item.page_id === pageId && item.student_user_id === sid)
   } else {
     oldDataIndex = teacherData.findIndex(item => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)
   }
-
-  if(oldDataIndex > -1) {
+  if (oldDataIndex > -1) {
     teacherData[oldDataIndex] = data
   } else {
     teacherData.push(data)
@@ -57,7 +57,6 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
       ...JSON.parse(item.data)
     }
   })
-  console.log(mapData, '=====')
   return mapData
 }
 

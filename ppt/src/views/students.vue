@@ -6,7 +6,7 @@
       :token="token"
     />
     <pageLockedNote
-      v-else-if="classRoomInfo && isPageLocked()"
+      v-else-if="(classRoomInfo && isPageLocked()) || lock_all_pages"
       :data="currentItemData"
       :answerList="answerList"
     />
@@ -63,16 +63,31 @@
           :style="`color: ${onLine ? 'green' : 'red'}`"
         />
       </div>
+      <div class="deadline_info" v-if="showRemainTime()">
+        Deadlie time remain:10 mintues.
+      </div>
     </div>
   </div>
 </template>
 <style scoped>
+.deadline_info {
+  background-color: red;
+  opacity: 0.6;
+  height: 43px;
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 5px;
+}
 .top_btn {
   height: 30px;
   width: auto;
   position: fixed;
   left: 20px;
   top: 20px;
+  align-items: center;
   display: flex;
 }
 .online_status {
@@ -201,6 +216,8 @@ export default {
       classRoomInfo: null,
       answerList: [],
       onLine: false, // 在线状态
+      deadLineTimer: null,
+      lock_all_pages: false,
     };
   },
   mounted() {
@@ -269,6 +286,13 @@ export default {
         }
       }
       return false;
+    },
+    showRemainTime() {
+      if (this.lock_all_pages) return false;
+      if (this.isPageLocked()) return false;
+      if (this.currentModel == ClassRoomModelEnum.TEACHER_MODEL) return false;
+      if (this.classRoomInfo.mode == 0) return false;
+      return true;
     },
     goToLogin() {
       getStudentLoginUrl().then((url) => {
@@ -367,14 +391,6 @@ export default {
       this.beforejoinRoom();
     },
     beforejoinRoom() {
-      // const uname = getStudentUserName(this.uid);
-      // console.log(uname, "uname");
-      // this.uname = uname != "null" && uname != undefined ? uname : "";
-      // if (!this.uname) {
-      //   this.enterUname(true);
-      // } else {
-      //   this.joinRoom();
-      // }
       queryClassStatus(this.class_id, this.token)
         .then((res) => {
           this.classRoomInfo = res;
@@ -383,12 +399,33 @@ export default {
           } else if (this.classRoomInfo.status == "student-paced") {
             this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
           }
-          console.log(this.classRoomInfo);
+          let time = 0;
+          if (this.classRoomInfo.mode == 1) {
+            //
+          } else if (this.classRoomInfo.mode == 2) {
+          }
+          if (time > 0) {
+            this.deadLineTimer = setInterval(() => {
+              //触发deadline事件
+              //todo 防止用户不停刷新页面，从而刷新时间
+              this.handleDeadLineEvent();
+              clearInterval(this.deadLineTimer);
+            }, time);
+            // 在beforeDestroy钩子触发时清除定时器
+            this.$once("hook:beforeDestroy", () => {
+              clearInterval(this.deadLineTimer);
+            });
+          }
         })
         .catch((res) => {
           console.log(res);
         });
       this.joinRoom();
+    },
+    //处理deadline事件
+    handleDeadLineEvent() {
+      this.lock_all_pages = true;
+      console.log("Deadline event!!");
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -418,6 +455,9 @@ export default {
             d.params.mode === "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
+          if (this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
+            this.lock_all_pages = false;
+          }
           this.$forceUpdate();
         } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
           if (!this.classRoomInfo) return;
@@ -435,6 +475,32 @@ export default {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
               (item) => item != page
             );
+          }
+        } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
+          const { mode, time } = d.params;
+          let timeSetted = 0;
+          if (mode == 0) {
+            //解除锁定
+            clearInterval(this.deadLineTimer);
+            this.lock_all_pages = false;
+          } else if (mode == 1) {
+            let timeNow = new Date().getTime();
+            timeSetted = time - timeNow > 0 ? time - timeNow : 0;
+          } else if (mode == 2) {
+            timeSetted = time * 1000 * 60;
+          }
+          console.log(timeSetted, "锁定倒计时");
+          if (timeSetted > 0) {
+            clearInterval(this.deadLineTimer);
+            this.deadLineTimer = setInterval(() => {
+              //触发deadline事件
+              this.handleDeadLineEvent();
+              clearInterval(this.deadLineTimer);
+            }, timeSetted);
+            // 在beforeDestroy钩子触发时清除定时器
+            this.$once("hook:beforeDestroy", () => {
+              clearInterval(this.deadLineTimer);
+            });
           }
         }
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
@@ -505,7 +571,7 @@ export default {
     },
     enterUname(status) {
       MessageBox.prompt("enter a new name", "enter a new name", {
-        confirmButtonText: "确定",
+        confirmButtonText: "Confirm",
         showCancelButton: false,
         showClose: false,
       })
@@ -525,13 +591,11 @@ export default {
         .catch(() => {});
     },
     lastPage() {
-      console.log(this.currentIndex);
       if (this.currentIndex > 0) {
         this.pageChange(this.currentIndex);
       }
     },
     nextPage() {
-      console.log(this.currentIndex, this.currentIndex + 2, "nextpage");
       if (this.currentIndex < this.slides.length - 1) {
         this.pageChange(parseInt(this.currentIndex) + 2);
       }
