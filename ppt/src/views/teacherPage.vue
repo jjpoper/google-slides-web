@@ -535,6 +535,9 @@ type: "slide"*/
       this.startConnectRoom();
     },
     startConnectRoom() {
+      if (this.directFromPlugin) {
+        this.stepOneDialog = true;
+      }
       this.joinRoom();
       queryClassStatus(this.class_id, this.token)
         .then(res => {
@@ -581,7 +584,27 @@ type: "slide"*/
           hideLoading();
         });
       getOnlineUsers(this.token, this.class_id)
-        .then(res => {})
+        .then(res => {
+          if (res.code == "ok") {
+            let list = res.data;
+            for (let i = 0; i < list.length; i++) {
+              let { user_id, role, user_name } = list[i];
+              console.log(user_id, role, user_name);
+              let user = new Object();
+              user.name = user_name;
+              user.user_id = user_id;
+              user.state = "online";
+              user.count = 1;
+              if (role == "student") {
+                // student.page_id = d.page_id;
+                this.studentList.push(user);
+              } else if (role == "teacher") {
+                this.teacherList.push(user);
+              }
+            }
+          }
+          this.studentCounts = this.studentList.length;
+        })
         .catch(res => {});
     },
     joinRoom() {
