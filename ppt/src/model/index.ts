@@ -120,13 +120,15 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
   return res;
 }
 
-
-
+const filterHref = () => {
+  const url = location.href
+  return url.split("&token")[0]
+}
 
 // 获取授权登录
 export const getTeacherLoginUrl = async (): Promise<string> => {
   const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_teacher`, {
-    return_url: location.href,
+    return_url: filterHref(),
   })
   let authUrl = ''
   // let list = data.data.data.pages
@@ -172,7 +174,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
 // 获取学生授权登录
 export const getStudentLoginUrl = async (): Promise<string> => {
   const data = await axios.post(`${PPT.requestUrl}account/get_auth_url_for_student`, {
-    return_url: location.href,
+    return_url: filterHref(),
   })
   let authUrl = ''
   // let list = data.data.data.pages
