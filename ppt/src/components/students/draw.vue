@@ -30,25 +30,46 @@
       </div>
     </div>
     <div class="canvasfooter">
-      <div class="red-pencial" :style="`background-color: ${color}`"  @click="showModal"></div>
-      <div class="eraser" @click="drawPath">
-        <i class="el-icon-edit" :style="`font-size: 30px; color: ${currentTab == 1 ? color : 'rgb(212 208 208)'}`"></i>
-      </div>
-      <div class="eraser" @click="drawLine">
-        <i class="el-icon-minus" :style="`font-size: 30px; color: ${currentTab == 2 ? color : 'rgb(212 208 208)'}`"></i>
-      </div>
-      <div class="eraser" @click="edit">
-        <i class="el-icon-edit-outline" :style="`font-size: 30px; color: ${currentTab == 4 ? color : 'rgb(212 208 208)'}`"></i>
-      </div>
-      <div class="eraser" @click="earse">
-        <i class="el-icon-circle-close" :style="`font-size: 30px; color: ${currentTab == 3 ? color : 'rgb(212 208 208)'}`"></i>
-      </div>
-      <div class="eraser" @click="undo">
-        <i class="el-icon-refresh-left" style="font-size: 30px"></i>
-      </div>
-      <div class="eraser" @click="clear">
-        <i class="el-icon-delete" style="font-size: 30px"></i>
-      </div>
+      <el-tooltip content="change color" placement="top">
+        <div class="red-pencial" :style="`background-color: ${color}`"  @click="showModal"></div>
+      </el-tooltip>
+      <el-tooltip content="draw line" placement="top">
+        <div class="eraser" @click="drawPath">
+          <i class="el-icon-edit" :style="`font-size: 30px; color: ${currentTab == 1 ? color : 'rgb(212 208 208)'}`"></i>
+        </div>
+      </el-tooltip>
+      <el-tooltip content="draw path" placement="top">
+        <div class="eraser" @click="drawLine">
+          <i class="el-icon-minus" :style="`font-size: 30px; color: ${currentTab == 2 ? color : 'rgb(212 208 208)'}`"></i>
+        </div>
+      </el-tooltip>
+      <el-tooltip content="draw text" placement="top">
+        <div class="eraser" @click="edit">
+          <i class="el-icon-edit-outline" :style="`font-size: 30px; color: ${currentTab == 4 ? color : 'rgb(212 208 208)'}`"></i>
+        </div>
+      </el-tooltip>
+      <el-tooltip content="earse tool" placement="top">
+        <div class="eraser" @click="earse">
+          <!-- <i class="el-icon-circle-close" :style="`font-size: 30px; color: ${currentTab == 3 ? color : 'rgb(212 208 208)'}`"></i> -->
+          <svg t="1621859340302" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="989" width="32" height="32">
+            <path
+              d="M604.536246 736.222443l288.794439-282.693148-287.777557-270.999007-270.999007 283.201589z m-72.70705 71.181728L264.389275 539.455809 145.922542 660.973188l164.734856 164.734856a50.844091 50.844091 0 0 0 36.099305 14.744786h107.789474a101.688183 101.688183 0 0 0 71.181728-28.981132z m109.314796 35.082423h254.220457a50.844091 50.844091 0 0 1 0 101.688183H346.248262a152.532274 152.532274 0 0 1-107.789474-44.742801l-164.734856-164.734856a101.688183 101.688183 0 0 1 0-142.363456l457.596823-480.476663a101.688183 101.688183 0 0 1 143.380337-3.559086l287.269117 270.999007a101.688183 101.688183 0 0 1 4.067527 143.888778l-3.050646 3.050646z"
+              :fill="`${currentTab == 3 ? color : 'rgb(212 208 208)'}`"
+              p-id="990">
+            </path>
+          </svg>
+        </div>
+      </el-tooltip>
+      <el-tooltip content="undo" placement="top">
+        <div class="eraser" @click="undo">
+          <i class="el-icon-refresh-left" style="font-size: 30px"></i>
+        </div>
+      </el-tooltip>
+      <el-tooltip content="clear" placement="top">
+        <div class="eraser" @click="clear">
+          <i class="el-icon-delete" style="font-size: 30px"></i>
+        </div>
+      </el-tooltip>
     </div>
   </div>
 </template>

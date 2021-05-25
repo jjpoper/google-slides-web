@@ -12,6 +12,7 @@ export enum DrawTypeData {
 
 type DrawType = 'line' | 'draw' | 'text'
 type onDrawBack = (data: any) => void
+window.canvasPool = []
 
 export default class Draw {
   private el: any
@@ -19,7 +20,6 @@ export default class Draw {
   private lineWidth = 2
   private canvas: any
   private cxt: any
-  private canvasPool: string[] = []
   private stage_info = {
     left: 20,
     top: 20
@@ -34,6 +34,7 @@ export default class Draw {
 
   private canvasWidth = document.documentElement.clientWidth - 40;
   private canvasHeight = document.documentElement.clientHeight - 40;
+  private isEarse = false // 橡皮擦
 
   private drawType: DrawType = 'draw'
   private onDrawBack: onDrawBack = () => null
@@ -99,14 +100,19 @@ export default class Draw {
   initByBase64(base64Url: string) {
     const img = new Image();
     img.src = base64Url;
+    this.cxt.globalCompositeOperation = "source-over";
     img.onload = () => {
       this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.cxt.drawImage(img, 0, 0);
       this.saveImageData()
+      if(this.isEarse) {
+        this.cxt.globalCompositeOperation = "destination-out";
+      }
     };
   }
 
   changeDrawType(drawType: DrawType) {
+    this.isEarse = false
     this.drawType = drawType
     this.cxt.globalCompositeOperation = "source-over";
   }
@@ -125,7 +131,7 @@ export default class Draw {
     textarea.id = 'textarea';
     textarea.rows = 3;
     textarea.autofocus = true;
-    textarea.placeholder = '请输入回车键换行..';
+    textarea.placeholder = 'Please insert text';
     textarea.style.position = 'absolute';
     textarea.style.left = `${this.pointer.beginX}px`;
     textarea.style.top = `${this.pointer.beginY}px`;
@@ -156,11 +162,11 @@ export default class Draw {
         this.drawing(event)
       }
       this.canvas.onmouseout = () => {
-        setTimeout(() => {
-          // console.log('========= 1')
-          this.isDrawing = false
-          this.drawEnd();
-        }, 100);
+        // setTimeout(() => {
+        //   // console.log('========= 1')
+        //   this.isDrawing = false
+        //   this.drawEnd();
+        // }, 100);
         // ws.send('stop')
       };
     } else {
@@ -248,8 +254,9 @@ export default class Draw {
   }
 
   addHistory() {
+    console.log('====== addHistory')
     const base64Url = this.canvas.toDataURL("image/png");
-    this.canvasPool.push(base64Url);
+    window.canvasPool.push(base64Url);
   }
 
   drawEnd() {
@@ -274,15 +281,15 @@ export default class Draw {
   earse() {
     // this.strokeColor = 'pink'
     // this.lineWidth = 20;
+    this.isEarse = true
     this.drawType = 'draw'
     this.cxt.globalCompositeOperation = "destination-out";
   }
 
   undo() {
-    console.log(this.canvasPool.length, '=========');
-    if(this.canvasPool.length > 0) {
-      const current = this.canvasPool.pop() || ''
-
+    console.log(window.canvasPool.length, '=========');
+    if(window.canvasPool.length > 0) {
+      const current = window.canvasPool.pop() || ''
       this.initByBase64(current);
       this.callBackData(current)
     } else {
