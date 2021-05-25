@@ -6,7 +6,7 @@
       :token="token"
     />
     <pageLockedNote
-      v-else-if="(classRoomInfo && isPageLocked()) || lock_all_pages"
+      v-else-if="((classRoomInfo && isPageLocked()) || lock_all_pages)&&currentItemData"
       :data="currentItemData"
       :answerList="answerList"
     />
@@ -398,10 +398,24 @@ export default {
           } else if (this.classRoomInfo.status == "student-paced") {
             this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
           }
-          this.handleDeadLineEvent(
-            this.classRoomInfo.response_limit_mode,
-            this.classRoomInfo.response_limit_time
-          );
+          if (this.classRoomInfo.response_limit_mode == 2) {
+            let time = Date.now();
+            let countDown =
+              this.classRoomInfo.response_limit_time - time / 1000;
+            if (countDown <= 0) {
+              this.lock_all_pages = true;
+              return;
+            }
+            this.handleDeadLineEvent(
+              this.classRoomInfo.response_limit_mode,
+              countDown
+            );
+          } else {
+            this.handleDeadLineEvent(
+              this.classRoomInfo.response_limit_mode,
+              this.classRoomInfo.response_limit_time
+            );
+          }
         })
         .catch(res => {
           console.log(res);
@@ -427,7 +441,6 @@ export default {
       } else if (mode == 2) {
         timeSetted = time;
       }
-      console.log(timeSetted, "handleDeadLineEvent");
       if (timeSetted > 0) {
         clearInterval(this.limitText);
         this.countDownMin = parseInt(timeSetted / 60 / 1000);
