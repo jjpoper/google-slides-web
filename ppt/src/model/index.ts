@@ -116,7 +116,7 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
     token: token,
     class_id: class_id,
   })
-  let res = data.data.data;
+  let res = data.data;
   return res;
 }
 

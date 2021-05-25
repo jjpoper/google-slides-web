@@ -19,10 +19,7 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div
-          class="block"
-          v-if="currentItemData && currentItemData.thumbnail_url"
-        >
+        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
           <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
       </el-main>
@@ -58,14 +55,12 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadlie time remain:10 mintues.
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadlie time remain:{{countDownMin}} mintues.</div>
     </div>
   </div>
 </template>
@@ -161,7 +156,7 @@ import {
   getAllPPTS,
   getStudentLoginUrl,
   getUserProfile,
-  queryClassStatus,
+  queryClassStatus
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -171,7 +166,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -182,7 +177,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken,
+  saveStudentStoreToken
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -214,10 +209,13 @@ export default {
       uid: "", // uid
       class_id: "",
       classRoomInfo: null,
+
       answerList: [],
       onLine: false, // 在线状态
       deadLineTimer: null,
+      limitText: null,
       lock_all_pages: false,
+      countDownMin: 0
     };
   },
   mounted() {
@@ -229,10 +227,10 @@ export default {
     StudentComment,
     ClassRoomClosed,
     studentControlPanel,
-    pageLockedNote,
+    pageLockedNote
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -291,11 +289,11 @@ export default {
       if (this.lock_all_pages) return false;
       if (this.isPageLocked()) return false;
       if (this.currentModel == ClassRoomModelEnum.TEACHER_MODEL) return false;
-      if (this.classRoomInfo.mode == 0) return false;
+      if (this.classRoomInfo.response_limit_mode == 0) return false;
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -322,7 +320,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -335,7 +333,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -355,7 +353,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.currentAnswerd = true;
     },
@@ -392,40 +390,64 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
+          console.log(this.classRoomInfo);
           if (this.classRoomInfo.status == "live") {
             this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
           } else if (this.classRoomInfo.status == "student-paced") {
             this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
           }
-          let time = 0;
-          if (this.classRoomInfo.mode == 1) {
-            //
-          } else if (this.classRoomInfo.mode == 2) {
-          }
-          if (time > 0) {
-            this.deadLineTimer = setInterval(() => {
-              //触发deadline事件
-              //todo 防止用户不停刷新页面，从而刷新时间
-              this.handleDeadLineEvent();
-              clearInterval(this.deadLineTimer);
-            }, time);
-            // 在beforeDestroy钩子触发时清除定时器
-            this.$once("hook:beforeDestroy", () => {
-              clearInterval(this.deadLineTimer);
-            });
-          }
+          this.handleDeadLineEvent(
+            this.classRoomInfo.response_limit_mode,
+            this.classRoomInfo.response_limit_time
+          );
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
       this.joinRoom();
     },
     //处理deadline事件
-    handleDeadLineEvent() {
-      this.lock_all_pages = true;
-      console.log("Deadline event!!");
+    handleDeadLineEvent(mode, time) {
+      this.classRoomInfo.response_limit_mode = mode;
+      this.classRoomInfo.response_limit_time = time;
+      time = time * 1000;
+      let timeSetted = 0;
+      if (mode == 0) {
+        //解除锁定
+        clearInterval(this.deadLineTimer);
+        this.lock_all_pages = false;
+      } else if (mode == 1) {
+        let timeNow = new Date().getTime();
+        timeSetted = time - timeNow > 0 ? time - timeNow : 0;
+        if (timeSetted == 0) {
+          this.lock_all_pages = true;
+        }
+      } else if (mode == 2) {
+        timeSetted = time;
+      }
+      console.log(timeSetted, "handleDeadLineEvent");
+      if (timeSetted > 0) {
+        clearInterval(this.limitText);
+        this.countDownMin = parseInt(timeSetted / 60 / 1000);
+        this.limitText = setInterval(() => {
+          this.countDownMin--;
+          if (this.countDownMin <= 0) {
+            clearInterval(this.limitText);
+          }
+        }, 60 * 1000);
+        clearInterval(this.deadLineTimer);
+        this.deadLineTimer = setInterval(() => {
+          //触发deadline事件
+          this.lock_all_pages = true;
+          clearInterval(this.deadLineTimer);
+        }, timeSetted);
+        // 在beforeDestroy钩子触发时清除定时器
+        this.$once("hook:beforeDestroy", () => {
+          clearInterval(this.deadLineTimer);
+        });
+      }
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -473,35 +495,12 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
-          const { mode, time } = d.params;
-          let timeSetted = 0;
-          if (mode == 0) {
-            //解除锁定
-            clearInterval(this.deadLineTimer);
-            this.lock_all_pages = false;
-          } else if (mode == 1) {
-            let timeNow = new Date().getTime();
-            timeSetted = time - timeNow > 0 ? time - timeNow : 0;
-          } else if (mode == 2) {
-            timeSetted = time * 1000 * 60;
-          }
-          console.log(timeSetted, "锁定倒计时");
-          if (timeSetted > 0) {
-            clearInterval(this.deadLineTimer);
-            this.deadLineTimer = setInterval(() => {
-              //触发deadline事件
-              this.handleDeadLineEvent();
-              clearInterval(this.deadLineTimer);
-            }, timeSetted);
-            // 在beforeDestroy钩子触发时清除定时器
-            this.$once("hook:beforeDestroy", () => {
-              clearInterval(this.deadLineTimer);
-            });
-          }
+          const { response_limit_mode, response_limit_time } = d.params;
+          this.handleDeadLineEvent(response_limit_mode, response_limit_time);
         }
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
@@ -518,9 +517,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex,
+          slideIndex
         },
-        user_id,
+        user_id
       } = d;
       if (user_id === this.uid) {
         // 对比一下uid
@@ -553,7 +552,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v,
+        answer: v
       });
       this.currentAnswerd = true;
       // // this.allAnswers[pid] = v;
@@ -573,7 +572,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "Confirm",
         showCancelButton: false,
-        showClose: false,
+        showClose: false
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -599,7 +598,7 @@ export default {
       if (this.currentIndex < this.slides.length - 1) {
         this.pageChange(parseInt(this.currentIndex) + 2);
       }
-    },
-  },
+    }
+  }
 };
 </script>
