@@ -75,6 +75,8 @@ export default class Draw {
     this.canvas.height = this.canvasHeight
     // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
     this.onDrawBack = onDrawBack;
+
+    this.cxt.lineCap = "round";
     this.canvas.onmousedown = () => {
       this.drawBegin(event);
     };
@@ -228,6 +230,7 @@ export default class Draw {
     this.restoreImageData(this.imageData)
     this.cxt.save();
     this.cxt.beginPath();
+    this.cxt.lineWidth = this.lineWidth;
     this.cxt.moveTo(
       this.pointer.beginX,
       this.pointer.beginY
@@ -237,7 +240,6 @@ export default class Draw {
       this.pointer.endY
     );
 
-    this.cxt.lineWidth = this.lineWidth;
     this.cxt.stroke();
     this.cxt.restore();
   }
@@ -248,6 +250,7 @@ export default class Draw {
       this.pointer.endX,
       this.pointer.endY
     );
+
     this.cxt.lineWidth = this.lineWidth;
     this.cxt.stroke();
     this.cxt.restore();
