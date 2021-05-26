@@ -146,6 +146,8 @@ export default {
     },
     drawMark() {
       this.currentTab = 5
+      this.draw.changeDrawType(DrawTypeData.marker);
+      this.showModal()
     },
     drawPath() {
       this.currentTab = 1
