@@ -78,6 +78,8 @@ export default class Draw {
     this.onDrawBack = onDrawBack;
 
     this.cxt.lineCap = "round";
+    this.cxt.lineJoin = "round";
+    // this.cxt.shadowBlur = 10;
     this.canvas.onmousedown = () => {
       this.drawBegin(event);
     };
@@ -255,6 +257,8 @@ export default class Draw {
       this.pointer.endX,
       this.pointer.endY
     );
+
+    // this.cxt.shadowColor = this.strokeColor;
 
     this.cxt.lineWidth = this.lineWidth;
     this.cxt.stroke();
