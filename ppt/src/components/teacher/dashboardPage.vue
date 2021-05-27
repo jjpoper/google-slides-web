@@ -18,9 +18,9 @@
               placement="right"
               width="100"
               trigger="hover"
-              v-if="getPageStudent(index)>0"
+              v-if="getPageStudent(index) > 0"
             >
-              <div class="student_name">{{getStudentName(index)}}</div>
+              <div class="student_name">{{ getStudentName(index) }}</div>
 
               <!-- @click.stop="showCurrentStudent()" -->
               <div class="student_flag" slot="reference">
@@ -49,14 +49,27 @@
           </div>
 
           <div class="response_flag">
-            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
+            <div
+              class="top"
+              :style="'width:' + responsePercentage[index] + '%'"
+            ></div>
           </div>
         </div>
       </div>
 
       <div class="divider"></div>
 
-      <div class="content_parent">
+      <div
+        :class="
+          showResponse &&
+          currentItemData &&
+          currentItemData.items &&
+          currentItemData.items[0] &&
+          currentItemData.items[0].type != 'website'
+            ? 'content_parent content_parent--border'
+            : 'content_parent'
+        "
+      >
         <div class="content_main">
           <teacherIndexItem
             v-if="currentItemData && currentItemData.items[0]"
@@ -145,6 +158,13 @@ svg {
   display: flex;
   flex: 1;
   overflow-x: hidden;
+  border: 5px solid white;
+  margin-bottom: 60px;
+  border-radius: 10px;
+}
+
+.content_parent--border {
+  border: 5px solid red;
 }
 
 .content_main {
@@ -204,49 +224,49 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     slides: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     showResponse: {
       type: Boolean,
-      default: false
+      default: false,
     },
     currentAnswerCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     responseContentList: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     giveFocus: {
-      type: Function
+      type: Function,
     },
     responsePercentage: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     isFocus: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     getPageStudent: {
-      type: Function
+      type: Function,
     },
     getStudentName: {
-      type: Function
-    }
+      type: Function,
+    },
   },
   data() {
     return {};
@@ -258,7 +278,7 @@ export default {
   methods: {
     showCurrentStudent() {
       console.log("studeng!!!");
-    }
-  }
+    },
+  },
 };
 </script>

@@ -437,7 +437,8 @@ type: "slide"*/
                 show: responseList[i].show,
                 key: user_id,
               });
-              EventBus.$emit("choice", { user_id, answer });
+              const data = this.currentItemData;
+              EventBus.$emit("choice", { data });
             } else if (itemData[0].type == "draw") {
               const user_id = studentId;
               const content = responseList[i].content;
@@ -784,7 +785,8 @@ type: "slide"*/
           show: true,
           key: user_id,
         });
-        EventBus.$emit("choice", { user_id, answer });
+        const data = this.currentItemData;
+        EventBus.$emit("choice", { data });
       } else if (
         d.type == SocketEventsEnum.TEXT_INPUT ||
         d.type === SocketEventsEnum.NUMBER_INPUT
@@ -820,7 +822,7 @@ type: "slide"*/
     pageChange(value, notSend) {
       console.log(value, "pageChage!!!" + this.isDashboard);
       if (this.isDashboard) {
-        this.giveFocus(value-1, notSend);
+        this.giveFocus(value - 1, notSend);
         return;
       }
       this.currentIndex = value - 1;
@@ -878,7 +880,7 @@ type: "slide"*/
       this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
-        this.currentItemData.flag = false;
+        this.currentItemData.flag = this.isDashboard;
         this.getResponeCount();
       });
     },
@@ -1097,7 +1099,7 @@ type: "slide"*/
         console.log(0 + "_blank");
         var windowObjectReference;
         var strWindowFeatures =
-          "width=900,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+          "width=1000,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
 
         //"/index.html#/dashboard?slide_id=" + this.slide_id
         windowObjectReference = window.open(
@@ -1189,9 +1191,8 @@ type: "slide"*/
     },
     giveFocus(index, notSend) {
       this.currentIndex = index;
-      // this.getItemData();
-      this.currentItemData = this.slides[this.currentIndex];
-      this.currentItemData.flag = false;
+      this.currentItemData = this.slides[index];
+      this.currentItemData.flag = this.isDashboard;
       this.getResponeCount();
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
@@ -1201,7 +1202,15 @@ type: "slide"*/
       for (let i = 0; i < this.slides.length; i++) {
         this.isFocus[i] = i == index;
       }
-      //  this.$forceUpdate();
+      const data = this.currentItemData;
+      if (
+        this.currentItemData.items[0] &&
+        this.currentItemData.items[0].type == "choice"
+      ) {
+        EventBus.$emit("choice", { data });
+      }
+
+      // this.$forceUpdate();
     },
     getPageStudent(index) {
       let count = 0;

@@ -65,8 +65,12 @@
     <div v-else class="personal">
       <div v-for="(item, index) in answerList" :key="index">
         <div v-if="shouldShow(item)">
-          <template v-if="isMulti">
-            <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'" v-for="ans in JSON.parse(item.answer)" :key="ans">
+          <!-- <template v-if="isMulti">
+            <div
+              :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
+              v-for="ans in JSON.parse(item.answer)"
+              :key="ans"
+            >
               <div class="text_content">
                 {{ optFlags[ans] + ": " + getAnswer(ans).text }}
               </div>
@@ -83,11 +87,13 @@
                 }"
               />
             </div>
-          </template>
-          <template v-else>
+          </template> -->
+          <template>
             <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
               <div class="text_content">
-                {{ optFlags[item.answer] + ": " + getAnswer(item.answer).text }}
+                <p v-for="ans_text in getAnswer(item)" :key="ans_text">
+                  {{ ans_text }}
+                </p>
               </div>
               <student-response-opt-bar
                 v-if="flag_1"
@@ -95,7 +101,7 @@
                   pageId: data.page_id,
                   itemId: item.answer,
                   studentId: item.user_id,
-                  title: getConent(item.answer),
+                  //  title: getConent(item.answer),
                   isStar: item.star,
                   isShowRes: item.show,
                   name: getUname(item.user_id),
@@ -105,20 +111,6 @@
           </template>
         </div>
       </div>
-
-      <!-- <el-tooltip
-        placement="bottom"
-        :disabled="!flag_1"
-        v-for="item in answerList"
-        :key="item.id"
-      >
-        <div slot="content">{{ getUname(item.user_id) }}</div>
-        <div class="personal_item">
-          <strong>{{
-            optFlags[item.answer] + ": " + getAnswer(item.answer).text
-          }}</strong>
-        </div>
-      </el-tooltip> -->
     </div>
   </div>
 </template>
@@ -213,6 +205,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 </style>
 
@@ -221,11 +214,11 @@ import {
   getCurrentPageAnswerList,
   getStundentUidAndName,
 } from "@/model/store.teacher";
-import ECharts from 'vue-echarts'
+import ECharts from "vue-echarts";
 import commentIcon from "./commentIcon.vue";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 export default {
-  components: { commentIcon, StudentResponseOptBar, 'v-chart': ECharts },
+  components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts },
   props: {
     data: {
       type: Object,
@@ -252,70 +245,76 @@ export default {
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
       isMulti: false,
       initOptions: {
-        renderer: "canvas"
+        renderer: "canvas",
       },
     };
   },
   computed: {
-    'bar' () {
+    bar() {
       const names = this.options.map((item) => {
-        return this.optFlags[item.id] + ": " + item.text
-      })
+        return this.optFlags[item.id] + ": " + item.text;
+      });
       const values = this.options.map((item) => {
-        return this.getAnswerCount(item.id)
-      })
+        return this.getAnswerCount(item.id);
+      });
       return {
         tooltip: {
-          trigger: 'item',
-          formatter:'{c}%'
+          trigger: "item",
+          formatter: "{c}%",
         },
         xAxis: {
-            type: 'category',
-            data: names
+          type: "category",
+          data: names,
         },
         yAxis: {
-            type: 'value'
+          type: "value",
         },
-        series: [{
+        series: [
+          {
             data: values,
-            type: 'bar',
+            type: "bar",
             label: {
-                show: true,
-                position: 'inside',
-                formatter: (v) => {
-                  const val = v.data;
-                  const len = this.answerList.length
-                  if(len > 0 && val > 0) {
-                    const per = (val * 100 / len).toFixed(2)
-                    return `${val}（${per}/%）`;
-                  } else {
-                    return 0
-                  }
-                },
+              show: true,
+              position: "inside",
+              formatter: (v) => {
+                const val = v.data;
+                const len = this.answerList.length;
+                if (len > 0 && val > 0) {
+                  const per = ((val * 100) / len).toFixed(2);
+                  return `${val}（${per}/%）`;
+                } else {
+                  return 0;
+                }
+              },
             },
-        }]
-      }
-    }
+          },
+        ],
+      };
+    },
   },
   created() {
     const { title, options, isMulti } = this.data.items[0].data;
     this.title = title;
     this.options = options;
-    this.isMulti = isMulti
+    this.isMulti = isMulti;
     this.answerList = getCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type
     );
-    console.log(this.answerList, 'getCurrentPageAnswerList')
   },
   mounted() {
     EventBus.$on("choice", (data) => {
+      this.data = data.data;
+      const { title, options, isMulti } = this.data.items[0].data;
+      this.title = title;
+      this.options = options;
+      this.isMulti = isMulti;
+      console.log(this.data, data, "EventBus on");
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
         this.data.page_id,
         this.data.items[0].type
       );
-      console.log(this.answerList, "refresh answer");
     });
   },
   methods: {
@@ -328,9 +327,7 @@ export default {
       }
     },
     getConent(answer) {
-      return (
-        this.optFlags[answer] + ": " + this.getAnswer(answer).text
-      );
+      //  return this.optFlags[answer] + ": " + this.getAnswer(answer).text;
     },
     setModel(model) {
       this.currentModel = model;
@@ -338,31 +335,42 @@ export default {
     },
     getAnswerCount(value) {
       let count = 0;
-      const {isMulti} = this
+      const { isMulti } = this;
       for (let i = 0; i < this.answerList.length; i++) {
-        const {answer} = this.answerList[i]
+        const { answer } = this.answerList[i];
         if (
-          !!answer && 
-          (isMulti && JSON.parse(answer).indexOf(value) > -1) ||
+          (!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||
           (!isMulti && value == parseInt(answer))
         ) {
-          if(this.answerList[i].show || this.flag_1){
-              count++;
+          if (this.answerList[i].show || this.flag_1) {
+            count++;
           }
         }
       }
       return count;
     },
     getAnswer(answer) {
-      const data = this.options.filter((item) => item.id == answer)[0];
+      const data = [];
+      if (this.isMulti) {
+        let list = JSON.parse(answer.answer);
+        for (let i = 0; i < list.length; i++) {
+          let text =
+            this.optFlags[list[i]] +
+            " : " +
+            this.options.filter((item) => item.id == list[i])[0].text;
+          data.push(text);
+        }
+      } else {
+        data.push(
+          this.optFlags[answer.answer] +
+            " : " +
+            this.options.filter((item) => item.id == answer.answer)[0].text
+        );
+      }
       return data;
     },
     pageChange(value) {
-      if (value == 2) {
-        this.showStatistics = false;
-      } else {
-        this.showStatistics = true;
-      }
+      this.showStatistics = value == 2;
     },
     getUname(id) {
       const name = getStundentUidAndName(id);
