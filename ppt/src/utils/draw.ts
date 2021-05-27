@@ -7,10 +7,11 @@ import Text from './drawText'
 export enum DrawTypeData {
   line = 'line',
   draw = 'draw',
-  text = 'text'
+  text = 'text',
+  marker = 'marker'
 }
 
-type DrawType = 'line' | 'draw' | 'text'
+type DrawType = 'line' | 'draw' | 'text' | 'marker'
 type onDrawBack = (data: any) => void
 window.canvasPool = []
 
@@ -75,6 +76,8 @@ export default class Draw {
     this.canvas.height = this.canvasHeight
     // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
     this.onDrawBack = onDrawBack;
+
+    this.cxt.lineCap = "round";
     this.canvas.onmousedown = () => {
       this.drawBegin(event);
     };
@@ -157,7 +160,9 @@ export default class Draw {
       );
     }
 
-    if(this.drawType !== 'text') {
+    if(this.drawType === 'marker') {
+      this.drawMarker()
+    } else if(['draw', 'line'].indexOf(this.drawType) > -1) {
       this.canvas.onmousemove = () => {
         this.drawing(event)
       }
@@ -169,7 +174,7 @@ export default class Draw {
         // }, 100);
         // ws.send('stop')
       };
-    } else {
+    } else if(this.drawType === 'text') {
       this.drawText()
     }
 
@@ -224,14 +229,28 @@ export default class Draw {
     }
   }
 
+  // 画直线
   drawLine() {
     this.restoreImageData(this.imageData)
     this.cxt.save();
     this.cxt.beginPath();
+    this.cxt.lineWidth = this.lineWidth;
     this.cxt.moveTo(
       this.pointer.beginX,
       this.pointer.beginY
     );
+    this.cxt.lineTo(
+      this.pointer.endX,
+      this.pointer.endY
+    );
+
+    this.cxt.stroke();
+    this.cxt.restore();
+  }
+
+  // 画线
+  drawPath() {
+    this.cxt.save();
     this.cxt.lineTo(
       this.pointer.endX,
       this.pointer.endY
@@ -242,15 +261,14 @@ export default class Draw {
     this.cxt.restore();
   }
 
-  drawPath() {
+  // 画标记
+  drawMarker() {
+    this.addHistory()
     this.cxt.save();
-    this.cxt.lineTo(
-      this.pointer.endX,
-      this.pointer.endY
-    );
-    this.cxt.lineWidth = this.lineWidth;
-    this.cxt.stroke();
-    this.cxt.restore();
+    this.cxt.beginPath();
+    this.cxt.arc(this.pointer.beginX, this.pointer.beginY, this.lineWidth, 0, 2 * Math.PI);
+    this.cxt.fillStyle = this.strokeColor;
+    this.cxt.fill();
   }
 
   addHistory() {
