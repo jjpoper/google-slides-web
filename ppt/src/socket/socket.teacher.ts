@@ -7,7 +7,7 @@ type callback = (d: any) => void
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback) => {
   console.log(classId, "create ws socket")
-  const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
+  const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
   socket.on('connect', () => {
     // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
     socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
@@ -29,13 +29,13 @@ export const createSo = (room: string, token: string, classId: string, callback:
   });
   // 老师端接收到学生发来的答案
   socket.on('response', (data: any) => {
-    // console.log("收到学生发来的答案：" + data);
+    console.log("收到学生发来的答案：" + data);
     callback({ type: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
   });
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-    callback({type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data)})
+    callback({ type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data) })
   });
 
   socket.on('control', (data: any) => {
@@ -45,6 +45,11 @@ export const createSo = (room: string, token: string, classId: string, callback:
 
   socket.on('rename', (data: any) => {
     callback({ type: SocketEventsEnum.RENAME, ...JSON.parse(data) })
+  });
+
+  socket.on('go-to-page', (data: any) => {
+    console.log("收到系统信息：STUDETN_GO_PAGE" + data);
+    callback({ type: SocketEventsEnum.STUDETN_GO_PAGE, ...JSON.parse(data) })
   });
 
 
