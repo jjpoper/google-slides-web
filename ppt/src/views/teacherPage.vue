@@ -545,7 +545,7 @@ type: "slide"*/
     },
     startConnectRoom() {
       if (this.directFromPlugin) {
-        this.stepOneDialog = true;
+        this.stepTwoDialog = true;
       }
       this.joinRoom();
       queryClassStatus(this.class_id, this.token)
