@@ -6,7 +6,9 @@
       :token="token"
     />
     <pageLockedNote
-      v-else-if="((classRoomInfo && isPageLocked()) || lock_all_pages)&&currentItemData"
+      v-else-if="
+        ((classRoomInfo && isPageLocked()) || lock_all_pages) && currentItemData
+      "
       :data="currentItemData"
       :answerList="answerList"
     />
@@ -19,7 +21,10 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+        <div
+          class="block"
+          v-if="currentItemData && currentItemData.thumbnail_url"
+        >
           <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
       </el-main>
@@ -55,12 +60,14 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        <i
+          class="el-icon-s-opportunity"
+          :style="`color: ${onLine ? 'green' : 'red'}`"
+        />
       </div>
-      <div
-        class="deadline_info"
-        v-if="showRemainTime()"
-      >Deadlie time remain:{{countDownMin}} mintues.</div>
+      <div class="deadline_info" v-if="showRemainTime()">
+        Deadlie time remain:{{ countDownMin }} mintues.
+      </div>
     </div>
   </div>
 </template>
@@ -156,7 +163,7 @@ import {
   getAllPPTS,
   getStudentLoginUrl,
   getUserProfile,
-  queryClassStatus
+  queryClassStatus,
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -166,7 +173,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum
+  ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -177,7 +184,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken
+  saveStudentStoreToken,
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -215,7 +222,7 @@ export default {
       deadLineTimer: null,
       limitText: null,
       lock_all_pages: false,
-      countDownMin: 0
+      countDownMin: 0,
     };
   },
   mounted() {
@@ -227,10 +234,10 @@ export default {
     StudentComment,
     ClassRoomClosed,
     studentControlPanel,
-    pageLockedNote
+    pageLockedNote,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -293,7 +300,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then(url => {
+      getStudentLoginUrl().then((url) => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -320,7 +327,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id)
+        getAllPPTS(this.slide_id),
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -333,7 +340,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url
+        content: base64Url,
       });
       this.emitSo(
         "response",
@@ -353,7 +360,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg
+        content: msg,
       });
       this.currentAnswerd = true;
     },
@@ -364,15 +371,15 @@ export default {
         this.checkCurrentAnswerd();
 
         if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
+
+          console.log("学生go-to-page")
           this.emitSo(
-            "response",
-            `{"room": "${
-              this.class_id
-            }", "type":"student_go_page", "user_name":"${
-              this.uname
-            }","user_id": "${this.uid}","token": "${this.token}","class_id":"${
-              this.class_id
-            }",  "page_id": "${this.slides[this.currentIndex].page_id}"}`
+            "go-to-page",
+            `{"room": "${this.class_id}", "token": "${
+              this.token
+            }","class_id":"${this.class_id}", "params": {"page":"${
+              this.slides[this.currentIndex].page_id
+            }"}}`
           );
         }
       });
@@ -390,7 +397,7 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then(res => {
+        .then((res) => {
           this.classRoomInfo = res;
           console.log(this.classRoomInfo);
           if (this.classRoomInfo.status == "live") {
@@ -417,7 +424,7 @@ export default {
             );
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
         });
       this.joinRoom();
@@ -474,6 +481,15 @@ export default {
             "rename",
             `{"room": "${this.class_id}", "user_id": "${this.uid}", "token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${this.uname}"}`
           );
+
+          this.emitSo(
+            "go-to-page",
+            `{"room": "${this.class_id}", "token": "${
+              this.token
+            }","class_id":"${this.class_id}", "params": {"page":"${
+              this.slides[this.currentIndex].page_id
+            }"}}`
+          );
         },
         this.onLineStatusChanged
       );
@@ -508,7 +524,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              item => item != page
+              (item) => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -530,9 +546,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex
+          slideIndex,
         },
-        user_id
+        user_id,
       } = d;
       if (user_id === this.uid) {
         // 对比一下uid
@@ -565,7 +581,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v
+        answer: v,
       });
       this.currentAnswerd = true;
       // // this.allAnswers[pid] = v;
@@ -585,7 +601,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "Confirm",
         showCancelButton: false,
-        showClose: false
+        showClose: false,
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -611,7 +627,7 @@ export default {
       if (this.currentIndex < this.slides.length - 1) {
         this.pageChange(parseInt(this.currentIndex) + 2);
       }
-    }
-  }
+    },
+  },
 };
 </script>
