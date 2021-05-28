@@ -4,13 +4,13 @@
       <el-input
         type="textarea"
         :autosize="{ minRows: 3}"
-        placeholder="Please input somthing(Press Ctrl+Enter to send)"
+        placeholder="Please input somthing"
         v-model="item.content"
-        @input="onInputText(index)">
-        </el-input>
-        <div class="el-input__icon" v-if="item.textSended">
-          <i class="el-icon-edit-outline"></i>
-        </div>
+        @input="onInputText(index)"
+      ></el-input>
+      <div class="el-input__icon" v-if="item.textSended">
+        <i class="el-icon-edit-outline"></i>
+      </div>
     </div>
     <el-button type="text" @click="addInput()" :disabled="addDisable">+Add Other One</el-button>
   </div>
@@ -22,13 +22,13 @@
   flex-direction: column;
   padding: 20px;
 }
-.el-input__icon{
+.el-input__icon {
   position: relative;
   line-height: 25px;
   margin-top: -22px;
   margin-left: 93%;
 }
-.el-input__icon>i{
+.el-input__icon > i {
   cursor: pointer;
 }
 .input_parent {
@@ -54,67 +54,70 @@ el-button {
 
 <script>
 import { SocketEventsEnum } from "../../socket/socketEvents";
-import { getCurrentPageStudentAnswerList } from '@/model/data.student';
+import { getCurrentPageStudentAnswerList } from "@/model/data.student";
 export default {
   props: {
     method: { type: Function },
     data: {
       type: Object,
       default: () => {
-        return {}
+        return {};
       }
-    },
+    }
   },
   data() {
     return {
       addDisable: false,
       maxCount: 3,
       inputCount: 0,
-      arrList: getCurrentPageStudentAnswerList(this.data.page_id, SocketEventsEnum.TEXT_INPUT),
+      arrList: getCurrentPageStudentAnswerList(
+        this.data.page_id,
+        SocketEventsEnum.TEXT_INPUT
+      ),
       sendDelay: null
     };
   },
   created() {
-    console.log("text template created!!"+this.arrList.length);
-    if(!this.arrList||this.arrList.length==0){
-        this.arrList.push({content:''})
+    console.log("text template created!!" + this.arrList.length);
+    if (!this.arrList || this.arrList.length == 0) {
+      this.arrList.push({ content: "" });
     }
     this.inputCount = this.arrList.length;
   },
   beforeDestroy() {
-    this.clearDelay()
+    this.clearDelay();
   },
   methods: {
     addInput: function() {
       this.inputCount++;
-      var item = { content: "", id: this.inputCount ,textSended:false};
+      var item = { content: "", id: this.inputCount, textSended: false };
       this.arrList.push(item);
       this.addDisable = this.inputCount >= this.maxCount;
     },
     send: function(index) {
-      this.arrList[index].textSended = true
+      this.arrList[index].textSended = true;
       var text = this.arrList[index].content;
       this.method(index, text);
       // if (text) {
       //   this.method(index, text);
       // } else {
-        // this.$alert("Input some words!", "Note", {
-        //   confirmButtonText: "Ok",
-        //   callback: action => {}
-        // });
+      // this.$alert("Input some words!", "Note", {
+      //   confirmButtonText: "Ok",
+      //   callback: action => {}
+      // });
       // }
     },
     clearDelay() {
-      if(this.sendDelay) {
-        clearTimeout(this.sendDelay)
-        this.sendDelay = null
+      if (this.sendDelay) {
+        clearTimeout(this.sendDelay);
+        this.sendDelay = null;
       }
     },
     onInputText(index) {
-      this.clearDelay()
+      this.clearDelay();
       this.sendDelay = setTimeout(() => {
-        this.send(index)
-      }, 200)
+        this.send(index);
+      }, 200);
     }
   }
 };
