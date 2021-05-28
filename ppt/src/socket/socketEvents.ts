@@ -16,6 +16,7 @@ export enum SocketEventsEnum {
   STAR_OR_HIDE_ANSWER = 'STAR_OR_HIDE_ANSWER',
   STUDETN_GO_PAGE ='STUDENT_GO_PAGE',
   SET_DEADLINE_TIME = 'response_limit',
+  COPY_LINK_DIALOG_CLOSE = 'copy_link_dialog_close',
 }
 
 export enum ModalEventsNameEnum {
