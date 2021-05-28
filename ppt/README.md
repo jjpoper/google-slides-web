@@ -1,4 +1,4 @@
-# slide-demo
+# Classcipe
 
 ## Project setup
 ```
