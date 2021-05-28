@@ -49,10 +49,7 @@
           </div>
 
           <div class="response_flag">
-            <div
-              class="top"
-              :style="'width:' + responsePercentage[index] + '%'"
-            ></div>
+            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
           </div>
         </div>
       </div>
@@ -99,6 +96,7 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+  margin-bottom: 60px;
 }
 .student_flag {
   background-color: rgba(74, 172, 213, 0.9);
@@ -159,7 +157,6 @@ svg {
   flex: 1;
   overflow-x: hidden;
   border: 5px solid white;
-  margin-bottom: 60px;
   border-radius: 10px;
 }
 
@@ -224,49 +221,49 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     slides: {
       type: Array,
       function() {
         return [];
-      },
+      }
     },
     showResponse: {
       type: Boolean,
-      default: false,
+      default: false
     },
     currentAnswerCount: {
       type: Number,
-      default: 0,
+      default: 0
     },
     responseContentList: {
       type: Array,
       function() {
         return [];
-      },
+      }
     },
     giveFocus: {
-      type: Function,
+      type: Function
     },
     responsePercentage: {
       type: Array,
       function() {
         return [];
-      },
+      }
     },
     isFocus: {
       type: Array,
       function() {
         return [];
-      },
+      }
     },
     getPageStudent: {
-      type: Function,
+      type: Function
     },
     getStudentName: {
-      type: Function,
-    },
+      type: Function
+    }
   },
   data() {
     return {};
@@ -278,7 +275,7 @@ export default {
   methods: {
     showCurrentStudent() {
       console.log("studeng!!!");
-    },
-  },
+    }
+  }
 };
 </script>

@@ -14,7 +14,7 @@
         <path
           d="M157.538462 866.461538h787.692307v78.769231H78.769231V78.769231h78.769231v787.692307z m78.76923-374.153846h78.769231v315.076923h-78.769231V492.307692z m177.23077-118.153846h78.76923v433.230769h-78.76923V374.153846z m177.230769 118.153846h78.769231v315.076923h-78.769231V492.307692z m177.230769-157.538461h78.769231v472.615384h-78.769231V334.769231z m-470.468923 13.075692l-43.697231-65.536L452.923077 149.582769l173.784615 115.849846 154.505846-137.334153 52.322462 58.88-199.936 177.723076L452.923077 244.263385l-155.392 103.581538z"
           p-id="2037"
-        ></path>
+        />
       </svg>
       <svg
         t="1619507881682"
@@ -29,13 +29,11 @@
         <path
           d="M64 163.7c0 22.6 18.3 40.9 40.9 40.9 22.6 0 40.9-18.3 40.9-40.9 0-22.6-18.3-40.9-40.9-40.9-22.6 0-40.9 18.3-40.9 40.9zM64 512c0 22.6 18.3 40.9 40.9 40.9 22.6 0 40.9-18.3 40.9-40.9 0-22.6-18.3-40.9-40.9-40.9-22.6 0-40.9 18.3-40.9 40.9zM64 860.3c0 22.6 18.3 40.9 40.9 40.9 22.6 0 40.9-18.3 40.9-40.9 0-22.6-18.3-40.9-40.9-40.9-22.6 0.1-40.9 18.3-40.9 40.9zM935 189.2H289.9c-13.7 0-25-11.3-25-25v-1.1c0-13.7 11.3-25 25-25H935c13.8 0 25 11.3 25 25v1.1c0 13.8-11.2 25-25 25zM935 537.5H289.9c-13.7 0-25-11.2-25-25v-1.1c0-13.8 11.3-25 25-25H935c13.8 0 25 11.2 25 25v1.1c0 13.8-11.2 25-25 25zM935 885.9H289.9c-13.7 0-25-11.2-25-25v-1.1c0-13.8 11.3-25 25-25H935c13.8 0 25 11.3 25 25v1.1c0 13.7-11.2 25-25 25z"
           p-id="2981"
-        ></path>
+        />
       </svg>
     </div>
 
-    <span class="flag_text">
-      {{ currentModel == 0 ? "Statistics" : "Personal" }}
-    </span>
+    <span class="flag_text">{{ currentModel == 0 ? "Statistics" : "Personal" }}</span>
 
     <div v-if="currentModel == 0" class="statistics">
       <!-- <el-tooltip
@@ -51,7 +49,7 @@
           }}</span>
           <span>{{ getAnswerCount(item.id) }}</span>
         </div>
-      </el-tooltip> -->
+      </el-tooltip>-->
       <v-chart
         style="height: 500px"
         :option="bar"
@@ -87,13 +85,11 @@
                 }"
               />
             </div>
-          </template> -->
+          </template>-->
           <template>
             <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
               <div class="text_content">
-                <p v-for="ans_text in getAnswer(item)" :key="ans_text">
-                  {{ ans_text }}
-                </p>
+                <p v-for="ans_text in getAnswer(item)" :key="ans_text">{{ ans_text }}</p>
               </div>
               <student-response-opt-bar
                 v-if="flag_1"
@@ -101,7 +97,7 @@
                   pageId: data.page_id,
                   itemId: item.answer,
                   studentId: item.user_id,
-                  //  title: getConent(item.answer),
+                  title: getConent(item),
                   isStar: item.star,
                   isShowRes: item.show,
                   name: getUname(item.user_id),
@@ -212,7 +208,7 @@
 <script>
 import {
   getCurrentPageAnswerList,
-  getStundentUidAndName,
+  getStundentUidAndName
 } from "@/model/store.teacher";
 import ECharts from "vue-echarts";
 import commentIcon from "./commentIcon.vue";
@@ -224,12 +220,12 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     flag_1: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
     // answerList: {
     //   type: Array,
     //   default: [],
@@ -245,29 +241,29 @@ export default {
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
       isMulti: false,
       initOptions: {
-        renderer: "canvas",
-      },
+        renderer: "canvas"
+      }
     };
   },
   computed: {
     bar() {
-      const names = this.options.map((item) => {
+      const names = this.options.map(item => {
         return this.optFlags[item.id] + ": " + item.text;
       });
-      const values = this.options.map((item) => {
+      const values = this.options.map(item => {
         return this.getAnswerCount(item.id);
       });
       return {
         tooltip: {
           trigger: "item",
-          formatter: "{c}%",
+          formatter: "{c}%"
         },
         xAxis: {
           type: "category",
-          data: names,
+          data: names
         },
         yAxis: {
-          type: "value",
+          type: "value"
         },
         series: [
           {
@@ -276,7 +272,7 @@ export default {
             label: {
               show: true,
               position: "inside",
-              formatter: (v) => {
+              formatter: v => {
                 const val = v.data;
                 const len = this.answerList.length;
                 if (len > 0 && val > 0) {
@@ -285,12 +281,12 @@ export default {
                 } else {
                   return 0;
                 }
-              },
-            },
-          },
-        ],
+              }
+            }
+          }
+        ]
       };
-    },
+    }
   },
   created() {
     const { title, options, isMulti } = this.data.items[0].data;
@@ -303,7 +299,7 @@ export default {
     );
   },
   mounted() {
-    EventBus.$on("choice", (data) => {
+    EventBus.$on("choice", data => {
       this.data = data.data;
       const { title, options, isMulti } = this.data.items[0].data;
       this.title = title;
@@ -320,13 +316,14 @@ export default {
   methods: {
     counts(id) {
       if (this.answerList && this.answerList.length > 0) {
-        const filterData = this.answerList.filter((item) => item.answer == id);
+        const filterData = this.answerList.filter(item => item.answer == id);
         return filterData.length;
       } else {
         return 0;
       }
     },
     getConent(answer) {
+      return JSON.stringify(this.getAnswer(answer));
       //  return this.optFlags[answer] + ": " + this.getAnswer(answer).text;
     },
     setModel(model) {
@@ -357,14 +354,14 @@ export default {
           let text =
             this.optFlags[list[i]] +
             " : " +
-            this.options.filter((item) => item.id == list[i])[0].text;
+            this.options.filter(item => item.id == list[i])[0].text;
           data.push(text);
         }
       } else {
         data.push(
           this.optFlags[answer.answer] +
             " : " +
-            this.options.filter((item) => item.id == answer.answer)[0].text
+            this.options.filter(item => item.id == answer.answer)[0].text
         );
       }
       return data;
@@ -400,7 +397,7 @@ export default {
       } else {
         return "";
       }
-    },
-  },
+    }
+  }
 };
 </script>
