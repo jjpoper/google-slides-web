@@ -136,6 +136,8 @@
     <el-dialog
       title="Share this link with your students"
       :visible.sync="showCopyLinkDialog"
+      @close="closeCopyLinkDialog()"
+      @open="openCopyLinkDialog()"
     >
       <copyLinkDialog
         v-if="classRoomInfo"
@@ -145,6 +147,7 @@
         :enterClassroom="enterClassroom"
         :setTimeDialogShow="setTimeDialogShow"
         :currentMode="page_model"
+        :isDashboard="isDashboard"
       />
     </el-dialog>
   </div>
@@ -336,6 +339,7 @@ type: "slide"*/
       directFromPlugin: false, //是否是从插件直接打开的。
       showTimeSetDialog: false,
       showCopyLinkDialog: false,
+      firstCloseCopyLinkDialog: true,
       mode: 1,
     };
   },
@@ -375,7 +379,7 @@ type: "slide"*/
       vm.class_id = class_id;
       window.classId = class_id;
       vm.currentIndex = to.query.page ? to.query.page : 0;
-      vm.isDashboard = type === "dashboard";
+      vm.isDashboard = type == "dashboard";
       vm.directFromPlugin = to.query.direct ? true : false;
       if (token) {
         vm.token = token;
@@ -613,6 +617,10 @@ type: "slide"*/
             }
           }
           this.studentCounts = this.studentList.length;
+          console.log(this.studentCounts, "getOnlineUsers");
+          if (this.studentCounts == 0) {
+            this.showCopyLinkDialog = true;
+          }
         })
         .catch((res) => {});
     },
@@ -769,6 +777,10 @@ type: "slide"*/
         }
       } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
         console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
+      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
+        console.log(SocketEventsEnum.COPY_LINK_DIALOG_CLOSE);
+        this.firstCloseCopyLinkDialog = false;
+        this.showCopyLinkDialog = false;
       }
 
       // 回答问题
@@ -1265,6 +1277,18 @@ type: "slide"*/
     },
     changeFeedbackTimeMode(index) {
       this.mode = index;
+    },
+
+    closeCopyLinkDialog() {
+      if (this.firstCloseCopyLinkDialog) {
+        this.firstCloseCopyLinkDialog = false;
+        this.emitSo(
+          `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
+        );
+      }
+    },
+    openCopyLinkDialog() {
+      console.log("open copy link dialog!!");
     },
   },
 };
