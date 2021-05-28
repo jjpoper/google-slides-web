@@ -29,7 +29,7 @@
         </div>
       </el-main>
       <el-aside
-        :width="`${currentItemData.items[0].type !== 'draw' ? '40%' : '100%'}`"
+        :width="`${getWidthPercent(currentItemData.items[0].type)}`"
         style="position: relative"
         v-if="currentItemData && currentItemData.items[0]"
       >
@@ -253,6 +253,11 @@ export default {
     });
   },
   methods: {
+    getWidthPercent(type) {
+      if(type === 'draw') return '100%'
+      if(type === 'website') return '70%'
+      return '40%'
+    },
     onLineStatusChanged(status) {
       this.onLine = status;
     },
