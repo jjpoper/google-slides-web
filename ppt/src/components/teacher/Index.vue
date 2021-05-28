@@ -9,7 +9,7 @@
     />
     <draw v-else-if="type === 'draw'" v-bind="$attrs" :flag_1="flag_1" />
   </div>
-  <div class="page center" v-else>
+  <div class="page center" v-else-if="type!='website'">
     <div class="loadEffect">
       <span></span>
       <span></span>

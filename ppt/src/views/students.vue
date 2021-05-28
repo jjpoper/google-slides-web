@@ -66,7 +66,7 @@
         />
       </div>
       <div class="deadline_info" v-if="showRemainTime()">
-        Deadlie time remain:{{ countDownMin }} mintues.
+        Deadline time remain:{{ countDownMin }} mintues.
       </div>
     </div>
   </div>
