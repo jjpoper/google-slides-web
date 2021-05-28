@@ -5,7 +5,10 @@
       <div v-for="(item, index) in commentList" :key="index.toString()">
         <p class="title">slide {{item.slideIndex}}</p>
         <div class="rightmtitle" v-if="item.title.indexOf('data:image/') > -1">
-            <base64image :url="item.title"/>
+          <base64image :url="item.title" />
+        </div>
+        <div class="rightmtitle" v-else-if="item.title.indexOf('[') > -1">
+          <p v-for="(text,index) in JSON.parse(item.title)" :key="index">{{text}}</p>
         </div>
         <div class="rightmtitle" v-else>{{item.title}}</div>
         <div class="rightcomment">
@@ -16,11 +19,11 @@
           </div>
         </div>
       </div>
-    </div> 
-  </div>  
+    </div>
+  </div>
 </template>
 <style scoped>
-.studentComment{
+.studentComment {
   position: absolute;
   width: 80%;
   height: 100%;
@@ -35,11 +38,11 @@
   text-align: left;
   z-index: 9998;
 }
-.title{
+.title {
   height: 50px;
   text-align: center;
 }
-.rightmtitle{
+.rightmtitle {
   width: 100%;
   min-height: 70px;
   background-color: #f2f2f2;
@@ -50,7 +53,7 @@
   line-height: 20px;
   position: relative;
 }
-.rightcomment{
+.rightcomment {
   width: 100%;
   min-height: 70px;
   background-color: #fff;
@@ -60,40 +63,40 @@
   word-wrap: break-word;
   line-height: 20px;
 }
-.section{
+.section {
   margin-bottom: 10px;
 }
 </style>
 <script>
-import { ModalEventsNameEnum } from '@/socket/socketEvents'
-import { getStudentCommentList } from '@/model/store.student'
-import { showToast } from '@/utils/loading'
-import base64image from '../base64image.vue'
+import { ModalEventsNameEnum } from "@/socket/socketEvents";
+import { getStudentCommentList } from "@/model/store.student";
+import { showToast } from "@/utils/loading";
+import base64image from "../base64image.vue";
 export default {
   data() {
     return {
       modalVisibale: false,
       commentList: []
-    }
+    };
   },
   components: { base64image },
   mounted() {
     // this.showStudentModal()
-    EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL, (status) => {
-      if(status) {
-        this.showStudentModal()
+    EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL, status => {
+      if (status) {
+        this.showStudentModal();
       } else {
-        this.hideStudentModal()
+        this.hideStudentModal();
       }
-    })
-    
+    });
+
     EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL_REFRESH, () => {
-      this.refreshList()
-    })
+      this.refreshList();
+    });
   },
   methods: {
     showStudentModal() {
-      const list = getStudentCommentList()
+      const list = getStudentCommentList();
       // let newMap = {}
       // for(let i = 0; i < list.length; i++) {
       //   const item = list[i]
@@ -108,22 +111,19 @@ export default {
       //   }
       // }
 
-
-
-
-      this.commentList = list
-      console.log(list)
-      this.modalVisibale = true
+      this.commentList = list;
+      console.log(list);
+      this.modalVisibale = true;
     },
     hideStudentModal() {
-      this.modalVisibale = false
-      this.commentList = []
+      this.modalVisibale = false;
+      this.commentList = [];
     },
     refreshList() {
-      const list = getStudentCommentList()
-      this.commentList = list
-      showToast('new messages loaded')
+      const list = getStudentCommentList();
+      this.commentList = list;
+      showToast("new messages loaded");
     }
   }
-}
+};
 </script>
