@@ -613,7 +613,7 @@ type: "slide"*/
           }
           this.studentCounts = this.studentList.length;
           console.log(this.studentCounts, "getOnlineUsers");
-          if (this.studentCounts == 0) {
+          if (this.studentCounts == 0 && !this.directFromPlugin) {
             this.showCopyLinkDialog = true;
           }
         })
