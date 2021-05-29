@@ -283,7 +283,7 @@ export default {
       if (!this.slides[this.currentIndex]) {
         return false;
       }
-      if (!this.classRoomInfo.lock_page) {
+      if (!this.classRoomInfo || !this.classRoomInfo.lock_page) {
         return false;
       } else {
         for (let i = 0; i < this.classRoomInfo.lock_page.length; i++) {
