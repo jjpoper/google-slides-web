@@ -555,7 +555,7 @@ export default {
         },
         user_id,
       } = d;
-      if (user_id === this.uid) {
+      if (studentId === this.uid) {
         // 对比一下uid
         addStudentComment(d.item);
         unreadStudentComment();
