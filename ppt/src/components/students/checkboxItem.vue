@@ -98,11 +98,8 @@ export default {
       if (!this.optionData.options) {
         return false;
       }
-      console.log("false", this.optionData);
       for (let i = 0; i < this.optionData.options.length; i++) {
-        console.log("false", this.optionData.options[i].isAnswer);
         if (this.optionData.options[i].isAnswer) {
-          console.log("true");
           return true;
         }
       }
