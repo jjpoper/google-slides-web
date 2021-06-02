@@ -1,5 +1,5 @@
 <template>
-  <div class="studentComment" v-if="modalVisibale">
+  <div class="studentComment" :style="`height: ${webHeight}px; `" v-if="modalVisibale">
     <div>
       <div class="title">Teacher Feedback</div>
       <div v-for="(item, index) in commentList" :key="index.toString()">
@@ -76,8 +76,9 @@ export default {
   data() {
     return {
       modalVisibale: false,
-      commentList: []
-    };
+      commentList: [],
+      webHeight: window.winHeight  - 50
+    }
   },
   components: { base64image },
   mounted() {
