@@ -206,10 +206,19 @@
 .icon {
   cursor: pointer;
 }
+.video{
+  width: 200px;
+  height: 100px;
+  position: fixed;
+  top:100px;
+  left: 300px;
+  z-index: 999;
+  background-color: red;
+}
 </style>
 
 <script>
-import { ModalEventsNameEnum } from "@/socket/socketEvents";
+import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
 import {startVideo} from '@/utils/video'
 export default {
   props: {
@@ -225,7 +234,7 @@ export default {
     return {
       //   isStar: false,
       //   isShowRes: true,
-      size: 20
+      size: 20,
     };
   },
   methods: {
@@ -245,12 +254,16 @@ export default {
     },
     comment() {
       console.log("回复");
+      this.showComment(ModalEventsTypeEnum.TEXT)
+    },
+    showComment(type) {
       const { pageId, itemId, studentId, title } = this.data;
       EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
         pageId,
         itemId,
         title,
-        studentId
+        studentId,
+        type
       });
     },
     hideResponse() {
@@ -268,7 +281,7 @@ export default {
       });
     },
     video() {
-      startVideo()
+      this.showComment(ModalEventsTypeEnum.VIDEO)
     }
   }
 };

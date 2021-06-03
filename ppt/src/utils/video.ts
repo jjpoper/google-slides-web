@@ -1,26 +1,45 @@
 import MediaStreamRecorder from 'msr'
 
-function onMediaSuccess(stream) {
-  var mediaRecorder = new MediaStreamRecorder(stream);
-  mediaRecorder.mimeType = 'video/webm';
-  mediaRecorder.ondataavailable = function (blob) {
-      // POST/PUT "Blob" using FormData/XHR2
-      var blobURL = URL.createObjectURL(blob);
-      document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
-  };
-  mediaRecorder.start(3000);
+function onMediaError() {
+  // console.error('media error', e);
+}
+const mediaConstraints = {
+  audio: true,
+  video: true
+};
+let mediaRecorder: any = null
+let domVideoElement: any = null
+
+export const startRecordVideo = (domVideo: any) => {
+  domVideoElement = domVideo
+  domVideoElement.width = 202
+  navigator.mediaDevices.getUserMedia(mediaConstraints).then((stream) => {
+    domVideoElement.srcObject = stream;
+    domVideoElement.play()
+    mediaRecorder = new MediaStreamRecorder(stream);
+    mediaRecorder.start(1000 * 60 * 60)
+    mediaRecorder.mimeType = 'video/webm';
+    mediaRecorder.ondataavailable = (blob: Blob) => {
+        // POST/PUT "Blob" using FormData/XHR2
+        const blobURL = URL.createObjectURL(blob);
+        // callback(blobURL)
+        // document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
+    };
+  }).catch(onMediaError);
 }
 
-function onMediaError(e) {
-  console.error('media error', e);
+export const pauseRecordVideo = () => {
+  mediaRecorder.pause();
+  domVideoElement.pause()
 }
 
-export const startVideo = () => {
-  var mediaConstraints = {
-      audio: true,
-      video: true
-  };
+export const resumeRecordVideo = () => {
+  mediaRecorder.resume();
+  domVideoElement.play()
+}
 
-  navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
-
+export const saveRecordVideo = () => {
+  debugger
+  mediaRecorder.stop();
+  domVideoElement.pause();
 }
