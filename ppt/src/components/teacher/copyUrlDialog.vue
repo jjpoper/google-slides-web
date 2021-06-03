@@ -7,12 +7,12 @@
     </div>
 
     <div class="btn_class" @click="enterClassroom()">
-      {{ isDashboard ? "Enter dashboard" : "Enter classroom" }}
+      {{ getBtnString() }}
     </div>
 
     <div class="bottom_div">
-      <div class="online_text">
-        {{ getStudentOnLineCount() }} student online
+      <div class="online_text" v-if="!isDashboard">
+        {{ getStudentCountString() }}
       </div>
 
       <div
@@ -69,7 +69,9 @@
 }
 .btn_class {
   margin-top: 40px;
-  width: 150px;
+  width: auto;
+  padding-left: 20px;
+  padding-right: 20px;
   height: 40px;
   display: flex;
   justify-content: center;
@@ -125,9 +127,23 @@ export default {
       type: Boolean,
       default: false,
     },
+    getBtnString: {
+      type: Function,
+    },
   },
   data() {
     return {};
+  },
+  methods: {
+    getStudentCountString() {
+      if (this.getStudentOnLineCount() == 0) {
+        return "No student connected";
+      } else if (this.getStudentOnLineCount() == 1) {
+        return "1 student connected";
+      } else {
+        this.getStudentOnLineCount() + " students connected";
+      }
+    },
   },
 };
 </script>

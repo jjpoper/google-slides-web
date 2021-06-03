@@ -57,14 +57,16 @@
     <comment-modal />
     <div class="top_btn">
       <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        <i
+          class="el-icon-s-opportunity"
+          :style="`color: ${onLine ? 'green' : 'red'}`"
+        />
       </div>
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
-      <div
-        class="number_info"
-        @click="showStudents()"
-      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
+      <div class="number_info" @click="showStudents()">
+        Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}
+      </div>
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -116,8 +118,13 @@
       <stepOneView :openTwo="openTwo" />
     </el-dialog>
 
-    <el-dialog title="This Session is in Student-Paced Mode" :visible.sync="stepTwoDialog">
-      <stepTwoView :copyUrl="copyUrl" :closeTwo="closeTwo" />
+    <el-dialog
+      :title="getStepTwoTitle()"
+      :visible.sync="stepTwoDialog"
+      @close="closeCopyLinkDialog()"
+      @open="openCopyLinkDialog()"
+    >
+      <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" />
     </el-dialog>
 
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
@@ -127,6 +134,8 @@
         :confirm="hindeTimeDialog"
       />
     </el-dialog>
+
+    <!-- custom-class="custom-dialog" -->
 
     <el-dialog
       title="Share this link with your students"
@@ -139,6 +148,7 @@
         :getStudentOnLineCount="getStudentOnLineCount"
         :url="getStudentUrl()"
         :copyLink="copyLink"
+        :getBtnString="getBtnString"
         :enterClassroom="enterClassroom"
         :setTimeDialogShow="setTimeDialogShow"
         :currentMode="page_model"
@@ -148,6 +158,17 @@
   </div>
 </template>
 
+<style lang="scss">
+.custom-dialog.el-dialog {
+  padding: 0;
+  .el-dialog__header {
+    display: none;
+  }
+  .el-dialog__body {
+    padding: 0;
+  }
+}
+</style>
 
 <style scoped>
 .page {
@@ -244,12 +265,12 @@ import {
   queryClassStatus,
   endClassRoomReq,
   reopenClass,
-  getOnlineUsers
+  getOnlineUsers,
 } from "../model/index";
 import {
   initTeacherData,
   getTeacherCurrentPageAnswerList,
-  addTeacherData
+  addTeacherData,
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
@@ -257,13 +278,13 @@ import { createSo } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum
+  ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveAnswerList,
-  getStundentUidAndName
+  getStundentUidAndName,
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -286,7 +307,7 @@ export default {
     stepTwoView,
     studentList,
     feedbackTimePanel,
-    copyLinkDialog
+    copyLinkDialog,
   },
 
   /*author: "yujj085@gmail.com"
@@ -334,12 +355,13 @@ type: "slide"*/
       directFromPlugin: false, //是否是从插件直接打开的。
       showTimeSetDialog: false,
       showCopyLinkDialog: false,
+      copyLinkBtnString: "",
       firstCloseCopyLinkDialog: true,
-      mode: 1
+      mode: 1,
     };
   },
   mounted() {
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
       this.sendComment(data);
     });
 
@@ -365,10 +387,10 @@ type: "slide"*/
       } else {
         return "p";
       }
-    }
+    },
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { slide_id, token, class_id, type } = to.query;
       vm.slide_id = slide_id;
       vm.class_id = class_id;
@@ -389,6 +411,9 @@ type: "slide"*/
   methods: {
     onLineStatusChanged(status) {
       this.onLine = status;
+    },
+    getStepTwoTitle() {
+      return "This Session is in " + this.page_model + " Mode";
     },
     handleStarOrHide(
       pageId,
@@ -434,7 +459,7 @@ type: "slide"*/
                 answer,
                 star: responseList[i].star,
                 show: responseList[i].show,
-                key: user_id
+                key: user_id,
               });
               const data = this.currentItemData;
               EventBus.$emit("choice", { data });
@@ -448,7 +473,7 @@ type: "slide"*/
                 user_name,
                 star: responseList[i].star,
                 show: responseList[i].show,
-                key: user_id
+                key: user_id,
               });
               EventBus.$emit("draw", { user_id, content, user_name });
             } else if (
@@ -466,7 +491,7 @@ type: "slide"*/
                 item_id,
                 star: responseList[i].star,
                 show: responseList[i].show,
-                key: `${item_id}_${user_id}`
+                key: `${item_id}_${user_id}`,
               });
               EventBus.$emit(itemData[0].type, { user_id, pageId });
             }
@@ -489,7 +514,7 @@ type: "slide"*/
       title,
       time,
       value,
-      teacherName
+      teacherName,
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -501,7 +526,7 @@ type: "slide"*/
         value,
         teacherName,
         slideIndex: this.currentIndex + 1,
-        room: this.slide_id
+        room: this.slide_id,
       });
       console.log(itemData);
       this.currentSo.emit(
@@ -529,7 +554,7 @@ type: "slide"*/
     },
 
     goToLogin() {
-      getTeacherLoginUrl().then(url => {
+      getTeacherLoginUrl().then((url) => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -544,11 +569,11 @@ type: "slide"*/
     },
     startConnectRoom() {
       if (this.directFromPlugin) {
-        this.stepTwoDialog = true;
+        this.stepOneDialog = true;
       }
       this.joinRoom();
       queryClassStatus(this.class_id, this.token)
-        .then(res => {
+        .then((res) => {
           this.classRoomInfo = res;
           this.classRoomInfo.showResponsePages = new Array();
           if (this.classRoomInfo.status == "live") {
@@ -571,12 +596,12 @@ type: "slide"*/
             this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
         });
 
       requestRefreshPPT(this.slide_id, this.token)
-        .then(res => {
+        .then((res) => {
           // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -586,13 +611,13 @@ type: "slide"*/
             hideLoading();
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
         });
       getOnlineUsers(this.token, this.class_id)
-        .then(res => {
+        .then((res) => {
           if (res.code == "ok") {
             let list = res.data;
             for (let i = 0; i < list.length; i++) {
@@ -612,12 +637,15 @@ type: "slide"*/
             }
           }
           this.studentCounts = this.studentList.length;
-          console.log(this.studentCounts, "getOnlineUsers");
-          if (this.studentCounts == 0 && !this.directFromPlugin) {
-            this.showCopyLinkDialog = true;
+          if (this.studentCounts == 0) {
+            if (this.isDashboard) {
+              this.stepTwoDialog = true;
+            } else {
+              this.showCopyLinkDialog = true;
+            }
           }
         })
-        .catch(res => {});
+        .catch((res) => {});
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -735,7 +763,7 @@ type: "slide"*/
           this.classRoomInfo.lock_page.push(page);
         } else {
           this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-            item => item != page
+            (item) => item != page
           );
         }
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
@@ -746,7 +774,7 @@ type: "slide"*/
             title,
             studentId,
             nextStatus,
-            type
+            type,
           } = d.params;
           this.handleStarOrHide(
             pageId,
@@ -773,9 +801,15 @@ type: "slide"*/
       } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
         console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
       } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
-        console.log(SocketEventsEnum.COPY_LINK_DIALOG_CLOSE);
         this.firstCloseCopyLinkDialog = false;
         this.showCopyLinkDialog = false;
+        this.stepTwoDialog = false;
+      } else if ((d.type = SocketEventsEnum.COPY_LINK_DIALOG_OPEN)) {
+        if (this.isDashboard) {
+          this.stepTwoDialog = true;
+        } else {
+          this.showCopyLinkDialog = true;
+        }
       }
 
       // 回答问题
@@ -790,7 +824,7 @@ type: "slide"*/
           answer,
           star: false,
           show: true,
-          key: user_id
+          key: user_id,
         });
         const data = this.currentItemData;
         EventBus.$emit("choice", { data });
@@ -807,7 +841,7 @@ type: "slide"*/
           item_id,
           star: false,
           show: true,
-          key: `${item_id}_${user_id}`
+          key: `${item_id}_${user_id}`,
         });
         EventBus.$emit(d.type, { user_id, page_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
@@ -818,7 +852,7 @@ type: "slide"*/
           star: false,
           show: true,
           key: user_id,
-          user_name
+          user_name,
         });
         EventBus.$emit("draw", { user_id, content, user_name });
       }
@@ -845,9 +879,9 @@ type: "slide"*/
       let _this = this;
       if (count < 20) {
         queryRefreshResult(code, token)
-          .then(res => {
+          .then((res) => {
             if (res.data.status === "processing") {
-              setTimeout(function() {
+              setTimeout(function () {
                 _this.queryResult(code, token, ++count);
               }, 1000);
             } else {
@@ -855,7 +889,7 @@ type: "slide"*/
               hideLoading();
             }
           })
-          .catch(res => {
+          .catch((res) => {
             this.getAllSlides();
             hideLoading();
           });
@@ -869,7 +903,7 @@ type: "slide"*/
       initTeacherCommentData(this.class_id, this.token);
       Promise.all([
         initTeacherData(this.class_id, this.token),
-        getAllPPTS(this.slide_id)
+        getAllPPTS(this.slide_id),
       ]).then(([alldata, list]) => {
         console.log(list);
         // this.contentUrl = d;
@@ -931,13 +965,22 @@ type: "slide"*/
     },
 
     copyUrl() {
-      this.showCopyLinkDialog = true;
-      // if (!this.page_model) {
-      //   this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
-      // }
-      // const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
-      // copy(url);
-      // showToast("copy link success");
+      if (this.isDashboard) {
+        this.stepTwoDialog = true;
+      } else {
+        this.showCopyLinkDialog = true;
+      }
+    },
+
+    getBtnString() {
+      if (this.getStudentOnLineCount() == 0) {
+        this.copyLinkBtnString = "Waiting for students..";
+      } else if (this.currentIndex == 0) {
+        this.copyLinkBtnString = "Start Class";
+      } else {
+        this.copyLinkBtnString = "Continue";
+      }
+      return this.copyLinkBtnString;
     },
 
     getStudentUrl() {
@@ -953,6 +996,7 @@ type: "slide"*/
       copy(this.getStudentUrl());
       showToast("copy link success");
       this.showCopyLinkDialog = false;
+      this.stepTwoDialog = false;
     },
 
     emitSo(message) {
@@ -1037,7 +1081,7 @@ type: "slide"*/
       showLoading();
 
       endClassRoomReq(this.token, name, this.class_id)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           let _this = this;
           this.confirmCloseDialogVisible = false;
@@ -1045,7 +1089,7 @@ type: "slide"*/
             this.emitSo(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
-            setTimeout(function() {
+            setTimeout(function () {
               hideLoading();
               let url =
                 "https://docs.google.com/presentation/d/" + _this.slide_id;
@@ -1053,7 +1097,7 @@ type: "slide"*/
             }, 2000);
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
           this.$message("error", "Close Session error");
           hideLoading();
@@ -1069,7 +1113,7 @@ type: "slide"*/
         this.classRoomInfo.lock_page.push(page_id);
       } else {
         let pages = this.classRoomInfo.lock_page.filter(
-          item => item != page_id
+          (item) => item != page_id
         );
         islocked = this.classRoomInfo.lock_page.length == pages.length;
         if (islocked) {
@@ -1100,15 +1144,11 @@ type: "slide"*/
       window.open(url);
     },
     open(model) {
-      // this.$router.push({ path: "/dashboard" });
-
       if (model == 0) {
         console.log(0 + "_blank");
         var windowObjectReference;
         var strWindowFeatures =
-          "width=1000,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
-
-        //"/index.html#/dashboard?slide_id=" + this.slide_id
+          "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
         windowObjectReference = window.open(
           "about:blank",
           "_blank",
@@ -1147,7 +1187,7 @@ type: "slide"*/
     //重新开启课堂
     _reopenClass() {
       reopenClass(this.token, this.class_id)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
@@ -1162,7 +1202,7 @@ type: "slide"*/
             }
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
         });
     },
@@ -1283,8 +1323,11 @@ type: "slide"*/
     },
     openCopyLinkDialog() {
       console.log("open copy link dialog!!");
-    }
-  }
+      this.emitSo(
+        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
+      );
+    },
+  },
 };
 </script>,
     
