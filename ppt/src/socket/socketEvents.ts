@@ -17,6 +17,7 @@ export enum SocketEventsEnum {
   STUDETN_GO_PAGE ='STUDENT_GO_PAGE',
   SET_DEADLINE_TIME = 'response_limit',
   COPY_LINK_DIALOG_CLOSE = 'copy_link_dialog_close',
+  COPY_LINK_DIALOG_OPEN = 'copy_link_dialog_open',
 }
 
 export enum ModalEventsNameEnum {

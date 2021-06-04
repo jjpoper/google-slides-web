@@ -9,11 +9,22 @@
       </div>
       <div class="mbox" v-if="commentData.pageId">
         <div class="left">
-          <div class="mtitle" v-if="commentData.title.indexOf('data:image/') > -1">
+          <div
+            class="mtitle"
+            v-if="commentData.title.indexOf('data:image/') > -1"
+          >
             <base64image :url="commentData.title" />
           </div>
-          <div class="rightmtitle" v-else-if="commentData.title.indexOf('[') > -1">
-            <div v-for="(text,index) in getAnswer(commentData.title)" :key="index">{{text}}</div>
+          <div
+            class="rightmtitle"
+            v-else-if="commentData.title.indexOf('[') > -1"
+          >
+            <div
+              v-for="(text, index) in getAnswer(commentData.title)"
+              :key="index"
+            >
+              {{ text }}
+            </div>
           </div>
           <div class="rightmtitle" v-else>{{commentData.title}}</div>
           <template v-if="commentData.type === ModalEventsTypeEnum.TEXT">
@@ -46,16 +57,27 @@
         </div>
         <div class="right" v-if="commentList && commentList.length > 0">
           <div v-for="(item, index) in commentList" :key="index.toString()">
-            <div class="rightmtitle" v-if="commentData.title.indexOf('data:image/') > -1">
+            <div
+              class="rightmtitle"
+              v-if="commentData.title.indexOf('data:image/') > -1"
+            >
               <base64image :url="commentData.title" />
             </div>
-            <div class="rightmtitle" v-else-if="commentData.title.indexOf('[') > -1">
-              <p v-for="(text,index) in getAnswer(commentData.title)" :key="index">{{text}}</p>
+            <div
+              class="rightmtitle"
+              v-else-if="commentData.title.indexOf('[') > -1"
+            >
+              <p
+                v-for="(text, index) in getAnswer(commentData.title)"
+                :key="index"
+              >
+                {{ text }}
+              </p>
             </div>
-            <div class="rightmtitle" v-else>{{commentData.title}}</div>
+            <div class="rightmtitle" v-else>{{ commentData.title }}</div>
             <div class="rightcomment">
-              <p>{{item.teacherName}} {{item.time}}</p>
-              <p>{{item.value}}</p>
+              <p>{{ item.teacherName }} {{ item.time }}</p>
+              <p>{{ item.value }}</p>
             </div>
           </div>
         </div>
@@ -164,7 +186,7 @@ import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents"
 import {
   getTeacherUserName,
   addTeacherComment,
-  getTeacherCommentList
+  getTeacherCommentList,
 } from "@/model/store.teacher";
 import { getTimeValue } from "@/utils/help";
 import base64image from "../base64image.vue";
@@ -179,7 +201,7 @@ export default {
         title: "1",
         pageId: "1",
         itemId: "1",
-        studentId: "1"
+        studentId: "1",
       },
       ModalEventsTypeEnum,
       isRecording: false,
@@ -222,12 +244,16 @@ export default {
       return JSON.parse(answer);
     },
     sendMessage() {
+      if (!this.commentValue) {
+        this.$message.warning("Please input your comment");
+        return;
+      }
       const { year, hours, month, date, minutes } = getTimeValue(Date.now());
       console.log(getTeacherUserName());
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
         value: this.commentValue,
-        teacherName: getTeacherUserName()
+        teacherName: getTeacherUserName(),
       };
       const { pageId, itemId, studentId, title } = this.commentData;
       addTeacherComment({
@@ -235,7 +261,7 @@ export default {
         pageId,
         itemId,
         title,
-        ...data
+        ...data,
       });
       this.commentList.unshift(data);
       this.commentValue = "";
@@ -244,7 +270,7 @@ export default {
         pageId,
         itemId,
         title,
-        ...data
+        ...data,
       });
     },
     pauseVideo() {
