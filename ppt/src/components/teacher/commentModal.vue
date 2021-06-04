@@ -26,15 +26,34 @@
               {{ text }}
             </div>
           </div>
-          <div class="rightmtitle" v-else>{{ commentData.title }}</div>
-          <textarea
-            class="textarea"
-            v-model="commentValue"
-            placeholder="Leave a message for this response..."
-          ></textarea>
-          <el-button type="primary" style="width: 100%" @click="sendMessage"
-            >send</el-button
-          >
+          <div class="rightmtitle" v-else>{{commentData.title}}</div>
+          <template v-if="commentData.type === ModalEventsTypeEnum.TEXT">
+            <div>
+              <textarea
+                class="textarea"
+                v-model="commentValue"
+                placeholder="Leave a message for this response..."
+              ></textarea>
+              <el-button type="primary" style="width: 100%" @click="sendMessage">send</el-button>
+            </div> 
+          </template>
+          <template v-else-if="commentData.type === ModalEventsTypeEnum.VIDEO">
+            <div>
+              <video class="textarea" id="record-video"/>
+              <el-row>
+                <el-tooltip content="record" placement="top" v-if="!isRecording">
+                  <el-button type="primary" icon="el-icon-video-play" @click="resumeVideo" circle></el-button>
+                </el-tooltip>
+                <el-tooltip content="pause" placement="top" v-else>
+                  <el-button type="primary" icon="el-icon-video-pause" @click="pauseVideo" circle></el-button>
+                </el-tooltip>
+                <!-- <el-tooltip content="resume" placement="top">
+                  <el-button type="primary" icon="el-icon-refresh" @click="resume" circle></el-button>
+                </el-tooltip> -->
+                <el-button type="primary" @click="doneRecord">done</el-button>
+              </el-row>
+            </div> 
+          </template>
         </div>
         <div class="right" v-if="commentList && commentList.length > 0">
           <div v-for="(item, index) in commentList" :key="index.toString()">
@@ -163,7 +182,7 @@
 }
 </style>
 <script>
-import { ModalEventsNameEnum } from "@/socket/socketEvents";
+import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
 import {
   getTeacherUserName,
   addTeacherComment,
@@ -171,6 +190,7 @@ import {
 } from "@/model/store.teacher";
 import { getTimeValue } from "@/utils/help";
 import base64image from "../base64image.vue";
+import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo} from '@/utils/video'
 export default {
   components: { base64image },
   data() {
@@ -183,28 +203,37 @@ export default {
         itemId: "1",
         studentId: "1",
       },
-      commentList: [], // {time: '',value: ''}
+      ModalEventsTypeEnum,
+      isRecording: false,
+      commentList: [] // {time: '',value: ''}
     };
   },
   mounted() {
     EventBus.$on(
       ModalEventsNameEnum.TEACHER_COMMENT_MODAL,
-      ({ pageId, itemId, title, studentId }) => {
+      ({ pageId, itemId, title, studentId, type }) => {
         // 通知展示当前pageid，当前itemid的评论框
-        this.showModal({ pageId, itemId, title, studentId });
+        this.showModal({ pageId, itemId, title, studentId, type });
       }
     );
   },
   methods: {
-    showModal({ pageId, itemId, title, studentId }) {
+    showModal({ pageId, itemId, title, studentId, type }) {
       this.commentData = {
         title,
         pageId,
         itemId,
         studentId,
+        type
       };
       this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
       this.modalVisiable = true;
+      if(type === ModalEventsTypeEnum.VIDEO) {
+        this.$nextTick(() => {
+          startRecordVideo(document.getElementById("record-video"))
+          this.isRecording = true
+        })
+      }
     },
     closeModal() {
       this.modalVisiable = false;
@@ -244,6 +273,17 @@ export default {
         ...data,
       });
     },
-  },
+    pauseVideo() {
+      pauseRecordVideo()
+      this.isRecording = false
+    },
+    resumeVideo() {
+      resumeRecordVideo()
+      this.isRecording = true
+    },
+    doneRecord() {
+      saveRecordVideo()
+    }
+  }
 };
 </script>
