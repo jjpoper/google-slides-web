@@ -1,4 +1,4 @@
-import MediaStreamRecorder from 'msr'
+import RecordRTC from 'recordrtc'
 
 function onMediaError() {
   // console.error('media error', e);
@@ -13,33 +13,35 @@ let domVideoElement: any = null
 export const startRecordVideo = (domVideo: any) => {
   domVideoElement = domVideo
   domVideoElement.width = 202
-  navigator.mediaDevices.getUserMedia(mediaConstraints).then((stream) => {
-    domVideoElement.srcObject = stream;
+  navigator.mediaDevices.getUserMedia(mediaConstraints).then((camera) => {
+    domVideoElement.srcObject = camera;
     domVideoElement.play()
-    mediaRecorder = new MediaStreamRecorder(stream);
-    mediaRecorder.start(1000 * 60 * 60)
-    mediaRecorder.mimeType = 'video/webm';
-    mediaRecorder.ondataavailable = (blob: Blob) => {
-        // POST/PUT "Blob" using FormData/XHR2
-        const blobURL = URL.createObjectURL(blob);
-        // callback(blobURL)
-        // document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
-    };
+    mediaRecorder = RecordRTC(camera, {
+      type: 'video'
+    });
+    mediaRecorder.startRecording();
+
+    mediaRecorder.camera = camera;
   }).catch(onMediaError);
 }
 
 export const pauseRecordVideo = () => {
-  mediaRecorder.pause();
+  mediaRecorder.pauseRecording();
   domVideoElement.pause()
 }
 
 export const resumeRecordVideo = () => {
-  mediaRecorder.resume();
+  mediaRecorder.resumeRecording();
   domVideoElement.play()
 }
 
 export const saveRecordVideo = () => {
-  debugger
-  mediaRecorder.stop();
   domVideoElement.pause();
+  mediaRecorder.stopRecording(() => {
+    domVideoElement.src = domVideoElement.srcObject = null;
+    domVideoElement.src = URL.createObjectURL(mediaRecorder.getBlob());
+    mediaRecorder.camera.stop();
+    mediaRecorder.destroy();
+    mediaRecorder = null;
+  });
 }
