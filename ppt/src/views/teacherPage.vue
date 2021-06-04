@@ -1,5 +1,11 @@
 <template>
   <div class="page">
+    <student-paced-note
+      v-if="showStudentPacedNotePage"
+      class="student_note_page"
+      :confirmModeChange="confirmModeChange"
+      :cancelModeChange="cancelModeChange"
+    />
     <div class="content" v-if="currentItemData">
       <TeacherPPTPage
         v-if="!isDashboard && currentItemData"
@@ -175,6 +181,14 @@
   width: 100%;
   height: 100%;
 }
+.student_note_page {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0%;
+  top: 0%;
+  z-index: 9999;
+}
 .content {
   width: 100%;
   height: 100%;
@@ -296,6 +310,7 @@ import stepTwoView from "../components/teacher/openDashboardStepTwo";
 import studentList from "../components/teacher/studentList";
 import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
+import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 export default {
   components: {
     teacherControlPanel,
@@ -308,6 +323,7 @@ export default {
     studentList,
     feedbackTimePanel,
     copyLinkDialog,
+    StudentPacedNote,
   },
 
   /*author: "yujj085@gmail.com"
@@ -358,6 +374,7 @@ type: "slide"*/
       copyLinkBtnString: "",
       firstCloseCopyLinkDialog: true,
       mode: 1,
+      showStudentPacedNotePage: false,
     };
   },
   mounted() {
@@ -987,7 +1004,6 @@ type: "slide"*/
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      //
       const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
       return url;
     },
@@ -1007,15 +1023,27 @@ type: "slide"*/
     },
 
     turnModel() {
+      console.log(this.page_model);
       if (this.page_model === ClassRoomModelEnum.STUDENT_MODEL) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+        this.sendModeChangeCommend();
       } else {
-        this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+        this.showStudentPacedNotePage = true;
       }
+    },
 
+    confirmModeChange() {
+      this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+      this.sendModeChangeCommend();
+      this.showStudentPacedNotePage = false;
+    },
+    cancelModeChange() {
+      this.showStudentPacedNotePage = false;
+    },
+
+    sendModeChangeCommend() {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        console.log(this.page_model, "send message");
         this.emitSo(
           `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.MODEL_CHANGE
