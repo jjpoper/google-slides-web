@@ -259,3 +259,70 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   }
   return result.reverse()
 }
+
+const makeXMLHttpRequest = (url, data, callback) => {
+  var request = new XMLHttpRequest();
+  request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+          callback('upload-ended');
+      }
+  };
+
+  request.upload.onloadstart = function() {
+      callback('Upload started...');
+  };
+
+  request.upload.onprogress = function(event) {
+      callback('Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%");
+  };
+
+  request.upload.onload = function() {
+      callback('progress-about-to-end');
+  };
+
+  request.upload.onload = function() {
+      callback('progress-ended');
+  };
+
+  request.upload.onerror = function(error) {
+      callback('Failed to upload to server');
+      console.error('XMLHttpRequest failed', error);
+  };
+
+  request.upload.onabort = function(error) {
+      callback('Upload aborted.');
+      console.error('XMLHttpRequest aborted', error);
+  };
+
+  request.open('POST', url);
+  request.send(data);
+}
+
+// 上传文件
+export const upLoadFile = async (mp4: Blob) => {
+  // console.log(file)
+  // const data = await axios.post(`${PPT.requestUrl}upload`, {
+  //   file
+  // })
+  const fileType = 'video'
+  const fileName = (Math.random() * 1000).toString().replace('.', '');
+
+  const formData = new FormData();
+  formData.append('file', mp4);
+
+  // callback('Uploading ' + fileType + ' recording to server.');
+
+  // var upload_directory = upload_url;
+
+  makeXMLHttpRequest(`${PPT.requestUrl}upload`, formData, (progress) => {
+      if(progress !== 'upload-ended') {
+          console.log(progress);
+          return;
+      }
+
+      // callback('ended', upload_directory + fileName);
+
+      // to make sure we can delete as soon as visitor leaves
+      // listOfFilesUploaded.push(upload_directory + fileName);
+  });
+}

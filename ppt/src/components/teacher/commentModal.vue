@@ -39,7 +39,7 @@
           </template>
           <template v-else-if="commentData.type === ModalEventsTypeEnum.VIDEO">
             <div>
-              <video class="textarea" id="record-video"/>
+              <video id="record-video" controls width="200" height="150"/>
               <el-row>
                 <el-tooltip content="start" placement="top" v-if="endRecording">
                   <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
