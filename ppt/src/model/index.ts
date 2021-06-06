@@ -314,7 +314,7 @@ export const upLoadFile = async (mp4: Blob) => {
 
   // var upload_directory = upload_url;
 
-  makeXMLHttpRequest(`${PPT.requestUrl}upload`, formData, (progress) => {
+  makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData, (progress) => {
       if(progress !== 'upload-ended') {
           console.log(progress);
           return;

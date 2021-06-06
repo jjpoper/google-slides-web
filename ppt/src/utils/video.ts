@@ -45,10 +45,10 @@ export const saveRecordVideo = () => {
     const blobData = mediaRecorder.getBlob()
     domVideoElement.src = URL.createObjectURL(blobData);
     console.log(URL.createObjectURL(blobData))
-    let files = new window.File([blobData], 'video')
+    let files = new window.File([blobData], 'mp4')
 
     upLoadFile(files)
-    upLoadFile(blobData)
+    // upLoadFile(blobData)
     mediaRecorder.camera.stop();
     mediaRecorder.destroy();
     mediaRecorder = null;
