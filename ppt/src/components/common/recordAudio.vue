@@ -33,7 +33,7 @@
 }
 </style>
 <script>
-import {startRecordAudio, pauseRecordAudio, resumeRecordAudio, saveRecordAudio} from '@/utils/audio'
+import {startRecordAudio, pauseRecordAudio, resumeRecordAudio, saveRecordAudio, endRecordAudio} from '@/utils/audio'
 export default {
   props: {
     onSend: {
@@ -55,6 +55,9 @@ export default {
   },
   beforeDestroy() {
     this.clearCount()
+    if(!this.endRecording) {
+      endRecordAudio()
+    }
   },
   methods: {
     count() {

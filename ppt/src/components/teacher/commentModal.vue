@@ -196,6 +196,7 @@ export default {
         pageId: "1",
         itemId: "1",
         studentId: "1",
+        type: 'text'
       },
       ModalEventsTypeEnum,
       isRecording: false,
@@ -227,9 +228,6 @@ export default {
     closeModal() {
       this.modalVisiable = false;
       this.commentList = [];
-      if(this.isRecording) {
-        this.doneRecord()
-      }
     },
     getAnswer(answer) {
       console.log(JSON.parse(answer));

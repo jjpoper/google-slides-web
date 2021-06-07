@@ -1,6 +1,6 @@
 <template>
   <div>
-    <video id="record-video" controls width="200" height="150"/>
+    <video id="record-video" width="200" height="150"/>
     <el-row>
       <el-tooltip content="start" placement="top" v-if="endRecording">
         <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
@@ -16,7 +16,7 @@
   </div> 
 </template>
 <script>
-import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo} from '@/utils/video'
+import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo, endRecord} from '@/utils/video'
 export default {
   props: {
     onSend: {
@@ -31,6 +31,11 @@ export default {
   },
   mounted() {
     this.startRecord()
+  },
+  beforeDestroy() {
+    if(!this.endRecording) {
+      endRecord()
+    }
   },
   methods: {
     pauseVideo() {

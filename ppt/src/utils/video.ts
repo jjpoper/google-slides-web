@@ -38,6 +38,16 @@ export const resumeRecordVideo = () => {
   domVideoElement.play()
 }
 
+export const endRecord = () => {
+  domVideoElement.pause();
+  mediaRecorder.stopRecording(() => {
+    domVideoElement.src = domVideoElement.srcObject = null;
+    mediaRecorder.camera.stop();
+    mediaRecorder.destroy();
+    mediaRecorder = null;
+  });
+}
+
 export const saveRecordVideo = async (): Promise<any> => {
   return new Promise((res, rej) => {
     domVideoElement.pause();

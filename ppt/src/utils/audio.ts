@@ -64,6 +64,13 @@ export const startRecordAudio = (domAudio: any) => {
   })
 }
 
+export const endRecordAudio = () => {
+  recorder.stopRecording(() => {
+    microphone.stop();
+    microphone = null;
+  });
+}
+
 export const saveRecordAudio = async (): Promise<any> => {
   return new Promise((res, rej) => {
     recorder.stopRecording(() => {
