@@ -39,12 +39,15 @@
           </template>
           <template v-else-if="commentData.type === ModalEventsTypeEnum.VIDEO">
             <div>
-              <video class="textarea" id="record-video"/>
+              <video id="record-video" controls width="200" height="150"/>
               <el-row>
-                <el-tooltip content="record" placement="top" v-if="!isRecording">
+                <el-tooltip content="start" placement="top" v-if="endRecording">
+                  <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
+                </el-tooltip>
+                <el-tooltip content="resume" placement="top" v-if="!isRecording && !endRecording">
                   <el-button type="primary" icon="el-icon-video-play" @click="resumeVideo" circle></el-button>
                 </el-tooltip>
-                <el-tooltip content="pause" placement="top" v-else>
+                <el-tooltip content="pause" placement="top" v-else-if="isRecording && !endRecording">
                   <el-button type="primary" icon="el-icon-video-pause" @click="pauseVideo" circle></el-button>
                 </el-tooltip>
                 <!-- <el-tooltip content="resume" placement="top">
@@ -205,6 +208,7 @@ export default {
       },
       ModalEventsTypeEnum,
       isRecording: false,
+      endRecording: false,
       commentList: [] // {time: '',value: ''}
     };
   },
@@ -238,6 +242,9 @@ export default {
     closeModal() {
       this.modalVisiable = false;
       this.commentList = [];
+      if(this.isRecording) {
+        this.doneRecord()
+      }
     },
     getAnswer(answer) {
       console.log(JSON.parse(answer));
@@ -283,6 +290,13 @@ export default {
     },
     doneRecord() {
       saveRecordVideo()
+      this.endRecording = true
+      this.isRecording = false
+    },
+    startRecord() {
+      startRecordVideo(document.getElementById("record-video"))
+      this.isRecording = true
+      this.endRecording = false
     }
   }
 };

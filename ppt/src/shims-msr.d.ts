@@ -1,1 +1,1 @@
-declare module 'msr'
+declare module 'recordrtc'
