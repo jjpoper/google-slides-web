@@ -24,7 +24,7 @@ export const getAllPPTS = async (slideid: string) => {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'
     // })
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return list
@@ -135,7 +135,7 @@ export const getTeacherLoginUrl = async (): Promise<string> => {
   // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return authUrl
@@ -165,7 +165,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
   // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return result
@@ -181,7 +181,7 @@ export const getStudentLoginUrl = async (): Promise<string> => {
   // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return authUrl
@@ -199,7 +199,7 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return result
@@ -208,7 +208,7 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
 // 获取学生的答案
 export const getStudentClassAnswers = async (classId: string, token: string) => {
 
-  console.log('=======', 'initStudentData')
+  // console.log('=======', 'initStudentData')
   const data = await axios.post(`${PPT.requestUrl}slide/get_student_response`, {
     class_id: classId,
     role: "student",
@@ -219,7 +219,7 @@ export const getStudentClassAnswers = async (classId: string, token: string) => 
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return result
@@ -237,7 +237,7 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return result.reverse()
@@ -254,44 +254,44 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
   return result.reverse()
 }
 
-const makeXMLHttpRequest = (url, data, callback) => {
-  var request = new XMLHttpRequest();
-  request.onreadystatechange = function() {
-      if (request.readyState == 4 && request.status == 200) {
-          callback('upload-ended');
+const makeXMLHttpRequest = (url: string, data: any, callback: any) => {
+  const request = new XMLHttpRequest();
+  request.onreadystatechange = () => {
+      if(request.readyState === 4 && request.status === 200) {
+          callback('upload-ended', request.response);
       }
   };
 
-  request.upload.onloadstart = function() {
+  request.upload.onloadstart = () => {
       callback('Upload started...');
   };
 
-  request.upload.onprogress = function(event) {
-      callback('Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%");
+  request.upload.onprogress = (event) => {
+      // callback('Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%");
   };
 
-  request.upload.onload = function() {
+  request.upload.onload = () => {
       callback('progress-about-to-end');
   };
 
-  request.upload.onload = function() {
+  request.upload.onload = () => {
       callback('progress-ended');
   };
 
-  request.upload.onerror = function(error) {
+  request.upload.onerror = (error) => {
       callback('Failed to upload to server');
-      console.error('XMLHttpRequest failed', error);
+      // console.error('XMLHttpRequest failed', error);
   };
 
-  request.upload.onabort = function(error) {
+  request.upload.onabort = (error) => {
       callback('Upload aborted.');
-      console.error('XMLHttpRequest aborted', error);
+      // console.error('XMLHttpRequest aborted', error);
   };
 
   request.open('POST', url);
@@ -304,25 +304,26 @@ export const upLoadFile = async (mp4: Blob) => {
   // const data = await axios.post(`${PPT.requestUrl}upload`, {
   //   file
   // })
-  const fileType = 'video'
-  const fileName = (Math.random() * 1000).toString().replace('.', '');
+  return new Promise((res, rej) => {
+    const fileType = 'video'
+    const fileName = (Math.random() * 1000).toString().replace('.', '');
 
-  const formData = new FormData();
-  formData.append('file', mp4);
+    const formData = new FormData();
+    formData.append('file', mp4);
 
-  // callback('Uploading ' + fileType + ' recording to server.');
+    // callback('Uploading ' + fileType + ' recording to server.');
 
-  // var upload_directory = upload_url;
+    // var upload_directory = upload_url;
 
-  makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData, (progress) => {
-      if(progress !== 'upload-ended') {
-          console.log(progress);
-          return;
-      }
+    makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData, (progress: string, result: any) => {
+        if(progress === 'upload-ended') {
+            res(JSON.parse(result))
+        }
 
-      // callback('ended', upload_directory + fileName);
+        // callback('ended', upload_directory + fileName);
 
-      // to make sure we can delete as soon as visitor leaves
-      // listOfFilesUploaded.push(upload_directory + fileName);
-  });
+        // to make sure we can delete as soon as visitor leaves
+        // listOfFilesUploaded.push(upload_directory + fileName);
+    });
+  })
 }

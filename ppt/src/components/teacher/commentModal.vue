@@ -53,7 +53,7 @@
                 <!-- <el-tooltip content="resume" placement="top">
                   <el-button type="primary" icon="el-icon-refresh" @click="resume" circle></el-button>
                 </el-tooltip> -->
-                <el-button type="primary" @click="doneRecord">done</el-button>
+                <el-button v-if="!endRecording" type="primary" @click="doneRecord">done</el-button>
               </el-row>
             </div> 
           </template>
@@ -80,7 +80,8 @@
             <div class="rightmtitle" v-else>{{ commentData.title }}</div>
             <div class="rightcomment">
               <p>{{ item.teacherName }} {{ item.time }}</p>
-              <p>{{ item.value }}</p>
+              <video v-if="item.commentType === 'video'" controls :src="item.value" width="60%"/>
+              <p v-else>{{ item.value }}</p>
             </div>
           </div>
         </div>
@@ -98,13 +99,13 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 .commentModal {
-  width: 600px;
-  height: 360px;
+  width: 800px;
+  height: 600px;
   position: relative;
   top: 50%;
   left: 50%;
-  margin-left: -300px;
-  margin-top: -150px;
+  margin-left: -400px;
+  margin-top: -300px;
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -129,7 +130,7 @@
   font-size: 30px;
 }
 .mbox {
-  height: 270px;
+  height: 525px;
   width: 100%;
   text-align: left;
   padding: 0 30px;
@@ -138,8 +139,8 @@
   box-sizing: border-box;
 }
 .left {
-  width: 200px;
-  height: 270px;
+  width: 300px;
+  height: 525px;
   /* border: 1px solid #999; */
 }
 .mtitle {
@@ -160,8 +161,8 @@
   /* border: none; */
 }
 .right {
-  width: 323px;
-  height: 270px;
+  width: 100%;
+  height: 525px;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -179,7 +180,7 @@
 .rightcomment {
   min-height: 70px;
   background-color: #fff;
-  width: 320px;
+  width: 100%;
   border: 1px solid #999;
   margin-bottom: 10px;
 }
@@ -255,11 +256,16 @@ export default {
         this.$message.warning("Please input your comment");
         return;
       }
+      this.sendComment(this.commentValue, 'text')
+      this.commentValue = ''
+    },
+    sendComment(value, commentType = 'text') {
       const { year, hours, month, date, minutes } = getTimeValue(Date.now());
       console.log(getTeacherUserName());
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
-        value: this.commentValue,
+        value,
+        commentType,
         teacherName: getTeacherUserName(),
       };
       const { pageId, itemId, studentId, title } = this.commentData;
@@ -271,7 +277,6 @@ export default {
         ...data,
       });
       this.commentList.unshift(data);
-      this.commentValue = "";
       EventBus.$emit(ModalEventsNameEnum.TEACHER_SEND_COMMENT, {
         studentId,
         pageId,
@@ -289,9 +294,16 @@ export default {
       this.isRecording = true
     },
     doneRecord() {
-      saveRecordVideo()
-      this.endRecording = true
-      this.isRecording = false
+      if(!this.endRecording) {
+        this.endRecording = true
+        this.isRecording = false
+        saveRecordVideo().then((d) => {
+          if(d.data) {
+            // 发送url信息
+            this.sendComment(d.data, 'video')
+          }
+        })
+      }
     },
     startRecord() {
       startRecordVideo(document.getElementById("record-video"))

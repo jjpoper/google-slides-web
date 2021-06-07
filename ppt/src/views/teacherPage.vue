@@ -532,6 +532,7 @@ type: "slide"*/
       time,
       value,
       teacherName,
+      commentType
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -541,6 +542,7 @@ type: "slide"*/
         title,
         time,
         value,
+        commentType,
         teacherName,
         slideIndex: this.currentIndex + 1,
         room: this.slide_id,
