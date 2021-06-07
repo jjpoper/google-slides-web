@@ -38,24 +38,10 @@
             </div> 
           </template>
           <template v-else-if="commentData.type === ModalEventsTypeEnum.VIDEO">
-            <div>
-              <video id="record-video" controls width="200" height="150"/>
-              <el-row>
-                <el-tooltip content="start" placement="top" v-if="endRecording">
-                  <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
-                </el-tooltip>
-                <el-tooltip content="resume" placement="top" v-if="!isRecording && !endRecording">
-                  <el-button type="primary" icon="el-icon-video-play" @click="resumeVideo" circle></el-button>
-                </el-tooltip>
-                <el-tooltip content="pause" placement="top" v-else-if="isRecording && !endRecording">
-                  <el-button type="primary" icon="el-icon-video-pause" @click="pauseVideo" circle></el-button>
-                </el-tooltip>
-                <!-- <el-tooltip content="resume" placement="top">
-                  <el-button type="primary" icon="el-icon-refresh" @click="resume" circle></el-button>
-                </el-tooltip> -->
-                <el-button v-if="!endRecording" type="primary" @click="doneRecord">done</el-button>
-              </el-row>
-            </div> 
+            <record-video :onSend="sendVideoOrAudio"/>
+          </template>
+          <template v-else-if="commentData.type === ModalEventsTypeEnum.AUDIO">
+            <record-audio :onSend="sendVideoOrAudio"/>
           </template>
         </div>
         <div class="right" v-if="commentList && commentList.length > 0">
@@ -80,7 +66,8 @@
             <div class="rightmtitle" v-else>{{ commentData.title }}</div>
             <div class="rightcomment">
               <p>{{ item.teacherName }} {{ item.time }}</p>
-              <video v-if="item.commentType === 'video'" controls :src="item.value" width="60%"/>
+              <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" width="60%" />
+              <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" width="60%" />
               <p v-else>{{ item.value }}</p>
             </div>
           </div>
@@ -183,6 +170,7 @@
   width: 100%;
   border: 1px solid #999;
   margin-bottom: 10px;
+  box-sizing: border-box;
 }
 </style>
 <script>
@@ -194,9 +182,11 @@ import {
 } from "@/model/store.teacher";
 import { getTimeValue } from "@/utils/help";
 import base64image from "../base64image.vue";
-import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo} from '@/utils/video'
+import RecordAudio from '../common/recordAudio.vue';
+import RecordVideo from '../common/recordVideo.vue';
+// import  
 export default {
-  components: { base64image },
+  components: { base64image, RecordAudio, RecordVideo },
   data() {
     return {
       commentValue: "",
@@ -233,12 +223,6 @@ export default {
       };
       this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
       this.modalVisiable = true;
-      if(type === ModalEventsTypeEnum.VIDEO) {
-        this.$nextTick(() => {
-          startRecordVideo(document.getElementById("record-video"))
-          this.isRecording = true
-        })
-      }
     },
     closeModal() {
       this.modalVisiable = false;
@@ -285,31 +269,9 @@ export default {
         ...data,
       });
     },
-    pauseVideo() {
-      pauseRecordVideo()
-      this.isRecording = false
+    sendVideoOrAudio(url, type = 'text') {
+      this.sendComment(url, type)
     },
-    resumeVideo() {
-      resumeRecordVideo()
-      this.isRecording = true
-    },
-    doneRecord() {
-      if(!this.endRecording) {
-        this.endRecording = true
-        this.isRecording = false
-        saveRecordVideo().then((d) => {
-          if(d.data) {
-            // 发送url信息
-            this.sendComment(d.data, 'video')
-          }
-        })
-      }
-    },
-    startRecord() {
-      startRecordVideo(document.getElementById("record-video"))
-      this.isRecording = true
-      this.endRecording = false
-    }
   }
 };
 </script>
