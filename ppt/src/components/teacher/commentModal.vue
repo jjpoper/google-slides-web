@@ -38,24 +38,10 @@
             </div> 
           </template>
           <template v-else-if="commentData.type === ModalEventsTypeEnum.VIDEO">
-            <div>
-              <video id="record-video" controls width="200" height="150"/>
-              <el-row>
-                <el-tooltip content="start" placement="top" v-if="endRecording">
-                  <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
-                </el-tooltip>
-                <el-tooltip content="resume" placement="top" v-if="!isRecording && !endRecording">
-                  <el-button type="primary" icon="el-icon-video-play" @click="resumeVideo" circle></el-button>
-                </el-tooltip>
-                <el-tooltip content="pause" placement="top" v-else-if="isRecording && !endRecording">
-                  <el-button type="primary" icon="el-icon-video-pause" @click="pauseVideo" circle></el-button>
-                </el-tooltip>
-                <!-- <el-tooltip content="resume" placement="top">
-                  <el-button type="primary" icon="el-icon-refresh" @click="resume" circle></el-button>
-                </el-tooltip> -->
-                <el-button type="primary" @click="doneRecord">done</el-button>
-              </el-row>
-            </div> 
+            <record-video :onSend="sendVideoOrAudio"/>
+          </template>
+          <template v-else-if="commentData.type === ModalEventsTypeEnum.AUDIO">
+            <record-audio :onSend="sendVideoOrAudio"/>
           </template>
         </div>
         <div class="right" v-if="commentList && commentList.length > 0">
@@ -80,7 +66,9 @@
             <div class="rightmtitle" v-else>{{ commentData.title }}</div>
             <div class="rightcomment">
               <p>{{ item.teacherName }} {{ item.time }}</p>
-              <p>{{ item.value }}</p>
+              <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" width="60%" />
+              <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" width="60%" />
+              <p v-else>{{ item.value }}</p>
             </div>
           </div>
         </div>
@@ -98,13 +86,13 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 .commentModal {
-  width: 600px;
-  height: 360px;
+  width: 800px;
+  height: 600px;
   position: relative;
   top: 50%;
   left: 50%;
-  margin-left: -300px;
-  margin-top: -150px;
+  margin-left: -400px;
+  margin-top: -300px;
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -129,7 +117,7 @@
   font-size: 30px;
 }
 .mbox {
-  height: 270px;
+  height: 525px;
   width: 100%;
   text-align: left;
   padding: 0 30px;
@@ -138,8 +126,8 @@
   box-sizing: border-box;
 }
 .left {
-  width: 200px;
-  height: 270px;
+  width: 300px;
+  height: 525px;
   /* border: 1px solid #999; */
 }
 .mtitle {
@@ -160,8 +148,8 @@
   /* border: none; */
 }
 .right {
-  width: 323px;
-  height: 270px;
+  width: 100%;
+  height: 525px;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -179,9 +167,10 @@
 .rightcomment {
   min-height: 70px;
   background-color: #fff;
-  width: 320px;
+  width: 100%;
   border: 1px solid #999;
   margin-bottom: 10px;
+  box-sizing: border-box;
 }
 </style>
 <script>
@@ -193,9 +182,11 @@ import {
 } from "@/model/store.teacher";
 import { getTimeValue } from "@/utils/help";
 import base64image from "../base64image.vue";
-import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo} from '@/utils/video'
+import RecordAudio from '../common/recordAudio.vue';
+import RecordVideo from '../common/recordVideo.vue';
+// import  
 export default {
-  components: { base64image },
+  components: { base64image, RecordAudio, RecordVideo },
   data() {
     return {
       commentValue: "",
@@ -205,6 +196,7 @@ export default {
         pageId: "1",
         itemId: "1",
         studentId: "1",
+        type: 'text'
       },
       ModalEventsTypeEnum,
       isRecording: false,
@@ -232,19 +224,10 @@ export default {
       };
       this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
       this.modalVisiable = true;
-      if(type === ModalEventsTypeEnum.VIDEO) {
-        this.$nextTick(() => {
-          startRecordVideo(document.getElementById("record-video"))
-          this.isRecording = true
-        })
-      }
     },
     closeModal() {
       this.modalVisiable = false;
       this.commentList = [];
-      if(this.isRecording) {
-        this.doneRecord()
-      }
     },
     getAnswer(answer) {
       console.log(JSON.parse(answer));
@@ -255,11 +238,16 @@ export default {
         this.$message.warning("Please input your comment");
         return;
       }
+      this.sendComment(this.commentValue, 'text')
+      this.commentValue = ''
+    },
+    sendComment(value, commentType = 'text') {
       const { year, hours, month, date, minutes } = getTimeValue(Date.now());
       console.log(getTeacherUserName());
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
-        value: this.commentValue,
+        value,
+        commentType,
         teacherName: getTeacherUserName(),
       };
       const { pageId, itemId, studentId, title } = this.commentData;
@@ -271,7 +259,6 @@ export default {
         ...data,
       });
       this.commentList.unshift(data);
-      this.commentValue = "";
       EventBus.$emit(ModalEventsNameEnum.TEACHER_SEND_COMMENT, {
         studentId,
         pageId,
@@ -280,24 +267,9 @@ export default {
         ...data,
       });
     },
-    pauseVideo() {
-      pauseRecordVideo()
-      this.isRecording = false
+    sendVideoOrAudio(url, type = 'text') {
+      this.sendComment(url, type)
     },
-    resumeVideo() {
-      resumeRecordVideo()
-      this.isRecording = true
-    },
-    doneRecord() {
-      saveRecordVideo()
-      this.endRecording = true
-      this.isRecording = false
-    },
-    startRecord() {
-      startRecordVideo(document.getElementById("record-video"))
-      this.isRecording = true
-      this.endRecording = false
-    }
   }
 };
 </script>

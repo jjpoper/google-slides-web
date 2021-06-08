@@ -38,19 +38,33 @@ export const resumeRecordVideo = () => {
   domVideoElement.play()
 }
 
-export const saveRecordVideo = () => {
+export const endRecord = () => {
   domVideoElement.pause();
   mediaRecorder.stopRecording(() => {
     domVideoElement.src = domVideoElement.srcObject = null;
-    const blobData = mediaRecorder.getBlob()
-    domVideoElement.src = URL.createObjectURL(blobData);
-    console.log(URL.createObjectURL(blobData))
-    let files = new window.File([blobData], 'mp4')
-
-    upLoadFile(files)
-    // upLoadFile(blobData)
     mediaRecorder.camera.stop();
     mediaRecorder.destroy();
     mediaRecorder = null;
   });
+}
+
+export const saveRecordVideo = async (): Promise<any> => {
+  return new Promise((res, rej) => {
+    domVideoElement.pause();
+    mediaRecorder.stopRecording(() => {
+      domVideoElement.src = domVideoElement.srcObject = null;
+      const blobData = mediaRecorder.getBlob()
+      domVideoElement.src = URL.createObjectURL(blobData);
+      // console.log(URL.createObjectURL(blobData))
+      let files = new window.File([blobData], 'mp4')
+
+      upLoadFile(files).then((data) => {
+        res(data)
+      })
+
+      mediaRecorder.camera.stop();
+      mediaRecorder.destroy();
+      mediaRecorder = null;
+    });
+  })
 }
