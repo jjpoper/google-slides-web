@@ -15,7 +15,10 @@
           <div class="section">
             <p>{{item.teacherName}}</p>
             <p>{{item.time}}</p>
-            <p>{{item.value}}</p>
+            <!-- <p>{{item.value}}</p> -->
+            <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" width="100%" />
+            <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" width="100%" />
+            <p v-else>{{ item.value }}</p>
           </div>
         </div>
       </div>
@@ -25,7 +28,7 @@
 <style scoped>
 .studentComment {
   position: absolute;
-  width: 80%;
+  width: 40%;
   height: 100%;
   overflow-y: scroll;
   top: 0;
