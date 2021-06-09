@@ -1,8 +1,11 @@
 <template>
   <div class="parent" v-if="textList && textList.length > 0">
     <div v-for="(item, index) in textList" :key="index">
-      <div v-if="shouldShow(item)" :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
-        <div class="text_content">{{ item.content }}</div>
+      <div
+        v-if="shouldShow(item)"
+        :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
+      >
+        <div class="text_content">{{ getText(item) }}</div>
         <student-response-opt-bar
           v-if="flag_1"
           :data="{
@@ -69,16 +72,16 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     flag_1: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
-      textList: []
+      textList: [],
     };
   },
   mounted() {
@@ -89,7 +92,7 @@ export default {
     );
 
     console.log("text refresh", this.textList);
-    EventBus.$on(this.data.items[0].type, data => {
+    EventBus.$on(this.data.items[0].type, (data) => {
       // 通知展示当前pageid，当前itemid的评论框
       this.textList = getCurrentPageAnswerList(
         this.data.page_id,
@@ -103,7 +106,12 @@ export default {
       const name = getStundentUidAndName(id);
       return name ? name : id;
     },
-
+    getText(item) {
+      if (item.content) {
+        return item.content;
+      }
+      return "Deleted response";
+    },
     //返回当前这个item是否应该show出来
     shouldShow(item) {
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
@@ -113,7 +121,7 @@ export default {
         if (this.textList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
       }
       return true;
-    }
-  }
+    },
+  },
 };
 </script>

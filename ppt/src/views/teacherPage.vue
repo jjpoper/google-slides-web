@@ -823,7 +823,7 @@ type: "slide"*/
         this.firstCloseCopyLinkDialog = false;
         this.showCopyLinkDialog = false;
         this.stepTwoDialog = false;
-      } else if ((d.type = SocketEventsEnum.COPY_LINK_DIALOG_OPEN)) {
+      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
         if (this.isDashboard) {
           this.stepTwoDialog = true;
         } else {
