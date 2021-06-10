@@ -2,10 +2,10 @@ import { Loading, Notification } from 'element-ui'
 
 let loading: any = null
 
-export const showLoading = () => {
+export const showLoading = (text = '加载中……') => {
     loading = Loading.service({
         lock: true,
-        text: '加载中……',
+        text,
         background: 'rgba(0, 0, 0, 0.7)'
     })
 }
