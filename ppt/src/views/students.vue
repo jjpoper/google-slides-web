@@ -54,6 +54,7 @@
           :currentAnswerd="currentAnswerd"
           :unread="unread"
           :showStudentModal="showStudentModal"
+          :showStudentQuestions="showStudentQuestions"
         />
       </div>
     </el-container>
@@ -69,6 +70,7 @@
         Deadline time remain:{{ countDownMin }} mintues.
       </div>
     </div>
+    <student-questions v-if="questionModalVisiable"/>
   </div>
 </template>
 <style scoped>
@@ -191,6 +193,7 @@ import StudentComment from "@/components/students/studentComment.vue";
 import ClassRoomClosed from "@/components/students/classRoomClosed.vue";
 import studentControlPanel from "@/components/students/studentControlPanel.vue";
 import pageLockedNote from "@/components/students/pageLockedNote.vue";
+import StudentQuestions from '@/components/students/studentQuestions.vue';
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
@@ -223,6 +226,7 @@ export default {
       limitText: null,
       lock_all_pages: false,
       countDownMin: 0,
+      questionModalVisiable: false, // ppt 反馈面板
     };
   },
   mounted() {
@@ -235,6 +239,7 @@ export default {
     ClassRoomClosed,
     studentControlPanel,
     pageLockedNote,
+    StudentQuestions,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -574,6 +579,12 @@ export default {
         EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
       }
       this.modalVisiable = !this.modalVisiable;
+    },
+    showStudentQuestions() {
+      // 与评论互斥, 需要关闭
+      EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
+      this.modalVisiable = false
+      this.questionModalVisiable = !this.questionModalVisiable
     },
     answerChoice(v, locked) {
       console.log("change answer==" + v, this.currentSo);
