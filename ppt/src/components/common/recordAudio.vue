@@ -6,7 +6,7 @@
       <p>{{getTime(timeValue)}}</p>
       <audio id="record-audio"  width="1" height="1" src="opacity: 0"/>
     </div>
-    <el-row>
+    <el-row justify="center">
       <el-tooltip content="start" placement="top" v-if="endRecording">
         <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
       </el-tooltip>

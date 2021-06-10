@@ -3,7 +3,8 @@ import {
     Main, Aside, Container, Form, FormItem, Progress, Pagination, Radio, Button, Checkbox, Input,
     Row, Col, MessageBox, Alert, Tooltip, Dialog, Tabs, TabPane, Table, TableColumn, Popover, Slider, Select, Option, DatePicker,
     CheckboxGroup,
-    Switch
+    Switch,
+    Drawer
 } from 'element-ui';
 
 Vue.use(Main)
@@ -33,4 +34,5 @@ Vue.use(Select)
 Vue.use(DatePicker)
 Vue.use(CheckboxGroup)
 Vue.use(Switch)
+Vue.use(Drawer)
 Vue.prototype.$alert = MessageBox

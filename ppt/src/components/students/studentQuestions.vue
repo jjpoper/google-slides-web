@@ -141,7 +141,7 @@ export default {
         this.marks.pop()
       }
     },
-    sendVideoOrAudio(link, type = 'text') {
+    sendVideoOrAudio(link, type = '') {
       // this.sendComment(url, type)
       const {
         left, top, content_width, content_height
@@ -152,7 +152,7 @@ export default {
         link,
         content_width,
         content_height,
-        type: this.type
+        type
       })
       this.sendSuccess = true
       this.recordVisiable = false

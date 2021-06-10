@@ -163,7 +163,7 @@
         :isDashboard="isDashboard"
       />
     </el-dialog>
-    <students-qs-modal v-if="questionModalVisiable" :markupslist="markupslist"/>
+    <students-qs-modal v-if="questionModalVisiable" :list="filterMarkupList"/>
   </div>
 </template>
 
@@ -412,6 +412,13 @@ type: "slide"*/
         return "p";
       }
     },
+    filterMarkupList() {
+      if(this.currentPageId) {
+        const list = this.markupslist.filter((item) => item.data.page_id === this.currentPageId)
+        return list
+      }
+      return []      
+    }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {

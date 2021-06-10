@@ -626,11 +626,12 @@ export default {
         top,
         link,
         content_width,
-        content_height
+        content_height,
+        type
       } = data
       this.emitSo(
         "comment-ppt",
-        `{"token": "${this.token}", "class_id": "${this.class_id}", "data": {"left": ${left}, "top": ${top}, "link": "${link}", "type": "video", "content_width": ${content_width}, "content_height": ${content_height}}}`
+        `{"token": "${this.token}", "class_id": "${this.class_id}", "data": {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}", "content_width": ${content_width}, "content_height": ${content_height}, "page_id": "${this.slides[this.currentIndex].page_id}"}}`
       )
     },
     emitSo(action, message) {
