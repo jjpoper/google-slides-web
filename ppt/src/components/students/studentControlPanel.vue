@@ -46,13 +46,13 @@
     <el-tooltip content="mark up and send comment" placement="top">
       <div
         class="readchat comment"
-        @click="showStudentQuestions"
       >
         <el-switch
           style="display: block"
-          v-model="questionModalVisiable"
+          v-model="questionVisiable"
           active-color="#13ce66"
           inactive-color="#999"
+          @change="showStudentQuestions"
           active-text="comment">
         </el-switch>
       </div>
@@ -212,8 +212,10 @@ export default {
     showStudentQuestions: {
       type: Function,
     },
-    questionModalVisiable: {
-      type: Boolean
+  },
+  data() {
+    return {
+      questionVisiable: false
     }
   },
 };

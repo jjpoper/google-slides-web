@@ -105,6 +105,11 @@ export default {
   },
   methods: {
     markup(e) {
+      if(!this.sendSuccess) {
+        // 没有发送要删除这次打点
+        this.marks.pop()
+      }
+      
       console.log(e.target.offsetWidth, e.target.offsetHeight)
       const {pageX, pageY} = e
       const left = pageX - 15;

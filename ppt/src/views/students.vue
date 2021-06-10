@@ -630,7 +630,7 @@ export default {
       } = data
       this.emitSo(
         "comment-ppt",
-        `{"token": "${this.token}", "class_id": "${this.class_id}", "data": {"position_x": ${left}, "postion_y": ${top}, "link": "${link}", "type": "video", "content_width": ${content_width}, "content_height": ${content_height}}}`
+        `{"token": "${this.token}", "class_id": "${this.class_id}", "data": {"left": ${left}, "top": ${top}, "link": "${link}", "type": "video", "content_width": ${content_width}, "content_height": ${content_height}}}`
       )
     },
     emitSo(action, message) {

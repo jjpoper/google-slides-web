@@ -59,7 +59,7 @@ export const saveRecordVideo = async (): Promise<any> => {
       // console.log(URL.createObjectURL(blobData))
       let files = new window.File([blobData], 'mp4')
 
-      showLoading('正在上传')
+      showLoading('uploading')
       upLoadFile(files).then((data) => {
         hideLoading()
         res(data)

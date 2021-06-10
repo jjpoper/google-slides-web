@@ -79,7 +79,7 @@ export const saveRecordAudio = async (): Promise<any> => {
       const files = new File([blobData], 'mp3', {
           type: 'audio/mp3'
       });
-      showLoading('正在上传')
+      showLoading('uploading')
       upLoadFile(files).then((data) => {
         hideLoading()
         res(data)
