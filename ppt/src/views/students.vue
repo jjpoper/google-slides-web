@@ -259,6 +259,7 @@ export default {
   },
   methods: {
     getWidthPercent(type) {
+      if(this.questionModalVisiable) return '0%'
       if(type === 'draw') return '100%'
       if(type === 'website') return '70%'
       return '40%'
