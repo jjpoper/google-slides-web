@@ -55,6 +55,7 @@
           :unread="unread"
           :showStudentModal="showStudentModal"
           :showStudentQuestions="showStudentQuestions"
+          :questionModalVisiable="questionModalVisiable"
         />
       </div>
     </el-container>
