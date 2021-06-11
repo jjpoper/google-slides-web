@@ -127,6 +127,9 @@
   margin-top: -32px;
   cursor: pointer;
 }
+.studentComment{
+  overflow-y: scroll;
+}
 </style>
 <script>
 export default {
