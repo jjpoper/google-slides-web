@@ -71,7 +71,11 @@
         Deadline time remain:{{ countDownMin }} mintues.
       </div>
     </div>
-    <student-questions v-if="questionModalVisiable" :sendQuestion="sendQuestion"/>
+    <student-questions
+      v-if="questionModalVisiable"
+      :sendQuestion="sendQuestion"
+      :marks="marks"
+    />
   </div>
 </template>
 <style scoped>
@@ -167,6 +171,7 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
+  getAVComment,
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -194,7 +199,7 @@ import StudentComment from "@/components/students/studentComment.vue";
 import ClassRoomClosed from "@/components/students/classRoomClosed.vue";
 import studentControlPanel from "@/components/students/studentControlPanel.vue";
 import pageLockedNote from "@/components/students/pageLockedNote.vue";
-import StudentQuestions from '@/components/students/studentQuestions.vue';
+import StudentQuestions from "@/components/students/studentQuestions.vue";
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
@@ -220,7 +225,7 @@ export default {
       uid: "", // uid
       class_id: "",
       classRoomInfo: null,
-
+      marks: [],
       answerList: [],
       onLine: false, // 在线状态
       deadLineTimer: null,
@@ -260,10 +265,10 @@ export default {
   },
   methods: {
     getWidthPercent(type) {
-      if(this.questionModalVisiable) return '0%'
-      if(type === 'draw') return '100%'
-      if(type === 'website') return '70%'
-      return '40%'
+      if (this.questionModalVisiable) return "0%";
+      if (type === "draw") return "100%";
+      if (type === "website") return "70%";
+      return "40%";
     },
     onLineStatusChanged(status) {
       this.onLine = status;
@@ -383,8 +388,7 @@ export default {
         this.checkCurrentAnswerd();
 
         if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
-
-          console.log("学生go-to-page")
+          console.log("学生go-to-page");
           this.emitSo(
             "go-to-page",
             `{"room": "${this.class_id}", "token": "${
@@ -434,6 +438,19 @@ export default {
               this.classRoomInfo.response_limit_mode,
               this.classRoomInfo.response_limit_time
             );
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+
+      getAVComment(this.class_id, this.token)
+        .then((res) => {
+          console.log(res);
+          if (res.code == "ok") {
+            for (let i = 0; i < res.data.length; i++) {
+              this.marks.push(res.data[i].data);
+            }
           }
         })
         .catch((res) => {
@@ -585,8 +602,8 @@ export default {
     showStudentQuestions() {
       // 与评论互斥, 需要关闭
       EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
-      this.modalVisiable = false
-      this.questionModalVisiable = !this.questionModalVisiable
+      this.modalVisiable = false;
+      this.questionModalVisiable = !this.questionModalVisiable;
     },
     answerChoice(v, locked) {
       console.log("change answer==" + v, this.currentSo);
@@ -619,20 +636,17 @@ export default {
       //     "type": "",
       //     "content_width": 123,
       //     "content_height": 123
-      //     } 
+      //     }
       // }
-      const {
-        left,
-        top,
-        link,
-        content_width,
-        content_height,
-        type
-      } = data
+      const { left, top, link, content_width, content_height, type } = data;
       this.emitSo(
         "comment-ppt",
-        `{"token": "${this.token}", "class_id": "${this.class_id}", "data": {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}", "content_width": ${content_width}, "content_height": ${content_height}, "page_id": "${this.slides[this.currentIndex].page_id}"}}`
-      )
+        `{"token": "${this.token}", "class_id": "${
+          this.class_id
+        }", "data": {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}", "content_width": ${content_width}, "content_height": ${content_height}, "page_id": "${
+          this.slides[this.currentIndex].page_id
+        }"}}`
+      );
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();
