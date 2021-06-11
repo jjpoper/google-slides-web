@@ -163,7 +163,7 @@
         :isDashboard="isDashboard"
       />
     </el-dialog>
-    <students-qs-modal v-if="questionModalVisiable" :list="filterMarkupList"/>
+    <students-qs-modal v-if="questionModalVisiable" :list="filterMarkupList" />
   </div>
 </template>
 
@@ -283,6 +283,7 @@ import {
   endClassRoomReq,
   reopenClass,
   getOnlineUsers,
+  getAVComment,
 } from "../model/index";
 import {
   initTeacherData,
@@ -328,7 +329,7 @@ export default {
     feedbackTimePanel,
     copyLinkDialog,
     StudentPacedNote,
-    StudentsQsModal
+    StudentsQsModal,
   },
 
   /*author: "yujj085@gmail.com"
@@ -413,12 +414,14 @@ type: "slide"*/
       }
     },
     filterMarkupList() {
-      if(this.currentPageId) {
-        const list = this.markupslist.filter((item) => item.data.page_id === this.currentPageId)
-        return list
+      if (this.currentPageId) {
+        const list = this.markupslist.filter(
+          (item) => item.data.page_id === this.currentPageId
+        );
+        return list;
       }
-      return []      
-    }
+      return [];
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -546,7 +549,7 @@ type: "slide"*/
       time,
       value,
       teacherName,
-      commentType
+      commentType,
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -679,6 +682,17 @@ type: "slide"*/
           }
         })
         .catch((res) => {});
+
+      getAVComment(this.class_id, this.token)
+        .then((res) => {
+          console.log(res);
+          if (res.code == "ok") {
+            this.markupslist = res.data;
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+        });
     },
     joinRoom() {
       this.currentSo = createSo(
@@ -801,14 +815,8 @@ type: "slide"*/
         }
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
-          const {
-            pageId,
-            itemId,
-            title,
-            studentId,
-            nextStatus,
-            type,
-          } = d.params;
+          const { pageId, itemId, title, studentId, nextStatus, type } =
+            d.params;
           this.handleStarOrHide(
             pageId,
             itemId,
@@ -843,10 +851,10 @@ type: "slide"*/
         } else {
           this.showCopyLinkDialog = true;
         }
-      } else if(d.type === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
+      } else if (d.type === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
         // 评论ppt消息
-        this.markupslist.push(d)
-        return
+        this.markupslist.push(d);
+        return;
       }
 
       // 回答问题
@@ -1376,7 +1384,7 @@ type: "slide"*/
       );
     },
     showStudentQuestions() {
-      this.questionModalVisiable = !this.questionModalVisiable
+      this.questionModalVisiable = !this.questionModalVisiable;
     },
   },
 };

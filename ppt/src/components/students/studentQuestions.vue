@@ -87,13 +87,18 @@ export default {
   props: {
     sendQuestion: {
       type: Function
+    },
+    marks:{
+      type:Array,
+       default: () => {
+        return [];
+      },
     }
   },
   data() {
     return {
       ModalEventsTypeEnum,
       currentPosition: {left: 0, top: 0, content_width: 0, content_height: 0},
-      marks: [],
       buttonVisiable: false,
       recordVisiable: false,
       type: '',

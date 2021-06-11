@@ -260,6 +260,25 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   return result.reverse()
 }
 
+export const getAVComment = async (classId: string, token: string)=>{
+
+  const data = await axios.post(`${PPT.requestUrl}slide/get_presentation_comments`, {
+    class_id: classId,
+    token: token,
+  })
+  let result = []
+  // // let list = data.data.data.pages
+  console.log(data.data)
+  try {
+    result = data.data
+  } catch(e) {
+    // console.log(e)
+  }
+
+  return result;
+
+}
+
 const makeXMLHttpRequest = (url: string, data: any, callback: any) => {
   const request = new XMLHttpRequest();
   request.onreadystatechange = () => {
@@ -326,4 +345,8 @@ export const upLoadFile = async (mp4: Blob) => {
         // listOfFilesUploaded.push(upload_directory + fileName);
     });
   })
+
+  //获取audio和video
+
+  
 }
