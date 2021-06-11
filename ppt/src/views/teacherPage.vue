@@ -57,6 +57,8 @@
         :reopenClass="_reopenClass"
         :currentItemData="currentItemData"
         :setTimeDialogShow="setTimeDialogShow"
+        :showStudentQuestions="showStudentQuestions"
+        :questionModalVisiable="questionModalVisiable"
       />
     </div>
 
@@ -161,6 +163,7 @@
         :isDashboard="isDashboard"
       />
     </el-dialog>
+    <students-qs-modal v-if="questionModalVisiable" :list="filterMarkupList"/>
   </div>
 </template>
 
@@ -311,6 +314,7 @@ import studentList from "../components/teacher/studentList";
 import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
+import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
 export default {
   components: {
     teacherControlPanel,
@@ -324,6 +328,7 @@ export default {
     feedbackTimePanel,
     copyLinkDialog,
     StudentPacedNote,
+    StudentsQsModal
   },
 
   /*author: "yujj085@gmail.com"
@@ -375,6 +380,8 @@ type: "slide"*/
       firstCloseCopyLinkDialog: true,
       mode: 1,
       showStudentPacedNotePage: false,
+      questionModalVisiable: false,
+      markupslist: [], // ppt comment列表
     };
   },
   mounted() {
@@ -405,6 +412,13 @@ type: "slide"*/
         return "p";
       }
     },
+    filterMarkupList() {
+      if(this.currentPageId) {
+        const list = this.markupslist.filter((item) => item.data.page_id === this.currentPageId)
+        return list
+      }
+      return []      
+    }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -829,6 +843,10 @@ type: "slide"*/
         } else {
           this.showCopyLinkDialog = true;
         }
+      } else if(d.type === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
+        // 评论ppt消息
+        this.markupslist.push(d)
+        return
       }
 
       // 回答问题
@@ -1356,6 +1374,9 @@ type: "slide"*/
       this.emitSo(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
+    },
+    showStudentQuestions() {
+      this.questionModalVisiable = !this.questionModalVisiable
     },
   },
 };

@@ -65,7 +65,20 @@
 
       <strong>{{ isClosed ? "Closed" : current_model }}</strong>
     </div>
-
+    <el-tooltip content="show comment" placement="top">
+      <div
+        class="readchat comment"
+      >
+        <el-switch
+          style="display: block"
+          v-model="questionVisiable"
+          active-color="#13ce66"
+          inactive-color="#999"
+          @change="showStudentQuestions"
+          active-text="students comment">
+        </el-switch>
+      </div>
+    </el-tooltip>
     <div
       :class="isResponseShow ? 'button_area back_red' : 'button_area'"
       @click="showRes()"
@@ -279,6 +292,9 @@ export default {
         return {};
       },
     },
+    showStudentQuestions: {
+      type: Function,
+    },
   },
   components: {
     dashboardMenu,
@@ -286,6 +302,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      questionVisiable: false
     };
   },
   methods: {
@@ -466,5 +483,18 @@ strong {
 .button_text {
   line-height: 20px;
   font-size: 15px;
+}
+.readchat {
+  font-size: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.comment{
+  background: #fff; height: 40px; padding: 0 5px;
+  margin-top: 5px;
+  border-radius: 4px;
+
 }
 </style>

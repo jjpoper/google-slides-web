@@ -1,5 +1,6 @@
 import { upLoadFile } from '@/model';
 import RecordRTC from 'recordrtc'
+import { hideLoading, showLoading } from './loading';
 
 function onMediaError() {
   // console.error('media error', e);
@@ -58,7 +59,9 @@ export const saveRecordVideo = async (): Promise<any> => {
       // console.log(URL.createObjectURL(blobData))
       let files = new window.File([blobData], 'mp4')
 
+      showLoading('uploading')
       upLoadFile(files).then((data) => {
+        hideLoading()
         res(data)
       })
 

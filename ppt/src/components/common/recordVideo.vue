@@ -1,7 +1,7 @@
 <template>
   <div>
     <video id="record-video" width="200" height="150"/>
-    <el-row>
+    <el-row justify="center" type="flex">
       <el-tooltip content="start" placement="top" v-if="endRecording">
         <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
       </el-tooltip>

@@ -1,6 +1,6 @@
 import { upLoadFile } from '@/model';
 import RecordRTC from 'recordrtc'
-import { showToast } from './loading';
+import { hideLoading, showLoading, showToast } from './loading';
 
 let microphone: any = null
 const isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
@@ -79,8 +79,9 @@ export const saveRecordAudio = async (): Promise<any> => {
       const files = new File([blobData], 'mp3', {
           type: 'audio/mp3'
       });
-
+      showLoading('uploading')
       upLoadFile(files).then((data) => {
+        hideLoading()
         res(data)
       })
       microphone.stop();
