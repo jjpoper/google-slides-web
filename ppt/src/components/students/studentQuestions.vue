@@ -167,7 +167,12 @@ export default {
     markup(e) {
       if (!this.sendSuccess) {
         // 没有发送要删除这次打点
-        if (!this.marks || !this.marks[this.marks.length - 1].fromServie) {
+        if (
+          !this.marks ||
+          (this.marks &&
+            this.marks.length > 0 &&
+            !this.marks[this.marks.length - 1].fromServie)
+        ) {
           this.marks.pop();
         }
       }
