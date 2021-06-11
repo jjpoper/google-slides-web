@@ -449,6 +449,7 @@ export default {
           console.log(res);
           if (res.code == "ok") {
             for (let i = 0; i < res.data.length; i++) {
+              res.data[i].data.fromServie= true;//从服务器处获取
               this.marks.push(res.data[i].data);
             }
           }
