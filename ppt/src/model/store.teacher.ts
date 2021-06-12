@@ -2,8 +2,8 @@
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid, getUrlParam } from '../utils/help'
-import {getTeacherCurrentPageAnswerList, getStudentsName, addTeacherData} from './data.teacher'
-import {getTeacherCurrentItemCommentList, addTeacherCommentData} from './comment.teacher'
+import { getTeacherCurrentPageAnswerList, getStudentsName, addTeacherData } from './data.teacher'
+import { getTeacherCurrentItemCommentList, addTeacherCommentData } from './comment.teacher'
 
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_tid`
@@ -32,7 +32,7 @@ const getTeacherStore = (key: string): any => {
 
 export const getTeacherUid = (): string => {
   let sid = getStore(UID_KEY)
-  if(!sid) {
+  if (!sid) {
     // 自动生成并存储
     sid = generateUuid("t_", 16);
     saveStore(UID_KEY, sid)
@@ -101,4 +101,14 @@ export const saveStudentsPageAnswerList = (pageId: string, type: string, data: S
 
 export const saveAnswerList = (pageId: string, type: string, data: any) => {
   saveTeacherStore(`c_p_a_${pageId}_${type}`, data);
+}
+
+
+export const saveStepOneStatus = (class_id: string, slide_id: string, isHide: string) => {
+  localStorage.setItem(`stepone_${class_id}_${slide_id}`, isHide)
+}
+
+export const getStepOneStatus = (class_id: string, slide_id: string) => {
+  const result = localStorage.getItem(`stepone_${class_id}_${slide_id}`) || ''
+  return result && result == "true";
 }

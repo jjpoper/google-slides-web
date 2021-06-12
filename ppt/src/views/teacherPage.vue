@@ -121,7 +121,7 @@
       :close-on-click-modal="false"
       :show-close="false"
     >
-      <stepOneView :openTwo="openTwo" />
+      <stepOneView :openTwo="openTwo" :hideStepOne="hideStepOne" />
     </el-dialog>
 
     <el-dialog
@@ -300,7 +300,9 @@ import {
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveAnswerList,
-  getStundentUidAndName
+  getStundentUidAndName,
+  saveStepOneStatus,
+  getStepOneStatus
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -413,7 +415,7 @@ type: "slide"*/
     },
     filterMarkupList() {
       if (this.currentPageId) {
-        console.log(this.currentPageId)
+        console.log(this.currentPageId);
         const list = this.markupslist.filter(
           item => item.data.page_id === this.currentPageId
         );
@@ -603,10 +605,15 @@ type: "slide"*/
       this.startConnectRoom();
     },
     startConnectRoom() {
-      if (this.directFromPlugin) {
-        this.stepOneDialog = true;
-      }
       this.joinRoom();
+
+      if (this.directFromPlugin) {
+        if (getStepOneStatus(this.class_id, this.slide_id)) {
+          this.stepTwoDialog = true;
+        } else {
+          this.stepOneDialog = true;
+        }
+      }
       queryClassStatus(this.class_id, this.token)
         .then(res => {
           this.classRoomInfo = res;
@@ -1392,6 +1399,11 @@ type: "slide"*/
     },
     showStudentQuestions() {
       this.questionModalVisiable = !this.questionModalVisiable;
+    },
+    hideStepOne() {
+      saveStepOneStatus(this.class_id, this.slide_id, "true");
+      this.stepTwoDialog = true;
+      this.stepOneDialog = false;
     }
   }
 };

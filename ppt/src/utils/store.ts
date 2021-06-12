@@ -10,6 +10,15 @@ export const saveStudentsAnswer = (itemid: string, answer: string) => {
   localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${STUDENTS_ANSWER}_${itemid}`, answer)
 }
 
+export const saveStepOneStatus = (class_id: string, slide_id: string, isHide: string) => {
+  localStorage.setItem(`${getUrlParam("slide_id")}_${storeUid}_${STUDENTS_ANSWER}_${class_id}_${slide_id}`, isHide)
+}
+
+export const getStepOneStatus = (class_id: string, slide_id: string) => {
+  const result = localStorage.getItem(`${getUrlParam("slide_id")}_${storeUid}_${STUDENTS_ANSWER}_${class_id}_${slide_id}`) || ''
+  return result && result == "true";
+}
+
 export const getStudentsAnswer = (itemid: string) => {
   const data = localStorage.getItem(`${getUrlParam("slide_id")}_${storeUid}_${STUDENTS_ANSWER}_${itemid}`) || ''
   let value = parseInt(data)

@@ -5,7 +5,7 @@
     <div class="opts">
       <el-button @click="openTwo()" type="primary">Got it</el-button>
 
-      <span>Don't show this again</span>
+      <span @click="hideStepOne()">Don't show this again</span>
     </div>
   </div>
 </template>
@@ -14,6 +14,9 @@
 export default {
   props: {
     openTwo: {
+      type: Function
+    },
+    hideStepOne: {
       type: Function
     }
   }
