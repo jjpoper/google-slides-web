@@ -68,7 +68,7 @@
           v-model="questionVisiable"
           active-color="#13ce66"
           inactive-color="#999"
-          @change="showStudentQuestions"
+          @change="showStudentQuestions(questionVisiable)"
           active-text="students comment"
         ></el-switch>
       </div>
@@ -279,6 +279,10 @@ export default {
     },
     showStudentQuestions: {
       type: Function
+    },
+    questionModalVisiable:{
+      type:Boolean,
+      default:false,
     }
   },
   components: {
