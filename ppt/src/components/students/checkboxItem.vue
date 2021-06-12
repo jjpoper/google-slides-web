@@ -65,19 +65,22 @@ export default {
     answer: {
       type: Function,
       default: () => {}
-    }
+    },
+    // showCorrect: {
+    //   type: Boolean,
+    //   default: false
+    // }
   },
   data() {
     return {
       optionData: {},
       pageId: "",
       checkedValues: [],
-      showCorrect: false
+      showCorrect:false,
     };
   },
   created() {
     this.optionData = this.data.items[0].data;
-    console.log(this.optionData, "testtttt");
     this.pageId = this.data.page_id;
     const result = getStudentCurrentPageAnswerList(
       this.pageId,

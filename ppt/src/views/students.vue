@@ -65,6 +65,8 @@
         class="deadline_info"
         v-if="showRemainTime()"
       >Deadline time remain:{{ countDownMin }} mintues.</div>
+
+      <div class="deadline_info" v-if="isShowRightAnswer()">You are unable to change your answer</div>
     </div>
     <student-questions
       v-if="questionModalVisiable"
@@ -78,7 +80,7 @@
   background-color: red;
   opacity: 0.6;
   height: 43px;
-  width: 250px;
+  width: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -227,7 +229,8 @@ export default {
       limitText: null,
       lock_all_pages: false,
       countDownMin: 0,
-      questionModalVisiable: false // ppt 反馈面板
+      questionModalVisiable: false, // ppt 反馈面板
+      showCorrect: false
     };
   },
   mounted() {
@@ -695,6 +698,38 @@ export default {
       if (this.currentIndex < this.slides.length - 1) {
         this.pageChange(parseInt(this.currentIndex) + 2);
       }
+    },
+    isShowRightAnswer() {
+      if (!this.slides || !this.slides[this.currentIndex]) {
+        return false;
+      }
+      let data = this.slides[this.currentIndex];
+      if (!data) {
+        return false;
+      }
+      let pageId = data.page_id;
+      if (!data || !data.items || !data.items[0]) return false;
+      if (data.items[0].type != "choice") return false;
+      const result = getStudentCurrentPageAnswerList(
+        pageId,
+        data.items[0].type
+      );
+      if (result && result.length > 0) {
+        const { answer, locked } = result[0];
+        let checkedValues = JSON.parse(answer);
+        this.showCorrect = locked === "true" ? true : false;
+        if (this.showCorrect) {
+          this.showCorrect = this.hasAnswer(data.items[0].data.options);
+        }
+        return this.showCorrect;
+      }
+      return false;
+    },
+    hasAnswer(opts) {
+      for (let i = 0; i < opts.length; i++) {
+        if (opts[i].isAnswer) return true;
+      }
+      return false;
     }
   }
 };
