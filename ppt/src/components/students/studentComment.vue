@@ -16,8 +16,8 @@
             <p>{{item.teacherName}}</p>
             <p>{{item.time}}</p>
             <!-- <p>{{item.value}}</p> -->
-            <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" width="100%" />
-            <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" width="100%" />
+            <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" style="width:100%;"/>
+            <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" style="width:100%;"/>
             <p v-else>{{ item.value }}</p>
           </div>
         </div>

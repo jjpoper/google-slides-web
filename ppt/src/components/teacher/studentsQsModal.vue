@@ -67,14 +67,14 @@
                   controlslist="nodownload"
                   controls=""
                   :src="item.data.link"
-                  width="100%"
+                  style="width:100%;"
                 />
                 <audio
                   v-else-if="item.data.type === 'audio'"
                   controlslist="nodownload"
                   controls=""
                   :src="item.data.link"
-                  width="auto"
+                  style="width:100%;"
                 />
               </div>
             </div>
