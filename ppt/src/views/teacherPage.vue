@@ -1053,8 +1053,8 @@ type: "slide"*/
     copyLink() {
       copy(this.getStudentUrl());
       showToast("copy link success");
-      this.showCopyLinkDialog = false;
-      this.stepTwoDialog = false;
+      // this.showCopyLinkDialog = false;
+      // this.stepTwoDialog = false;
     },
 
     emitSo(message) {
