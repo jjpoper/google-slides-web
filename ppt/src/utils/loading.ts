@@ -1,4 +1,5 @@
 import { Loading, Notification } from 'element-ui'
+import { MessageType } from 'element-ui/types/message'
 
 let loading: any = null
 
@@ -13,10 +14,10 @@ export const hideLoading = () => {
     loading.close()
 }
 
-export const showToast = (text: string) => {
+export const showToast = (text: string, type: MessageType = 'success') => {
   Notification({
     title: 'success',
     message: text,
-    type: 'success'
+    type
   });
 }

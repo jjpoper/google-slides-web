@@ -1,6 +1,6 @@
 import { upLoadFile } from '@/model';
 import RecordRTC from 'recordrtc'
-import { hideLoading, showLoading } from './loading';
+import { hideLoading, showLoading, showToast } from './loading';
 
 function onMediaError() {
   // console.error('media error', e);
@@ -21,7 +21,9 @@ export const startRecordVideo = (domVideo: any) => {
     domVideoElement.srcObject = camera;
     domVideoElement.play()
     mediaRecorder = RecordRTC(camera, {
-      type: 'video'
+      type: 'video',
+      sampleRate: 22050,
+      mimeType: 'video/webm',
     });
     mediaRecorder.startRecording();
 
@@ -57,12 +59,15 @@ export const saveRecordVideo = async (): Promise<any> => {
       const blobData = mediaRecorder.getBlob()
       domVideoElement.src = URL.createObjectURL(blobData);
       // console.log(URL.createObjectURL(blobData))
-      let files = new window.File([blobData], 'mp4')
+      let files = new window.File([blobData], 'webm')
 
       showLoading('uploading')
       upLoadFile(files).then((data) => {
         hideLoading()
         res(data)
+      }).catch(() => {
+        hideLoading()
+        showToast('upload failed, please try again', 'error')
       })
 
       mediaRecorder.camera.stop();

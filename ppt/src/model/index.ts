@@ -285,6 +285,9 @@ const makeXMLHttpRequest = (url: string, data: any, callback: any) => {
       if(request.readyState === 4 && request.status === 200) {
           callback('upload-ended', request.response);
       }
+      if(request.status === 413) {
+        callback('onerror');
+    }
   };
 
   request.upload.onloadstart = () => {
@@ -304,7 +307,7 @@ const makeXMLHttpRequest = (url: string, data: any, callback: any) => {
   };
 
   request.upload.onerror = (error) => {
-      callback('Failed to upload to server');
+      callback('onerror');
       // console.error('XMLHttpRequest failed', error);
   };
 
@@ -335,8 +338,12 @@ export const upLoadFile = async (mp4: Blob) => {
     // var upload_directory = upload_url;
 
     makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData, (progress: string, result: any) => {
+      console.log(progress, '===progress===')
         if(progress === 'upload-ended') {
             res(JSON.parse(result))
+        }
+        if(progress === 'onerror') {
+          rej()
         }
 
         // callback('ended', upload_directory + fileName);
@@ -346,7 +353,5 @@ export const upLoadFile = async (mp4: Blob) => {
     });
   })
 
-  //获取audio和video
-
-  
+  // 获取audio和video
 }
