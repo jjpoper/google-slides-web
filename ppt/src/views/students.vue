@@ -701,7 +701,6 @@ export default {
     },
     isShowRightAnswer() {
       if (!this.slides || !this.slides[this.currentIndex]) {
-        this.showCorrect = false;
         return false;
       }
       let data = this.slides[this.currentIndex];
@@ -722,8 +721,9 @@ export default {
         if (this.showCorrect) {
           this.showCorrect = this.hasAnswer(data.items[0].data.options);
         }
+        return this.showCorrect;
       }
-      return this.showCorrect;
+      return false;
     },
     hasAnswer(opts) {
       for (let i = 0; i < opts.length; i++) {
