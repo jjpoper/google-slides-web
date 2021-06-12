@@ -743,9 +743,11 @@ type: "slide"*/
             this.studentCounts = this.studentList.length;
 
             //发送一个页面同步消息
-            this.emitSo(
-              `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
-            );
+            if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
+              this.emitSo(
+                `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+              );
+            }
           } else if (d.join_in.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == student.user_id) {
