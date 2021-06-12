@@ -933,6 +933,7 @@ type: "slide"*/
         return;
       }
       this.currentIndex = value - 1;
+      this.questionModalVisiable = false;//与控制面板中的comment显示与否的按钮保持同步
       this.getItemData();
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
@@ -1404,8 +1405,8 @@ type: "slide"*/
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
     },
-    showStudentQuestions() {
-      this.questionModalVisiable = !this.questionModalVisiable;
+    showStudentQuestions(visiable) {
+      this.questionModalVisiable = visiable;
     },
     hideStepOne() {
       saveStepOneStatus(this.class_id, this.slide_id, "true");
