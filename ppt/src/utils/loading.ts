@@ -13,10 +13,10 @@ export const hideLoading = () => {
     loading.close()
 }
 
-export const showToast = (text: string) => {
+export const showToast = (text: string, type = 'success') => {
   Notification({
     title: 'success',
     message: text,
-    type: 'success'
+    type
   });
 }

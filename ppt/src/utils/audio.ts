@@ -56,7 +56,8 @@ export const startRecordAudio = (domAudio: any) => {
       type: 'audio',
       numberOfAudioChannels: isEdge ? 1 : 2,
       checkForInactiveTracks: true,
-      bufferSize: 16384
+      // bufferSize: 16384,
+      sampleRate: 22050,
     };
     recorder = RecordRTC(microphone, options);
 
@@ -77,12 +78,15 @@ export const saveRecordAudio = async (): Promise<any> => {
       const blobData = recorder.getBlob()
       // domAudioElement.src = URL.createObjectURL(recorder.getBlob())
       const files = new File([blobData], 'mp3', {
-          type: 'audio/mp3'
+          type: 'audio/mp3',
       });
       showLoading('uploading')
       upLoadFile(files).then((data) => {
         hideLoading()
         res(data)
+      }).catch(() => {
+        hideLoading()
+        showToast('upload failed, please try again', 'error')
       })
       microphone.stop();
       microphone = null;
