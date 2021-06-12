@@ -11,9 +11,11 @@
     </el-checkbox-group>
     <template v-if="checkedValues.length > 0">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
-        正确答案：
+        Correct answer:
         <template v-for="item in optionData.options">
-          <span :key="item.id" v-if="item.isAnswer">{{item.text}}</span>
+          <div class="rightA" :key="item.id" v-if="item.isAnswer">
+            <span>{{getAnswerText(item)}}</span>
+          </div>
         </template>
       </div>
       <el-switch
@@ -40,6 +42,10 @@
   border-radius: 10px;
   line-height: 50px;
   position: relative;
+}
+.rightA {
+  display: flex;
+  flex-direction: column;
 }
 .tag {
   color: red;
@@ -105,6 +111,11 @@ export default {
       }
 
       return false;
+    },
+    getAnswerText(item) {
+      console.log(item);
+      let AA = ["A", "B", "C", "D", "E", "F", "G"];
+      return AA[item.id] + ": " + item.text;
     }
   }
 };

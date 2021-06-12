@@ -74,7 +74,7 @@
                   controlslist="nodownload"
                   controls=""
                   :src="item.data.link"
-                  width="100%"
+                  width="auto"
                 />
               </div>
             </div>
@@ -117,6 +117,7 @@
 }
 .section {
   margin-bottom: 10px;
+  overflow: hidden;
 }
 .cl {
   position: absolute;
