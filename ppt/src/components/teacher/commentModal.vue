@@ -66,8 +66,8 @@
             <div class="rightmtitle" v-else>{{ commentData.title }}</div>
             <div class="rightcomment">
               <p>{{ item.teacherName }} {{ item.time }}</p>
-              <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" width="60%" />
-              <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" width="60%" />
+              <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" style="width:60%;"  />
+              <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" style="width:60%;"  />
               <p v-else>{{ item.value }}</p>
             </div>
           </div>
