@@ -22,11 +22,7 @@
 
     <button class="control-bar__button">
       <div class="control-bar__icon" @click="nextPage()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 35.12 60.82"
-          class="svg_right"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82" class="svg_right">
           <title>icon-control-btn__arrow</title>
           <path
             d="M14.44,31.91A8.54,8.54,0,0,0,17,38l8.93,9L39.47,60.67a5.64,5.64,0,0,0,8.15,0,6.58,6.58,0,0,0,0-8.93l-6.59-7-6.41-7-5.81-5.88,5.81-5.68,6.6-7,6.59-7a6.57,6.57,0,0,0,0-8.92,5.65,5.65,0,0,0-4.07-1.73,5.75,5.75,0,0,0-4.08,1.74L26.1,16.75l-8.93,8.93A8.71,8.71,0,0,0,14.44,31.91Z"
@@ -48,9 +44,9 @@
         <circle cx="10" cy="20" r="5" fill="#ffffff" />
       </svg>
 
-      <strong style="margin-right: 20px"
-        >{{ current_response == 0 ? "No" : current_response }} Response</strong
-      >
+      <strong
+        style="margin-right: 20px"
+      >{{ current_response == 0 ? "No" : current_response }} Response</strong>
 
       <svg
         t="1619161258814"
@@ -66,17 +62,15 @@
       <strong>{{ isClosed ? "Closed" : current_model }}</strong>
     </div>
     <el-tooltip content="show comment" placement="top">
-      <div
-        class="readchat comment"
-      >
+      <div class="readchat comment">
         <el-switch
           style="display: block"
           v-model="questionVisiable"
           active-color="#13ce66"
           inactive-color="#999"
           @change="showStudentQuestions"
-          active-text="students comment">
-        </el-switch>
+          active-text="students comment"
+        ></el-switch>
       </div>
     </el-tooltip>
     <div
@@ -109,15 +103,13 @@
         />
       </svg>
 
-      <strong class="button_text"
-        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
-      >
+      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
     </div>
 
     <div
-      :class="isLoked() ? 'button_area back_red' : 'button_area'"
+      :class="isLoked() ? 'button_area back_red' : (isLokeEnable()?'button_area':'button_area button_grey')"
       v-if="!isClosed && current_model != 'Student-Paced'"
-      @click="lockPage()"
+      @click="dolockPage()"
     >
       <svg
         t="1620829350317"
@@ -135,9 +127,7 @@
           fill="#ffffff"
         />
       </svg>
-      <strong class="button_text"
-        >{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong
-      >
+      <strong class="button_text">{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong>
     </div>
     <div
       class="button_area"
@@ -164,15 +154,10 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    <el-popover
-      placement="top"
-      width="400"
-      trigger="hover"
-      class="dropdown-icon"
-    >
+    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
       <!-- :open="open"
         :openProject="openProject" 
-        :reopenClass="reopenClass"-->
+      :reopenClass="reopenClass"-->
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
@@ -213,11 +198,11 @@ export default {
   props: {
     currentPage: {
       type: Number,
-      default: 1,
+      default: 1
     },
     slide_id: {
       type: String,
-      default: "",
+      default: ""
     },
     // reopenClass: {
     //   type: Function,
@@ -226,78 +211,78 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     totalPage: {
       type: Number,
-      default: 3,
+      default: 3
     },
     isClosed: {
       type: Boolean,
-      default: false,
+      default: false
     },
     current_model: {
       type: String,
-      default: "Insturctor-Paced",
+      default: "Insturctor-Paced"
     },
 
     current_response: {
       type: Number,
-      default: 0,
+      default: 0
     },
 
     // open: {
     //   type: Function,
     // },
     turnModel: {
-      type: Function,
+      type: Function
     },
     isDashboard: {
       type: Boolean,
-      default: false,
+      default: false
     },
     changePage: {
-      type: Function,
+      type: Function
     },
 
     turnOff: {
-      type: Function,
+      type: Function
     },
     // open: {
     //   type: Function,
     // },
     showResponse: {
-      type: Function,
+      type: Function
     },
     isResponseShow: {
       type: Boolean,
-      default: false,
+      default: false
     },
     // openProject: {
     //   type: Function,
     // },
     endLesson: {
-      type: Function,
+      type: Function
     },
     lockPage: {
-      type: Function,
+      type: Function
     },
     slides: {
       type: Array,
-      default: [],
+      default: []
     },
     currentItemData: {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     showStudentQuestions: {
-      type: Function,
-    },
+      type: Function
+    }
   },
   components: {
-    dashboardMenu,
+    dashboardMenu
   },
   data() {
     return {
@@ -313,6 +298,23 @@ export default {
         this.changePage(page);
       }
     },
+    isLokeEnable() {
+      //锁定操作是否可行。
+      if (!this.slides || !this.slides[this.currentPage - 1]) {
+        return true;
+      }
+      let items = this.slides[this.currentPage - 1].items;
+      if (items && items[0] && items[0].type == "choice") {
+        let opts = items[0].data.options;
+        for (let i = 0; i < opts.length; i++) {
+          if (opts[i].isAnswer) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    },
     isLoked() {
       if (
         !this.classRoomInfo.lock_page ||
@@ -321,6 +323,9 @@ export default {
       ) {
         return false;
       } else {
+        if (!this.isLokeEnable()) {
+          return false;
+        }
         for (let i = 0; i < this.classRoomInfo.lock_page.length; i++) {
           if (
             this.classRoomInfo.lock_page[i] ===
@@ -347,7 +352,12 @@ export default {
       this.showResponse();
       //    this.isResponseShow = !this.isResponseShow;
     },
-  },
+    dolockPage() {
+      if (this.isLokeEnable()) {
+        this.lockPage();
+      }
+    }
+  }
 };
 </script>
 
@@ -477,6 +487,10 @@ strong {
   color: #ffffff;
   overflow: hidden;
 }
+
+.button_grey {
+  background-color: #cfcfcf;
+}
 .back_red {
   background-color: red;
 }
@@ -491,10 +505,11 @@ strong {
   align-items: center;
   margin-right: 10px;
 }
-.comment{
-  background: #fff; height: 40px; padding: 0 5px;
+.comment {
+  background: #fff;
+  height: 40px;
+  padding: 0 5px;
   margin-top: 5px;
   border-radius: 4px;
-
 }
 </style>
