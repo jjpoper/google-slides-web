@@ -66,7 +66,7 @@
         v-if="showRemainTime()"
       >Deadline time remain:{{ countDownMin }} mintues.</div>
 
-      <div class="deadline_info" v-if="isShowRightAnswer()">You are unable to change your answer</div>
+      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
     </div>
     <student-questions
       v-if="questionModalVisiable"
@@ -82,6 +82,7 @@
   height: 43px;
   width: 300px;
   display: flex;
+  margin-left: 20px;
   justify-content: center;
   align-items: center;
   color: white;
@@ -397,7 +398,7 @@ export default {
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
         this.checkCurrentAnswerd();
-
+        this.isShowRightAnswer();
         if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
           console.log("学生go-to-page");
           this.emitSo(
@@ -415,6 +416,7 @@ export default {
       console.log(page, "pageChange");
       this.currentIndex = page - 1;
       this.getItemData();
+      this.isShowRightAnswer();
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;
@@ -631,6 +633,8 @@ export default {
         answer: v
       });
       this.currentAnswerd = true;
+      this.showCorrect = locked;
+      this.$forceUpdate();
       // // this.allAnswers[pid] = v;
       // this.$set(this.allAnswers, pid, v);
       // // this.$forceUpdate()
@@ -701,15 +705,23 @@ export default {
     },
     isShowRightAnswer() {
       if (!this.slides || !this.slides[this.currentIndex]) {
+        this.showCorrect = false;
         return false;
       }
       let data = this.slides[this.currentIndex];
       if (!data) {
+        this.showCorrect = false;
         return false;
       }
       let pageId = data.page_id;
-      if (!data || !data.items || !data.items[0]) return false;
-      if (data.items[0].type != "choice") return false;
+      if (!data || !data.items || !data.items[0]) {
+        this.showCorrect = false;
+        return false;
+      }
+      if (data.items[0].type != "choice") {
+        this.showCorrect = false;
+        return false;
+      }
       const result = getStudentCurrentPageAnswerList(
         pageId,
         data.items[0].type
@@ -723,6 +735,7 @@ export default {
         }
         return this.showCorrect;
       }
+      this.showCorrect = false;
       return false;
     },
     hasAnswer(opts) {
