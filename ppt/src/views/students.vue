@@ -21,7 +21,10 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+        <div
+          class="block"
+          v-if="currentItemData && currentItemData.thumbnail_url"
+        >
           <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
       </el-main>
@@ -59,14 +62,18 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        <i
+          class="el-icon-s-opportunity"
+          :style="`color: ${onLine ? 'green' : 'red'}`"
+        />
       </div>
-      <div
-        class="deadline_info"
-        v-if="showRemainTime()"
-      >Deadline time remain:{{ countDownMin }} mintues.</div>
+      <div class="deadline_info" v-if="showRemainTime()">
+        Deadline time remain: {{ getDeadLineStr(countDownMin) }}
+      </div>
 
-      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
+      <div class="deadline_info" v-if="showCorrect">
+        You are unable to change your answer
+      </div>
     </div>
     <student-questions
       v-if="questionModalVisiable"
@@ -80,7 +87,9 @@
   background-color: red;
   opacity: 0.6;
   height: 43px;
-  width: 300px;
+  width: auto;
+  padding-left: 10px;
+  padding-right: 10px;
   display: flex;
   margin-left: 20px;
   justify-content: center;
@@ -169,7 +178,7 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
-  getAVComment
+  getAVComment,
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -179,7 +188,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum
+  ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -190,7 +199,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken
+  saveStudentStoreToken,
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -231,7 +240,7 @@ export default {
       lock_all_pages: false,
       countDownMin: 0,
       questionModalVisiable: false, // ppt 反馈面板
-      showCorrect: false
+      showCorrect: false,
     };
   },
   mounted() {
@@ -244,10 +253,10 @@ export default {
     ClassRoomClosed,
     studentControlPanel,
     pageLockedNote,
-    StudentQuestions
+    StudentQuestions,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -268,12 +277,12 @@ export default {
         console.log(this.marks);
         console.log(this.slides[this.currentIndex].page_id);
         const list = this.marks.filter(
-          item => item.page_id === this.slides[this.currentIndex].page_id
+          (item) => item.page_id === this.slides[this.currentIndex].page_id
         );
         return list;
       }
       return [];
-    }
+    },
   },
   methods: {
     getWidthPercent(type) {
@@ -329,7 +338,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then(url => {
+      getStudentLoginUrl().then((url) => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -356,7 +365,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id)
+        getAllPPTS(this.slide_id),
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -369,7 +378,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url
+        content: base64Url,
       });
       this.emitSo(
         "response",
@@ -389,7 +398,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg
+        content: msg,
       });
       this.currentAnswerd = true;
     },
@@ -426,7 +435,7 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then(res => {
+        .then((res) => {
           this.classRoomInfo = res;
           console.log(this.classRoomInfo);
           if (this.classRoomInfo.status == "live") {
@@ -453,12 +462,12 @@ export default {
             );
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
         });
 
       getAVComment(this.class_id, this.token)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.code == "ok") {
             for (let i = 0; i < res.data.length; i++) {
@@ -467,7 +476,7 @@ export default {
             }
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
         });
       this.joinRoom();
@@ -567,7 +576,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              item => item != page
+              (item) => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -589,9 +598,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex
+          slideIndex,
         },
-        user_id
+        user_id,
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
@@ -630,7 +639,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v
+        answer: v,
       });
       this.currentAnswerd = true;
       this.showCorrect = locked;
@@ -676,7 +685,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "Confirm",
         showCancelButton: false,
-        showClose: false
+        showClose: false,
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -743,7 +752,30 @@ export default {
         if (opts[i].isAnswer) return true;
       }
       return false;
-    }
-  }
+    },
+    getDeadLineStr(countDownTime) {
+      if (countDownTime < 60) {
+        return parseInt(countDownTime) + "mintue" + this.hasS(countDownTime);
+      } else if (countDownTime < 24 * 60) {
+        return (
+          parseInt(countDownTime / 60) +
+          "hour" +
+          this.hasS(countDownTime / 60) +
+          this.getDeadLineStr(countDownTime % 60)
+        );
+      } else {
+        return (
+          parseInt(countDownTime / (60 * 24)) +
+          "day" +
+          this.hasS(countDownTime / (60 * 24)) +
+          this.getDeadLineStr(countDownTime % (60 * 24))
+        );
+      }
+    },
+    hasS(count) {
+      if (count > 1) return "s ";
+      return " ";
+    },
+  },
 };
 </script>
