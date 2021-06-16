@@ -5,7 +5,15 @@
         v-if="shouldShow(item)"
         :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
       >
-        <div class="text_content">{{ getText(item) }}</div>
+        <div class="text_area">
+          <div class="text_content">
+            {{ getText(item) }}
+          </div>
+
+          <div class="text_static" v-if="flag_1 && textList.length > 1">
+            {{ index + 1 + " of " + textList.length }}
+          </div>
+        </div>
         <student-response-opt-bar
           v-if="flag_1"
           :data="{
@@ -47,6 +55,20 @@
   border: 1px solid #cfcfcf;
 }
 .text_content {
+  width: 100%;
+  height: 85%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.text_static {
+  width: 100%;
+  height: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.text_area {
   width: 80%;
   height: 70%;
   border: 1px solid #f0f0f0;
@@ -56,8 +78,8 @@
   background-color: white;
   color: cadetblue;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  padding-right: 10px;
 }
 </style>
 
@@ -82,6 +104,9 @@ export default {
   data() {
     return {
       textList: [],
+      isTextChanging: false,
+      changeUser: "", //当前是哪个item发生了变化
+      changeItemId: "", //当前是哪个item发生了变化
     };
   },
   mounted() {
@@ -90,14 +115,20 @@ export default {
       this.data.page_id,
       this.data.items[0].type
     );
-
-    console.log("text refresh", this.textList);
     EventBus.$on(this.data.items[0].type, (data) => {
       // 通知展示当前pageid，当前itemid的评论框
+      console.log(data);
       this.textList = getCurrentPageAnswerList(
         this.data.page_id,
         this.data.items[0].type
       );
+      this.isTextChanging = true;
+      this.changeUser = data.user_id;
+      this.changeItemId = data.item_id;
+      let _this = this;
+      setTimeout(function () {
+        _this.isTextChanging = false;
+      }, 3000);
     });
   },
   methods: {
@@ -108,6 +139,14 @@ export default {
     },
     getText(item) {
       if (item.content) {
+        if (this.isTextChanging) {
+          if (
+            item.user_id == this.changeUser &&
+            item.item_id == this.changeItemId
+          ) {
+            return item.content + "....";
+          }
+        }
         return item.content;
       }
       return "Deleted response";

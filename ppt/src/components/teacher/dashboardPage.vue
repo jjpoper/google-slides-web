@@ -43,13 +43,16 @@
 	C12.9,44,6,53,6,64H58z"
                   />
                 </svg>
-                <div class="student_count">111</div>
+                <div class="student_count">1</div>
               </div>
             </el-popover>
           </div>
 
           <div class="response_flag">
-            <div class="top" :style="'width:' + responsePercentage[index] + '%'"></div>
+            <div
+              class="top"
+              :style="'width:' + responsePercentage[index] + '%'"
+            ></div>
           </div>
         </div>
       </div>
@@ -62,7 +65,8 @@
           currentItemData &&
           currentItemData.items &&
           currentItemData.items[0] &&
-          currentItemData.items[0].type != 'website'
+          currentItemData.items[0].type != 'website' &&
+          page_model != 'Student-Paced'
             ? 'content_parent content_parent--border'
             : 'content_parent'
         "
@@ -221,49 +225,53 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
+    },
+    page_model: {
+      type: String,
+      default: "Insturctor-Paced",
     },
     slides: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     showResponse: {
       type: Boolean,
-      default: false
+      default: false,
     },
     currentAnswerCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     responseContentList: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     giveFocus: {
-      type: Function
+      type: Function,
     },
     responsePercentage: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     isFocus: {
       type: Array,
       function() {
         return [];
-      }
+      },
     },
     getPageStudent: {
-      type: Function
+      type: Function,
     },
     getStudentName: {
-      type: Function
-    }
+      type: Function,
+    },
   },
   data() {
     return {};
@@ -275,7 +283,7 @@ export default {
   methods: {
     showCurrentStudent() {
       console.log("studeng!!!");
-    }
-  }
+    },
+  },
 };
 </script>
