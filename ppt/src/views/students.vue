@@ -12,7 +12,21 @@
       :data="currentItemData"
       :answerList="answerList"
     />
+
     <el-container v-else>
+      <div
+        v-if="
+          fullScreen &&
+          currentItemData &&
+          currentItemData.thumbnail_url &&
+          (!currentItemData.items[0] ||
+            currentItemData.items[0].type !== 'draw')
+        "
+        class="full_screen"
+        @click="showFullScreen(false)"
+      >
+        <pptcontent :url="currentItemData.thumbnail_url" />
+      </div>
       <el-main
         v-if="
           currentItemData &&
@@ -56,6 +70,11 @@
           :showStudentModal="showStudentModal"
           :showStudentQuestions="showStudentQuestions"
           :questionModalVisiable="questionModalVisiable"
+          :isShowQuestion="isShowQuestion"
+          :changeShowOrAnswer="changeShowOrAnswer"
+          :fullScreenWidth="screenWidth"
+          :screenWidth="currentScreenWidth"
+          :smallWindow="smallWindow"
         />
       </div>
     </el-container>
@@ -75,6 +94,32 @@
         You are unable to change your answer
       </div>
     </div>
+    <svg
+      t="1623813115939"
+      class="icon"
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      p-id="2481"
+      width="40"
+      height="40"
+      v-if="
+        !fullScreen &&
+        !smallWindow &&
+        !questionModalVisiable &&
+        currentItemData &&
+        currentItemData.thumbnail_url &&
+        currentItemData.items[0] &&
+        currentItemData.items[0].type !== 'draw'
+      "
+      @click="showFullScreen(true)"
+    >
+      <path
+        d="M629.557 391.972c17.329 17.32 47.028 17.32 66.815 0l168.302-165.814v133.637c0 19.806 14.85 34.647 34.637 34.647h24.743c19.806 0 34.657-12.372 34.657-29.692V119.733h-2.479l2.479-17.318c0-9.904-2.479-17.33-7.436-24.752-4.936-4.948-14.848-9.895-24.743-9.895h-17.327L664.211 65.29c-19.805 0-34.654 17.329-34.654 34.646v24.752c2.478 22.274 19.789 34.646 39.593 34.646h128.69L632.036 325.149c-22.283 17.319-22.283 47.026-2.478 66.823zM394.44 629.557c-17.31-17.327-47.009-17.327-66.815 0l-168.3 165.807V664.195c0-19.787-14.833-34.638-34.638-34.638h-24.76c-19.788 0-34.639 12.372-34.639 29.699v242.533h2.478l-2.478 17.327c0 9.894 2.478 17.31 7.416 24.744 4.956 4.956 14.868 9.894 24.761 9.894h17.328l244.993 2.478c19.823 0 34.655-17.328 34.655-34.638v-24.76c-2.478-22.266-19.788-34.638-39.593-34.638H226.16l168.283-165.824c17.327-17.327 17.327-47.027-0.001-66.815z m561.79 274.709v-242.55c0-19.787-17.329-29.68-34.639-29.68h-24.759c-19.788 0-34.639 17.31-34.639 34.638v131.168l-168.3-165.806c-17.309-17.329-47.01-17.329-66.816 0-17.326 17.31-17.326 47.009 0 66.814l168.284 165.806h-128.69c-19.787 0-37.116 12.388-39.594 34.654v24.745c0 19.805 17.33 34.654 34.64 34.654l240.071-2.478h17.329c9.893 0 17.31-2.478 24.743-9.894 4.955-4.956 7.415-14.85 7.415-24.744l4.955-17.327c-2.478 0 0 0 0 0zM228.636 159.335h128.69c19.806 0 37.116-12.373 39.593-34.646V99.936c0-19.797-17.309-34.646-34.654-34.646l-244.993 2.478H99.927c-9.876 0-17.31 2.478-24.743 9.895-4.939 4.956-7.416 14.849-7.416 24.752l2.477 17.318h-2.477v245.018c0 19.797 14.85 29.692 34.638 29.692h24.743c19.823 0 34.655-14.841 34.655-34.646v-133.64l168.283 165.815c17.345 17.32 47.045 17.32 66.832 0 17.33-17.327 17.33-47.026 0-66.823L228.636 159.335z m0 0"
+        p-id="2482"
+        fill="#1296db"
+      ></path>
+    </svg>
     <student-questions
       v-if="questionModalVisiable"
       :sendQuestion="sendQuestion"
@@ -83,6 +128,13 @@
   </div>
 </template>
 <style scoped>
+.icon {
+  cursor: pointer;
+  z-index: 999;
+  position: fixed;
+  top: 60px;
+  right: 45%;
+}
 .deadline_info {
   background-color: red;
   opacity: 0.6;
@@ -119,6 +171,7 @@
 .page {
   width: 100%;
   height: 100%;
+  min-width: 600px;
 }
 .block {
   width: 100%;
@@ -168,6 +221,17 @@
 }
 .readchat {
   font-size: 30px;
+  cursor: pointer;
+}
+.full_screen {
+  background-color: #000000;
+  opacity: 0.98;
+  z-index: 99999;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
   cursor: pointer;
 }
 </style>
@@ -241,10 +305,43 @@ export default {
       countDownMin: 0,
       questionModalVisiable: false, // ppt 反馈面板
       showCorrect: false,
+      fullScreen: false,
+      screenWidth: 0,
+      screenHeight: 0,
+      isShowQuestion: true,
+      currentScreenWidth: 700,
+      smallWindow: false,
+      smallWindowValue: 800,
     };
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
+    this.screenWidth = document.body.clientWidth;
+    this.screenHeight = document.body.clientHeight;
+    this.currentScreenWidth = document.body.clientWidth;
+    if (
+      this.currentItemData &&
+      this.currentItemData.items[0] &&
+      this.currentItemData.items[0].type != "draw"
+    ) {
+      this.smallWindow = this.currentScreenWidth < this.smallWindowValue;
+    } else {
+      this.smallWindow = false;
+    }
+    window.onresize = () => {
+      return (() => {
+        this.currentScreenWidth = document.body.clientWidth;
+        if (
+          this.currentItemData &&
+          this.currentItemData.items[0] &&
+          this.currentItemData.items[0].type != "draw"
+        ) {
+          this.smallWindow = this.currentScreenWidth < this.smallWindowValue;
+        } else {
+          this.smallWindow = false;
+        }
+      })();
+    };
   },
   components: {
     pptcontent,
@@ -285,10 +382,21 @@ export default {
     },
   },
   methods: {
+    changeShowOrAnswer() {
+      this.isShowQuestion = !this.isShowQuestion;
+    },
     getWidthPercent(type) {
       if (this.questionModalVisiable) return "0%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
+      console.log(this.currentScreenWidth, "currentScreenWidth");
+      if (this.smallWindow) {
+        if (this.isShowQuestion) {
+          return "0%";
+        } else {
+          return "100%";
+        }
+      }
       return "40%";
     },
     onLineStatusChanged(status) {
@@ -408,6 +516,15 @@ export default {
         this.currentItemData = this.slides[this.currentIndex];
         this.checkCurrentAnswerd();
         this.isShowRightAnswer();
+        if (
+          this.currentItemData &&
+          this.currentItemData.items[0] &&
+          this.currentItemData.items[0].type != "draw"
+        ) {
+          this.smallWindow = this.currentScreenWidth < this.smallWindowValue;
+        } else {
+          this.smallWindow = false;
+        }
         if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
           console.log("学生go-to-page");
           this.emitSo(
@@ -426,6 +543,7 @@ export default {
       this.currentIndex = page - 1;
       this.getItemData();
       this.isShowRightAnswer();
+      this.isShowQuestion = true;
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;
@@ -755,26 +873,31 @@ export default {
     },
     getDeadLineStr(countDownTime) {
       if (countDownTime < 60) {
-        return parseInt(countDownTime) + "mintue" + this.hasS(countDownTime);
+        return parseInt(countDownTime) + " min";
       } else if (countDownTime < 24 * 60) {
         return (
           parseInt(countDownTime / 60) +
-          "hour" +
-          this.hasS(countDownTime / 60) +
-          this.getDeadLineStr(countDownTime % 60)
+          " hour/" +
+          parseInt(countDownTime % 60) +
+          " min"
         );
       } else {
         return (
           parseInt(countDownTime / (60 * 24)) +
-          "day" +
-          this.hasS(countDownTime / (60 * 24)) +
-          this.getDeadLineStr(countDownTime % (60 * 24))
+          " day/" +
+          parseInt((countDownTime % (60 * 24)) / 60) +
+          " hour/" +
+          parseInt((countDownTime % (60 * 24)) % 60) +
+          " min"
         );
       }
     },
     hasS(count) {
       if (count > 1) return "s ";
       return " ";
+    },
+    showFullScreen(isFull) {
+      this.fullScreen = isFull;
     },
   },
 };
