@@ -44,16 +44,15 @@
       </div>
     </div>
     <el-tooltip content="mark up and send comment" placement="top">
-      <div
-        class="readchat comment"
-      >
+      <div class="readchat comment">
         <el-switch
           style="display: block"
           v-model="questionVisiable"
           active-color="#13ce66"
           inactive-color="#999"
           @change="showStudentQuestions"
-          active-text="comment">
+          active-text="comment"
+        >
         </el-switch>
       </div>
     </el-tooltip>
@@ -62,10 +61,24 @@
       @click="showStudentModal"
       :style="{ color: unread ? 'red' : '#fff' }"
     />
+    <div class="question_area" v-if="smallWindow" @click="changeShowOrAnswer()">
+      {{ isShowQuestion ? "Answer " : "Show " }}Question
+    </div>
   </div>
 </template>
 
 <style scoped>
+.question_area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 150px;
+  background-color: cadetblue;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
 .arrow_opts {
   display: flex;
   width: auto;
@@ -171,8 +184,10 @@
   align-items: center;
   margin-right: 50px;
 }
-.comment{
-  background: #fff; height: 40px; padding: 0 5px;
+.comment {
+  background: #fff;
+  height: 40px;
+  padding: 0 5px;
   margin-top: 5px;
   border-radius: 4px;
 }
@@ -212,11 +227,30 @@ export default {
     showStudentQuestions: {
       type: Function,
     },
+    fullScreenWidth: {
+      type: Number,
+      default: 0,
+    },
+    screenWidth: {
+      type: Number,
+      default: 900,
+    },
+    isShowQuestion: {
+      type: Boolean,
+      default: true,
+    },
+    changeShowOrAnswer: {
+      type: Function,
+    },
+    smallWindow: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      questionVisiable: false
-    }
+      questionVisiable: false,
+    };
   },
 };
 </script>
