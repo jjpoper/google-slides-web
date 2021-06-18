@@ -35,17 +35,19 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div
-          class="block"
-          v-if="currentItemData && currentItemData.thumbnail_url"
-        >
-          <pptcontent :url="currentItemData.thumbnail_url" />
+        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+          <pptcontent :url="currentItemData.thumbnail_url"/>
+          <student-questions
+            v-if="questionModalVisiable"
+            :sendQuestion="sendQuestion"
+            :marks="filterMarkupList"
+          />
         </div>
       </el-main>
       <el-aside
         :width="`${getWidthPercent(currentItemData.items[0].type)}`"
         style="position: relative"
-        v-if="currentItemData && currentItemData.items[0]"
+        v-if="currentItemData && currentItemData.items[0] && !questionModalVisiable"
       >
         <StudentsIndexItem
           :data="currentItemData"
@@ -57,8 +59,15 @@
         />
         <student-comment />
       </el-aside>
+      <el-aside
+        width="30%"
+        style="position: relative"
+        v-else-if="questionModalVisiable"
+      >
+        
+      </el-aside>
 
-      <div class="sfooter" v-if="slides && slides.length > 0">
+      <div class="sfooter" v-if="slides && slides.length > 0 && !questionModalVisiable">
         <student-control-panel
           :lastPage="lastPage"
           :nextPage="nextPage"
@@ -89,6 +98,24 @@
       <div class="deadline_info" v-if="showRemainTime()">
         Deadline time remain: {{ getDeadLineStr(countDownMin) }}
       </div>
+      <el-tooltip content="mark up and send comment" placement="top">
+        <div
+          class="readchat comment"
+        >
+          <el-switch
+            style="display: block"
+            v-model="questionModalVisiable"
+            active-color="#13ce66"
+            inactive-color="#999"
+            @change="showStudentQuestions"
+            active-text="comment">
+          </el-switch>
+        </div>
+      </el-tooltip>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain:{{ countDownMin }} mintues.</div>
 
       <div class="deadline_info" v-if="showCorrect">
         You are unable to change your answer
@@ -120,11 +147,6 @@
         fill="#1296db"
       ></path>
     </svg>
-    <student-questions
-      v-if="questionModalVisiable"
-      :sendQuestion="sendQuestion"
-      :marks="filterMarkupList"
-    />
   </div>
 </template>
 <style scoped>
@@ -157,6 +179,7 @@
   top: 20px;
   align-items: center;
   display: flex;
+  z-index: 999;
 }
 .online_status {
   width: 50px;
@@ -386,7 +409,7 @@ export default {
       this.isShowQuestion = !this.isShowQuestion;
     },
     getWidthPercent(type) {
-      if (this.questionModalVisiable) return "0%";
+      // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
       console.log(this.currentScreenWidth, "currentScreenWidth");
@@ -744,7 +767,7 @@ export default {
       // 与评论互斥, 需要关闭
       EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
       this.modalVisiable = false;
-      this.questionModalVisiable = !this.questionModalVisiable;
+      // this.questionModalVisiable = !this.questionModalVisiable;
     },
     answerChoice(v, locked) {
       console.log("change answer==" + v, this.currentSo);

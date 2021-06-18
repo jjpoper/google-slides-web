@@ -43,19 +43,6 @@
         </el-checkbox>
       </div>
     </div>
-    <el-tooltip content="mark up and send comment" placement="top">
-      <div class="readchat comment">
-        <el-switch
-          style="display: block"
-          v-model="questionVisiable"
-          active-color="#13ce66"
-          inactive-color="#999"
-          @change="showStudentQuestions"
-          active-text="comment"
-        >
-        </el-switch>
-      </div>
-    </el-tooltip>
     <i
       class="el-icon-chat-dot-round readchat"
       @click="showStudentModal"
