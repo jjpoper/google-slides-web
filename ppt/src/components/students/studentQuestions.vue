@@ -1,7 +1,7 @@
 <template>
   <div style="background-color: #E9EEF3;">
     <div class="mark-area" @click="markup($event)" @mousemove="move($event)">
-      <pptcontent :url="url"/>
+      <pptcontent :url="pptUrl"/>
       <div
         v-for="(item, index) in marks"
         :key="index"
@@ -119,9 +119,9 @@ import RecordVideo from "../common/recordVideo.vue";
 import recordCommentList from "../common/recordCommentList.vue";
 import { showToast } from "@/utils/loading";
 import colorSelector from '@/utils/color'
-import Pptcontent from '../pptcontent.vue';
+import pptcontent from '../pptcontent.vue';
 export default {
-  components: { recordAudio, RecordVideo, Pptcontent, recordCommentList },
+  components: { recordAudio, RecordVideo, pptcontent, recordCommentList },
   props: {
     sendQuestion: {
       type: Function
@@ -158,12 +158,14 @@ export default {
       selectedIndex: -1,
       currentPageId: 0,
       marks: [],
-      mediaList: []
+      mediaList: [],
+      pptUrl: ''
     };
   },
   created() {
     this.marks = JSON.parse(JSON.stringify(this.list))
     this.mediaList = JSON.parse(JSON.stringify(this.list))
+    this.pptUrl = this.url
     this.currentPageId = this.pageId
     console.log(this.marks)
   },
@@ -176,6 +178,8 @@ export default {
   },
   methods: {
     markup(e) {
+      // 正在录音，不允许打点
+      if(this.recordVisiable) return false
       if (!this.sendSuccess) {
         // 没有发送要删除这次打点
         if (
@@ -217,10 +221,12 @@ export default {
       }
     },
     audio() {
+      this.recordVisiable = true
       this.buttonVisiable = false;
       this.type = ModalEventsTypeEnum.AUDIO;
     },
     video() {
+      this.recordVisiable = true
       this.buttonVisiable = false;
       this.type = ModalEventsTypeEnum.VIDEO;
     },
@@ -228,6 +234,7 @@ export default {
       console.log("1111");
       this.type = "";
       this.recordVisiable = false;
+      this.buttonVisiable = false;
       if (!this.sendSuccess) {
         // 没有发送要删除这次打点
         this.marks.pop();
@@ -244,14 +251,12 @@ export default {
         content_height,
         type,
         background,
-        pageId: this.currentPageId
+        page_id: this.currentPageId,
+        time: Math.floor(Date.now() / 1000)
       }
       this.sendQuestion(params);
       // 增加页面展示
-      this.mediaList.push({
-        ...params,
-        time: Math.floor(Date.now() / 1000)
-      })
+      this.mediaList.push(params)
       this.selectedIndex = this.mediaList.length - 1
       
       this.sendSuccess = true;
@@ -285,6 +290,9 @@ export default {
     selectMark(item, index) {
       this.selectedIndex = index
       console.log(this.selectedIndex)
+      if(this.buttonVisiable) {
+        this.closeRecord();
+      }
     },
     leaveModal() {
       if(this.modalVisable) {

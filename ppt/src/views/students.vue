@@ -13,14 +13,16 @@
       :answerList="answerList"
     />
 
-    <student-questions
-      v-else-if="questionModalVisiable"
-      :sendQuestion="sendQuestion"
-      :list="filterMarkupList"
-      :url="currentItemData.thumbnail_url"
-      :pageId="slides[currentIndex].page_id"
-    />
+    <div v-else>
+      <student-questions
+        v-if="questionModalVisiable"
+        :sendQuestion="sendQuestion"
+        :list="filterMarkupList"
+        :url="currentItemData && currentItemData.thumbnail_url"
+        :pageId="slides[currentIndex].page_id"
+      />
 
+<<<<<<< HEAD
     <el-container v-else>
       <div
         v-if="
@@ -63,27 +65,69 @@
         />
         <student-comment />
       </el-aside>
+=======
+      <el-container v-show="!questionModalVisiable">
+        <div
+          v-if="
+            fullScreen &&
+            currentItemData &&
+            currentItemData.thumbnail_url &&
+            (!currentItemData.items[0] ||
+              currentItemData.items[0].type !== 'draw')
+          "
+          class="full_screen"
+          @click="showFullScreen(false)"
+        >
+          <pptcontent :url="currentItemData.thumbnail_url" />
+        </div>
+        <el-main
+          v-if="
+            currentItemData &&
+            currentItemData.thumbnail_url &&
+            (!currentItemData.items[0] ||
+              currentItemData.items[0].type !== 'draw')
+          "
+        >
+          <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+            <pptcontent :url="currentItemData.thumbnail_url"/>
+          </div>
+        </el-main>
+        <el-aside
+          :width="`${getWidthPercent(currentItemData.items[0].type)}`"
+          style="position: relative"
+          v-if="currentItemData && currentItemData.items[0]"
+        >
+          <StudentsIndexItem
+            :data="currentItemData"
+            :type="currentItemData.items[0].type"
+            :method="answerText"
+            :answer="answerChoice"
+            :sendCanvas="sendCanvas"
+            :url="currentItemData.thumbnail_url"
+          />
+          <student-comment />
+        </el-aside>
+>>>>>>> 4e8efddae61e51746a5a38c14c93007334852e45
 
-      <div class="sfooter" v-if="slides && slides.length > 0">
-        <student-control-panel
-          :lastPage="lastPage"
-          :nextPage="nextPage"
-          :currentPage="parseInt(currentIndex) + 1"
-          :totalPage="slides.length"
-          :currentModel="currentModel"
-          :currentAnswerd="currentAnswerd"
-          :unread="unread"
-          :showStudentModal="showStudentModal"
-          :showStudentQuestions="showStudentQuestions"
-          :questionModalVisiable="questionModalVisiable"
-          :isShowQuestion="isShowQuestion"
-          :changeShowOrAnswer="changeShowOrAnswer"
-          :fullScreenWidth="screenWidth"
-          :screenWidth="currentScreenWidth"
-          :smallWindow="smallWindow"
-        />
-      </div>
-    </el-container>
+        <div class="sfooter" v-if="slides && slides.length > 0">
+          <student-control-panel
+            :lastPage="lastPage"
+            :nextPage="nextPage"
+            :currentPage="parseInt(currentIndex) + 1"
+            :totalPage="slides.length"
+            :currentModel="currentModel"
+            :currentAnswerd="currentAnswerd"
+            :unread="unread"
+            :showStudentModal="showStudentModal"
+            :isShowQuestion="isShowQuestion"
+            :changeShowOrAnswer="changeShowOrAnswer"
+            :fullScreenWidth="screenWidth"
+            :screenWidth="currentScreenWidth"
+            :smallWindow="smallWindow"
+          />
+        </div>
+      </el-container>
+    </div>  
 
     <div class="top_btn">
       <div class="online_status">
@@ -808,6 +852,7 @@ export default {
       //     "content_height": 123
       //     }
       // }
+<<<<<<< HEAD
       const {
         left,
         top,
@@ -818,6 +863,9 @@ export default {
         background,
         pageId
       } = data;
+=======
+      const { left, top, link, content_width, content_height, type, background, page_id } = data;
+>>>>>>> 4e8efddae61e51746a5a38c14c93007334852e45
       this.emitSo(
         "comment-ppt",
         `{"token": "${this.token}", "class_id": "${this.class_id}",
@@ -825,8 +873,9 @@ export default {
         {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
         "background": "${background}", "content_width": ${content_width},
         "content_height": ${content_height},
-        "page_id": "${pageId}"}}`
+        "page_id": "${page_id}"}}`
       );
+      this.marks.push(data)
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();

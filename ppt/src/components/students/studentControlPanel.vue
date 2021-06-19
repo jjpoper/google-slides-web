@@ -211,9 +211,6 @@ export default {
     showStudentModal: {
       type: Function,
     },
-    showStudentQuestions: {
-      type: Function,
-    },
     fullScreenWidth: {
       type: Number,
       default: 0,
