@@ -10,9 +10,9 @@
 
 <style scoped>
 .index_page {
-  width: 100%;
+  /* width: 100%;
   height: 100%;
-  padding-top: 80px;
+  padding-top: 80px; */
 }
 </style>
 

@@ -6,62 +6,64 @@
       :confirmModeChange="confirmModeChange"
       :cancelModeChange="cancelModeChange"
     />
-    <div class="content" v-if="currentItemData">
-      <TeacherPPTPage
-        v-if="!isDashboard && currentItemData"
-        class="pptContent"
-        :currentItemData="currentItemData"
-        :showResponse="showResponse"
-        :currentAnswerCount="currentAnswerCount"
-        :responseContentList="responseContentList"
-      />
+    <div v-show="!questionModalVisiable">
+      <div class="content" v-if="currentItemData">
+        <TeacherPPTPage
+          v-if="!isDashboard && currentItemData"
+          class="pptContent"
+          :currentItemData="currentItemData"
+          :showResponse="showResponse"
+          :currentAnswerCount="currentAnswerCount"
+          :responseContentList="responseContentList"
+        />
 
-      <DashboardPage
-        class="pptContent"
-        :currentItemData="currentItemData"
-        :showResponse="showResponse"
-        :currentAnswerCount="currentAnswerCount"
-        :responseContentList="responseContentList"
-        :responsePercentage="responsePercentage"
-        :isFocus="isFocus"
-        :slides="slides"
-        :giveFocus="giveFocus"
-        :getPageStudent="getPageStudent"
-        :getStudentName="getStudentName"
-        :page_model="page_model"
-        v-else-if="currentItemData && slides"
-      />
+        <DashboardPage
+          class="pptContent"
+          :currentItemData="currentItemData"
+          :showResponse="showResponse"
+          :currentAnswerCount="currentAnswerCount"
+          :responseContentList="responseContentList"
+          :responsePercentage="responsePercentage"
+          :isFocus="isFocus"
+          :slides="slides"
+          :giveFocus="giveFocus"
+          :getPageStudent="getPageStudent"
+          :getStudentName="getStudentName"
+          :page_model="page_model"
+          v-else-if="currentItemData && slides"
+        />
+      </div>
+
+      <!-- :changePage="giveFocus" -->
+      <div class="control">
+        <teacher-control-panel
+          v-if="classRoomInfo && currentItemData"
+          :current_model="page_model"
+          :currentPage="parseInt(currentIndex) + 1"
+          :totalPage="slides.length"
+          :isDashboard="isDashboard"
+          :changePage="pageChange"
+          :turnModel="turnModel"
+          :open="open"
+          :showResponse="showres"
+          :current_response="currentAnswerCount"
+          :isResponseShow="showResponse"
+          :slide_id="slide_id"
+          :endLesson="endLesson"
+          :turnOff="turnModel"
+          :isClosed="classRoomInfo.status == 'close'"
+          :classRoomInfo="classRoomInfo"
+          :lockPage="lockPage"
+          :slides="slides"
+          :openProject="openProject"
+          :reopenClass="_reopenClass"
+          :currentItemData="currentItemData"
+          :setTimeDialogShow="setTimeDialogShow"
+        />
+      </div>
     </div>
 
-    <!-- :changePage="giveFocus" -->
-    <div class="control">
-      <teacher-control-panel
-        v-if="classRoomInfo && currentItemData"
-        :current_model="page_model"
-        :currentPage="parseInt(currentIndex) + 1"
-        :totalPage="slides.length"
-        :isDashboard="isDashboard"
-        :changePage="pageChange"
-        :turnModel="turnModel"
-        :open="open"
-        :showResponse="showres"
-        :current_response="currentAnswerCount"
-        :isResponseShow="showResponse"
-        :slide_id="slide_id"
-        :endLesson="endLesson"
-        :turnOff="turnModel"
-        :isClosed="classRoomInfo.status == 'close'"
-        :classRoomInfo="classRoomInfo"
-        :lockPage="lockPage"
-        :slides="slides"
-        :openProject="openProject"
-        :reopenClass="_reopenClass"
-        :currentItemData="currentItemData"
-        :setTimeDialogShow="setTimeDialogShow"
-        :showStudentQuestions="showStudentQuestions"
-        :questionModalVisiable="questionModalVisiable"
-      />
-    </div>
+    <students-qs-modal v-if="currentItemData && questionModalVisiable" :list="filterMarkupList" :url="currentItemData.thumbnail_url"/>
 
     <comment-modal />
     <div class="top_btn">
@@ -76,6 +78,19 @@
       <div class="number_info" @click="showStudents()">
         Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}
       </div>
+      <el-tooltip content="mark up and send comment" placement="top">
+        <div
+          class="readchat comment"
+        >
+          <el-switch
+            style="display: block"
+            v-model="questionModalVisiable"
+            active-color="#13ce66"
+            inactive-color="#999"
+            active-text="comment">
+          </el-switch>
+        </div>
+      </el-tooltip>
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -164,7 +179,6 @@
         :isDashboard="isDashboard"
       />
     </el-dialog>
-    <students-qs-modal v-if="questionModalVisiable" :list="filterMarkupList" />
   </div>
 </template>
 
@@ -207,12 +221,14 @@
   background-color: #000000af;
 }
 .top_btn {
-  height: 30px;
   width: auto;
   position: fixed;
-  right: 20px;
-  top: 20px;
+  left: 20px;
+  height: 50px;
+  top: 0;
+  align-items: center;
   display: flex;
+  z-index: 999;
 }
 .share_room {
   width: 100px;
@@ -247,6 +263,7 @@
   text-align: center;
   padding-top: 13px;
   cursor: pointer;
+  margin-right: 20px;
 }
 
 .dialog_page {
@@ -269,6 +286,9 @@
 .pptContent {
   height: 100%;
   width: 100%;
+}
+.readchat{
+
 }
 </style>
 
@@ -1401,9 +1421,6 @@ type: "slide"*/
       this.emitSo(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
-    },
-    showStudentQuestions(visiable) {
-      this.questionModalVisiable = visiable;
     },
     hideStepOne() {
       saveStepOneStatus(this.class_id, this.slide_id, "true");

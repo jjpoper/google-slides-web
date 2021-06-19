@@ -1,7 +1,7 @@
 <template>
   <div style="background-color: #E9EEF3;">
     <div class="mark-area" @click="markup($event)" @mousemove="move($event)">
-      <pptcontent :url="url"/>
+      <pptcontent :url="pptUrl"/>
       <div
         v-for="(item, index) in marks"
         :key="index"
@@ -119,9 +119,9 @@ import RecordVideo from "../common/recordVideo.vue";
 import recordCommentList from "../common/recordCommentList.vue";
 import { showToast } from "@/utils/loading";
 import colorSelector from '@/utils/color'
-import Pptcontent from '../pptcontent.vue';
+import pptcontent from '../pptcontent.vue';
 export default {
-  components: { recordAudio, RecordVideo, Pptcontent, recordCommentList },
+  components: { recordAudio, RecordVideo, pptcontent, recordCommentList },
   props: {
     sendQuestion: {
       type: Function
@@ -158,12 +158,14 @@ export default {
       selectedIndex: -1,
       currentPageId: 0,
       marks: [],
-      mediaList: []
+      mediaList: [],
+      pptUrl: ''
     };
   },
   created() {
     this.marks = JSON.parse(JSON.stringify(this.list))
     this.mediaList = JSON.parse(JSON.stringify(this.list))
+    this.pptUrl = this.url
     this.currentPageId = this.pageId
     console.log(this.marks)
   },

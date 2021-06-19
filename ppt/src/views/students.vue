@@ -13,76 +13,76 @@
       :answerList="answerList"
     />
 
-    <student-questions
-      v-else-if="questionModalVisiable"
-      :sendQuestion="sendQuestion"
-      :list="filterMarkupList"
-      :url="currentItemData.thumbnail_url"
-      :pageId="slides[currentIndex].page_id"
-    />
+    <div v-else>
+      <student-questions
+        v-if="questionModalVisiable"
+        :sendQuestion="sendQuestion"
+        :list="filterMarkupList"
+        :url="currentItemData && currentItemData.thumbnail_url"
+        :pageId="slides[currentIndex].page_id"
+      />
 
-    <el-container v-else>
-      <div
-        v-if="
-          fullScreen &&
-          currentItemData &&
-          currentItemData.thumbnail_url &&
-          (!currentItemData.items[0] ||
-            currentItemData.items[0].type !== 'draw')
-        "
-        class="full_screen"
-        @click="showFullScreen(false)"
-      >
-        <pptcontent :url="currentItemData.thumbnail_url" />
-      </div>
-      <el-main
-        v-if="
-          currentItemData &&
-          currentItemData.thumbnail_url &&
-          (!currentItemData.items[0] ||
-            currentItemData.items[0].type !== 'draw')
-        "
-      >
-        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-          <pptcontent :url="currentItemData.thumbnail_url"/>
+      <el-container v-show="!questionModalVisiable">
+        <div
+          v-if="
+            fullScreen &&
+            currentItemData &&
+            currentItemData.thumbnail_url &&
+            (!currentItemData.items[0] ||
+              currentItemData.items[0].type !== 'draw')
+          "
+          class="full_screen"
+          @click="showFullScreen(false)"
+        >
+          <pptcontent :url="currentItemData.thumbnail_url" />
         </div>
-      </el-main>
-      <el-aside
-        :width="`${getWidthPercent(currentItemData.items[0].type)}`"
-        style="position: relative"
-        v-if="currentItemData && currentItemData.items[0]"
-      >
-        <StudentsIndexItem
-          :data="currentItemData"
-          :type="currentItemData.items[0].type"
-          :method="answerText"
-          :answer="answerChoice"
-          :sendCanvas="sendCanvas"
-          :url="currentItemData.thumbnail_url"
-        />
-        <student-comment />
-      </el-aside>
+        <el-main
+          v-if="
+            currentItemData &&
+            currentItemData.thumbnail_url &&
+            (!currentItemData.items[0] ||
+              currentItemData.items[0].type !== 'draw')
+          "
+        >
+          <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+            <pptcontent :url="currentItemData.thumbnail_url"/>
+          </div>
+        </el-main>
+        <el-aside
+          :width="`${getWidthPercent(currentItemData.items[0].type)}`"
+          style="position: relative"
+          v-if="currentItemData && currentItemData.items[0]"
+        >
+          <StudentsIndexItem
+            :data="currentItemData"
+            :type="currentItemData.items[0].type"
+            :method="answerText"
+            :answer="answerChoice"
+            :sendCanvas="sendCanvas"
+            :url="currentItemData.thumbnail_url"
+          />
+          <student-comment />
+        </el-aside>
 
-      <div class="sfooter" v-if="slides && slides.length > 0">
-        <student-control-panel
-          :lastPage="lastPage"
-          :nextPage="nextPage"
-          :currentPage="parseInt(currentIndex) + 1"
-          :totalPage="slides.length"
-          :currentModel="currentModel"
-          :currentAnswerd="currentAnswerd"
-          :unread="unread"
-          :showStudentModal="showStudentModal"
-          :showStudentQuestions="showStudentQuestions"
-          :questionModalVisiable="questionModalVisiable"
-          :isShowQuestion="isShowQuestion"
-          :changeShowOrAnswer="changeShowOrAnswer"
-          :fullScreenWidth="screenWidth"
-          :screenWidth="currentScreenWidth"
-          :smallWindow="smallWindow"
-        />
-      </div>
-    </el-container>
+        <div class="sfooter" v-if="slides && slides.length > 0">
+          <student-control-panel
+            :lastPage="lastPage"
+            :nextPage="nextPage"
+            :currentPage="parseInt(currentIndex) + 1"
+            :totalPage="slides.length"
+            :currentModel="currentModel"
+            :currentAnswerd="currentAnswerd"
+            :unread="unread"
+            :showStudentModal="showStudentModal"
+            :isShowQuestion="isShowQuestion"
+            :changeShowOrAnswer="changeShowOrAnswer"
+            :fullScreenWidth="screenWidth"
+            :screenWidth="currentScreenWidth"
+            :smallWindow="smallWindow"
+          />
+        </div>
+      </el-container>
+    </div>  
 
     <div class="top_btn">
       <div class="online_status">
