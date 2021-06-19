@@ -1,6 +1,6 @@
 import { getTeacherClassAnswers } from './index'
 
-type ItemType = "text" | "draw" | "choice" | 'number'
+type ItemType = "text" | "draw" | "choice" | 'number' | 'audio' | 'video'
 
 interface TeacherDataItem {
   class_id: string
@@ -34,7 +34,7 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
   const { item_id: itemId, student_user_id: sid } = data
   console.log(data, "addItem")
   let oldDataIndex = -1
-  if (type === 'choice' || type === 'number' || type === 'draw') {
+  if (type === 'choice' || type === 'number' || type === 'draw' || type == 'audio' || type == 'video') {
     // 一条答案数据，去重
     oldDataIndex = teacherData.findIndex(item => item.page_id === pageId && item.student_user_id === sid)
   } else {

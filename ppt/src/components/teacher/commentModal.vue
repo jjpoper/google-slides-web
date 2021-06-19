@@ -9,22 +9,20 @@
       </div>
       <div class="mbox" v-if="commentData.pageId">
         <div class="left">
-          <div
-            class="mtitle"
-            v-if="commentData.title.indexOf('data:image/') > -1"
-          >
+          <div class="mtitle" v-if="commentData.title.indexOf('data:image/') > -1">
             <base64image :url="commentData.title" />
           </div>
-          <div
-            class="rightmtitle"
-            v-else-if="commentData.title.indexOf('[') > -1"
-          >
-            <div
-              v-for="(text, index) in getAnswer(commentData.title)"
-              :key="index"
-            >
-              {{ text }}
-            </div>
+
+          <div class="mtitle" v-else-if="commentData.title.indexOf('.mp3') > -1">
+            <audio controlslist="nodownload" controls :src="commentData.title" style="width:100%;" />
+          </div>
+
+          <div class="mtitle" v-else-if="commentData.title.indexOf('.webm') > -1">
+            <video controlslist="nodownload" controls :src="commentData.title" style="width:100%;" />
+          </div>
+
+          <div class="rightmtitle" v-else-if="commentData.title.indexOf('[') > -1">
+            <div v-for="(text, index) in getAnswer(commentData.title)" :key="index">{{ text }}</div>
           </div>
           <div class="rightmtitle" v-else>{{commentData.title}}</div>
           <template v-if="commentData.type === ModalEventsTypeEnum.TEXT">
@@ -35,39 +33,57 @@
                 placeholder="Leave a message for this response..."
               ></textarea>
               <el-button type="primary" style="width: 100%" @click="sendMessage">send</el-button>
-            </div> 
+            </div>
           </template>
           <template v-else-if="commentData.type === ModalEventsTypeEnum.VIDEO">
-            <record-video :onSend="sendVideoOrAudio"/>
+            <record-video :onSend="sendVideoOrAudio" />
           </template>
           <template v-else-if="commentData.type === ModalEventsTypeEnum.AUDIO">
-            <record-audio :onSend="sendVideoOrAudio"/>
+            <record-audio :onSend="sendVideoOrAudio" />
           </template>
         </div>
         <div class="right" v-if="commentList && commentList.length > 0">
           <div v-for="(item, index) in commentList" :key="index.toString()">
-            <div
-              class="rightmtitle"
-              v-if="commentData.title.indexOf('data:image/') > -1"
-            >
+            <div class="rightmtitle" v-if="commentData.title.indexOf('data:image/') > -1">
               <base64image :url="commentData.title" />
             </div>
-            <div
-              class="rightmtitle"
-              v-else-if="commentData.title.indexOf('[') > -1"
-            >
-              <p
-                v-for="(text, index) in getAnswer(commentData.title)"
-                :key="index"
-              >
-                {{ text }}
-              </p>
+            <div class="rightmtitle" v-else-if="commentData.title.indexOf('.mp3') > -1">
+              <audio
+                controlslist="nodownload"
+                controls
+                :src="commentData.title"
+                style="width:100%;"
+              />
+            </div>
+
+            <div class="rightmtitle" v-else-if="commentData.title.indexOf('.webm') > -1">
+              <video
+                controlslist="nodownload"
+                controls
+                :src="commentData.title"
+                style="width:100%;"
+              />
+            </div>
+            <div class="rightmtitle" v-else-if="commentData.title.indexOf('[') > -1">
+              <p v-for="(text, index) in getAnswer(commentData.title)" :key="index">{{ text }}</p>
             </div>
             <div class="rightmtitle" v-else>{{ commentData.title }}</div>
             <div class="rightcomment">
               <p>{{ item.teacherName }} {{ item.time }}</p>
-              <video v-if="item.commentType === 'video'" controlslist="nodownload" controls="" :src="item.value" style="width:60%;"  />
-              <audio v-else-if="item.commentType === 'audio'" controlslist="nodownload" controls="" :src="item.value" style="width:60%;"  />
+              <video
+                v-if="item.commentType === 'video'"
+                controlslist="nodownload"
+                controls
+                :src="item.value"
+                style="width:60%;"
+              />
+              <audio
+                v-else-if="item.commentType === 'audio'"
+                controlslist="nodownload"
+                controls
+                :src="item.value"
+                style="width:60%;"
+              />
               <p v-else>{{ item.value }}</p>
             </div>
           </div>
@@ -133,7 +149,10 @@
 .mtitle {
   background-color: #f2f2f2;
   width: 100%;
-  height: 100px;
+  height: auto;
+  min-height: 100px;
+  max-height: 250px;
+  overflow: hidden;
   border: 1px solid #999;
   box-sizing: border-box;
   padding: 20px;
@@ -174,17 +193,20 @@
 }
 </style>
 <script>
-import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
+import {
+  ModalEventsNameEnum,
+  ModalEventsTypeEnum
+} from "@/socket/socketEvents";
 import {
   getTeacherUserName,
   addTeacherComment,
-  getTeacherCommentList,
+  getTeacherCommentList
 } from "@/model/store.teacher";
 import { getTimeValue } from "@/utils/help";
 import base64image from "../base64image.vue";
-import RecordAudio from '../common/recordAudio.vue';
-import RecordVideo from '../common/recordVideo.vue';
-// import  
+import RecordAudio from "../common/recordAudio.vue";
+import RecordVideo from "../common/recordVideo.vue";
+// import
 export default {
   components: { base64image, RecordAudio, RecordVideo },
   data() {
@@ -196,7 +218,7 @@ export default {
         pageId: "1",
         itemId: "1",
         studentId: "1",
-        type: 'text'
+        type: "text"
       },
       ModalEventsTypeEnum,
       isRecording: false,
@@ -238,17 +260,17 @@ export default {
         this.$message.warning("Please input your comment");
         return;
       }
-      this.sendComment(this.commentValue, 'text')
-      this.commentValue = ''
+      this.sendComment(this.commentValue, "text");
+      this.commentValue = "";
     },
-    sendComment(value, commentType = 'text') {
+    sendComment(value, commentType = "text") {
       const { year, hours, month, date, minutes } = getTimeValue(Date.now());
       console.log(getTeacherUserName());
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
         value,
         commentType,
-        teacherName: getTeacherUserName(),
+        teacherName: getTeacherUserName()
       };
       const { pageId, itemId, studentId, title } = this.commentData;
       addTeacherComment({
@@ -256,7 +278,7 @@ export default {
         pageId,
         itemId,
         title,
-        ...data,
+        ...data
       });
       this.commentList.unshift(data);
       EventBus.$emit(ModalEventsNameEnum.TEACHER_SEND_COMMENT, {
@@ -264,12 +286,12 @@ export default {
         pageId,
         itemId,
         title,
-        ...data,
+        ...data
       });
     },
-    sendVideoOrAudio(url, type = 'text') {
-      this.sendComment(url, type)
-    },
+    sendVideoOrAudio(url, type = "text") {
+      this.sendComment(url, type);
+    }
   }
 };
 </script>

@@ -6,6 +6,8 @@ export enum SocketEventsEnum {
   RENAME = 'RENAME', // 改名
   TEXT_INPUT = 'text', // 文本框输入
   NUMBER_INPUT = 'number', // 数字输入
+  AUDIO_INPUT = 'audio',
+  VIDEO_INPUT = 'video',
   TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
   CONTROL = "teacher_control", // 教师端发送控制命令
   MODEL_CHANGE = 'Mode_Change',
@@ -14,7 +16,7 @@ export enum SocketEventsEnum {
   CHANGE_SESSION_STATUS = 'change_session_status',
   LOCK_PAGE = 'lock_page',
   STAR_OR_HIDE_ANSWER = 'STAR_OR_HIDE_ANSWER',
-  STUDETN_GO_PAGE ='STUDENT_GO_PAGE',
+  STUDETN_GO_PAGE = 'STUDENT_GO_PAGE',
   SET_DEADLINE_TIME = 'response_limit',
   COPY_LINK_DIALOG_CLOSE = 'copy_link_dialog_close',
   COPY_LINK_DIALOG_OPEN = 'copy_link_dialog_open',

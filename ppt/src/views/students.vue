@@ -45,7 +45,7 @@
           "
         >
           <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-            <pptcontent :url="currentItemData.thumbnail_url"/>
+            <pptcontent :url="currentItemData.thumbnail_url" />
           </div>
         </el-main>
         <el-aside
@@ -60,6 +60,7 @@
             :answer="answerChoice"
             :sendCanvas="sendCanvas"
             :url="currentItemData.thumbnail_url"
+            :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
           />
           <student-comment />
         </el-aside>
@@ -82,30 +83,26 @@
           />
         </div>
       </el-container>
-    </div>  
+    </div>
 
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain: {{ getDeadLineStr(countDownMin) }}
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain: {{ getDeadLineStr(countDownMin) }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
-        <div
-          class="readchat comment"
-        >
+        <div class="readchat comment">
           <el-switch
             style="display: block"
             v-model="questionModalVisiable"
             active-color="#13ce66"
             inactive-color="#999"
             @change="showStudentQuestions"
-            active-text="comment">
-          </el-switch>
+            active-text="comment"
+          ></el-switch>
         </div>
       </el-tooltip>
       <div
@@ -113,9 +110,7 @@
         v-if="showRemainTime()"
       >Deadline time remain:{{ countDownMin }} mintues.</div>
 
-      <div class="deadline_info" v-if="showCorrect">
-        You are unable to change your answer
-      </div>
+      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
     </div>
     <svg
       t="1623813115939"
@@ -141,14 +136,13 @@
         d="M629.557 391.972c17.329 17.32 47.028 17.32 66.815 0l168.302-165.814v133.637c0 19.806 14.85 34.647 34.637 34.647h24.743c19.806 0 34.657-12.372 34.657-29.692V119.733h-2.479l2.479-17.318c0-9.904-2.479-17.33-7.436-24.752-4.936-4.948-14.848-9.895-24.743-9.895h-17.327L664.211 65.29c-19.805 0-34.654 17.329-34.654 34.646v24.752c2.478 22.274 19.789 34.646 39.593 34.646h128.69L632.036 325.149c-22.283 17.319-22.283 47.026-2.478 66.823zM394.44 629.557c-17.31-17.327-47.009-17.327-66.815 0l-168.3 165.807V664.195c0-19.787-14.833-34.638-34.638-34.638h-24.76c-19.788 0-34.639 12.372-34.639 29.699v242.533h2.478l-2.478 17.327c0 9.894 2.478 17.31 7.416 24.744 4.956 4.956 14.868 9.894 24.761 9.894h17.328l244.993 2.478c19.823 0 34.655-17.328 34.655-34.638v-24.76c-2.478-22.266-19.788-34.638-39.593-34.638H226.16l168.283-165.824c17.327-17.327 17.327-47.027-0.001-66.815z m561.79 274.709v-242.55c0-19.787-17.329-29.68-34.639-29.68h-24.759c-19.788 0-34.639 17.31-34.639 34.638v131.168l-168.3-165.806c-17.309-17.329-47.01-17.329-66.816 0-17.326 17.31-17.326 47.009 0 66.814l168.284 165.806h-128.69c-19.787 0-37.116 12.388-39.594 34.654v24.745c0 19.805 17.33 34.654 34.64 34.654l240.071-2.478h17.329c9.893 0 17.31-2.478 24.743-9.894 4.955-4.956 7.415-14.85 7.415-24.744l4.955-17.327c-2.478 0 0 0 0 0zM228.636 159.335h128.69c19.806 0 37.116-12.373 39.593-34.646V99.936c0-19.797-17.309-34.646-34.654-34.646l-244.993 2.478H99.927c-9.876 0-17.31 2.478-24.743 9.895-4.939 4.956-7.416 14.849-7.416 24.752l2.477 17.318h-2.477v245.018c0 19.797 14.85 29.692 34.638 29.692h24.743c19.823 0 34.655-14.841 34.655-34.646v-133.64l168.283 165.815c17.345 17.32 47.045 17.32 66.832 0 17.33-17.327 17.33-47.026 0-66.823L228.636 159.335z m0 0"
         p-id="2482"
         fill="#1296db"
-      ></path>
+      />
     </svg>
-    <div id="diycolor_comment">
-    </div>
+    <div id="diycolor_comment"></div>
   </div>
 </template>
 <style scoped>
-#diycolor_comment{
+#diycolor_comment {
   top: 0;
   left: 0;
   width: 100%;
@@ -204,7 +198,7 @@
   width: 100%;
   height: 100%;
   min-width: 600px;
-  background-color: #E9EEF3;
+  background-color: #e9eef3;
 }
 .block {
   width: 100%;
@@ -275,7 +269,7 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
-  getAVComment,
+  getAVComment
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -285,7 +279,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -296,7 +290,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken,
+  saveStudentStoreToken
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -344,7 +338,7 @@ export default {
       isShowQuestion: true,
       currentScreenWidth: 700,
       smallWindow: false,
-      smallWindowValue: 800,
+      smallWindowValue: 800
     };
   },
   mounted() {
@@ -383,10 +377,10 @@ export default {
     ClassRoomClosed,
     studentControlPanel,
     pageLockedNote,
-    StudentQuestions,
+    StudentQuestions
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -407,12 +401,12 @@ export default {
         console.log(this.marks);
         console.log(this.slides[this.currentIndex].page_id);
         const list = this.marks.filter(
-          (item) => item.page_id === this.slides[this.currentIndex].page_id
+          item => item.page_id === this.slides[this.currentIndex].page_id
         );
         return list;
       }
       return [];
-    },
+    }
   },
   methods: {
     changeShowOrAnswer() {
@@ -478,7 +472,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -505,7 +499,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -519,7 +513,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -539,7 +533,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.currentAnswerd = true;
     },
@@ -586,7 +580,7 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           console.log(this.classRoomInfo);
           if (this.classRoomInfo.status == "live") {
@@ -613,12 +607,12 @@ export default {
             );
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
 
       getAVComment(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           if (res.code == "ok") {
             for (let i = 0; i < res.data.length; i++) {
@@ -627,7 +621,7 @@ export default {
             }
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
       this.joinRoom();
@@ -727,7 +721,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -749,9 +743,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex,
+          slideIndex
         },
-        user_id,
+        user_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
@@ -790,7 +784,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v,
+        answer: v
       });
       this.currentAnswerd = true;
       this.showCorrect = locked;
@@ -814,19 +808,26 @@ export default {
       //     "content_height": 123
       //     }
       // }
-      const { left, top, link, content_width, content_height, type, background, page_id } = data;
+      const {
+        left,
+        top,
+        link,
+        content_width,
+        content_height,
+        type,
+        background,
+        page_id
+      } = data;
       this.emitSo(
         "comment-ppt",
-        `{"token": "${this.token}", "class_id": "${
-          this.class_id
-        }",
+        `{"token": "${this.token}", "class_id": "${this.class_id}",
         "data":
         {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
         "background": "${background}", "content_width": ${content_width},
         "content_height": ${content_height},
         "page_id": "${page_id}"}}`
       );
-      this.marks.push(data)
+      this.marks.push(data);
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();
@@ -840,7 +841,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "Confirm",
         showCancelButton: false,
-        showClose: false,
+        showClose: false
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -936,6 +937,21 @@ export default {
     showFullScreen(isFull) {
       this.fullScreen = isFull;
     },
-  },
+    sendAudioOrVideoAnswer(link) {
+      const { page_id, items } = this.currentItemData;
+      const { type } = items[0];
+      console.log("sendAudioOrVideoAnswer", page_id);
+      this.emitSo(
+        "response",
+        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+      );
+      saveStudentsCurrentPageAnswerList(page_id, type, {
+        item_id: 0,
+        key: 0,
+        content: link
+      });
+      this.currentAnswerd = true;
+    }
+  }
 };
 </script>

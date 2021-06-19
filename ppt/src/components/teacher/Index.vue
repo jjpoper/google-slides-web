@@ -8,6 +8,10 @@
       class="item"
     />
     <draw v-else-if="type === 'draw'" v-bind="$attrs" :flag_1="flag_1" />
+
+    <AudioItem v-else-if="type === 'audio'" v-bind="$attrs" :flag_1="flag_1" />
+
+    <VideoItem v-else-if="type === 'video'" v-bind="$attrs" :flag_1="flag_1" />
   </div>
   <div class="page center" v-else-if="type!='website'">
     <div class="loadEffect">
@@ -19,8 +23,7 @@
       <span></span>
       <span></span>
       <span></span>
-    </div>
-    Waiting For Responses
+    </div>Waiting For Responses
   </div>
 </template>
 
@@ -118,26 +121,30 @@ import textItem from "./textItem";
 import radioItem from "./radioItem";
 import choiceItem from "./choiceItem";
 import draw from "./draw";
+import VideoItem from "./VideoItem";
+import AudioItem from "./AudioItem";
 export default {
   props: {
     type: {
       type: String,
-      default: "",
+      default: ""
     },
     currentAnswerCount: {
       type: Number,
-      default: 0,
+      default: 0
     },
     flag_1: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   components: {
     textItem,
     radioItem,
     choiceItem,
     draw,
-  },
+    VideoItem,
+    AudioItem
+  }
 };
 </script>
