@@ -234,6 +234,7 @@ export default {
       console.log("1111");
       this.type = "";
       this.recordVisiable = false;
+      this.buttonVisiable = false;
       if (!this.sendSuccess) {
         // 没有发送要删除这次打点
         this.marks.pop();
@@ -289,6 +290,9 @@ export default {
     selectMark(item, index) {
       this.selectedIndex = index
       console.log(this.selectedIndex)
+      if(this.buttonVisiable) {
+        this.closeRecord();
+      }
     },
     leaveModal() {
       if(this.modalVisable) {
