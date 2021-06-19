@@ -72,12 +72,6 @@
       </div>
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
-<<<<<<< HEAD
-      <div
-        class="number_info"
-        @click="showStudents()"
-      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
-=======
       <div class="number_info" @click="showStudents()">
         Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}
       </div>
@@ -94,7 +88,6 @@
           </el-switch>
         </div>
       </el-tooltip>
->>>>>>> 4e8efddae61e51746a5a38c14c93007334852e45
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
