@@ -246,14 +246,12 @@ export default {
         content_height,
         type,
         background,
-        pageId: this.currentPageId
+        page_id: this.currentPageId,
+        time: Math.floor(Date.now() / 1000)
       }
       this.sendQuestion(params);
       // 增加页面展示
-      this.mediaList.push({
-        ...params,
-        time: Math.floor(Date.now() / 1000)
-      })
+      this.mediaList.push(params)
       this.selectedIndex = this.mediaList.length - 1
       
       this.sendSuccess = true;

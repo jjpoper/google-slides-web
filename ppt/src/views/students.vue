@@ -814,7 +814,7 @@ export default {
       //     "content_height": 123
       //     }
       // }
-      const { left, top, link, content_width, content_height, type, background, pageId } = data;
+      const { left, top, link, content_width, content_height, type, background, page_id } = data;
       this.emitSo(
         "comment-ppt",
         `{"token": "${this.token}", "class_id": "${
@@ -824,8 +824,9 @@ export default {
         {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
         "background": "${background}", "content_width": ${content_width},
         "content_height": ${content_height},
-        "page_id": "${pageId}"}}`
+        "page_id": "${page_id}"}}`
       );
+      this.marks.push(data)
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();
