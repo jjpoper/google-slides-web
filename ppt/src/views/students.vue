@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" v-if="slides && slides.length">
     <class-room-closed
       v-if="classRoomInfo && classRoomInfo.status == 'close'"
       :class_id="classRoomInfo.class_id"
@@ -11,6 +11,14 @@
       "
       :data="currentItemData"
       :answerList="answerList"
+    />
+
+    <student-questions
+      v-else-if="questionModalVisiable"
+      :sendQuestion="sendQuestion"
+      :list="filterMarkupList"
+      :url="currentItemData.thumbnail_url"
+      :pageId="slides[currentIndex].page_id"
     />
 
     <el-container v-else>
@@ -35,11 +43,8 @@
             currentItemData.items[0].type !== 'draw')
         "
       >
-        <div
-          class="block"
-          v-if="currentItemData && currentItemData.thumbnail_url"
-        >
-          <pptcontent :url="currentItemData.thumbnail_url" />
+        <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+          <pptcontent :url="currentItemData.thumbnail_url"/>
         </div>
       </el-main>
       <el-aside
@@ -89,6 +94,24 @@
       <div class="deadline_info" v-if="showRemainTime()">
         Deadline time remain: {{ getDeadLineStr(countDownMin) }}
       </div>
+      <el-tooltip content="mark up and send comment" placement="top">
+        <div
+          class="readchat comment"
+        >
+          <el-switch
+            style="display: block"
+            v-model="questionModalVisiable"
+            active-color="#13ce66"
+            inactive-color="#999"
+            @change="showStudentQuestions"
+            active-text="comment">
+          </el-switch>
+        </div>
+      </el-tooltip>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain:{{ countDownMin }} mintues.</div>
 
       <div class="deadline_info" v-if="showCorrect">
         You are unable to change your answer
@@ -120,14 +143,22 @@
         fill="#1296db"
       ></path>
     </svg>
-    <student-questions
-      v-if="questionModalVisiable"
-      :sendQuestion="sendQuestion"
-      :marks="filterMarkupList"
-    />
+    <div id="diycolor_comment">
+    </div>
   </div>
 </template>
 <style scoped>
+#diycolor_comment{
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: none;
+  opacity: 0;
+  transition: opacity 150ms linear;
+  z-index: 9999;
+}
 .icon {
   cursor: pointer;
   z-index: 999;
@@ -150,13 +181,14 @@
   border-radius: 5px;
 }
 .top_btn {
-  height: 30px;
+  height: 50px;
   width: auto;
   position: fixed;
   left: 20px;
-  top: 20px;
+  top: 0;
   align-items: center;
   display: flex;
+  z-index: 999;
 }
 .online_status {
   width: 50px;
@@ -172,6 +204,7 @@
   width: 100%;
   height: 100%;
   min-width: 600px;
+  background-color: #E9EEF3;
 }
 .block {
   width: 100%;
@@ -386,7 +419,7 @@ export default {
       this.isShowQuestion = !this.isShowQuestion;
     },
     getWidthPercent(type) {
-      if (this.questionModalVisiable) return "0%";
+      // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
       console.log(this.currentScreenWidth, "currentScreenWidth");
@@ -411,8 +444,7 @@ export default {
           if (logout) {
             this.goToLogin();
           } else {
-            this.afterLogin(profile);
-            this.getAllSlides();
+            this.getAllSlides(profile);
           }
         });
       }
@@ -468,7 +500,7 @@ export default {
         }
       }
     },
-    getAllSlides() {
+    getAllSlides(profile) {
       console.log("list", "========");
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
@@ -478,6 +510,7 @@ export default {
         console.log(list, "========");
         this.slides = list;
         this.getItemData();
+        this.afterLogin(profile);
         hideLoading();
       });
     },
@@ -744,7 +777,7 @@ export default {
       // 与评论互斥, 需要关闭
       EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
       this.modalVisiable = false;
-      this.questionModalVisiable = !this.questionModalVisiable;
+      // this.questionModalVisiable = !this.questionModalVisiable;
     },
     answerChoice(v, locked) {
       console.log("change answer==" + v, this.currentSo);
@@ -781,14 +814,17 @@ export default {
       //     "content_height": 123
       //     }
       // }
-      const { left, top, link, content_width, content_height, type } = data;
+      const { left, top, link, content_width, content_height, type, background, pageId } = data;
       this.emitSo(
         "comment-ppt",
         `{"token": "${this.token}", "class_id": "${
           this.class_id
-        }", "data": {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}", "content_width": ${content_width}, "content_height": ${content_height}, "page_id": "${
-          this.slides[this.currentIndex].page_id
-        }"}}`
+        }",
+        "data":
+        {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
+        "background": "${background}", "content_width": ${content_width},
+        "content_height": ${content_height},
+        "page_id": "${pageId}"}}`
       );
     },
     emitSo(action, message) {
