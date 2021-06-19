@@ -5,6 +5,8 @@
     <choice v-else-if="type === 'choice'" v-bind="$attrs" />
     <website v-else-if="type === 'website'" v-bind="$attrs" />
     <draw v-else-if="type === 'draw'" v-bind="$attrs" />
+    <studentAudioItem v-else-if="type=='audio'" v-bind="$attrs" />
+    <studentVideoItem v-else-if="type=='video'" v-bind="$attrs" />
   </div>
 </template>
 
@@ -22,12 +24,14 @@ import textItem from "./textItem";
 import choice from "./choice";
 import website from "./website";
 import draw from "./draw";
+import studentAudioItem from "./studentAudioItem";
+import studentVideoItem from "./studentVideoItem";
 export default {
   props: {
     type: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   components: {
     numberIndex,
@@ -35,6 +39,8 @@ export default {
     choice,
     website,
     draw,
-  },
+    studentAudioItem,
+    studentVideoItem
+  }
 };
 </script>

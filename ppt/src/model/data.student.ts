@@ -1,6 +1,6 @@
-import {getStudentClassAnswers} from './index'
+import { getStudentClassAnswers } from './index'
 
-type ItemType = "text" | "draw" | "choice" | 'number'
+type ItemType = "text" | "draw" | "choice" | 'number' | 'audio' | 'video'
 
 interface StudentDataItem {
   class_id: string
@@ -31,16 +31,16 @@ export const addStudentData = (pageId: string, type: string, oldData: any) => {
     student_user_id: oldData.user_id,
     type
   }
-  const {item_id: itemId} = data
+  const { item_id: itemId } = data
   let oldDataIndex = -1
-  if(type === 'choice' || type === 'number' || type === 'draw') {
+  if (type === 'choice' || type === 'number' || type === 'draw' || type == 'audio' || type == 'video') {
     // 一条答案数据，去重
     oldDataIndex = studentData.findIndex(item => item.page_id === pageId)
   } else {
     oldDataIndex = studentData.findIndex(item => item.page_id === pageId && item.item_id === itemId)
   }
 
-  if(oldDataIndex > -1) {
+  if (oldDataIndex > -1) {
     studentData[oldDataIndex] = data
   } else {
     studentData.push(data)

@@ -104,11 +104,11 @@ export const saveAnswerList = (pageId: string, type: string, data: any) => {
 }
 
 
-export const saveStepOneStatus = (class_id: string, slide_id: string, isHide: string) => {
-  localStorage.setItem(`stepone_${class_id}_${slide_id}`, isHide)
+export const saveStepOneStatus = (user_id: string, isHide: string) => {
+  localStorage.setItem(`stepone_${user_id}`, isHide)
 }
 
-export const getStepOneStatus = (class_id: string, slide_id: string) => {
-  const result = localStorage.getItem(`stepone_${class_id}_${slide_id}`) || ''
+export const getStepOneStatus = (user_id: string) => {
+  const result = localStorage.getItem(`stepone_${user_id}`) || ''
   return result && result == "true";
 }
