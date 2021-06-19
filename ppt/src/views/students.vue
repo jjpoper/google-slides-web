@@ -45,7 +45,7 @@
           "
         >
           <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-            <pptcontent :url="currentItemData.thumbnail_url"/>
+            <pptcontent :url="currentItemData.thumbnail_url" />
           </div>
         </el-main>
         <el-aside
@@ -60,6 +60,7 @@
             :answer="answerChoice"
             :sendCanvas="sendCanvas"
             :url="currentItemData.thumbnail_url"
+            :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
           />
           <student-comment />
         </el-aside>
@@ -82,7 +83,7 @@
           />
         </div>
       </el-container>
-    </div>  
+    </div>
 
     <div class="top_btn">
       <div class="online_status">
@@ -807,7 +808,16 @@ export default {
       //     "content_height": 123
       //     }
       // }
-      const { left, top, link, content_width, content_height, type, background, page_id } = data;
+      const {
+        left,
+        top,
+        link,
+        content_width,
+        content_height,
+        type,
+        background,
+        page_id
+      } = data;
       this.emitSo(
         "comment-ppt",
         `{"token": "${this.token}", "class_id": "${this.class_id}",
@@ -817,7 +827,7 @@ export default {
         "content_height": ${content_height},
         "page_id": "${page_id}"}}`
       );
-      this.marks.push(data)
+      this.marks.push(data);
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();

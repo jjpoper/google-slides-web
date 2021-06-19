@@ -63,7 +63,11 @@
       </div>
     </div>
 
-    <students-qs-modal v-if="currentItemData && questionModalVisiable" :list="filterMarkupList" :url="currentItemData.thumbnail_url"/>
+    <students-qs-modal
+      v-if="currentItemData && questionModalVisiable"
+      :list="filterMarkupList"
+      :url="currentItemData.thumbnail_url"
+    />
 
     <comment-modal />
     <div class="top_btn">
@@ -72,20 +76,19 @@
       </div>
       <div class="share_room" @click="copyUrl()">Share Class</div>
 
-      <div class="number_info" @click="showStudents()">
-        Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}
-      </div>
+      <div
+        class="number_info"
+        @click="showStudents()"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
-        <div
-          class="readchat comment"
-        >
+        <div class="readchat comment">
           <el-switch
             style="display: block"
             v-model="questionModalVisiable"
             active-color="#13ce66"
             inactive-color="#999"
-            active-text="comment">
-          </el-switch>
+            active-text="comment"
+          ></el-switch>
         </div>
       </el-tooltip>
     </div>
@@ -284,8 +287,7 @@
   height: 100%;
   width: 100%;
 }
-.readchat{
-
+.readchat {
 }
 </style>
 
@@ -628,17 +630,18 @@ type: "slide"*/
     },
     startConnectRoom() {
       this.joinRoom();
-
-      if (this.directFromPlugin) {
-        if (getStepOneStatus(this.classRoomInfo.author)) {
-          this.stepTwoDialog = true;
-        } else {
-          this.stepOneDialog = true;
-        }
-      }
       queryClassStatus(this.class_id, this.token)
         .then(res => {
           this.classRoomInfo = res;
+          if (this.directFromPlugin) {
+            if (this.classRoomInfo) {
+              if (getStepOneStatus(this.classRoomInfo.author)) {
+                this.stepTwoDialog = true;
+              } else {
+                this.stepOneDialog = true;
+              }
+            }
+          }
           this.classRoomInfo.showResponsePages = new Array();
           if (this.classRoomInfo.status == "live") {
             this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
