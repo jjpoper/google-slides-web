@@ -178,6 +178,8 @@ export default {
   },
   methods: {
     markup(e) {
+      // 正在录音，不允许打点
+      if(this.recordVisiable) return false
       if (!this.sendSuccess) {
         // 没有发送要删除这次打点
         if (
@@ -219,10 +221,12 @@ export default {
       }
     },
     audio() {
+      this.recordVisiable = true
       this.buttonVisiable = false;
       this.type = ModalEventsTypeEnum.AUDIO;
     },
     video() {
+      this.recordVisiable = true
       this.buttonVisiable = false;
       this.type = ModalEventsTypeEnum.VIDEO;
     },
