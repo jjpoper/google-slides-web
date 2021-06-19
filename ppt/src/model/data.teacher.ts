@@ -49,7 +49,6 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
 
 // 获取老师端数据量
 export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) => {
-  console.log(teacherData, "获取老师数据")
   const filterData = teacherData.filter(item => item.page_id === pageId && item.type === type)
   const mapData = filterData.map((item) => {
     return {

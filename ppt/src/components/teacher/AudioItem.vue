@@ -117,9 +117,9 @@ export default {
       this.data.page_id,
       this.data.items[0].type
     );
+    console.log(this.avList, "avlist");
     EventBus.$on(this.data.items[0].type, data => {
       // 通知展示当前pageid，当前itemid的评论框
-      console.log(this.data.items[0].type, "avlist");
       this.avList = getCurrentPageAnswerList(
         this.data.page_id,
         this.data.items[0].type

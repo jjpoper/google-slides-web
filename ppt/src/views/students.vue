@@ -937,9 +937,9 @@ export default {
       this.fullScreen = isFull;
     },
     sendAudioOrVideoAnswer(link) {
-      console.log("sendAudioOrVideoAnswer" + link);
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
+      console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
         `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
