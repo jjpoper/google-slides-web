@@ -1,22 +1,31 @@
 <template>
   <div class="parent" v-if="avList && avList.length > 0">
     <div v-for="(item, index) in avList" :key="index">
-      <div v-if="shouldShow(item)" :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
+      <div
+        v-if="shouldShow(item)"
+        :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
+      >
         <div class="text_area">
           <div class="text_content">
             <audio
-              v-if="data.items[0].type=='audio'"
+              v-if="item.content.indexOf('.mp3') > -1"
               controlslist="nodownload"
               controls
               :src="item.content"
-              style="width:100%;"
+              style="width: 90%"
+            />
+            <video
+              v-else-if="item.content.indexOf('.webm') > -1"
+              controlslist="nodownload"
+              controls
+              :src="item.content"
+              style="width: 100%"
             />
           </div>
 
-          <div
-            class="text_static"
-            v-if="flag_1 && avList.length > 1"
-          >{{ index + 1 + " of " + avList.length }}</div>
+          <div class="text_static" v-if="flag_1 && avList.length > 1">
+            {{ index + 1 + " of " + avList.length }}
+          </div>
         </div>
         <student-response-opt-bar
           v-if="flag_1"
@@ -99,16 +108,16 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     flag_1: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
-      avList: []
+      avList: [],
     };
   },
   mounted() {
@@ -118,7 +127,7 @@ export default {
       this.data.items[0].type
     );
     console.log(this.avList, "avlist");
-    EventBus.$on(this.data.items[0].type, data => {
+    EventBus.$on(this.data.items[0].type, (data) => {
       // 通知展示当前pageid，当前itemid的评论框
       this.avList = getCurrentPageAnswerList(
         this.data.page_id,
@@ -141,7 +150,7 @@ export default {
         if (this.avList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
       }
       return true;
-    }
-  }
+    },
+  },
 };
 </script>
