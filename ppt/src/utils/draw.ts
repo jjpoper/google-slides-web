@@ -14,6 +14,7 @@ export enum DrawTypeData {
 type DrawType = 'line' | 'draw' | 'text' | 'marker'
 type onDrawBack = (data: any) => void
 window.canvasPool = []
+window.drawPool = []
 
 export default class Draw {
   private el: any
@@ -25,6 +26,7 @@ export default class Draw {
     left: 20,
     top: 20
   }
+  private initUrl = ""
 
   private pointer = {
     beginX: 0,
@@ -46,6 +48,8 @@ export default class Draw {
     x: 0,
     y: 0
   }
+  private lastImageData = ''
+  private currentIndex = -1;
 
   private isDrawing = false
 
@@ -84,7 +88,7 @@ export default class Draw {
       this.drawBegin(event);
     };
     this.canvas.onmouseup = () => {
-      // console.log('========= 1')
+      //console.log('========= 1')
       this.isDrawing = false
       this.drawEnd();
       // ws.send('stop')
@@ -95,11 +99,18 @@ export default class Draw {
       // ws.send('stop')
     };
     // 绘制缓存数据
-    if(initUrl) {
+    if (initUrl) {
       this.initByBase64(initUrl);
+      //  window.drawPool.splice(++this.currentIndex, 0, initUrl);
     } else {
       this.saveImageData()
     }
+    if (this.currentIndex == -1) {
+      window.drawPool = [];
+      const base64Url = this.canvas.toDataURL("image/png");
+      window.drawPool.splice(++this.currentIndex, 0, base64Url);
+    }
+
   }
 
   initByBase64(base64Url: string) {
@@ -110,7 +121,7 @@ export default class Draw {
       this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.cxt.drawImage(img, 0, 0);
       this.saveImageData()
-      if(this.isEarse) {
+      if (this.isEarse) {
         this.cxt.globalCompositeOperation = "destination-out";
       }
     };
@@ -154,7 +165,7 @@ export default class Draw {
     this.pointer.beginX = e.clientX - this.stage_info.left
     this.pointer.beginY = e.clientY - this.stage_info.top
 
-    if(this.drawType === 'draw') {
+    if (this.drawType === 'draw') {
       this.cxt.beginPath();
       this.cxt.moveTo(
         this.pointer.beginX,
@@ -162,9 +173,9 @@ export default class Draw {
       );
     }
 
-    if(this.drawType === 'marker') {
+    if (this.drawType === 'marker') {
       this.drawMarker()
-    } else if(['draw', 'line'].indexOf(this.drawType) > -1) {
+    } else if (['draw', 'line'].indexOf(this.drawType) > -1) {
       this.canvas.onmousemove = () => {
         this.drawing(event)
       }
@@ -176,7 +187,8 @@ export default class Draw {
         // }, 100);
         // ws.send('stop')
       };
-    } else if(this.drawType === 'text') {
+    } else if (this.drawType === 'text') {
+
       this.drawText()
     }
 
@@ -193,8 +205,8 @@ export default class Draw {
   }
 
   drawText() {
-    if(this.canTextarea) {
-      this.textPostion = {x: this.pointer.beginX, y: this.pointer.beginY}
+    if (this.canTextarea) {
+      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
       // 添加textarea文本框
       const textarea = this.createDom();
       this.canvasParant.appendChild(textarea);
@@ -206,11 +218,12 @@ export default class Draw {
       const textarea = document.getElementById('textarea');
       // @ts-ignore
       const tValue = textarea.value
-      if(tValue) {
+      if (tValue) {
+        console.log('text end draw!!')
         this.addHistory();
         const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor);
         text.draw(this.cxt);
-        this.drawEnd()
+        //  this.drawEnd() 防止重复调用
       }
       this.canvasParant.removeChild(textarea);
       this.canTextarea = true;
@@ -218,15 +231,15 @@ export default class Draw {
   }
 
   drawing(e: any) {
-    if(!this.isDrawing) {
+    if (!this.isDrawing) {
       this.addHistory()
     }
     this.isDrawing = true
     this.pointer.endX = e.clientX - this.stage_info.left
     this.pointer.endY = e.clientY - this.stage_info.top
-    if(this.drawType === 'draw') {
+    if (this.drawType === 'draw') {
       this.drawPath()
-    } else if(this.drawType === 'line') {
+    } else if (this.drawType === 'line') {
       this.drawLine()
     }
   }
@@ -276,18 +289,20 @@ export default class Draw {
   }
 
   addHistory() {
-    console.log('====== addHistory')
+    // console.log('====== addHistory')
     const base64Url = this.canvas.toDataURL("image/png");
     window.canvasPool.push(base64Url);
   }
 
   drawEnd() {
-    // // console.log('========= 2')
+    console.log('========= drawEnd')
     this.canvas.onmousemove = null;
     // // console.log();
     const base64Url = this.canvas.toDataURL("image/png");
     this.callBackData(base64Url)
+    // this.lastImageData = base64Url;
     // this.canvas.onmousemove = null
+    window.drawPool.splice(++this.currentIndex, 0, base64Url);
   }
 
   clearCanvas() {
@@ -308,15 +323,49 @@ export default class Draw {
     this.cxt.globalCompositeOperation = "destination-out";
   }
 
+  //更改undo的逻辑，不采用进出栈的方式，而是采用工作指针的方式
+  //这样可以方便的进行撤销操作和撤销撤销的操作
+  //
   undo() {
-    console.log(window.canvasPool.length, '=========');
-    if(window.canvasPool.length > 0) {
-      const current = window.canvasPool.pop() || ''
-      this.initByBase64(current);
-      this.callBackData(current)
-    } else {
+    //  console.log(window.canvasPool, '=========');
+    // if (window.canvasPool.length > 0) {
+    //   const current = window.canvasPool.pop() || ''
+    //   this.initByBase64(current);
+    //   this.callBackData(current);
+    //   window.drawPool.push(current);
+    // } else {
+    //   showToast("this is last step");
+    // }
+
+    if (this.currentIndex <= 0) {
       showToast("this is last step");
+    } else {
+      const current = window.drawPool[--this.currentIndex] || ''
+      this.initByBase64(current);
+      this.callBackData(current);
     }
+  }
+  redo() {
+    console.log(window.drawPool, this.currentIndex, "++++");
+    if (this.currentIndex == window.drawPool.length - 1) {
+      showToast("this is last step");
+    } else {
+      const current = window.drawPool[++this.currentIndex] || ''
+      this.initByBase64(current);
+      this.callBackData(current);
+    }
+    // console.log(window.drawPool, '+++++');
+    // let lastUrl: any;
+    // if (window.drawPool.length > 1) {
+    //   lastUrl = window.drawPool.pop() || '';
+    //   window.canvasPool.push(lastUrl);
+    // } else if (window.drawPool.length == 1) {
+    //   lastUrl = this.lastImageData;
+    // } else {
+    //   return;
+    // }
+    // this.initByBase64(lastUrl);
+    // this.callBackData(lastUrl);
   }
 
   callBackData(str: string) {

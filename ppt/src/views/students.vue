@@ -61,6 +61,7 @@
             :sendCanvas="sendCanvas"
             :url="currentItemData.thumbnail_url"
             :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
+            :link="link"
           />
           <student-comment />
         </el-aside>
@@ -338,7 +339,8 @@ export default {
       isShowQuestion: true,
       currentScreenWidth: 700,
       smallWindow: false,
-      smallWindowValue: 800
+      smallWindowValue: 800,
+      link: ""
     };
   },
   mounted() {
@@ -416,7 +418,6 @@ export default {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
-      console.log(this.currentScreenWidth, "currentScreenWidth");
       if (this.smallWindow) {
         if (this.isShowQuestion) {
           return "0%";
@@ -487,8 +488,12 @@ export default {
             page_id,
             items[0].type
           );
-          console.log("list", this.answerList);
           this.currentAnswerd = this.answerList.length > 0;
+          if (this.currentAnswerd) {
+            if (this.answerList[0].type == "audio") {
+              this.link = this.answerList[0].content;
+            }
+          }
         } else {
           this.currentAnswerd = false;
         }
@@ -940,10 +945,11 @@ export default {
     sendAudioOrVideoAnswer(link) {
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
+      this.link = link;
       console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+        `{"room": "${this.class_id}", "type":"audio", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,
