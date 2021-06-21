@@ -1,16 +1,10 @@
 <template>
   <div class="audio_page">
-    <recordAudio
-      v-if="startRecord && type == 'audio'"
-      :onSend="sendVideoOrAudio"
-    />
+    <recordAudio v-if="startRecord && type == 'audio'" :onSend="sendVideoOrAudio" />
 
-    <recordVideo
-      v-else-if="startRecord && type == 'video'"
-      :onSend="sendVideoOrAudio"
-    />
+    <recordVideo v-else-if="startRecord && type == 'video'" :onSend="sendVideoOrAudio" />
     <audio
-      v-else-if="link && link.indexOf('.mp3') > -1"
+      v-else-if="link && type == 'audio'"
       controlslist="nodownload"
       controls
       :src="link"
@@ -18,7 +12,7 @@
     />
 
     <video
-      v-else-if="link && link.indexOf('.webm') > -1"
+      v-else-if="link && type == 'video'"
       controlslist="nodownload"
       controls
       :src="link"
@@ -66,26 +60,29 @@ export default {
   components: { recordAudio, recordVideo },
   props: {
     sendAudioOrVideoAnswer: {
-      type: Function,
+      type: Function
     },
     link: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
       startRecord: false,
       sendSuccess: false,
-      type: "",
+      type: ""
     };
   },
 
   mounted() {
+    
     if (this.link && this.link.indexOf(".mp3") > -1) {
       this.type = "audio";
+      console.log(this.link);
     } else if (this.link && this.link.indexOf(".webm") > -1) {
       this.type = "video";
+      console.log(this.link);
     }
   },
 
@@ -102,15 +99,13 @@ export default {
     },
     sendVideoOrAudio(link, type = "") {
       // this.sendComment(url, type)
-      console.log(link, type);
-      this.link = link;
       this.closeRecord();
       this.sendSuccess = true;
       this.sendAudioOrVideoAnswer(link);
     },
     closeRecord() {
       this.startRecord = false;
-    },
-  },
+    }
+  }
 };
 </script>

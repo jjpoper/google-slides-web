@@ -26,6 +26,7 @@ export default class Draw {
     left: 20,
     top: 20
   }
+  private initUrl = ""
 
   private pointer = {
     beginX: 0,
@@ -87,7 +88,7 @@ export default class Draw {
       this.drawBegin(event);
     };
     this.canvas.onmouseup = () => {
-      // console.log('========= 1')
+      //console.log('========= 1')
       this.isDrawing = false
       this.drawEnd();
       // ws.send('stop')
@@ -100,10 +101,16 @@ export default class Draw {
     // 绘制缓存数据
     if (initUrl) {
       this.initByBase64(initUrl);
-      window.drawPool.splice(++this.currentIndex, 0, initUrl);
+      //  window.drawPool.splice(++this.currentIndex, 0, initUrl);
     } else {
       this.saveImageData()
     }
+    if (this.currentIndex == -1) {
+      window.drawPool = [];
+      const base64Url = this.canvas.toDataURL("image/png");
+      window.drawPool.splice(++this.currentIndex, 0, base64Url);
+    }
+
   }
 
   initByBase64(base64Url: string) {
@@ -181,6 +188,7 @@ export default class Draw {
         // ws.send('stop')
       };
     } else if (this.drawType === 'text') {
+
       this.drawText()
     }
 
@@ -189,7 +197,6 @@ export default class Draw {
   // 保留当前画布ImageData
   saveImageData() {
     this.imageData = this.cxt.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
-    console.log(this.imageData);
   }
 
   // 把上一步保留的ImageData绘制到画布上
@@ -212,10 +219,11 @@ export default class Draw {
       // @ts-ignore
       const tValue = textarea.value
       if (tValue) {
+        console.log('text end draw!!')
         this.addHistory();
         const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor);
         text.draw(this.cxt);
-        this.drawEnd()
+        //  this.drawEnd() 防止重复调用
       }
       this.canvasParant.removeChild(textarea);
       this.canTextarea = true;
@@ -328,8 +336,8 @@ export default class Draw {
     // } else {
     //   showToast("this is last step");
     // }
-    console.log(window.drawPool, this.currentIndex, "-------");
-    if (this.currentIndex < 0) {
+
+    if (this.currentIndex <= 0) {
       showToast("this is last step");
     } else {
       const current = window.drawPool[--this.currentIndex] || ''
@@ -338,6 +346,7 @@ export default class Draw {
     }
   }
   redo() {
+    console.log(window.drawPool, this.currentIndex, "++++");
     if (this.currentIndex == window.drawPool.length - 1) {
       showToast("this is last step");
     } else {

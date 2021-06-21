@@ -44,10 +44,7 @@
               currentItemData.items[0].type !== 'draw')
           "
         >
-          <div
-            class="block"
-            v-if="currentItemData && currentItemData.thumbnail_url"
-          >
+          <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
             <pptcontent :url="currentItemData.thumbnail_url" />
           </div>
         </el-main>
@@ -91,14 +88,12 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain: {{ getDeadLineStr(countDownMin) }}
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain: {{ getDeadLineStr(countDownMin) }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
         <div class="readchat comment">
           <el-switch
@@ -111,13 +106,12 @@
           ></el-switch>
         </div>
       </el-tooltip>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain:{{ countDownMin }} mintues.
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain:{{ countDownMin }} mintues.</div>
 
-      <div class="deadline_info" v-if="showCorrect">
-        You are unable to change your answer
-      </div>
+      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
     </div>
     <svg
       t="1623813115939"
@@ -276,7 +270,7 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
-  getAVComment,
+  getAVComment
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -286,7 +280,7 @@ import { createSo } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -297,7 +291,7 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken,
+  saveStudentStoreToken
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -346,7 +340,7 @@ export default {
       currentScreenWidth: 700,
       smallWindow: false,
       smallWindowValue: 800,
-      link: "",
+      link: ""
     };
   },
   mounted() {
@@ -385,10 +379,10 @@ export default {
     ClassRoomClosed,
     studentControlPanel,
     pageLockedNote,
-    StudentQuestions,
+    StudentQuestions
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { slide_id, token, page } = to.query;
       console.log(page, "currentIndex");
       vm.slide_id = slide_id;
@@ -409,12 +403,12 @@ export default {
         console.log(this.marks);
         console.log(this.slides[this.currentIndex].page_id);
         const list = this.marks.filter(
-          (item) => item.page_id === this.slides[this.currentIndex].page_id
+          item => item.page_id === this.slides[this.currentIndex].page_id
         );
         return list;
       }
       return [];
-    },
+    }
   },
   methods: {
     changeShowOrAnswer() {
@@ -479,7 +473,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         console.log(url);
         if (url) {
           location.href = url;
@@ -494,7 +488,6 @@ export default {
             page_id,
             items[0].type
           );
-          console.log("list", this.answerList);
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
             if (this.answerList[0].type == "audio") {
@@ -511,7 +504,7 @@ export default {
       initStudentCommentData(this.class_id, this.token);
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, list]) => {
         console.log(list, "========");
         this.slides = list;
@@ -525,7 +518,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -545,7 +538,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.currentAnswerd = true;
     },
@@ -592,7 +585,7 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           console.log(this.classRoomInfo);
           if (this.classRoomInfo.status == "live") {
@@ -619,12 +612,12 @@ export default {
             );
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
 
       getAVComment(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           if (res.code == "ok") {
             for (let i = 0; i < res.data.length; i++) {
@@ -633,7 +626,7 @@ export default {
             }
           }
         })
-        .catch((res) => {
+        .catch(res => {
           console.log(res);
         });
       this.joinRoom();
@@ -733,7 +726,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -755,9 +748,9 @@ export default {
           time,
           value,
           teacherName,
-          slideIndex,
+          slideIndex
         },
-        user_id,
+        user_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
@@ -796,7 +789,7 @@ export default {
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1",
-        answer: v,
+        answer: v
       });
       this.currentAnswerd = true;
       this.showCorrect = locked;
@@ -828,7 +821,7 @@ export default {
         content_height,
         type,
         background,
-        page_id,
+        page_id
       } = data;
       this.emitSo(
         "comment-ppt",
@@ -853,7 +846,7 @@ export default {
       MessageBox.prompt("enter a new name", "enter a new name", {
         confirmButtonText: "Confirm",
         showCancelButton: false,
-        showClose: false,
+        showClose: false
       })
         .then(({ value }) => {
           if (!value) value = this.uid;
@@ -952,18 +945,19 @@ export default {
     sendAudioOrVideoAnswer(link) {
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
+      this.link = link;
       console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+        `{"room": "${this.class_id}", "type":"audio", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,
         key: 0,
-        content: link,
+        content: link
       });
       this.currentAnswerd = true;
-    },
-  },
+    }
+  }
 };
 </script>
