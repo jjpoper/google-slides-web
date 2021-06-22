@@ -8,17 +8,20 @@ export enum DrawTypeData {
   line = 'line',
   draw = 'draw',
   text = 'text',
-  marker = 'marker'
+  marker = 'marker',
+  circle = "circle",
+  rect = "rect",
+  polygon = "polygon"
 }
 
-type DrawType = 'line' | 'draw' | 'text' | 'marker'
+type DrawType = 'line' | 'draw' | 'text' | 'marker' | 'rect' | 'circle' | 'polygon'
 type onDrawBack = (data: any) => void
 window.canvasPool = []
 window.drawPool = []
 
 export default class Draw {
   private el: any
-  private strokeColor = "#000";
+  private strokeColor = "#02a3ee";
   private lineWidth = 2
   private canvas: any
   private cxt: any
@@ -38,6 +41,7 @@ export default class Draw {
   private canvasWidth = document.documentElement.clientWidth - 40;
   private canvasHeight = document.documentElement.clientHeight - 40;
   private isEarse = false // 橡皮擦
+  private beginTime: any;
 
   private drawType: DrawType = 'draw'
   private onDrawBack: onDrawBack = () => null
@@ -175,7 +179,7 @@ export default class Draw {
 
     if (this.drawType === 'marker') {
       this.drawMarker()
-    } else if (['draw', 'line'].indexOf(this.drawType) > -1) {
+    } else if (['draw', 'line', 'rect', 'circle', 'polygon'].indexOf(this.drawType) > -1) {
       this.canvas.onmousemove = () => {
         this.drawing(event)
       }
@@ -191,6 +195,7 @@ export default class Draw {
 
       this.drawText()
     }
+    this.beginTime = new Date().getTime();
 
   }
 
@@ -241,7 +246,107 @@ export default class Draw {
       this.drawPath()
     } else if (this.drawType === 'line') {
       this.drawLine()
+    } else if (this.drawType === 'rect') {
+      this.drawRect()
+    } else if (this.drawType == "circle") {
+      this.drawCircle();
+    } else if (this.drawType == "polygon") {
+      this.drawPolygon();
     }
+  }
+
+  canUndo() {
+    return this.currentIndex > 0;
+  }
+  canRedo() {
+    return this.currentIndex < window.drawPool.length - 1;
+  }
+
+
+  //画多边形
+  drawPolygon() {
+    //鼠标在某点停留800ms之后，确定一条边，进行下一条边的绘制
+    this.drawLine();
+    let current = new Date().getTime();
+    if (current - this.beginTime < 800) {
+      this.beginTime = current;
+    } else {
+      console.log("确定了一条边");
+      this.saveImageData();
+      this.beginTime = current;
+      this.pointer.beginX = this.pointer.endX;
+      this.pointer.beginY = this.pointer.endY;
+    }
+
+  }
+
+  // 画椭圆
+  drawCircle() {
+
+    this.restoreImageData(this.imageData)
+    this.cxt.save();
+    this.cxt.beginPath();
+    this.cxt.lineWidth = this.lineWidth;
+
+    let xR = (this.pointer.endX - this.pointer.beginX) / 2
+    let yR = (this.pointer.endY - this.pointer.beginY) / 2
+    if (xR < 0) {
+      this.cxt.moveTo(
+        this.pointer.beginX,
+        this.pointer.beginY + yR
+      );
+    } else {
+      this.cxt.moveTo(
+        this.pointer.beginX + 2 * xR,
+        this.pointer.beginY + yR
+      );
+    }
+
+    let xPoint = this.pointer.beginX + xR;
+    let yPoint = this.pointer.beginY + yR;
+
+    if (this.cxt.ellipse) {
+      this.cxt.ellipse(xPoint, yPoint, Math.abs(xR), Math.abs(yR), 0, 0, Math.PI * 2);
+    } else {
+      //使用三次贝塞尔曲线模拟椭圆2
+      this.bezierEllipse2(xPoint, yPoint, Math.abs(xR), Math.abs(yR));
+    }
+
+
+    this.cxt.stroke();
+    this.cxt.restore();
+
+  }
+
+  bezierEllipse2(x: any, y: any, a: any, b: any) {
+    var k = .5522848,
+      ox = a * k, // 水平控制点偏移量
+      oy = b * k; // 垂直控制点偏移量</p> <p> ctx.beginPath();
+    //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
+    this.cxt.moveTo(x - a, y);
+    this.cxt.bezierCurveTo(x - a, y - oy, x - ox, y - b, x, y - b);
+    this.cxt.bezierCurveTo(x + ox, y - b, x + a, y - oy, x + a, y);
+    this.cxt.bezierCurveTo(x + a, y + oy, x + ox, y + b, x, y + b);
+    this.cxt.bezierCurveTo(x - ox, y + b, x - a, y + oy, x - a, y);
+    this.cxt.closePath();
+    this.cxt.stroke();
+  };
+
+  //画矩形
+  drawRect() {
+
+    this.restoreImageData(this.imageData)
+    this.cxt.save();
+    this.cxt.beginPath();
+    this.cxt.lineWidth = this.lineWidth;
+    this.cxt.moveTo(
+      this.pointer.beginX,
+      this.pointer.beginY
+    );
+    this.cxt.strokeRect(this.pointer.beginX, this.pointer.beginY, this.pointer.endX - this.pointer.beginX, this.pointer.endY - this.pointer.beginY);
+    this.cxt.stroke();
+    this.cxt.restore();
+
   }
 
   // 画直线
@@ -336,7 +441,7 @@ export default class Draw {
     // } else {
     //   showToast("this is last step");
     // }
-
+    console.log(window.drawPool.length, this.currentIndex, "---");
     if (this.currentIndex <= 0) {
       showToast("this is last step");
     } else {
@@ -346,7 +451,7 @@ export default class Draw {
     }
   }
   redo() {
-    console.log(window.drawPool, this.currentIndex, "++++");
+    console.log(window.drawPool.length, this.currentIndex, "++++");
     if (this.currentIndex == window.drawPool.length - 1) {
       showToast("this is last step");
     } else {
@@ -354,18 +459,6 @@ export default class Draw {
       this.initByBase64(current);
       this.callBackData(current);
     }
-    // console.log(window.drawPool, '+++++');
-    // let lastUrl: any;
-    // if (window.drawPool.length > 1) {
-    //   lastUrl = window.drawPool.pop() || '';
-    //   window.canvasPool.push(lastUrl);
-    // } else if (window.drawPool.length == 1) {
-    //   lastUrl = this.lastImageData;
-    // } else {
-    //   return;
-    // }
-    // this.initByBase64(lastUrl);
-    // this.callBackData(lastUrl);
   }
 
   callBackData(str: string) {
