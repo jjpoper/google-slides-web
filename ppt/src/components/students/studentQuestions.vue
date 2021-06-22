@@ -60,6 +60,9 @@
               />
             </svg>
           </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="Text" placement="top-start">
+            <svg @click="enterText" t="1624363217137" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3341" width="20" height="20"><path d="M563.2 281.6V870.4a51.2 51.2 0 0 1-102.4 0V281.6H179.2a51.2 51.2 0 1 1 0-102.4h665.6a51.2 51.2 0 0 1 0 102.4H563.2z" fill="#1296db" p-id="3342"></path></svg>
+          </el-tooltip>
         </div>
         <div
           slot="reference"
@@ -71,9 +74,12 @@
     <div class="right-area">
       <recordCommentList :list="mediaList" :selectedIndex="selectedIndex"/>
     </div>
-    <div class="record-container" v-if="type === ModalEventsTypeEnum.VIDEO || type === ModalEventsTypeEnum.AUDIO">
-      <record-video v-if="type === ModalEventsTypeEnum.VIDEO" :onSend="sendVideoOrAudio" />
-      <record-audio v-else-if="type === ModalEventsTypeEnum.AUDIO" :onSend="sendVideoOrAudio" />
+    <div class="record-container"
+      v-if="type === ModalEventsTypeEnum.VIDEO || type === ModalEventsTypeEnum.AUDIO || type === ModalEventsTypeEnum.TEXT"
+    >
+      <record-video v-if="type === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
+      <record-audio v-else-if="type === ModalEventsTypeEnum.AUDIO" :onSend="sendCommentCb" />
+      <record-text v-else-if="type === ModalEventsTypeEnum.TEXT" :onSend="sendCommentCb" />
       <div class="del-button" @click="closeRecord">
         <i class="el-icon-delete" style="`font-size: 20px;"></i>
       </div>
@@ -94,14 +100,30 @@
           :fill="`${currentTab == 1 ? color : 'rgb(212 208 208)'}`" p-id="5490"></path></svg>
         </div>
       </el-tooltip> -->
-      <el-tooltip content="line" placement="top">
-        <div class="eraser" @click="drawLine">
-          <i class="el-icon-minus" :style="`font-size: 30px; color: ${currentTab == 2 ? color : 'rgb(212 208 208)'}`"></i>
+      <el-tooltip content="mark" placement="top">
+        <div class="eraser" @click="markUp">
+          <svg
+            t="1622035315247"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="5489"
+            width="32"
+            height="32"
+          >
+            <path
+              d="M197.973333 546.133333c-3.413333-3.413333-10.24-6.826667-17.066666-3.413333-6.826667 0-10.24 6.826667-10.24 13.653333-6.826667 68.266667-44.373333 150.186667-98.986667 218.453334-6.826667 6.826667-3.413333 17.066667 0 23.893333l37.546667 37.546667-105.813334 105.813333c-3.413333 6.826667-3.413333 13.653333-3.413333 17.066667 0 6.826667 6.826667 10.24 13.653333 13.653333l136.533334 34.133333h3.413333c3.413333 0 10.24-3.413333 13.653333-3.413333l54.613334-54.613333 20.48 20.48c3.413333 3.413333 6.826667 3.413333 13.653333 3.413333 3.413333 0 6.826667 0 10.24-3.413333l51.2-30.72c58.026667-37.546667 116.053333-61.44 170.666667-68.266667 6.826667 0 13.653333-6.826667 13.653333-10.24 3.413333-6.826667 0-13.653333-3.413333-17.066667L197.973333 546.133333zM993.28 116.053333l-68.266667-68.266666c-34.133333-34.133333-92.16-40.96-133.12-10.24L204.8 477.866667c-3.413333 3.413333-6.826667 6.826667-6.826667 13.653333 0 3.413333 0 10.24 3.413334 13.653333l334.506666 334.506667c3.413333 3.413333 6.826667 3.413333 13.653334 3.413333 3.413333 0 10.24-3.413333 13.653333-6.826666L1003.52 249.173333c30.72-40.96 27.306667-95.573333-10.24-133.12z"
+              :fill="`${currentTab == 0 ? color : 'rgb(212 208 208)'}`"
+              p-id="5490"
+            />
+          </svg>
         </div>
       </el-tooltip>
-      <el-tooltip content="text" placement="top">
-        <div class="eraser" @click="edit">
-          <i class="el-icon-edit-outline" :style="`font-size: 30px; color: ${currentTab == 3 ? color : 'rgb(212 208 208)'}`"></i>
+      <el-tooltip content="select area" placement="top">
+        <div class="eraser" @click="boxMark">
+          <svg t="1624363538135" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4366" width="32" height="32"><path d="M896 773.888V250.112c37.248-13.184 64-48.32 64-90.112a95.68 95.68 0 1 0-186.112-32H250.112A95.68 95.68 0 0 0 64 160c0 41.728 26.816 76.928 64 90.112v523.776A95.68 95.68 0 0 0 160 960c41.728 0 76.928-26.752 90.112-64h523.776c13.184 37.248 48.384 64 90.112 64a96 96 0 0 0 96-96c0-41.728-26.752-76.928-64-90.112z m-704 0V250.112c27.136-9.664 48.448-30.976 58.112-58.112h523.776c9.6 27.136 30.912 48.512 58.112 58.112v523.776c-27.2 9.6-48.512 30.912-58.112 58.112H250.112A95.424 95.424 0 0 0 192 773.888z" p-id="4367"
+          :fill="`${currentTab == 1 ? color : 'rgb(212 208 208)'}`"></path></svg>
         </div>
       </el-tooltip>
       <el-tooltip content="color palette" placement="top">
@@ -120,8 +142,9 @@ import recordCommentList from "../common/recordCommentList.vue";
 import { showToast } from "@/utils/loading";
 import colorSelector from '@/utils/color'
 import pptcontent from '../pptcontent.vue';
+import RecordText from '../common/recordText.vue';
 export default {
-  components: { recordAudio, RecordVideo, pptcontent, recordCommentList },
+  components: { recordAudio, RecordVideo, pptcontent, recordCommentList, RecordText },
   props: {
     sendQuestion: {
       type: Function
@@ -144,7 +167,15 @@ export default {
   data() {
     return {
       ModalEventsTypeEnum,
-      currentPosition: { left: 0, top: 0, content_width: 0, content_height: 0, offsetX: 0, offsetY: 0, background: '#caf982'},
+      currentPosition: {
+        left: 0,
+        top: 0,
+        content_width: 0,
+        content_height: 0,
+        offsetX: 0,
+        offsetY: 0,
+        background: '#caf982'
+      },
       nextPosition: {offsetX: 0, offsetY: 0},
       buttonVisiable: false,
       recordVisiable: false,
@@ -154,7 +185,7 @@ export default {
       color: '#caf982',
       colors: ['#caf982', 'red', '#ec808d', '#facd91', '#ffff80', '#80ffff', '#81d3f8', '#8080ff', '#c280ff'],
       widthValue: 3,
-      currentTab: 1,
+      currentTab: 0,
       selectedIndex: -1,
       currentPageId: 0,
       marks: [],
@@ -167,7 +198,7 @@ export default {
     this.mediaList = JSON.parse(JSON.stringify(this.list))
     this.pptUrl = this.url
     this.currentPageId = this.pageId
-    console.log(this.marks)
+    // console.log(this.marks)
   },
   mounted() {
     const selector = document.getElementById('diycolor_comment');
@@ -221,14 +252,18 @@ export default {
       }
     },
     audio() {
-      this.recordVisiable = true
-      this.buttonVisiable = false;
-      this.type = ModalEventsTypeEnum.AUDIO;
+      this.clickType(ModalEventsTypeEnum.AUDIO)
     },
     video() {
+      this.clickType(ModalEventsTypeEnum.VIDEO)
+    },
+    enterText() {
+      this.clickType(ModalEventsTypeEnum.TEXT)
+    },
+    clickType(type) {
       this.recordVisiable = true
       this.buttonVisiable = false;
-      this.type = ModalEventsTypeEnum.VIDEO;
+      this.type = ModalEventsTypeEnum.TEXT
     },
     closeRecord() {
       console.log("1111");
@@ -240,13 +275,13 @@ export default {
         this.marks.pop();
       }
     },
-    sendVideoOrAudio(link, type = "") {
+    sendCommentCb(link, type = "") {
       // this.sendComment(url, type)
       const { left, top, content_width, content_height, background } = this.currentPosition;
       const params = {
         left,
         top,
-        link,
+        link, // 可能为链接或者文字
         content_width,
         content_height,
         type,
@@ -280,12 +315,10 @@ export default {
     changeColor(color) {
       this.color = color
     },
-    drawMark() {
+    markUp() {
       this.showModal()
     },
-    drawLine() {
-    },
-    edit() {
+    boxMark() {
     },
     selectMark(item, index) {
       this.selectedIndex = index
