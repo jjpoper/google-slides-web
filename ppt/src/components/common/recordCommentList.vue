@@ -25,6 +25,7 @@
             :src="item.link"
             style="width:100%;"
           />
+          <p v-else-if="item.type === 'text'">{{item.link}}</p>
         </div>
       </div>
     </div>

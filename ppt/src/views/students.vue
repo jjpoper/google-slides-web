@@ -400,8 +400,6 @@ export default {
   computed: {
     filterMarkupList() {
       if (this.slides) {
-        console.log(this.marks);
-        console.log(this.slides[this.currentIndex].page_id);
         const list = this.marks.filter(
           item => item.page_id === this.slides[this.currentIndex].page_id
         );
