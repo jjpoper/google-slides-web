@@ -2,63 +2,7 @@
   <div id="canvasouter">
     <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
     <div class="canvasmodal" v-show="modalVisable">
-      <i
-        class="el-icon-circle-close closemodal"
-        style="font-size: 30px"
-        @click="hideModal"
-      ></i>
-      <!-- <div class="widthlist">
-        <div class="item">
-          <span
-            class="icon"
-            :style="`width: 30px;height: 30px; background-color: ${color}; border-color: ${
-              widthValue === 30 ? 'red' : color
-            }`"
-            @click="changeWidth(30)"
-          ></span>
-          <span class="icontext">30</span>
-        </div>
-        <div class="item">
-          <span
-            class="icon"
-            :style="`width: 25px;height: 25px; background-color: ${color}; border-color: ${
-              widthValue === 20 ? 'red' : color
-            }`"
-            @click="changeWidth(20)"
-          ></span>
-          <span class="icontext">20</span>
-        </div>
-        <div class="item">
-          <span
-            class="icon"
-            :style="`width: 20px;height: 20px; background-color: ${color}; border-color: ${
-              widthValue === 10 ? 'red' : color
-            }`"
-            @click="changeWidth(10)"
-          ></span>
-          <span class="icontext">10</span>
-        </div>
-        <div class="item">
-          <span
-            class="icon"
-            :style="`width: 15px;height: 15px; background-color: ${color}; border-color: ${
-              widthValue === 5 ? 'red' : color
-            }`"
-            @click="changeWidth(5)"
-          ></span>
-          <span class="icontext">5</span>
-        </div>
-        <div class="item">
-          <span
-            class="icon"
-            :style="`width: 10px;height: 10px; background-color: ${color}; border-color: ${
-              widthValue === 3 ? 'red' : color
-            }`"
-            @click="changeWidth(3)"
-          ></span>
-          <span class="icontext">3</span>
-        </div>
-      </div> -->
+      <i class="el-icon-circle-close closemodal" style="font-size: 30px" @click="hideModal"></i>
       <div class="colorList">
         <span
           v-for="item in colors"
@@ -196,12 +140,7 @@
       <div id="diycolor"></div>
     </div>
     <div class="canvasfooter">
-      <el-popover
-        placement="right"
-        width="200"
-        trigger="hover"
-        class="dropdown-icon"
-      >
+      <el-popover placement="top" width="200" trigger="hover" class="dropdown-icon">
         <div class="shape_area">
           <svg
             t="1619161258814"
@@ -244,9 +183,7 @@
             :fill="color"
             @click="drawPolygon"
           >
-            <polygon
-              points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
-            />
+            <polygon points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162" />
           </svg>
         </div>
 
@@ -263,13 +200,7 @@
           class="shape_icon"
         >
           <circle v-if="currentShape == '1'" cx="516" cy="516" r="350" />
-          <rect
-            v-if="currentShape == '0'"
-            x="162"
-            y="162"
-            height="700"
-            width="700"
-          />
+          <rect v-if="currentShape == '0'" x="162" y="162" height="700" width="700" />
           <polygon
             v-if="currentShape == '2'"
             points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
@@ -282,9 +213,9 @@
           :style="`background-color: ${color}`"
           @click="showModal"
         ></div>
-      </el-tooltip> -->
+      </el-tooltip>-->
 
-      <el-popover placement="right" width="300" trigger="hover">
+      <el-popover placement="top" width="300" trigger="hover">
         <draw-line-width-panel
           :color="color"
           :changeWidth="changeWidth"
@@ -301,7 +232,7 @@
         </div>
       </el-popover>
 
-      <el-popover placement="right" width="300" trigger="hover">
+      <el-popover placement="top" width="300" trigger="hover">
         <draw-line-width-panel
           :color="color"
           :changeWidth="changeWidth"
@@ -318,7 +249,7 @@
         </div>
       </el-popover>
 
-      <el-popover placement="right" width="300" trigger="hover">
+      <el-popover placement="top" width="300" trigger="hover">
         <draw-line-width-panel
           :color="color"
           :changeWidth="changeWidth"
@@ -345,7 +276,7 @@
         </div>
       </el-popover>
 
-      <el-tooltip content="text" placement="right">
+      <el-tooltip content="text" placement="top">
         <div class="eraser" @click="edit">
           <svg
             t="1624354530526"
@@ -361,16 +292,16 @@
             <path
               d="M960 192 960 128c0-35.392-28.608-64-64-64l-64 0c-35.392 0-64 28.608-64 64L256 128c0-35.392-28.608-64-64-64L128 64C92.608 64 64 92.608 64 128l0 64c0 35.392 28.608 64 64 64l0 512c-35.392 0-64 28.608-64 64l0 64c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l512 0c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l0-64c0-35.392-28.608-64-64-64L896 256C931.392 256 960 227.392 960 192zM832 768c-35.392 0-64 28.608-64 64L256 832c0-35.392-28.608-64-64-64L192 256c35.392 0 64-28.608 64-64l512 0c0 35.392 28.608 64 64 64L832 768z"
               p-id="2671"
-            ></path>
+            />
             <path
               d="M736 320l-448 0C270.336 320 256 334.336 256 352l0 64C256 433.664 270.336 448 288 448S320 433.664 320 416L320 384l128 0 0 256L416 640C398.336 640 384 654.336 384 672S398.336 704 416 704l192 0c17.664 0 32-14.336 32-32S625.664 640 608 640L576 640 576 384l128 0 0 32C704 433.664 718.336 448 736 448S768 433.664 768 416l0-64C768 334.336 753.664 320 736 320z"
               p-id="2672"
-            ></path>
+            />
           </svg>
         </div>
       </el-tooltip>
 
-      <el-popover placement="right" width="300" trigger="hover">
+      <el-popover placement="top" width="300" trigger="hover">
         <draw-line-width-panel
           :color="color"
           :changeWidth="changeWidth"
@@ -413,7 +344,7 @@
               <path
                 d="M379.776 635.904c39.36 35.968 48.32 41.344 50.496-25.856 3.968-49.152 0-103.552 0-103.552 1.408-3.072 86.464-35.008 227.072 25.856 140.544 60.928 235.456 251.008 252.16 310.528 1.344 34.368 46.144 100.736 50.432-1.344 0.576-166.656-64.512-341.12-230.336-441.152C574.976 307.072 446.4 316.608 432.192 321.472c-0.256 1.344-0.64 1.856-1.344 1.024-0.192-0.256 0.384-0.64 1.344-1.024 1.216-6.208-2.496-38.272-2.88-98.56 2.368-54.144-12.096-55.808-49.536-26.944C311.168 252.288 128 427.264 128 427.264S311.168 580.608 379.776 635.904z"
                 p-id="3472"
-              ></path>
+              />
             </svg>
           </div>
         </el-tooltip>
@@ -433,13 +364,13 @@
               <path
                 d="M708.16 635.904c-39.36 35.968-48.32 41.344-50.496-25.856-3.968-49.152 0-103.552 0-103.552-1.408-3.072-86.464-35.008-227.072 25.856C290.048 593.28 195.2 783.36 178.432 842.88 177.088 877.248 132.288 943.616 128 841.472c-0.576-166.656 64.512-341.12 230.336-441.152 154.624-93.248 283.264-83.776 297.408-78.848 0.256 1.344 0.64 1.856 1.344 1.024 0.192-0.256-0.384-0.64-1.344-1.024-1.216-6.208 2.496-38.272 2.88-98.56-2.368-54.144 12.096-55.808 49.536-26.944 68.544 56.32 251.776 231.36 251.776 231.36S776.768 580.608 708.16 635.904z"
                 p-id="4271"
-              ></path>
+              />
             </svg>
           </div>
         </el-tooltip>
       </div>
 
-      <el-tooltip content="clear" placement="right">
+      <el-tooltip content="clear" placement="top">
         <div class="eraser" @click="clear">
           <i class="el-icon-delete" style="font-size: 30px"></i>
         </div>
@@ -462,12 +393,12 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     url: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
@@ -484,11 +415,11 @@ export default {
         "#81d3f8",
         "#8080ff",
         "#c280ff",
-        "#02a3ee",
+        "#02a3ee"
       ],
       widthValue: 3,
       currentTab: 1,
-      currentShape: 0,
+      currentShape: 0
     };
   },
   mounted() {
@@ -592,7 +523,7 @@ export default {
       this.modalVisable = false;
     },
     showDiy() {
-      colorSelector.show(this.color, (rgb) => {
+      colorSelector.show(this.color, rgb => {
         // console.log(d)
         const selectorColor = colorSelector.utils.rgb2txt(rgb);
         console.log(selectorColor);
@@ -614,8 +545,8 @@ export default {
       this.currentShape = 2;
       this.currentTab = 6;
       this.draw.changeDrawType(DrawTypeData.polygon);
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>
@@ -644,17 +575,16 @@ export default {
   background-position: center;
 }
 .canvasfooter {
-  width: 60px;
-  height: 60%;
+  width: 60%;
+  height: 60px;
   line-height: 50px;
   position: fixed;
-  top: 20%;
-  left: 5px;
+  bottom: 50px;
+  left: 20%;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #fff;
-  flex-direction: column;
   align-items: center;
   justify-content: space-around;
   border: 1px solid #9f9f9f;
@@ -663,7 +593,6 @@ export default {
   width: 30px;
   height: 30px;
   border-radius: 15px;
-  margin: 0 30px;
   cursor: pointer;
   line-height: 30px;
 }
@@ -671,6 +600,11 @@ export default {
   border: 1px solid #999;
 }
 .eraser {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 #keyword-box {
   margin: 10px 0;
