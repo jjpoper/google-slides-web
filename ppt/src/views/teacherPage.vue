@@ -81,7 +81,7 @@
         @click="showStudents()"
       >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
-        <div class="readchat comment">
+        <div class="readchat comment" v-if="isDashboard">
           <el-switch
             style="display: block"
             v-model="questionModalVisiable"
