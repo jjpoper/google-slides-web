@@ -29,7 +29,7 @@ export default class Draw {
     left: 20,
     top: 20
   }
-  private initUrl = ""
+  private fontFamily = "Microsoft YaHei"
 
   private pointer = {
     beginX: 0,
@@ -209,6 +209,10 @@ export default class Draw {
     this.cxt.putImageData(imageData, 0, 0);
   }
 
+  setFontFamily(font: string) {
+    this.fontFamily = font;
+  }
+
   drawText() {
     if (this.canTextarea) {
       this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
@@ -226,7 +230,7 @@ export default class Draw {
       if (tValue) {
         console.log('text end draw!!')
         this.addHistory();
-        const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor);
+        const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor, this.fontFamily);
         text.draw(this.cxt);
         //  this.drawEnd() 防止重复调用
       }
