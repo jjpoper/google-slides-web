@@ -7,12 +7,29 @@
         placeholder="Please input somthing"
         v-model="item.content"
         @input="onInputText(index)"
+        :disabled="showCorrect"
       ></el-input>
       <div class="el-input__icon" v-if="item.textSended">
         <i class="el-icon-edit-outline"></i>
       </div>
     </div>
-    <el-button type="text" @click="addInput()" :disabled="addDisable">+Add Other One</el-button>
+
+    <div v-if="showCorrect" class="answer_text">{{data.items[0].data.answer}}</div>
+    <el-switch
+      v-if="hasAnswer()"
+      v-model="showCorrect"
+      :disabled="showCorrect"
+      active-color="#13ce66"
+      inactive-color="#999"
+      @change="changeLocked('text')"
+      active-text="show answer"
+    />
+    <el-button
+      type="text"
+      @click="addInput()"
+      v-if="data.items[0].data.isMulti"
+      :disabled="addDisable||showCorrect"
+    >+Add Other One</el-button>
   </div>
 </template>
 
@@ -35,6 +52,16 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 20px;
+}
+.answer_text {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  line-height: 20px;
+  background-color: #efefef;
+  border: 1px solid #5f5f5f;
+  border-radius: 5px;
+  text-align: left;
 }
 /* .grid-content {
         border-radius: 4px;
@@ -63,24 +90,35 @@ export default {
       default: () => {
         return {};
       }
+    },
+    answer: {
+      type: Function,
+      default: () => {}
     }
   },
   data() {
     return {
       addDisable: false,
       maxCount: 3,
-      inputCount: 0,
+      inputCount: 1,
       arrList: getCurrentPageStudentAnswerList(
         this.data.page_id,
         SocketEventsEnum.TEXT_INPUT
       ),
-      sendDelay: null
+      sendDelay: null,
+      showCorrect: false
     };
   },
   created() {
-    console.log("text template created!!" + this.arrList.length);
+    console.log("text template created!!", this.arrList);
     if (!this.arrList || this.arrList.length == 0) {
       this.arrList.push({ content: "" });
+    } else {
+      for (let i = 0; i < this.arrList.length; i++) {
+        if (this.arrList[i].locked) {
+          this.showCorrect = true;
+        }
+      }
     }
     this.inputCount = this.arrList.length;
   },
@@ -97,7 +135,7 @@ export default {
     send: function(index) {
       this.arrList[index].textSended = true;
       var text = this.arrList[index].content;
-      this.method(index, text);
+      this.method(index, text, this.showCorrect);
       // if (text) {
       //   this.method(index, text);
       // } else {
@@ -118,6 +156,30 @@ export default {
       this.sendDelay = setTimeout(() => {
         this.send(index);
       }, 200);
+    },
+    changeLocked(type) {
+      this.answer("text", true, type);
+      let index = 0;
+      for (let i = 0; i < this.arrList.length; i++) {
+        if (this.arrList[i].content.length > 0) {
+          index = i;
+          break;
+        }
+      }
+      this.send(index);
+    },
+    hasAnswer() {
+      let answered = false;
+      for (let i = 0; i < this.arrList.length; i++) {
+        if (this.arrList[i].content.length > 0) {
+          answered = true;
+        }
+      }
+      return (
+        this.data.items[0].data.answer &&
+        this.data.items[0].data.answer.length > 0 &&
+        answered
+      );
     }
   }
 };

@@ -147,13 +147,15 @@ export default class Draw {
     // this.cxt.globalCompositeOperation = "source-over";
   }
 
+  //可以使用两层 canvas
+  //上面一层当drawType是text时才显现，用来保存图片的
   createDom() {
     let fontSize = Math.max(18, this.lineWidth) + "px";
-    const textarea = document.createElement('div');
+    const textarea = document.createElement('textarea');
     textarea.id = 'textarea';
     textarea.setAttribute("contenteditable", "true");
     textarea.setAttribute("placeholder", "Please insert text");
-    textarea.autofocus = true;
+    // textarea.autofocus = true;
     //   textarea.placeholder = 'Please insert text';
     textarea.style.position = 'absolute';
     textarea.style.left = `${this.pointer.beginX}px`;
@@ -163,19 +165,23 @@ export default class Draw {
     textarea.style.fontFamily = this.fontFamily;
     textarea.style.background = "00000000";
     textarea.style.color = this.strokeColor;
-    textarea.style.lineHeight = "40px";
+    textarea.style.lineHeight = this.getLineHeight();
     textarea.style.outline = "0";
     textarea.style.minWidth = "20px";
     textarea.style.minHeight = "auto";
-    textarea.style.border = "2px solid #c2d4fd";
-    textarea.style.padding = "3px";
+    //  textarea.style.border = "2px solid #c2d4fd";
     textarea.style.textAlign = "left";
     this.cxt.font = `${fontSize}px ${this.fontFamily}`;
     this.canvasParant.appendChild(textarea);
+    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
     //   textarea.focus();
     return textarea;
   }
 
+  getLineHeight() {
+    console.log(Math.max(18, this.lineWidth) + "px")
+    return Math.max(18, this.lineWidth) + "px";
+  }
   drawBegin(e: any) {
     // @ts-ignore
     // eslint-disable-next-line no-unused-expressions
@@ -185,7 +191,6 @@ export default class Draw {
 
     this.pointer.beginX = e.clientX - this.stage_info.left
     this.pointer.beginY = e.clientY - this.stage_info.top
-
     if (this.drawType === 'draw' || this.drawType === 'marker') {
       this.cxt.beginPath();
       this.cxt.moveTo(
@@ -226,7 +231,6 @@ export default class Draw {
 
       // 添加textarea文本框
       const textarea = this.createDom();
-
       // @ts-ignore
       document.getElementById('textarea').focus();
       this.canTextarea = false;
@@ -242,7 +246,7 @@ export default class Draw {
         text.draw(this.cxt);
         //  this.drawEnd() 防止重复调用
       }
-      //  this.canvasParant.removeChild(textarea);
+      this.canvasParant.removeChild(textarea);
       this.canTextarea = true;
     }
   }
