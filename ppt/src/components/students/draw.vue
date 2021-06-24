@@ -2,220 +2,9 @@
   <div id="canvasouter">
     <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
 
+    <!-- 颜色，多边形图形，直线，画笔，荧光笔，text box, 橡皮，朝左undo朝右恢复（参考classdojo), 清除键。 -->
+
     <div class="canvasfooter">
-      <el-popover
-        placement="top"
-        width="200"
-        trigger="hover"
-        class="dropdown-icon"
-      >
-        <div class="shape_area">
-          <svg
-            t="1619161258814"
-            slot="reference"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="6029"
-            height="40px"
-            width="40px"
-            viewBox="0 0 1024 1024"
-            :fill="color"
-            @click="drawRect"
-          >
-            <rect x="162" y="162" height="700" width="700" />
-          </svg>
-          <svg
-            t="1619161258814"
-            slot="reference"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="6029"
-            height="40px"
-            width="40px"
-            viewBox="0 0 1024 1024"
-            :fill="color"
-            @click="drawCircle"
-          >
-            <circle cx="516" cy="516" r="350" />
-          </svg>
-
-          <svg
-            t="1619161258814"
-            slot="reference"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="6029"
-            height="40px"
-            width="40px"
-            viewBox="0 0 1024 1024"
-            :fill="color"
-            @click="drawPolygon"
-          >
-            <polygon
-              points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
-            />
-          </svg>
-        </div>
-
-        <svg
-          t="1619161258814"
-          slot="reference"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="6029"
-          height="40px"
-          width="40px"
-          viewBox="0 0 1024 1024"
-          :fill="currentTab == 6 ? color : 'rgb(212 208 208)'"
-          class="shape_icon"
-        >
-          <circle v-if="currentShape == '1'" cx="516" cy="516" r="350" />
-          <rect
-            v-if="currentShape == '0'"
-            x="162"
-            y="162"
-            height="700"
-            width="700"
-          />
-          <polygon
-            v-if="currentShape == '2'"
-            points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
-          />
-        </svg>
-      </el-popover>
-      <!-- <el-tooltip content="change color" placement="right">
-        <div
-          class="red-pencial"
-          :style="`background-color: ${color}`"
-          @click="showModal"
-        ></div>
-      </el-tooltip>-->
-
-      <el-popover placement="top" width="300" trigger="hover">
-        <draw-line-width-panel
-          :color="color"
-          :changeWidth="changeWidth"
-          :widthValue="widthValue"
-          :tabIndex="2"
-        />
-        <div class="eraser" @click="drawLine" slot="reference">
-          <i
-            class="el-icon-minus"
-            :style="`font-size: 30px; color: ${
-              currentTab == 2 ? color : 'rgb(212 208 208)'
-            }`"
-          ></i>
-        </div>
-      </el-popover>
-
-      <el-popover placement="top" width="300" trigger="hover">
-        <draw-line-width-panel
-          :color="color"
-          :changeWidth="changeWidth"
-          :widthValue="widthValue"
-          :tabIndex="1"
-        />
-        <div class="eraser" @click="drawPath" slot="reference">
-          <i
-            class="el-icon-edit"
-            :style="`font-size: 30px; color: ${
-              currentTab == 1 ? color : 'rgb(212 208 208)'
-            }`"
-          ></i>
-        </div>
-      </el-popover>
-
-      <el-popover placement="top" width="300" trigger="hover">
-        <draw-line-width-panel
-          :color="color"
-          :changeWidth="changeWidth"
-          :widthValue="widthValue"
-          :tabIndex="3"
-        />
-        <div class="eraser" @click="earse" slot="reference">
-          <svg
-            t="1621859340302"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="989"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M604.536246 736.222443l288.794439-282.693148-287.777557-270.999007-270.999007 283.201589z m-72.70705 71.181728L264.389275 539.455809 145.922542 660.973188l164.734856 164.734856a50.844091 50.844091 0 0 0 36.099305 14.744786h107.789474a101.688183 101.688183 0 0 0 71.181728-28.981132z m109.314796 35.082423h254.220457a50.844091 50.844091 0 0 1 0 101.688183H346.248262a152.532274 152.532274 0 0 1-107.789474-44.742801l-164.734856-164.734856a101.688183 101.688183 0 0 1 0-142.363456l457.596823-480.476663a101.688183 101.688183 0 0 1 143.380337-3.559086l287.269117 270.999007a101.688183 101.688183 0 0 1 4.067527 143.888778l-3.050646 3.050646z"
-              :fill="`${currentTab == 3 ? color : 'rgb(212 208 208)'}`"
-              p-id="990"
-            />
-          </svg>
-        </div>
-      </el-popover>
-
-      <el-popover placement="top" width="300" trigger="hover">
-        <div v-for="(item, index) in fontFamilies" :key="index">
-          <div class="text_area" @click="changeTextFont(index)">
-            <p
-              class="text-font"
-              :style="`color:${
-                currentFont == index ? color : 'rgb(212 208 208)'
-              }; font-family:${item}`"
-            >
-              AaBbCcDd1234
-            </p>
-          </div>
-        </div>
-        <div class="eraser" @click="edit" slot="reference">
-          <svg
-            t="1624354530526"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2670"
-            width="32"
-            height="32"
-            :fill="`${currentTab == 4 ? color : 'rgb(212 208 208)'}`"
-          >
-            <path
-              d="M960 192 960 128c0-35.392-28.608-64-64-64l-64 0c-35.392 0-64 28.608-64 64L256 128c0-35.392-28.608-64-64-64L128 64C92.608 64 64 92.608 64 128l0 64c0 35.392 28.608 64 64 64l0 512c-35.392 0-64 28.608-64 64l0 64c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l512 0c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l0-64c0-35.392-28.608-64-64-64L896 256C931.392 256 960 227.392 960 192zM832 768c-35.392 0-64 28.608-64 64L256 832c0-35.392-28.608-64-64-64L192 256c35.392 0 64-28.608 64-64l512 0c0 35.392 28.608 64 64 64L832 768z"
-              p-id="2671"
-            />
-            <path
-              d="M736 320l-448 0C270.336 320 256 334.336 256 352l0 64C256 433.664 270.336 448 288 448S320 433.664 320 416L320 384l128 0 0 256L416 640C398.336 640 384 654.336 384 672S398.336 704 416 704l192 0c17.664 0 32-14.336 32-32S625.664 640 608 640L576 640 576 384l128 0 0 32C704 433.664 718.336 448 736 448S768 433.664 768 416l0-64C768 334.336 753.664 320 736 320z"
-              p-id="2672"
-            />
-          </svg>
-        </div>
-      </el-popover>
-
-      <el-popover placement="top" width="300" trigger="hover">
-        <draw-line-width-panel
-          :color="color"
-          :changeWidth="changeWidth"
-          :widthValue="widthValue"
-          :tabIndex="5"
-        />
-        <div class="eraser" @click="drawMark" slot="reference">
-          <svg
-            t="1622035315247"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="5489"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M197.973333 546.133333c-3.413333-3.413333-10.24-6.826667-17.066666-3.413333-6.826667 0-10.24 6.826667-10.24 13.653333-6.826667 68.266667-44.373333 150.186667-98.986667 218.453334-6.826667 6.826667-3.413333 17.066667 0 23.893333l37.546667 37.546667-105.813334 105.813333c-3.413333 6.826667-3.413333 13.653333-3.413333 17.066667 0 6.826667 6.826667 10.24 13.653333 13.653333l136.533334 34.133333h3.413333c3.413333 0 10.24-3.413333 13.653333-3.413333l54.613334-54.613333 20.48 20.48c3.413333 3.413333 6.826667 3.413333 13.653333 3.413333 3.413333 0 6.826667 0 10.24-3.413333l51.2-30.72c58.026667-37.546667 116.053333-61.44 170.666667-68.266667 6.826667 0 13.653333-6.826667 13.653333-10.24 3.413333-6.826667 0-13.653333-3.413333-17.066667L197.973333 546.133333zM993.28 116.053333l-68.266667-68.266666c-34.133333-34.133333-92.16-40.96-133.12-10.24L204.8 477.866667c-3.413333 3.413333-6.826667 6.826667-6.826667 13.653333 0 3.413333 0 10.24 3.413334 13.653333l334.506666 334.506667c3.413333 3.413333 6.826667 3.413333 13.653334 3.413333 3.413333 0 10.24-3.413333 13.653333-6.826666L1003.52 249.173333c30.72-40.96 27.306667-95.573333-10.24-133.12z"
-              :fill="`${currentTab == 5 ? color : 'rgb(212 208 208)'}`"
-              p-id="5490"
-            />
-          </svg>
-        </div>
-      </el-popover>
-
       <el-popover placement="top" width="400" trigger="hover">
         <div class="canvasmodal">
           <div class="colorList">
@@ -377,6 +166,218 @@
           </svg>
         </div>
       </el-popover>
+      <el-popover
+        placement="top"
+        width="200"
+        trigger="hover"
+        class="dropdown-icon"
+      >
+        <div class="shape_area">
+          <svg
+            t="1619161258814"
+            slot="reference"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="6029"
+            height="40px"
+            width="40px"
+            viewBox="0 0 1024 1024"
+            :fill="color"
+            @click="drawRect"
+          >
+            <rect x="162" y="162" height="700" width="700" />
+          </svg>
+          <svg
+            t="1619161258814"
+            slot="reference"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="6029"
+            height="40px"
+            width="40px"
+            viewBox="0 0 1024 1024"
+            :fill="color"
+            @click="drawCircle"
+          >
+            <circle cx="516" cy="516" r="350" />
+          </svg>
+
+          <svg
+            t="1619161258814"
+            slot="reference"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="6029"
+            height="40px"
+            width="40px"
+            viewBox="0 0 1024 1024"
+            :fill="color"
+            @click="drawPolygon"
+          >
+            <polygon
+              points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
+            />
+          </svg>
+        </div>
+
+        <svg
+          t="1619161258814"
+          slot="reference"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="6029"
+          height="40px"
+          width="40px"
+          viewBox="0 0 1024 1024"
+          :fill="currentTab == 6 ? color : 'rgb(212 208 208)'"
+          class="shape_icon"
+        >
+          <circle v-if="currentShape == '1'" cx="516" cy="516" r="350" />
+          <rect
+            v-if="currentShape == '0'"
+            x="162"
+            y="162"
+            height="700"
+            width="700"
+          />
+          <polygon
+            v-if="currentShape == '2'"
+            points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
+          />
+        </svg>
+      </el-popover>
+      <!-- <el-tooltip content="change color" placement="right">
+        <div
+          class="red-pencial"
+          :style="`background-color: ${color}`"
+          @click="showModal"
+        ></div>
+      </el-tooltip>-->
+
+      <el-popover placement="top" width="300" trigger="hover">
+        <draw-line-width-panel
+          :color="color"
+          :changeWidth="changeWidth"
+          :widthValue="widthValue"
+          :tabIndex="2"
+        />
+        <div class="eraser" @click="drawLine" slot="reference">
+          <i
+            class="el-icon-minus"
+            :style="`font-size: 30px; color: ${
+              currentTab == 2 ? color : 'rgb(212 208 208)'
+            }`"
+          ></i>
+        </div>
+      </el-popover>
+
+      <el-popover placement="top" width="300" trigger="hover">
+        <draw-line-width-panel
+          :color="color"
+          :changeWidth="changeWidth"
+          :widthValue="widthValue"
+          :tabIndex="1"
+        />
+        <div class="eraser" @click="drawPath" slot="reference">
+          <i
+            class="el-icon-edit"
+            :style="`font-size: 30px; color: ${
+              currentTab == 1 ? color : 'rgb(212 208 208)'
+            }`"
+          ></i>
+        </div>
+      </el-popover>
+
+      <el-popover placement="top" width="300" trigger="hover">
+        <draw-line-width-panel
+          :color="color"
+          :changeWidth="changeWidth"
+          :widthValue="widthValue"
+          :tabIndex="5"
+        />
+        <div class="eraser" @click="drawMark" slot="reference">
+          <svg
+            t="1622035315247"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="5489"
+            width="32"
+            height="32"
+          >
+            <path
+              d="M197.973333 546.133333c-3.413333-3.413333-10.24-6.826667-17.066666-3.413333-6.826667 0-10.24 6.826667-10.24 13.653333-6.826667 68.266667-44.373333 150.186667-98.986667 218.453334-6.826667 6.826667-3.413333 17.066667 0 23.893333l37.546667 37.546667-105.813334 105.813333c-3.413333 6.826667-3.413333 13.653333-3.413333 17.066667 0 6.826667 6.826667 10.24 13.653333 13.653333l136.533334 34.133333h3.413333c3.413333 0 10.24-3.413333 13.653333-3.413333l54.613334-54.613333 20.48 20.48c3.413333 3.413333 6.826667 3.413333 13.653333 3.413333 3.413333 0 6.826667 0 10.24-3.413333l51.2-30.72c58.026667-37.546667 116.053333-61.44 170.666667-68.266667 6.826667 0 13.653333-6.826667 13.653333-10.24 3.413333-6.826667 0-13.653333-3.413333-17.066667L197.973333 546.133333zM993.28 116.053333l-68.266667-68.266666c-34.133333-34.133333-92.16-40.96-133.12-10.24L204.8 477.866667c-3.413333 3.413333-6.826667 6.826667-6.826667 13.653333 0 3.413333 0 10.24 3.413334 13.653333l334.506666 334.506667c3.413333 3.413333 6.826667 3.413333 13.653334 3.413333 3.413333 0 10.24-3.413333 13.653333-6.826666L1003.52 249.173333c30.72-40.96 27.306667-95.573333-10.24-133.12z"
+              :fill="`${currentTab == 5 ? color : 'rgb(212 208 208)'}`"
+              p-id="5490"
+            />
+          </svg>
+        </div>
+      </el-popover>
+
+      <el-popover placement="top" width="300" trigger="hover">
+        <div v-for="(item, index) in fontFamilies" :key="index">
+          <div class="text_area" @click="changeTextFont(index)">
+            <p
+              class="text-font"
+              :style="`color:${
+                currentFont == index ? color : 'rgb(212 208 208)'
+              }; font-family:${item}`"
+            >
+              AaBbCcDd1234
+            </p>
+          </div>
+        </div>
+        <div class="eraser" @click="edit" slot="reference">
+          <svg
+            t="1624354530526"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="2670"
+            width="32"
+            height="32"
+            :fill="`${currentTab == 4 ? color : 'rgb(212 208 208)'}`"
+          >
+            <path
+              d="M960 192 960 128c0-35.392-28.608-64-64-64l-64 0c-35.392 0-64 28.608-64 64L256 128c0-35.392-28.608-64-64-64L128 64C92.608 64 64 92.608 64 128l0 64c0 35.392 28.608 64 64 64l0 512c-35.392 0-64 28.608-64 64l0 64c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l512 0c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l0-64c0-35.392-28.608-64-64-64L896 256C931.392 256 960 227.392 960 192zM832 768c-35.392 0-64 28.608-64 64L256 832c0-35.392-28.608-64-64-64L192 256c35.392 0 64-28.608 64-64l512 0c0 35.392 28.608 64 64 64L832 768z"
+              p-id="2671"
+            />
+            <path
+              d="M736 320l-448 0C270.336 320 256 334.336 256 352l0 64C256 433.664 270.336 448 288 448S320 433.664 320 416L320 384l128 0 0 256L416 640C398.336 640 384 654.336 384 672S398.336 704 416 704l192 0c17.664 0 32-14.336 32-32S625.664 640 608 640L576 640 576 384l128 0 0 32C704 433.664 718.336 448 736 448S768 433.664 768 416l0-64C768 334.336 753.664 320 736 320z"
+              p-id="2672"
+            />
+          </svg>
+        </div>
+      </el-popover>
+
+      <el-popover placement="top" width="300" trigger="hover">
+        <draw-line-width-panel
+          :color="color"
+          :changeWidth="changeWidth"
+          :widthValue="widthValue"
+          :tabIndex="3"
+        />
+        <div class="eraser" @click="earse" slot="reference">
+          <svg
+            t="1621859340302"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="989"
+            width="32"
+            height="32"
+          >
+            <path
+              d="M604.536246 736.222443l288.794439-282.693148-287.777557-270.999007-270.999007 283.201589z m-72.70705 71.181728L264.389275 539.455809 145.922542 660.973188l164.734856 164.734856a50.844091 50.844091 0 0 0 36.099305 14.744786h107.789474a101.688183 101.688183 0 0 0 71.181728-28.981132z m109.314796 35.082423h254.220457a50.844091 50.844091 0 0 1 0 101.688183H346.248262a152.532274 152.532274 0 0 1-107.789474-44.742801l-164.734856-164.734856a101.688183 101.688183 0 0 1 0-142.363456l457.596823-480.476663a101.688183 101.688183 0 0 1 143.380337-3.559086l287.269117 270.999007a101.688183 101.688183 0 0 1 4.067527 143.888778l-3.050646 3.050646z"
+              :fill="`${currentTab == 3 ? color : 'rgb(212 208 208)'}`"
+              p-id="990"
+            />
+          </svg>
+        </div>
+      </el-popover>
 
       <div class="do_btn">
         <el-tooltip content="undo" placement="top">
@@ -479,6 +480,7 @@ export default {
       ],
     };
   },
+  created() {},
   mounted() {
     let outer = document.getElementById("canvasouter");
     outer.style.width = document.documentElement.clientWidth - 40 + "px";
@@ -497,11 +499,19 @@ export default {
 
     const selector = document.getElementById("diycolor");
     colorSelector.init(selector);
+    // const _this = this;
+    // document.onkeydown = function (e) {
+    //   let key = window.event.key;
+    //   _this.draw.drawTextDirect(window.event);
+    // };
   },
   beforeDestroy() {
     colorSelector.destory();
   },
   methods: {
+    doKeyDown(e) {
+      console.log(e);
+    },
     changeColor(color) {
       this.color = color;
       this.draw.changeColor(color);
