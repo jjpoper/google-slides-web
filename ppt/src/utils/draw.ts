@@ -155,6 +155,7 @@ export default class Draw {
     textarea.id = 'textarea';
     textarea.setAttribute("contenteditable", "true");
     textarea.setAttribute("placeholder", "Please insert text");
+    textarea.setAttribute("rows", "3");
     // textarea.autofocus = true;
     //   textarea.placeholder = 'Please insert text';
     textarea.style.position = 'absolute';
@@ -169,6 +170,7 @@ export default class Draw {
     textarea.style.outline = "0";
     textarea.style.minWidth = "20px";
     textarea.style.minHeight = "auto";
+
     //  textarea.style.border = "2px solid #c2d4fd";
     textarea.style.textAlign = "left";
     this.cxt.font = `${fontSize}px ${this.fontFamily}`;
