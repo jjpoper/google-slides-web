@@ -17,6 +17,7 @@
             controls=""
             :src="item.link"
             style="width:100%;"
+            preload="none"
           />
           <audio
             v-else-if="item.type === 'audio'"
@@ -24,6 +25,7 @@
             controls=""
             :src="item.link"
             style="width:100%;"
+            preload="none"
           />
           <p v-else-if="item.type === 'text'">{{item.link}}</p>
         </div>
