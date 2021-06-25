@@ -303,7 +303,8 @@ import {
   endClassRoomReq,
   reopenClass,
   getOnlineUsers,
-  getAVComment
+  getAVComment,
+  saveUserConfig
 } from "../model/index";
 import {
   initTeacherData,
@@ -609,6 +610,22 @@ type: "slide"*/
             this.goToLogin();
           } else {
             this.afterLogin(profile);
+            console.log(profile.config);
+            if (!this.directFromPlugin) {
+              return;
+            }
+            if (profile.config && profile.config.length > 0) {
+              for (let i = 0; i < profile.config.length; i++) {
+                if (profile.config[i].key === "dashboard_step_one_hide") {
+                  if (profile.config[i].value === "1") {
+                    this.stepTwoDialog = true;
+                    return;
+                  }
+                  break;
+                }
+              }
+            }
+            this.stepOneDialog = true;
           }
         });
       }
@@ -634,13 +651,6 @@ type: "slide"*/
         .then(res => {
           this.classRoomInfo = res;
           if (this.directFromPlugin) {
-            if (this.classRoomInfo) {
-              if (getStepOneStatus(this.classRoomInfo.author)) {
-                this.stepTwoDialog = true;
-              } else {
-                this.stepOneDialog = true;
-              }
-            }
           }
           this.classRoomInfo.showResponsePages = new Array();
           if (this.classRoomInfo.status == "live") {
@@ -1432,12 +1442,12 @@ type: "slide"*/
     },
 
     closeCopyLinkDialog() {
-      if (this.firstCloseCopyLinkDialog) {
-        this.firstCloseCopyLinkDialog = false;
-        this.emitSo(
-          `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
-        );
-      }
+      // if (this.firstCloseCopyLinkDialog) {
+      this.firstCloseCopyLinkDialog = false;
+      this.emitSo(
+        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
+      );
+      // }
     },
     openCopyLinkDialog() {
       console.log("open copy link dialog!!");
@@ -1447,6 +1457,13 @@ type: "slide"*/
     },
     hideStepOne() {
       saveStepOneStatus(this.classRoomInfo.author, "true");
+      saveUserConfig(this.token, "dashboard_step_one_hide", "1")
+        .then(res => {
+          console.log(res);
+        })
+        .catch(res => {
+          console.log(res);
+        });
       this.stepTwoDialog = true;
       this.stepOneDialog = false;
     }

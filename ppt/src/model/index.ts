@@ -24,7 +24,7 @@ export const getAllPPTS = async (slideid: string) => {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'
     // })
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return list
@@ -135,7 +135,7 @@ export const getTeacherLoginUrl = async (): Promise<string> => {
   // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return authUrl
@@ -165,7 +165,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
   // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result
@@ -181,7 +181,7 @@ export const getStudentLoginUrl = async (): Promise<string> => {
   // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return authUrl
@@ -199,7 +199,7 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result
@@ -219,7 +219,7 @@ export const getStudentClassAnswers = async (classId: string, token: string) => 
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result
@@ -237,7 +237,7 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result.reverse()
@@ -254,13 +254,13 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   // // // console.log(data.data.data)
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result.reverse()
 }
 
-export const getAVComment = async (classId: string, token: string)=>{
+export const getAVComment = async (classId: string, token: string) => {
 
   const data = await axios.post(`${PPT.requestUrl}slide/get_presentation_comments`, {
     class_id: classId,
@@ -271,7 +271,7 @@ export const getAVComment = async (classId: string, token: string)=>{
   console.log(data.data)
   try {
     result = data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
 
@@ -282,42 +282,54 @@ export const getAVComment = async (classId: string, token: string)=>{
 const makeXMLHttpRequest = (url: string, data: any, callback: any) => {
   const request = new XMLHttpRequest();
   request.onreadystatechange = () => {
-      if(request.readyState === 4 && request.status === 200) {
-          callback('upload-ended', request.response);
-      }
-      if(request.status === 413) {
-        callback('onerror');
+    if (request.readyState === 4 && request.status === 200) {
+      callback('upload-ended', request.response);
+    }
+    if (request.status === 413) {
+      callback('onerror');
     }
   };
 
   request.upload.onloadstart = () => {
-      callback('Upload started...');
+    callback('Upload started...');
   };
 
   request.upload.onprogress = (event) => {
-      // callback('Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%");
+    // callback('Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%");
   };
 
   request.upload.onload = () => {
-      callback('progress-about-to-end');
+    callback('progress-about-to-end');
   };
 
   request.upload.onload = () => {
-      callback('progress-ended');
+    callback('progress-ended');
   };
 
   request.upload.onerror = (error) => {
-      callback('onerror');
-      // console.error('XMLHttpRequest failed', error);
+    callback('onerror');
+    // console.error('XMLHttpRequest failed', error);
   };
 
   request.upload.onabort = (error) => {
-      callback('Upload aborted.');
-      // console.error('XMLHttpRequest aborted', error);
+    callback('Upload aborted.');
+    // console.error('XMLHttpRequest aborted', error);
   };
 
   request.open('POST', url);
   request.send(data);
+}
+
+export const saveUserConfig = async (token: string, key: string, value: string) => {
+
+  const data = await axios.post(`${PPT.requestUrl}account/save_config`, {
+    token: token,
+    key: key,
+    value: value
+  })
+
+  return data;
+
 }
 
 // 上传文件
@@ -339,17 +351,17 @@ export const upLoadFile = async (mp4: Blob) => {
 
     makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData, (progress: string, result: any) => {
       console.log(progress, '===progress===')
-        if(progress === 'upload-ended') {
-            res(JSON.parse(result))
-        }
-        if(progress === 'onerror') {
-          rej()
-        }
+      if (progress === 'upload-ended') {
+        res(JSON.parse(result))
+      }
+      if (progress === 'onerror') {
+        rej()
+      }
 
-        // callback('ended', upload_directory + fileName);
+      // callback('ended', upload_directory + fileName);
 
-        // to make sure we can delete as soon as visitor leaves
-        // listOfFilesUploaded.push(upload_directory + fileName);
+      // to make sure we can delete as soon as visitor leaves
+      // listOfFilesUploaded.push(upload_directory + fileName);
     });
   })
 
