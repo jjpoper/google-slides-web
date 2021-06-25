@@ -14,11 +14,11 @@
           </div>
 
           <div class="mtitle" v-else-if="commentData.title.indexOf('.mp3') > -1">
-            <audio controlslist="nodownload" controls :src="commentData.title" style="width:100%;" />
+            <audio preload="none" controlslist="nodownload" controls :src="commentData.title" style="width:100%;" />
           </div>
 
           <div class="mtitle" v-else-if="commentData.title.indexOf('.webm') > -1">
-            <video controlslist="nodownload" controls :src="commentData.title" style="width:100%;" />
+            <video preload="none" controlslist="nodownload" controls :src="commentData.title" style="width:100%;" />
           </div>
 
           <div class="rightmtitle" v-else-if="commentData.title.indexOf('[') > -1">
