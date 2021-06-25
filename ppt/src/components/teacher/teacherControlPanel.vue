@@ -264,7 +264,7 @@ export default {
       default: () => {
         return {};
       }
-    },
+    }
   },
   components: {
     dashboardMenu
@@ -288,10 +288,16 @@ export default {
         return true;
       }
       let items = this.slides[this.currentPage - 1].items;
-      if (items && items[0] && items[0].type == "choice") {
-        let opts = items[0].data.options;
-        for (let i = 0; i < opts.length; i++) {
-          if (opts[i].isAnswer) {
+      if (items && items[0]) {
+        if (items[0].type == "choice") {
+          let opts = items[0].data.options;
+          for (let i = 0; i < opts.length; i++) {
+            if (opts[i].isAnswer) {
+              return false;
+            }
+          }
+        } else if (items[0].type == "text") {
+          if (items[0].data.answer && items[0].data.answer.length > 0) {
             return false;
           }
         }

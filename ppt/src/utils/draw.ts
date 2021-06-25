@@ -29,7 +29,8 @@ export default class Draw {
     left: 20,
     top: 20
   }
-  private initUrl = ""
+  private fontFamily = "Microsoft YaHei"
+  private textString = ""
 
   private pointer = {
     beginX: 0,
@@ -146,19 +147,43 @@ export default class Draw {
     // this.cxt.globalCompositeOperation = "source-over";
   }
 
+  //可以使用两层 canvas
+  //上面一层当drawType是text时才显现，用来保存图片的
   createDom() {
+    let fontSize = Math.max(18, this.lineWidth) + "px";
     const textarea = document.createElement('textarea');
     textarea.id = 'textarea';
-    textarea.rows = 3;
-    textarea.autofocus = true;
-    textarea.placeholder = 'Please insert text';
+    textarea.setAttribute("contenteditable", "true");
+    textarea.setAttribute("placeholder", "Please insert text");
+    textarea.setAttribute("rows", "3");
+    // textarea.autofocus = true;
+    //   textarea.placeholder = 'Please insert text';
     textarea.style.position = 'absolute';
     textarea.style.left = `${this.pointer.beginX}px`;
     textarea.style.top = `${this.pointer.beginY}px`;
     textarea.style.zIndex = '11';
+    textarea.style.fontSize = Math.max(18, this.lineWidth) + "px";
+    textarea.style.fontFamily = this.fontFamily;
+    textarea.style.background = "00000000";
+    textarea.style.color = this.strokeColor;
+    textarea.style.lineHeight = this.getLineHeight();
+    textarea.style.outline = "0";
+    textarea.style.minWidth = "20px";
+    textarea.style.minHeight = "auto";
+
+    //  textarea.style.border = "2px solid #c2d4fd";
+    textarea.style.textAlign = "left";
+    this.cxt.font = `${fontSize}px ${this.fontFamily}`;
+    this.canvasParant.appendChild(textarea);
+    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+    //   textarea.focus();
     return textarea;
   }
 
+  getLineHeight() {
+    console.log(Math.max(18, this.lineWidth) + "px")
+    return Math.max(18, this.lineWidth) + "px";
+  }
   drawBegin(e: any) {
     // @ts-ignore
     // eslint-disable-next-line no-unused-expressions
@@ -168,8 +193,7 @@ export default class Draw {
 
     this.pointer.beginX = e.clientX - this.stage_info.left
     this.pointer.beginY = e.clientY - this.stage_info.top
-
-    if (this.drawType === 'draw') {
+    if (this.drawType === 'draw' || this.drawType === 'marker') {
       this.cxt.beginPath();
       this.cxt.moveTo(
         this.pointer.beginX,
@@ -177,22 +201,13 @@ export default class Draw {
       );
     }
 
-    if (this.drawType === 'marker') {
-      this.drawMarker()
-    } else if (['draw', 'line', 'rect', 'circle', 'polygon'].indexOf(this.drawType) > -1) {
+    if (['draw', 'line', 'rect', 'circle', 'polygon', 'marker'].indexOf(this.drawType) > -1) {
       this.canvas.onmousemove = () => {
         this.drawing(event)
       }
       this.canvas.onmouseout = () => {
-        // setTimeout(() => {
-        //   // console.log('========= 1')
-        //   this.isDrawing = false
-        //   this.drawEnd();
-        // }, 100);
-        // ws.send('stop')
       };
     } else if (this.drawType === 'text') {
-
       this.drawText()
     }
     this.beginTime = new Date().getTime();
@@ -209,12 +224,15 @@ export default class Draw {
     this.cxt.putImageData(imageData, 0, 0);
   }
 
+  setFontFamily(font: string) {
+    this.fontFamily = font;
+  }
+
   drawText() {
     if (this.canTextarea) {
-      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+
       // 添加textarea文本框
       const textarea = this.createDom();
-      this.canvasParant.appendChild(textarea);
       // @ts-ignore
       document.getElementById('textarea').focus();
       this.canTextarea = false;
@@ -226,13 +244,36 @@ export default class Draw {
       if (tValue) {
         console.log('text end draw!!')
         this.addHistory();
-        const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor);
+        const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor, this.fontFamily);
         text.draw(this.cxt);
         //  this.drawEnd() 防止重复调用
       }
       this.canvasParant.removeChild(textarea);
       this.canTextarea = true;
     }
+  }
+
+  drawTextDirect(event: any) {
+    console.log(event.key);
+    if (this.drawType != "text") {
+      this.textString = "";
+      return;
+    }
+    let keyStr = event.key;
+    if (event.keyCode == 8 || event.keyCode == 46) {//删除
+      if (this.textString.length > 0) {
+        this.textString = this.textString.substring(0, this.textString.length - 1);
+      }
+    } else if (event.keyCode == 13) {//回车
+      this.textString += "\n";
+    } else {
+      this.textString += keyStr;
+    }
+    this.restoreImageData(this.imageData)
+    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+    const text = new Text(this.textPostion, this.textString, this.lineWidth, this.strokeColor, this.fontFamily);
+    text.draw(this.cxt);
+
   }
 
   drawing(e: any) {
@@ -252,6 +293,8 @@ export default class Draw {
       this.drawCircle();
     } else if (this.drawType == "polygon") {
       this.drawPolygon();
+    } else if (this.drawType == "marker") {
+      this.drawMarker();
     }
   }
 
@@ -271,13 +314,11 @@ export default class Draw {
     if (current - this.beginTime < 800) {
       this.beginTime = current;
     } else {
-      console.log("确定了一条边");
       this.saveImageData();
       this.beginTime = current;
       this.pointer.beginX = this.pointer.endX;
       this.pointer.beginY = this.pointer.endY;
     }
-
   }
 
   // 画椭圆
@@ -377,7 +418,6 @@ export default class Draw {
     );
 
     // this.cxt.shadowColor = this.strokeColor;
-
     this.cxt.lineWidth = this.lineWidth;
     this.cxt.stroke();
     this.cxt.restore();
@@ -385,12 +425,22 @@ export default class Draw {
 
   // 画标记
   drawMarker() {
-    this.addHistory()
+
+    this.restoreImageData(this.imageData)
+    this.cxt.strokeStyle = this.strokeColor + "65";
     this.cxt.save();
-    this.cxt.beginPath();
-    this.cxt.arc(this.pointer.beginX, this.pointer.beginY, this.lineWidth, 0, 2 * Math.PI);
-    this.cxt.fillStyle = this.strokeColor;
-    this.cxt.fill();
+    this.cxt.lineTo(
+      this.pointer.endX,
+      this.pointer.endY
+    );
+
+    // this.cxt.shadowColor = this.strokeColor;
+    this.cxt.lineWidth = this.lineWidth;
+
+    this.cxt.stroke();
+    this.cxt.restore();
+
+
   }
 
   addHistory() {
@@ -400,7 +450,13 @@ export default class Draw {
   }
 
   drawEnd() {
-    console.log('========= drawEnd')
+    console.log('========= drawEnd', this.canTextarea);
+
+    // if (this.drawType == "marker") {
+    //   this.cxt.stroke();
+    //   this.cxt.restore();
+    // }
+
     this.canvas.onmousemove = null;
     // // console.log();
     const base64Url = this.canvas.toDataURL("image/png");

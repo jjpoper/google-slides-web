@@ -525,13 +525,13 @@ export default {
       this.currentAnswerd = true;
     },
     // 发送text
-    answerText(index, msg) {
+    answerText(index, msg, show) {
       console.log("index==" + index + "  msg==" + msg);
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}"}`
+        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}","locked": ${show}}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
@@ -776,20 +776,23 @@ export default {
       this.modalVisiable = false;
       // this.questionModalVisiable = !this.questionModalVisiable;
     },
-    answerChoice(v, locked) {
+    answerChoice(v, locked, typeParam) {
       console.log("change answer==" + v, this.currentSo);
-      const { page_id, items } = this.currentItemData;
-      const { type } = items[0];
-      // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
-      this.emitSo(
-        "response",
-        `{"room": "${this.class_id}","user_name":"${this.uname}", "type":"${type}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}", "locked": "${locked}"}`
-      );
-      saveStudentsCurrentPageAnswerList(page_id, type, {
-        key: "item_1",
-        answer: v
-      });
-      this.currentAnswerd = true;
+      if (!typeParam || typeParam != "text") {
+        const { page_id, items } = this.currentItemData;
+        const { type } = items[0];
+        // emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`
+        this.emitSo(
+          "response",
+          `{"room": "${this.class_id}","user_name":"${this.uname}", "type":"${type}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "item_1", "answer": "${v}", "locked": "${locked}"}`
+        );
+        saveStudentsCurrentPageAnswerList(page_id, type, {
+          key: "item_1",
+          answer: v
+        });
+        this.currentAnswerd = true;
+      } else if (typeParam && typeParam == "text") {
+      }
       this.showCorrect = locked;
       this.$forceUpdate();
       // // this.allAnswers[pid] = v;
