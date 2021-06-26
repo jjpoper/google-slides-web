@@ -497,8 +497,8 @@ export default {
       );
     });
 
-    const selector = document.getElementById("diycolor");
-    colorSelector.init(selector);
+    // const selector = document.getElementById("diycolor_comment");
+    // colorSelector.init(selector);
     // const _this = this;
     // document.onkeydown = function (e) {
     //   let key = window.event.key;
@@ -506,7 +506,8 @@ export default {
     // };
   },
   beforeDestroy() {
-    colorSelector.destory();
+    // colorSelector.destory();
+    // document.getElementById("diycolor_comment").innerHTML = ''
   },
   methods: {
     doKeyDown(e) {

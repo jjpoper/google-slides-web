@@ -300,6 +300,7 @@ import ClassRoomClosed from "@/components/students/classRoomClosed.vue";
 import studentControlPanel from "@/components/students/studentControlPanel.vue";
 import pageLockedNote from "@/components/students/pageLockedNote.vue";
 import StudentQuestions from "@/components/students/studentQuestions.vue";
+import colorSelector from "@/utils/color";
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
@@ -410,6 +411,13 @@ export default {
     }
   },
   methods: {
+    loadDiyPainter() {
+       this.$nextTick(() => {
+          const selector = document.getElementById("diycolor_comment");
+          console.log(selector, 'selector')
+          colorSelector.init(selector);
+       })
+    },
     changeShowOrAnswer() {
       this.isShowQuestion = !this.isShowQuestion;
     },
@@ -510,6 +518,7 @@ export default {
         this.getItemData();
         this.afterLogin(profile);
         hideLoading();
+        this.loadDiyPainter()
       });
     },
     sendCanvas(base64Url) {

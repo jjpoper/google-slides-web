@@ -224,14 +224,15 @@ export default {
     console.log(this.marks)
   },
   mounted() {
-    const selector = document.getElementById('diycolor_comment');
-    colorSelector.init(selector);
+    // const selector = document.getElementById('diycolor_comment');
+    // colorSelector.init(selector);
     EventBus.$on(ModalEventsNameEnum.GET_COMMENT_ID, (d) => {
       console.log('===', d)
     });
   },
   beforeDestroy() {
-    colorSelector.destory()
+    // colorSelector.destory()
+    // document.getElementById('diycolor_comment').innerHTML = ''
   },
   methods: {
     resetPosition() {
