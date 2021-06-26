@@ -31,6 +31,10 @@ export default class Draw {
   }
   private fontFamily = "Microsoft YaHei"
   private textString = ""
+  private polygonStartPoint = {//记录多边形的起始点
+    beginX: -1,
+    beginY: -1,
+  }
 
   private pointer = {
     beginX: 0,
@@ -90,12 +94,32 @@ export default class Draw {
     this.cxt.lineJoin = "round";
     // this.cxt.shadowBlur = 10;
     this.canvas.onmousedown = () => {
-      this.drawBegin(event);
+      console.log(this.polygonStartPoint.beginX)
+      if (this.drawType == "polygon" && this.polygonStartPoint.beginX != -1 && this.polygonStartPoint.beginY != -1) {
+        this.saveImageData();
+        this.pointer.beginX = this.pointer.endX;
+        this.pointer.beginY = this.pointer.endY;
+        if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
+          // this.pointer.endY = this.polygonStartPoint.beginX;
+          // this.pointer.endY = this.polygonStartPoint.beginY;
+          // this.drawPolygon();
+          this.isDrawing = false
+          this.drawEnd();
+          this.polygonStartPoint.beginY = -1;
+          this.polygonStartPoint.beginX = -1;
+        }
+      } else {
+        console.log('drawBegin')
+        this.drawBegin(event);
+      }
     };
     this.canvas.onmouseup = () => {
       //console.log('========= 1')
-      this.isDrawing = false
-      this.drawEnd();
+      if (this.drawType != "polygon") {//多边形的结束判断方式和其他方式不一样。
+        this.isDrawing = false
+        this.drawEnd();
+      }
+
       // ws.send('stop')
     };
     document.onmouseup = () => {
@@ -199,6 +223,10 @@ export default class Draw {
         this.pointer.beginX,
         this.pointer.beginY
       );
+    }
+    if (this.drawType == "polygon") {
+      this.polygonStartPoint.beginX = this.pointer.beginX;
+      this.polygonStartPoint.beginY = this.pointer.beginY;
     }
 
     if (['draw', 'line', 'rect', 'circle', 'polygon', 'marker'].indexOf(this.drawType) > -1) {
@@ -308,17 +336,22 @@ export default class Draw {
 
   //画多边形
   drawPolygon() {
-    //鼠标在某点停留800ms之后，确定一条边，进行下一条边的绘制
-    this.drawLine();
-    let current = new Date().getTime();
-    if (current - this.beginTime < 800) {
-      this.beginTime = current;
-    } else {
-      this.saveImageData();
-      this.beginTime = current;
-      this.pointer.beginX = this.pointer.endX;
-      this.pointer.beginY = this.pointer.endY;
+
+    if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
+      this.pointer.endX = this.polygonStartPoint.beginX;
+      this.pointer.endY = this.polygonStartPoint.beginY;
     }
+
+    this.drawLine();
+    // let current = new Date().getTime();
+    // if (current - this.beginTime < 800) {
+    //   this.beginTime = current;
+    // } else {
+    //   this.saveImageData();
+    //   this.beginTime = current;
+    //   this.pointer.beginX = this.pointer.endX;
+    //   this.pointer.beginY = this.pointer.endY;
+    // }
   }
 
   // 画椭圆
