@@ -100,9 +100,9 @@ export default class Draw {
         this.pointer.beginX = this.pointer.endX;
         this.pointer.beginY = this.pointer.endY;
         if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
-          this.pointer.beginX = this.polygonStartPoint.beginX;
-          this.pointer.beginY = this.polygonStartPoint.beginY;
-          this.drawPolygon();
+          // this.pointer.endY = this.polygonStartPoint.beginX;
+          // this.pointer.endY = this.polygonStartPoint.beginY;
+          // this.drawPolygon();
           this.isDrawing = false
           this.drawEnd();
           this.polygonStartPoint.beginY = -1;
@@ -336,6 +336,12 @@ export default class Draw {
 
   //画多边形
   drawPolygon() {
+
+    if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
+      this.pointer.endX = this.polygonStartPoint.beginX;
+      this.pointer.endY = this.polygonStartPoint.beginY;
+    }
+
     this.drawLine();
     // let current = new Date().getTime();
     // if (current - this.beginTime < 800) {
