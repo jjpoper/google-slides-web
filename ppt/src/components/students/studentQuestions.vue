@@ -16,7 +16,8 @@
           v-if="item.pointType !== 'box'" 
           :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
           :style="`top:${item.top}px;left:${item.left}px;`"
-          @click.stop="selectMark(item, index)"
+          @mousedown.stop="selectMark(item, index)"
+          @click.stop
         >
           <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
         </div>
@@ -25,7 +26,8 @@
           v-else-if="item.pointType === 'box'"
           :class="`markitembox ${selectedIndex === index ? 'markitemhover' : ''}`"
           :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
-          @click.stop="selectMark(item, index)"
+          @mousedown.stop="selectMark(item, index)"
+          @click.stop
         >
           <div
             :style="`width:${item.width}px;
@@ -34,7 +36,7 @@
           />
         </div>
       </template>  
-      <div v-if="markType === 2" class="dragbg"/>
+      <div v-if="markType === 2 && isBoxing" class="dragbg" @click.stop/>
       <div
         v-if="markType === 2 && isBoxing"
         :style="`width:${Math.abs(nextPosition.offsetX - currentPosition.offsetX)}px;

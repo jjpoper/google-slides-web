@@ -848,7 +848,7 @@ export default {
     delQuestion(id) {
       this.emitSo(
         'delete-ppt-comment',
-        `{"token":"${this.token}","class_id":"${this.class_id}","id":"${id}}"}`
+        `{"token":"${this.token}","class_id":"${this.class_id}","id":${id}}`
       )
       const index = this.marks.findIndex(item => item.id == id)
       console.log(index, 'index')

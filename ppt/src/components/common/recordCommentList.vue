@@ -62,7 +62,9 @@ export default {
       console.log('1====')
       if(this.selectedIndex > -1) {
         this.$nextTick(() => {
-          this.$refs.activeRef[0].focus();
+          if(this.$refs.activeRef) {
+            this.$refs.activeRef[0].focus();
+          }
         });
       }
     }

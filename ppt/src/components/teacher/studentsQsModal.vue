@@ -2,7 +2,7 @@
   <div style="background-color: #E9EEF3;">
     <div class="mark-area">
       <pptcontent :url="url"/>
-      <div
+      <!-- <div
         v-for="(item, index) in marks"
         :key="index"
         :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
@@ -10,10 +10,34 @@
         @click.stop="selectMark(item, index)"
       >
         <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
-      </div>
+      </div> -->
+      <template v-for="(item, index) in marks">
+        <div
+          :key="item.id"
+          v-if="item.pointType !== 'box'" 
+          :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
+          :style="`top:${item.top}px;left:${item.left}px;`"
+          @click.stop="selectMark(item, index)"
+        >
+          <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
+        </div>
+        <div
+          :key="item.id"
+          v-else-if="item.pointType === 'box'"
+          :class="`markitembox ${selectedIndex === index ? 'markitemhover' : ''}`"
+          :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
+          @click.stop="selectMark(item, index)"
+        >
+          <div
+            :style="`width:${item.width}px;
+            height:${item.height}px;
+            border: 2px solid ${item.background}`"
+          />
+        </div>
+      </template>
     </div>   
     <div class="right-area">
-      <recordCommentList :list="marks" :selectedIndex="selectedIndex"/>
+      <recordCommentList :list="marks" :selectMark="selectMark" :selectedIndex="selectedIndex"/>
     </div>
   </div>
 </template>
@@ -87,10 +111,20 @@ export default {
   cursor: pointer;
   border: 2px solid transparent;
 }
+.markitembox{
+  position: absolute;
+  z-index: 999;
+  cursor: pointer;
+  padding: 4px;
+  border: 2px solid transparent;
+}
 .markitemhover{
   box-shadow: 0 0 20px #f00
 }
 .markitem:hover{
+  box-shadow: 0 0 20px #f00
+}
+.markitembox:hover{
   box-shadow: 0 0 20px #f00
 }
 .innermark{
