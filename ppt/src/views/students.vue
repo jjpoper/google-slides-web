@@ -822,7 +822,8 @@ export default {
         content_height,
         type,
         background,
-        page_id
+        page_id,
+        width, height, pointType
       } = data;
       this.emitSo(
         "comment-ppt",
@@ -831,6 +832,9 @@ export default {
         {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
         "background": "${background}", "content_width": ${content_width},
         "content_height": ${content_height},
+        "width": ${width},
+        "height": ${height},
+        "pointType": "${pointType}",
         "page_id": "${page_id}"}}`
       );
       this.marks.push(data);

@@ -1,81 +1,55 @@
 <template>
   <div style="background-color: #E9EEF3;">
-    <div class="mark-area" @click="markup($event)" @mousemove="move($event)">
-      <pptcontent :url="pptUrl"/>
-      <div
-        v-for="(item, index) in marks"
-        :key="index"
-        class="markitem"
-        :style="`top:${item.top}px;left:${item.left}px;`"
-        @click.stop="selectMark(item, index)"
+    <div class="mark-area"
+      @click="markup($event)"
+      @mousedown="startMove($event)"
+      @mousemove="mouseMoving($event)"
+      @mouseup="mouseEnd($event)"
+      @mouseleave="mouseEnd($event)"
+      onselectstart="return false"
+      @drag="pauseEvent($event)"
       >
-        <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
-      </div>
-      <!-- <div 
-        :style="`width:${nextPosition.offsetX - currentPosition.offsetX}px;
-        height:${nextPosition.offsetY - currentPosition.offsetY}px;
-        position: absolute;
-        left: ${currentPosition.offsetX}px;
-        top: ${currentPosition.offsetY}px;
-        border: 2px solid red`">
-      </div>  -->
-      <el-popover placement="top" width="100" trigger="manual" v-model="buttonVisiable" @click.stop>
-        <div class="buttonlist">
-          <el-tooltip class="item" effect="dark" content="Audio" placement="top-start">
-            <svg
-              @click="audio"
-              t="1622676486182"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="1217"
-              width="20"
-              height="20"
-            >
-              <path
-                d="M566.215111 899.811556v118.158222h-85.333333v-114.915556C294.4 888.718222 147.342222 735.573333 147.342222 562.688a42.666667 42.666667 0 0 1 85.333334 0c0 134.257778 123.790222 256.113778 276.764444 256.113778s276.707556-121.912889 276.707556-256.113778a42.666667 42.666667 0 1 1 85.333333 0c0 164.067556-132.380444 310.385778-305.265778 337.123556zM510.976 33.336889a170.666667 170.666667 0 0 1 170.666667 170.666667v341.333333a170.666667 170.666667 0 1 1-341.333334 0v-341.333333a170.666667 170.666667 0 0 1 170.666667-170.666667z"
-                fill="#1296db"
-                p-id="1218"
-              />
-            </svg>
-          </el-tooltip>
-
-          <el-tooltip class="item" effect="dark" content="Video" placement="top-start">
-            <svg
-              @click="video"
-              t="1622676554377"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="2348"
-              width="20"
-              height="20"
-            >
-              <path
-                d="M768 648.533333V768H128V256h640v119.466667L896 298.666667v426.666666l-128-76.8z m0-93.866666l42.666667 25.6v-136.533334l-42.666667 25.6v85.333334zM213.333333 341.333333v341.333334h469.333334V341.333333H213.333333z"
-                fill="#1296db"
-                p-id="2349"
-              />
-            </svg>
-          </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="Text" placement="top-start">
-            <svg @click="enterText" t="1624363217137" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3341" width="20" height="20"><path d="M563.2 281.6V870.4a51.2 51.2 0 0 1-102.4 0V281.6H179.2a51.2 51.2 0 1 1 0-102.4h665.6a51.2 51.2 0 0 1 0 102.4H563.2z" fill="#1296db" p-id="3342"></path></svg>
-          </el-tooltip>
+      <pptcontent :url="pptUrl"/>
+      <template v-for="(item, index) in marks">
+        <div
+          :key="index"
+          v-if="item.pointType !== 'box'" 
+          :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
+          :style="`top:${item.top}px;left:${item.left}px;`"
+          @click.stop="selectMark(item, index)"
+        >
+          <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
         </div>
         <div
-          slot="reference"
-          class="markitem markpos"
-          :style="`top:${currentPosition.top}px;left:${currentPosition.left}px`"
-        >buttons</div>
-      </el-popover>
+          :key="index"
+          v-else-if="item.pointType === 'box'"
+          :class="`markitembox ${selectedIndex === index ? 'markitemhover' : ''}`"
+          :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
+          @click.stop="selectMark(item, index)"
+        >
+          <div
+            :style="`width:${item.width}px;
+            height:${item.height}px;
+            border: 2px solid ${item.background}`"
+          />
+        </div>
+      </template>  
+      <div v-if="markType === 2" class="dragbg"/>
+      <div
+        v-if="markType === 2 && isBoxing"
+        :style="`width:${Math.abs(nextPosition.offsetX - currentPosition.offsetX)}px;
+        height:${Math.abs(nextPosition.offsetY - currentPosition.offsetY)}px;
+        position: absolute;
+        left: ${Math.min(currentPosition.offsetX, nextPosition.offsetX)}px;
+        top: ${Math.min(currentPosition.offsetY, nextPosition.offsetY)}px;
+        border: 2px solid ${this.color}`">
+      </div>
     </div>
     <div class="right-area">
-      <recordCommentList :list="mediaList" :selectedIndex="selectedIndex"/>
+      <recordCommentList :list="mediaList" :selectedIndex="selectedIndex" :selectMark="selectMark"/>
     </div>
     <div class="record-container"
-      v-if="type === ModalEventsTypeEnum.VIDEO || type === ModalEventsTypeEnum.AUDIO || type === ModalEventsTypeEnum.TEXT"
+      v-if="recordVisiable"
     >
       <record-video v-if="type === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
       <record-audio v-else-if="type === ModalEventsTypeEnum.AUDIO" :onSend="sendCommentCb" />
@@ -91,17 +65,55 @@
       </div>
     </div>
     <div class="canvasfooter">
+      <el-tooltip class="item" effect="dark" content="Audio" placement="top-start">
+        <svg
+          @click="audio"
+          t="1622676486182"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="1217"
+          width="32"
+          height="32"
+        >
+          <path
+            d="M566.215111 899.811556v118.158222h-85.333333v-114.915556C294.4 888.718222 147.342222 735.573333 147.342222 562.688a42.666667 42.666667 0 0 1 85.333334 0c0 134.257778 123.790222 256.113778 276.764444 256.113778s276.707556-121.912889 276.707556-256.113778a42.666667 42.666667 0 1 1 85.333333 0c0 164.067556-132.380444 310.385778-305.265778 337.123556zM510.976 33.336889a170.666667 170.666667 0 0 1 170.666667 170.666667v341.333333a170.666667 170.666667 0 1 1-341.333334 0v-341.333333a170.666667 170.666667 0 0 1 170.666667-170.666667z"
+            :fill="`${inputType == ModalEventsTypeEnum.AUDIO ? color : 'rgb(212 208 208)'}`"
+            p-id="1218"
+          />
+        </svg>
+      </el-tooltip>
+
+      <el-tooltip class="item" effect="dark" content="Video" placement="top-start">
+        <svg
+          @click="video"
+          t="1622676554377"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="2348"
+          width="32"
+          height="32"
+        >
+          <path
+            d="M768 648.533333V768H128V256h640v119.466667L896 298.666667v426.666666l-128-76.8z m0-93.866666l42.666667 25.6v-136.533334l-42.666667 25.6v85.333334zM213.333333 341.333333v341.333334h469.333334V341.333333H213.333333z"
+            :fill="`${inputType == ModalEventsTypeEnum.VIDEO ? color : 'rgb(212 208 208)'}`"
+            p-id="2349"
+          />
+        </svg>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="Text" placement="top-start">
+        <svg @click="enterText" t="1624363217137" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3341" width="32" height="32"><path d="M563.2 281.6V870.4a51.2 51.2 0 0 1-102.4 0V281.6H179.2a51.2 51.2 0 1 1 0-102.4h665.6a51.2 51.2 0 0 1 0 102.4H563.2z"
+        :fill="`${inputType == ModalEventsTypeEnum.TEXT ? color : 'rgb(212 208 208)'}`"
+        p-id="3342"></path></svg>
+      </el-tooltip>
       <el-tooltip content="change color" placement="top">
         <div :style="`background-color: ${color}`"  @click="showModal"></div>
       </el-tooltip>
-      <!-- <el-tooltip content="mark up" placement="top">
-        <div class="eraser" @click="drawMark">
-          <svg t="1622035315247" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5489" width="32" height="32"><path d="M197.973333 546.133333c-3.413333-3.413333-10.24-6.826667-17.066666-3.413333-6.826667 0-10.24 6.826667-10.24 13.653333-6.826667 68.266667-44.373333 150.186667-98.986667 218.453334-6.826667 6.826667-3.413333 17.066667 0 23.893333l37.546667 37.546667-105.813334 105.813333c-3.413333 6.826667-3.413333 13.653333-3.413333 17.066667 0 6.826667 6.826667 10.24 13.653333 13.653333l136.533334 34.133333h3.413333c3.413333 0 10.24-3.413333 13.653333-3.413333l54.613334-54.613333 20.48 20.48c3.413333 3.413333 6.826667 3.413333 13.653333 3.413333 3.413333 0 6.826667 0 10.24-3.413333l51.2-30.72c58.026667-37.546667 116.053333-61.44 170.666667-68.266667 6.826667 0 13.653333-6.826667 13.653333-10.24 3.413333-6.826667 0-13.653333-3.413333-17.066667L197.973333 546.133333zM993.28 116.053333l-68.266667-68.266666c-34.133333-34.133333-92.16-40.96-133.12-10.24L204.8 477.866667c-3.413333 3.413333-6.826667 6.826667-6.826667 13.653333 0 3.413333 0 10.24 3.413334 13.653333l334.506666 334.506667c3.413333 3.413333 6.826667 3.413333 13.653334 3.413333 3.413333 0 10.24-3.413333 13.653333-6.826666L1003.52 249.173333c30.72-40.96 27.306667-95.573333-10.24-133.12z"
-          :fill="`${currentTab == 1 ? color : 'rgb(212 208 208)'}`" p-id="5490"></path></svg>
-        </div>
-      </el-tooltip> -->
       <el-tooltip content="mark" placement="top">
-        <div class="eraser" @click="markUp">
+        <div class="eraser" @click="changeMarkType(1)">
           <svg
             t="1622035315247"
             class="icon"
@@ -114,16 +126,16 @@
           >
             <path
               d="M197.973333 546.133333c-3.413333-3.413333-10.24-6.826667-17.066666-3.413333-6.826667 0-10.24 6.826667-10.24 13.653333-6.826667 68.266667-44.373333 150.186667-98.986667 218.453334-6.826667 6.826667-3.413333 17.066667 0 23.893333l37.546667 37.546667-105.813334 105.813333c-3.413333 6.826667-3.413333 13.653333-3.413333 17.066667 0 6.826667 6.826667 10.24 13.653333 13.653333l136.533334 34.133333h3.413333c3.413333 0 10.24-3.413333 13.653333-3.413333l54.613334-54.613333 20.48 20.48c3.413333 3.413333 6.826667 3.413333 13.653333 3.413333 3.413333 0 6.826667 0 10.24-3.413333l51.2-30.72c58.026667-37.546667 116.053333-61.44 170.666667-68.266667 6.826667 0 13.653333-6.826667 13.653333-10.24 3.413333-6.826667 0-13.653333-3.413333-17.066667L197.973333 546.133333zM993.28 116.053333l-68.266667-68.266666c-34.133333-34.133333-92.16-40.96-133.12-10.24L204.8 477.866667c-3.413333 3.413333-6.826667 6.826667-6.826667 13.653333 0 3.413333 0 10.24 3.413334 13.653333l334.506666 334.506667c3.413333 3.413333 6.826667 3.413333 13.653334 3.413333 3.413333 0 10.24-3.413333 13.653333-6.826666L1003.52 249.173333c30.72-40.96 27.306667-95.573333-10.24-133.12z"
-              :fill="`${currentTab == 0 ? color : 'rgb(212 208 208)'}`"
+              :fill="`${markType == 1 ? color : 'rgb(212 208 208)'}`"
               p-id="5490"
             />
           </svg>
         </div>
       </el-tooltip>
       <el-tooltip content="select area" placement="top">
-        <div class="eraser" @click="boxMark">
+        <div class="eraser" @click="changeMarkType(2)">
           <svg t="1624363538135" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4366" width="32" height="32"><path d="M896 773.888V250.112c37.248-13.184 64-48.32 64-90.112a95.68 95.68 0 1 0-186.112-32H250.112A95.68 95.68 0 0 0 64 160c0 41.728 26.816 76.928 64 90.112v523.776A95.68 95.68 0 0 0 160 960c41.728 0 76.928-26.752 90.112-64h523.776c13.184 37.248 48.384 64 90.112 64a96 96 0 0 0 96-96c0-41.728-26.752-76.928-64-90.112z m-704 0V250.112c27.136-9.664 48.448-30.976 58.112-58.112h523.776c9.6 27.136 30.912 48.512 58.112 58.112v523.776c-27.2 9.6-48.512 30.912-58.112 58.112H250.112A95.424 95.424 0 0 0 192 773.888z" p-id="4367"
-          :fill="`${currentTab == 1 ? color : 'rgb(212 208 208)'}`"></path></svg>
+          :fill="`${markType == 2 ? color : 'rgb(212 208 208)'}`"></path></svg>
         </div>
       </el-tooltip>
       <el-tooltip content="color palette" placement="top">
@@ -174,23 +186,29 @@ export default {
         content_height: 0,
         offsetX: 0,
         offsetY: 0,
-        background: '#caf982'
+        background: '#caf982',
+        width: 0,
+        height: 0,
+        pointType: 'point'
       },
       nextPosition: {offsetX: 0, offsetY: 0},
       buttonVisiable: false,
       recordVisiable: false,
       type: "",
-      sendSuccess: false,
+      sendBusyStatus: false,
       modalVisable: false,
       color: '#caf982',
       colors: ['#caf982', 'red', '#ec808d', '#facd91', '#ffff80', '#80ffff', '#81d3f8', '#8080ff', '#c280ff'],
       widthValue: 3,
-      currentTab: 0,
       selectedIndex: -1,
       currentPageId: 0,
       marks: [],
       mediaList: [],
-      pptUrl: ''
+      pptUrl: '',
+      markType: 1, // 1 == point  2 = box
+      isBoxing: false,
+      buttonPosition: {left: 0, top: 0},
+      inputType: ModalEventsTypeEnum.TEXT // text video audio
     };
   },
   created() {
@@ -198,7 +216,7 @@ export default {
     this.mediaList = JSON.parse(JSON.stringify(this.list))
     this.pptUrl = this.url
     this.currentPageId = this.pageId
-    // console.log(this.marks)
+    console.log(this.marks)
   },
   mounted() {
     const selector = document.getElementById('diycolor_comment');
@@ -208,76 +226,158 @@ export default {
     colorSelector.destory()
   },
   methods: {
+    resetPosition() {
+      this.currentPosition = {
+        left: 0,
+        top: 0,
+        content_width: 0,
+        content_height: 0,
+        offsetX: 0,
+        offsetY: 0,
+        background: '#caf982'
+      },
+      this.nextPosition = {offsetX: 0, offsetY: 0}
+    },
     markup(e) {
-      // 正在录音，不允许打点
+      console.log('clicl')
+      if(this.markType === 1) {
+        // 正在进行 comment 记录，不允许打点
+        if(this.recordVisiable) return false
+        // if (this.sendBusyStatus) {
+        //   // 没有发送要删除这次打点
+        //   if (
+        //     !this.marks ||
+        //     (this.marks &&
+        //       this.marks.length > 0 &&
+        //       !this.marks[this.marks.length - 1].fromServie)
+        //   ) {
+        //     this.marks.pop();
+        //   }
+        // }
+        const { offsetX, offsetY } = e;
+        const left = offsetX - 15;
+        const top = offsetY - 15;
+        const { offsetHeight, offsetWidth } = e.target;
+        this.currentPosition = {
+          left,
+          top,
+          content_width: offsetWidth,
+          content_height: offsetHeight,
+          offsetX,
+          offsetY,
+          background: this.color,
+        };
+        this.markPointer()
+      }
+    },
+    startMove(e){
+      console.log('mousedown')
       if(this.recordVisiable) return false
-      if (!this.sendSuccess) {
-        // 没有发送要删除这次打点
-        if (
-          !this.marks ||
-          (this.marks &&
-            this.marks.length > 0 &&
-            !this.marks[this.marks.length - 1].fromServie)
-        ) {
-          this.marks.pop();
+      if(this.markType === 2) {
+        this.isBoxing = true
+        const { offsetX, offsetY } = e;
+        const left = offsetX - 15;
+        const top = offsetY - 15;
+        const { offsetHeight, offsetWidth } = e.target;
+        this.currentPosition = {
+          left,
+          top,
+          content_width: offsetWidth,
+          content_height: offsetHeight,
+          offsetX,
+          offsetY,
+          background: this.color,
+        };
+        this.nextPosition = {
+          offsetX,
+          offsetY
         }
       }
-
-      console.log(e);
-      const { offsetX, offsetY } = e;
-      const left = offsetX - 15;
-      const top = offsetY - 15;
-      const { offsetHeight, offsetWidth } = e.target;
-      this.currentPosition = {
-        left,
-        top,
-        content_width: offsetWidth,
-        content_height: offsetHeight,
-        offsetX,
-        offsetY,
-        background: this.color,
-      };
-      this.marks.push(this.currentPosition);
-      this.buttonVisiable = false;
-      this.sendSuccess = false;
-      this.$nextTick(() => {
-        this.buttonVisiable = true;
-      });
     },
-    move(e) {
-      const { offsetX, offsetY } = e;
-      this.nextPosition = {
-        offsetX,
-        offsetY
+    mouseMoving(e) {
+      if(this.markType === 2 && this.isBoxing) {
+        const { offsetX, offsetY, clientX, clientY } = e;
+        // console.log(offsetX, offsetY, clientX, clientY)
+        this.nextPosition = {
+          offsetX: clientX,
+          offsetY: clientY - 50
+        }
       }
     },
+    mouseEnd() {
+      if(this.isBoxing) {
+        console.log('mouseEnd')
+        this.markBox()
+        this.isBoxing = false
+      }
+    },
+    // 增加box标记
+    markBox() {
+      this.currentPosition = {
+        ...this.currentPosition,
+        width: Math.abs(this.nextPosition.offsetX - this.currentPosition.offsetX),
+        height: Math.abs(this.nextPosition.offsetY - this.currentPosition.offsetY),
+        left: Math.min(this.currentPosition.offsetX, this.nextPosition.offsetX),
+        top: Math.min(this.currentPosition.offsetY, this.nextPosition.offsetY),
+        pointType: 'box'
+      }
+      this.marks.push(this.currentPosition);
+      this.startInputComment()
+    },
+    pauseEvent(e){
+      console.log('pauseEvent')
+      if(e.stopPropagation) e.stopPropagation();
+      if(e.preventDefault) e.preventDefault();
+      e.cancelBubble=true;
+      e.returnValue=false;
+      return false;
+    },
+    // 增加点击标识
+    markPointer() {
+      this.currentPosition = {
+        ...this.currentPosition,
+        pointType: 'point'
+      }
+      this.marks.push(this.currentPosition);
+      // this.buttonPosition = {
+      //   top: this.currentPosition.top,
+      //   left: this.currentPosition.left
+      // }
+      // this.buttonVisiable = false;
+      // this.$nextTick(() => {
+      //   this.buttonVisiable = true;
+      // });
+      this.startInputComment()
+    },
     audio() {
-      this.clickType(ModalEventsTypeEnum.AUDIO)
+      this.inputType = ModalEventsTypeEnum.AUDIO
     },
     video() {
-      this.clickType(ModalEventsTypeEnum.VIDEO)
+      this.inputType = ModalEventsTypeEnum.VIDEO
     },
     enterText() {
-      this.clickType(ModalEventsTypeEnum.TEXT)
+      this.inputType = ModalEventsTypeEnum.TEXT
     },
-    clickType(type) {
+    // 打开纪录框
+    startInputComment() {
+      // 这次操作未完成发送
+      this.sendBusyStatus = true;
       this.recordVisiable = true
-      this.buttonVisiable = false;
-      this.type = ModalEventsTypeEnum.TEXT
+      this.type = this.inputType
     },
     closeRecord() {
       console.log("1111");
       this.type = "";
       this.recordVisiable = false;
-      this.buttonVisiable = false;
-      if (!this.sendSuccess) {
+      if (this.sendBusyStatus) {
         // 没有发送要删除这次打点
         this.marks.pop();
       }
+      this.sendBusyStatus = false
     },
     sendCommentCb(link, type = "") {
       // this.sendComment(url, type)
-      const { left, top, content_width, content_height, background } = this.currentPosition;
+      const { left, top, content_width, content_height, background, width, height, pointType} = this.currentPosition;
       const params = {
         left,
         top,
@@ -287,14 +387,15 @@ export default {
         type,
         background,
         page_id: this.currentPageId,
-        time: Math.floor(Date.now() / 1000)
+        time: Math.floor(Date.now() / 1000),
+        width, height, pointType
       }
       this.sendQuestion(params);
       // 增加页面展示
       this.mediaList.push(params)
       this.selectedIndex = this.mediaList.length - 1
       
-      this.sendSuccess = true;
+      this.sendBusyStatus = false;
       this.closeRecord()
       showToast("send success");
     },
@@ -315,15 +416,14 @@ export default {
     changeColor(color) {
       this.color = color
     },
-    markUp() {
-      this.showModal()
-    },
-    boxMark() {
+    changeMarkType(type) {
+      this.markType = type
+      this.resetPosition()
     },
     selectMark(item, index) {
       this.selectedIndex = index
       console.log(this.selectedIndex)
-      if(this.buttonVisiable) {
+      if(this.recordVisiable) {
         this.closeRecord();
       }
     },
@@ -361,9 +461,21 @@ export default {
   cursor: pointer;
   border: 2px solid transparent;
 }
+.markitembox{
+  position: absolute;
+  z-index: 999;
+  cursor: pointer;
+  padding: 4px;
+  border: 2px solid transparent;
+}
+.markitemhover{
+  box-shadow: 0 0 20px #f00
+}
 .markitem:hover{
-  border-color: #777;
-  background-color: #fff;
+  box-shadow: 0 0 20px #f00
+}
+.markitembox:hover{
+  box-shadow: 0 0 20px #f00
 }
 .markpos {
   z-index: 1;
@@ -483,5 +595,14 @@ export default {
   top: 10px;
   right: 10px;
   cursor: pointer;
+}
+.dragbg{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
+  z-index: 9999;
 }
 </style>

@@ -88,12 +88,10 @@ export default {
   border: 2px solid transparent;
 }
 .markitemhover{
-  border-color: #777;
-  background-color: #fff;
+  box-shadow: 0 0 20px #f00
 }
 .markitem:hover{
-  border-color: #777;
-  background-color: #fff;
+  box-shadow: 0 0 20px #f00
 }
 .innermark{
   width: 20px;

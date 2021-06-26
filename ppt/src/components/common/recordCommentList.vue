@@ -7,6 +7,7 @@
           :style="`background-color: ${selectedIndex === index ? '#a0e667' :'#fff'}`"
           :ref="selectedIndex === index ? 'activeRef': ''"
           :tabindex="selectedIndex === index ? '0' : ''"
+          @click="selectMark(item, index)"
         >
           <p v-if="item.user_name">{{ item.user_name }}</p>
           <p>{{ getTimeStr(item.time) }}</p>
@@ -41,6 +42,10 @@ export default {
     },
     selectedIndex: {
       type: Number
+    },
+    selectMark: {
+      type: Function,
+      default: () => null
     }
   },
   watch: {
