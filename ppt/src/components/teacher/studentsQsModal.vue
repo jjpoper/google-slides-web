@@ -5,7 +5,7 @@
       <div
         v-for="(item, index) in marks"
         :key="index"
-        class="markitem"
+        :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
         :style="`top:${item.top}px;left:${item.left}px;`"
         @click.stop="selectMark(item, index)"
       >
@@ -86,6 +86,10 @@ export default {
   z-index: 999;
   cursor: pointer;
   border: 2px solid transparent;
+}
+.markitemhover{
+  border-color: #777;
+  background-color: #fff;
 }
 .markitem:hover{
   border-color: #777;
