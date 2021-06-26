@@ -98,6 +98,7 @@ var cb;
 var renderID = -1;
 
 var init = function (dom) {
+  console.log(dom)
 
   // 初始化检查
   if (!dom || mainDom)
@@ -413,4 +414,5 @@ const colorSelector = {
   show: show,
   destory: destory
 }
+
 export default colorSelector

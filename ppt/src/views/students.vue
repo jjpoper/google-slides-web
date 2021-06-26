@@ -20,6 +20,7 @@
         :list="filterMarkupList"
         :url="currentItemData && currentItemData.thumbnail_url"
         :pageId="slides[currentIndex].page_id"
+        :delQuestion="delQuestion"
       />
 
       <el-container v-show="!questionModalVisiable">
@@ -299,6 +300,7 @@ import ClassRoomClosed from "@/components/students/classRoomClosed.vue";
 import studentControlPanel from "@/components/students/studentControlPanel.vue";
 import pageLockedNote from "@/components/students/pageLockedNote.vue";
 import StudentQuestions from "@/components/students/studentQuestions.vue";
+import colorSelector from "@/utils/color";
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
@@ -409,6 +411,13 @@ export default {
     }
   },
   methods: {
+    loadDiyPainter() {
+       this.$nextTick(() => {
+          const selector = document.getElementById("diycolor_comment");
+          console.log(selector, 'selector')
+          colorSelector.init(selector);
+       })
+    },
     changeShowOrAnswer() {
       this.isShowQuestion = !this.isShowQuestion;
     },
@@ -509,6 +518,7 @@ export default {
         this.getItemData();
         this.afterLogin(profile);
         hideLoading();
+        this.loadDiyPainter()
       });
     },
     sendCanvas(base64Url) {
@@ -620,6 +630,7 @@ export default {
           if (res.code == "ok") {
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].data.fromServie = true; //从服务器处获取
+              res.data[i].data.id = res.data[i].id;
               this.marks.push(res.data[i].data);
             }
           }
@@ -733,6 +744,10 @@ export default {
         }
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
+      } else if (d.mtype === SocketEventsEnum.GET_COMMENT_ID) {
+        // 获取评论id，用于删除
+        this.marks[this.marks.length - 1].id = d.id
+        EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       }
     },
     // 收到评论
@@ -822,7 +837,8 @@ export default {
         content_height,
         type,
         background,
-        page_id
+        page_id,
+        width = 0, height = 0, pointType
       } = data;
       this.emitSo(
         "comment-ppt",
@@ -831,9 +847,21 @@ export default {
         {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
         "background": "${background}", "content_width": ${content_width},
         "content_height": ${content_height},
+        "width": ${width},
+        "height": ${height},
+        "pointType": "${pointType}",
         "page_id": "${page_id}"}}`
       );
       this.marks.push(data);
+    },
+    delQuestion(id) {
+      this.emitSo(
+        'delete-ppt-comment',
+        `{"token":"${this.token}","class_id":"${this.class_id}","id":${id}}`
+      )
+      const index = this.marks.findIndex(item => item.id == id)
+      console.log(index, 'index')
+      this.marks.splice(index, 1)
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();

@@ -20,7 +20,9 @@ export enum SocketEventsEnum {
   SET_DEADLINE_TIME = 'response_limit',
   COPY_LINK_DIALOG_CLOSE = 'copy_link_dialog_close',
   COPY_LINK_DIALOG_OPEN = 'copy_link_dialog_open',
-  STUNDENT_COMMENT_PPT = 'STUNDENT_COMMENT_PPT'
+  STUNDENT_COMMENT_PPT = 'STUNDENT_COMMENT_PPT',
+  GET_COMMENT_ID = 'GET_COMMENT_ID',
+  STUDENT_DELETE_PPT = 'STUDENT_DELETE_PPT'
 }
 
 export enum ModalEventsNameEnum {
@@ -29,6 +31,7 @@ export enum ModalEventsNameEnum {
   SHOW_STUDENT_MODAL = 'SHOW_STUDENT_MODAL', // 打开学生端评论
   SHOW_STUDENT_MODAL_REFRESH = 'SHOW_STUDENT_MODAL_REFRESH', // 更新
   SHOW_STAR_ANSWER = 'SHOW_STAR_ANSWER', // 老师给答案点星星，或者取消星星,或者老师确定隐藏某个答案
+  GET_COMMENT_ID = 'GET_COMMENT_ID'
 }
 
 // 评论类型

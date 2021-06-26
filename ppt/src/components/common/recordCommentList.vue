@@ -1,12 +1,13 @@
 <template>
   <div class="studentComment" :style="`height: ${webHeight}px;`">
-    <div v-for="(item, index) in list" :key="index.toString()">
+    <div v-for="(item, index) in list" :key="item.id">
       <div class="rightcomment">
         <div
           class="section"
           :style="`background-color: ${selectedIndex === index ? '#a0e667' :'#fff'}`"
           :ref="selectedIndex === index ? 'activeRef': ''"
           :tabindex="selectedIndex === index ? '0' : ''"
+          @click="selectMark(item, index)"
         >
           <p v-if="item.user_name">{{ item.user_name }}</p>
           <p>{{ getTimeStr(item.time) }}</p>
@@ -28,6 +29,7 @@
             preload="none"
           />
           <p v-else-if="item.type === 'text'">{{item.link}}</p>
+          <i v-if="isStudent && item.id" class="el-icon-delete del-comment" @click.stop="del(item.id)"></i>
         </div>
       </div>
     </div>
@@ -41,14 +43,30 @@ export default {
     },
     selectedIndex: {
       type: Number
+    },
+    selectMark: {
+      type: Function,
+      default: () => null
+    },
+    del: {
+      type: Function,
+      default: () => null
+    },
+    isStudent: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
     'selectedIndex'() {
       console.log('1====')
-      this.$nextTick(() => {
-        this.$refs.activeRef[0].focus();
-      });
+      if(this.selectedIndex > -1) {
+        this.$nextTick(() => {
+          if(this.$refs.activeRef) {
+            this.$refs.activeRef[0].focus();
+          }
+        });
+      }
     }
   },
   data() {
@@ -114,6 +132,7 @@ export default {
 .section {
   overflow: hidden;
   padding: 10px;
+  position: relative;
 }
 .cl {
   position: absolute;
@@ -122,6 +141,10 @@ export default {
   height: 64px;
   right: 0;
   margin-top: -32px;
+  cursor: pointer;
+}
+.del-comment{
+  font-size: 15px; position: absolute; right: 5px; top: 5px;
   cursor: pointer;
 }
 </style>
