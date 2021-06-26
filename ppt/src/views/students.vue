@@ -20,6 +20,7 @@
         :list="filterMarkupList"
         :url="currentItemData && currentItemData.thumbnail_url"
         :pageId="slides[currentIndex].page_id"
+        :delQuestion="delQuestion"
       />
 
       <el-container v-show="!questionModalVisiable">
@@ -620,6 +621,7 @@ export default {
           if (res.code == "ok") {
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].data.fromServie = true; //从服务器处获取
+              res.data[i].data.id = res.data[i].id;
               this.marks.push(res.data[i].data);
             }
           }
@@ -733,6 +735,10 @@ export default {
         }
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
+      } else if (d.mtype === SocketEventsEnum.GET_COMMENT_ID) {
+        // 获取评论id，用于删除
+        this.marks[this.marks.length - 1].id = d.id
+        EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       }
     },
     // 收到评论
@@ -823,7 +829,7 @@ export default {
         type,
         background,
         page_id,
-        width, height, pointType
+        width = 0, height = 0, pointType
       } = data;
       this.emitSo(
         "comment-ppt",
@@ -838,6 +844,15 @@ export default {
         "page_id": "${page_id}"}}`
       );
       this.marks.push(data);
+    },
+    delQuestion(id) {
+      this.emitSo(
+        'delete-ppt-comment',
+        `{"token":"${this.token}","class_id":"${this.class_id}","id":"${id}}"}`
+      )
+      const index = this.marks.findIndex(item => item.id == id)
+      console.log(index, 'index')
+      this.marks.splice(index, 1)
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();

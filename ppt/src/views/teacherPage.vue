@@ -911,6 +911,13 @@ type: "slide"*/
         // 评论ppt消息
         this.markupslist.push(d);
         return;
+      } else if (d.type === SocketEventsEnum.STUDENT_DELETE_PPT) {
+        // 删除评论ppt消息
+        const index = this.markupslist.findIndex(item => item.id === d.id)
+        console.log('删除', index)
+        this.markupslist.splice(index, 1);
+        this.$forceUpdate()
+        return;
       }
 
       // 回答问题

@@ -72,6 +72,11 @@ export const createSo = (room: string, token: string, classId: string, callback:
     console.log("收到学生评论ppt信息", JSON.parse(data));
     callback({ type: SocketEventsEnum.STUNDENT_COMMENT_PPT, ...JSON.parse(data) })
   });
+
+  socket.on('delete-ppt-comment', (data: any) => {
+    console.log("收到学生删除ppt信息", JSON.parse(data));
+    callback({ type: SocketEventsEnum.STUDENT_DELETE_PPT, ...JSON.parse(data) })
+  });
   return socket
 
 }

@@ -39,5 +39,10 @@ export const createSo = (room: string, token: string,classId:string, callback: c
     console.log("老师发来了消息反馈。详细数据：" + data);
     callback({ mtype: SocketEventsEnum.TEACHER_COMMENT, ...JSON.parse(data) })
   });
+
+  socket.on('comment-ppt', (data: string) => {
+    console.log("学生评论id" + data);
+    callback({ mtype: SocketEventsEnum.GET_COMMENT_ID, ...JSON.parse(data) })
+  });
   return socket
 }

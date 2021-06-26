@@ -12,7 +12,7 @@
       <pptcontent :url="pptUrl"/>
       <template v-for="(item, index) in marks">
         <div
-          :key="index"
+          :key="item.id"
           v-if="item.pointType !== 'box'" 
           :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
           :style="`top:${item.top}px;left:${item.left}px;`"
@@ -21,7 +21,7 @@
           <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
         </div>
         <div
-          :key="index"
+          :key="item.id"
           v-else-if="item.pointType === 'box'"
           :class="`markitembox ${selectedIndex === index ? 'markitemhover' : ''}`"
           :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="right-area">
-      <recordCommentList :list="mediaList" :selectedIndex="selectedIndex" :selectMark="selectMark"/>
+      <recordCommentList :isStudent="true" :list="mediaList" :selectedIndex="selectedIndex" :selectMark="selectMark" :del="del"/>
     </div>
     <div class="record-container"
       v-if="recordVisiable"
@@ -147,7 +147,7 @@
   </div>
 </template>
 <script>
-import { ModalEventsTypeEnum } from "@/socket/socketEvents";
+import { ModalEventsTypeEnum, ModalEventsNameEnum } from "@/socket/socketEvents";
 import recordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import recordCommentList from "../common/recordCommentList.vue";
@@ -159,6 +159,9 @@ export default {
   components: { recordAudio, RecordVideo, pptcontent, recordCommentList, RecordText },
   props: {
     sendQuestion: {
+      type: Function
+    },
+    delQuestion: {
       type: Function
     },
     list: {
@@ -221,6 +224,9 @@ export default {
   mounted() {
     const selector = document.getElementById('diycolor_comment');
     colorSelector.init(selector);
+    EventBus.$on(ModalEventsNameEnum.GET_COMMENT_ID, (d) => {
+      console.log('===', d)
+    });
   },
   beforeDestroy() {
     colorSelector.destory()
@@ -431,6 +437,16 @@ export default {
       if(this.modalVisable) {
         this.hideModal()
       }
+    },
+    del(id) {
+      this.delQuestion(id)
+      const index = this.marks.findIndex(item => item.id == id)
+      this.marks.splice(index, 1)
+      this.mediaList.splice(index, 1)
+      if(index === this.selectedIndex) {
+        this.selectedIndex = -1
+      }
+      this.$forceUpdate()
     }
   }
 };
