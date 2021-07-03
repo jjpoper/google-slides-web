@@ -31,7 +31,8 @@ export enum ModalEventsNameEnum {
   SHOW_STUDENT_MODAL = 'SHOW_STUDENT_MODAL', // 打开学生端评论
   SHOW_STUDENT_MODAL_REFRESH = 'SHOW_STUDENT_MODAL_REFRESH', // 更新
   SHOW_STAR_ANSWER = 'SHOW_STAR_ANSWER', // 老师给答案点星星，或者取消星星,或者老师确定隐藏某个答案
-  GET_COMMENT_ID = 'GET_COMMENT_ID'
+  GET_COMMENT_ID = 'GET_COMMENT_ID',
+  ADD_NEW_MEDIA = 'ADD_NEW_MEDIA', // 显示新的 media 内容
 }
 
 // 评论类型

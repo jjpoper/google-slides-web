@@ -32,6 +32,9 @@
       </div>
     </button>
 
+
+    <UploadEnter />
+
     <div :class="isClosed ? 'info_area' : 'info_area'">
       <svg
         t="1619161258814"
@@ -182,6 +185,7 @@
 <script>
 import { ClassRoomModelEnum } from "@/socket/socketEvents";
 import dashboardMenu from "./teacherDashboardMenu";
+import UploadEnter from '@/components/uploadFile/uploadEnter.vue'
 export default {
   props: {
     currentPage: {
@@ -267,7 +271,8 @@ export default {
     }
   },
   components: {
-    dashboardMenu
+    dashboardMenu,
+    UploadEnter
   },
   data() {
     return {
