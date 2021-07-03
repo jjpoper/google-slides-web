@@ -4,7 +4,11 @@ import {
     Row, Col, MessageBox, Alert, Tooltip, Dialog, Tabs, TabPane, Table, TableColumn, Popover, Slider, Select, Option, DatePicker,
     CheckboxGroup,
     Switch,
-    Drawer
+    Drawer,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    Upload
 } from 'element-ui';
 
 Vue.use(Main)
@@ -35,4 +39,8 @@ Vue.use(DatePicker)
 Vue.use(CheckboxGroup)
 Vue.use(Switch)
 Vue.use(Drawer)
+Vue.use(Dropdown)
+Vue.use(DropdownItem)
+Vue.use(DropdownMenu)
+Vue.use(Upload)
 Vue.prototype.$alert = MessageBox

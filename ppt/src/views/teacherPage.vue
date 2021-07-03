@@ -352,7 +352,7 @@ export default {
     feedbackTimePanel,
     copyLinkDialog,
     StudentPacedNote,
-    StudentsQsModal
+    StudentsQsModal,
   },
 
   /*author: "yujj085@gmail.com"
