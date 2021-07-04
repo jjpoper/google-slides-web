@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 import { getTeacherStoreToken } from "@/model/store.teacher"
+import { showLoading } from "./loading"
 
 /* eslint-disable quote-props */
 class LoadPicker {
@@ -14,9 +15,11 @@ class LoadPicker {
   private developerKey = 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
   private oauthToken = null
   private pickerApiLoaded = false
+  private classCallback: any = null
 
-  init() {
+  init(callback: any) {
     this.loadPicker()
+    this.classCallback = callback
   }
 
   private loadPicker() {
@@ -70,6 +73,108 @@ class LoadPicker {
 
   private pickerCallback = (data: any) => {
     console.log(data)
+    if(data.action === google.picker.Action.PICKED) {
+      const {id} = data.docs[0];
+      showLoading()
+      this.getDownloadUrl(id)
+    }
+  }
+
+  private getDownloadUrl = (id: string) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET',
+      `https://www.googleapis.com/drive/v2/files/${id}?supportsTeamDrives=true&access_token=${this.oauthToken}`);
+    xhr.setRequestHeader('Authorization', `Bearer ${this.oauthToken}`);
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4 && xhr.status === 200) {
+        const data = JSON.parse(xhr.response)
+        const {downloadUrl} = data
+        this.downloadFile(downloadUrl)
+      }
+    }
+    xhr.send();
+  }
+
+  private getBlob(xhr: any) {
+    const imageType = xhr.getResponseHeader("Content-Type");
+    const blob = new Blob([xhr.response], { type: imageType });
+    const imageUrl = (window.URL || window.webkitURL).createObjectURL(blob);
+    console.log(imageUrl)
+    return blob
+  }
+
+  private downloadFile(downloadUrl: string) {
+    if(downloadUrl) {
+      // var accessToken = gapi.auth.getToken().access_token;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', downloadUrl);
+      xhr.setRequestHeader('Authorization', `Bearer ${this.oauthToken}`);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = () => {
+        const blob = this.getBlob(xhr)
+        const file = new File([blob], 'test.png', {
+            type: 'image/png',
+        });
+        this.upLoadFile(file)
+      };
+      xhr.send();
+    } else {
+      console.log(null);
+    }
+  }
+
+  private upLoadFile(file: any) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // callback('Uploading ' + fileType + ' recording to server.');
+
+    // var upload_directory = upload_url;
+
+    this.makeXMLHttpRequest(`https://dev.api.newzealand.actself.me/file/upload`, formData);
+  }
+
+  // 创建http请求
+  private makeXMLHttpRequest = (url: string, data: any) => {
+    const request = new XMLHttpRequest();
+    const callback = this.classCallback
+    request.onreadystatechange = () => {
+      if(request.readyState === 4 && request.status === 200) {
+        callback('upload-ended', request.response);
+      }
+      if(request.status === 413) {
+        callback('onerror');
+      }
+    };
+
+    request.upload.onloadstart = () => {
+      callback('Upload started...');
+    };
+
+    request.upload.onprogress = (event) => {
+      // callback('Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%");
+    };
+
+    request.upload.onload = () => {
+      callback('progress-about-to-end');
+    };
+
+    request.upload.onload = () => {
+      callback('progress-ended');
+    };
+
+    request.upload.onerror = (error) => {
+      callback('onerror');
+      // console.error('XMLHttpRequest failed', error);
+    };
+
+    request.upload.onabort = (error) => {
+      callback('Upload aborted.');
+      // console.error('XMLHttpRequest aborted', error);
+    };
+
+    request.open('POST', url);
+    request.send(data);
   }
 }
 

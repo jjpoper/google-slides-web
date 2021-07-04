@@ -51,6 +51,7 @@
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
 import GooglePicker from '@/utils/googlePicker'
+import { hideLoading, showLoading } from '@/utils/loading';
 export default {
   data() {
     return {
@@ -103,7 +104,15 @@ export default {
       this.showIframe = false
     },
     addDrive() {
-      GooglePicker.init()
+      GooglePicker.init((type, res) => {
+        // console.log('===done', data, d)
+        const {data} = JSON.parse(res)
+        EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+          type: 'image',
+          url: data
+        });
+        hideLoading()
+      })
     }
   }
 }
