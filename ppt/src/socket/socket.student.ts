@@ -44,5 +44,10 @@ export const createSo = (room: string, token: string,classId:string, callback: c
     console.log("学生评论id" + data);
     callback({ mtype: SocketEventsEnum.GET_COMMENT_ID, ...JSON.parse(data) })
   });
+
+  socket.on('add-element', (data: any) => {
+    console.log("收到老师添加的 media", JSON.parse(data));
+    callback({ type: SocketEventsEnum.STUDENT_ADD_MEDIA, ...JSON.parse(data) })
+  });
   return socket
 }

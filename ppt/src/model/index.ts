@@ -367,3 +367,17 @@ export const upLoadFile = async (mp4: Blob) => {
 
   // 获取audio和video
 }
+
+// 下载服务器图片
+export const getOnlineImage = async (url: string) => {
+  const data = await axios.post(`${PPT.requestUrl}file/download`, {
+    url,
+  })
+  let result = ''
+  try {
+    result = data.data.data
+  } catch(e) {
+    // console.log(e)
+  }
+  return result;
+}

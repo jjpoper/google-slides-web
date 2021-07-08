@@ -9,6 +9,14 @@ const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_tid`
 let teacherId = ''
 
+export const getTeacherClientStoreToken = (): string => {
+  return getStore('teacher_token_Client')
+}
+
+export const saveTeacherClientStoreToken = (token: string) => {
+  saveStore('teacher_token_Client', token)
+}
+
 export const getTeacherStoreToken = (): string => {
   return getStore('teacher_token')
 }

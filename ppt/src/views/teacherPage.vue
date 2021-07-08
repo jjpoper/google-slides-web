@@ -15,6 +15,7 @@
           :showResponse="showResponse"
           :currentAnswerCount="currentAnswerCount"
           :responseContentList="responseContentList"
+          :filterAddedMediaList="filterAddedMediaList"
         />
 
         <DashboardPage
@@ -405,7 +406,8 @@ type: "slide"*/
       mode: 1,
       showStudentPacedNotePage: false,
       questionModalVisiable: false,
-      markupslist: [] // ppt comment列表
+      markupslist: [], // ppt comment列表
+      allAddedMediaList: [],
     };
   },
   mounted() {
@@ -427,6 +429,11 @@ type: "slide"*/
         );
       }
     );
+
+
+    EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, (url) => {
+      this.addMediaList(url);
+    });
   },
   computed: {
     currentPageId() {
@@ -442,6 +449,17 @@ type: "slide"*/
         const list = this.markupslist.filter(
           item => item.data.page_id === this.currentPageId
         );
+        return list;
+      }
+      return [];
+    },
+    filterAddedMediaList() {
+      if (this.allAddedMediaList) {
+        const list = this.allAddedMediaList.filter(
+          item => item.page_id === this.currentPageId
+        );
+
+        console.log(list)
         return list;
       }
       return [];
@@ -467,6 +485,19 @@ type: "slide"*/
   },
 
   methods: {
+    addMediaList({url, type}) {
+      const page_id = this.currentPageId
+      this.allAddedMediaList.push({
+        page_id,
+        url,
+        type
+      })
+      const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"height": 0}});
+      this.currentSo.emit(
+        SocketEventsEnum.TEACHER_ADD_MEDIA,
+        `{"token": "${this.token}","class_id":"${this.class_id}", slide_id": "${page_id}", "data": "${itemData}"}`
+      );
+    },
     onLineStatusChanged(status) {
       this.onLine = status;
     },

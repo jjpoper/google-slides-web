@@ -35,7 +35,7 @@
           class="full_screen"
           @click="showFullScreen(false)"
         >
-          <pptcontent :url="currentItemData.thumbnail_url" />
+          <pptcontent :url="currentItemData.thumbnail_url" :filterAddedMediaList="filterAddedMediaList"/>
         </div>
         <el-main
           v-if="
@@ -342,8 +342,29 @@ export default {
       currentScreenWidth: 700,
       smallWindow: false,
       smallWindowValue: 800,
-      link: ""
+      link: "",
+      allAddedMediaList: [],
     };
+  },
+  computed: {
+    filterMarkupList() {
+      if (this.slides) {
+        const list = this.marks.filter(
+          item => item.page_id === this.slides[this.currentIndex].page_id
+        );
+        return list;
+      }
+      return [];
+    },
+    filterAddedMediaList() {
+      if (this.allAddedMediaList) {
+        const list = this.allAddedMediaList.filter(
+          item => item.page_id === this.slides[this.currentIndex].page_id
+        );
+        return list;
+      }
+      return [];
+    }
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
@@ -398,17 +419,6 @@ export default {
       }
       vm.initWithToken();
     });
-  },
-  computed: {
-    filterMarkupList() {
-      if (this.slides) {
-        const list = this.marks.filter(
-          item => item.page_id === this.slides[this.currentIndex].page_id
-        );
-        return list;
-      }
-      return [];
-    }
   },
   methods: {
     loadDiyPainter() {
@@ -748,6 +758,10 @@ export default {
         // 获取评论id，用于删除
         this.marks[this.marks.length - 1].id = d.id
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
+      } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
+        // 获取评论id，用于删除
+        console.log(d, 'STUDENT_ADD_MEDIA')
+        this.allAddedMediaList.push(d.data)
       }
     },
     // 收到评论

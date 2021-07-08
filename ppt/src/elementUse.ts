@@ -8,7 +8,9 @@ import {
     Dropdown,
     DropdownItem,
     DropdownMenu,
-    Upload
+    Upload,
+    InfiniteScroll,
+    ButtonGroup
 } from 'element-ui';
 
 Vue.use(Main)
@@ -43,4 +45,6 @@ Vue.use(Dropdown)
 Vue.use(DropdownItem)
 Vue.use(DropdownMenu)
 Vue.use(Upload)
+Vue.use(InfiniteScroll)
+Vue.use(ButtonGroup)
 Vue.prototype.$alert = MessageBox

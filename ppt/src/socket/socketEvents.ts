@@ -22,7 +22,9 @@ export enum SocketEventsEnum {
   COPY_LINK_DIALOG_OPEN = 'copy_link_dialog_open',
   STUNDENT_COMMENT_PPT = 'STUNDENT_COMMENT_PPT',
   GET_COMMENT_ID = 'GET_COMMENT_ID',
-  STUDENT_DELETE_PPT = 'STUDENT_DELETE_PPT'
+  STUDENT_DELETE_PPT = 'STUDENT_DELETE_PPT',
+  STUDENT_ADD_MEDIA = 'STUDENT_ADD_MEDIA',
+  TEACHER_ADD_MEDIA = 'add-element'
 }
 
 export enum ModalEventsNameEnum {
