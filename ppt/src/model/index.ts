@@ -18,18 +18,19 @@ export const getAllPPTS = async (slideid: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/get_all`, {
     slide_id: slideid,
   })
-  let list = data.data.data.pages
+  let {pages = []} = data.data.data
   // console.log(data.data.data)
   try {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'
     // })
-  } catch (e) {
+  } catch(e) {
     // console.log(e)
   }
-  return list
+  return {
+    pages
+  }
 }
-
 
 //请求后台进行ppt刷新
 export const requestRefreshPPT = async (slideid: string, _token: string) => {

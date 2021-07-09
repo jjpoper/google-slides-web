@@ -454,15 +454,11 @@ type: "slide"*/
       return [];
     },
     filterAddedMediaList() {
-      if (this.allAddedMediaList) {
-        const list = this.allAddedMediaList.filter(
-          item => item.page_id === this.currentPageId
-        );
-
-        console.log(list)
-        return list;
+      if (this.slides[this.currentIndex]) {
+        return this.slides[this.currentIndex].elements;
+      } else {
+        return [];
       }
-      return [];
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -487,7 +483,7 @@ type: "slide"*/
   methods: {
     addMediaList({url, type}) {
       const page_id = this.currentPageId
-      this.allAddedMediaList.push({
+      this.slides[this.currentIndex].elements.push({
         page_id,
         url,
         type
@@ -495,7 +491,7 @@ type: "slide"*/
       const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"height": 0}});
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", slide_id": "${page_id}", "data": "${itemData}"}`
+        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
       );
     },
     onLineStatusChanged(status) {
@@ -1060,11 +1056,12 @@ type: "slide"*/
       Promise.all([
         initTeacherData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([alldata, list]) => {
+      ]).then(([alldata, {pages: list, elements = []}]) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
+        this.allAddedMediaList = elements
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;

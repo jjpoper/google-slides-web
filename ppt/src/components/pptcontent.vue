@@ -1,7 +1,9 @@
 <template>
   <div v-if="url" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
-      <div class="medialist">
+    </div>
+    <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
+    <div class="medialist">
         <div v-for="item in filterAddedMediaList" :key="item.url">
           <div v-if="item.type === 'image'" class="meidaitem teacherppt" :style="`background-image:url(${item.url})`"></div>
           <div v-if="item.type === 'iframe'" class="meidaitem teacherppt" >
@@ -9,8 +11,6 @@
           </div>
         </div> 
       </div>
-    </div>
-    <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
   </div>
 </template>
 <style scoped>
@@ -28,6 +28,11 @@
   display: flex;
   width: 100%;
   flex-direction: row;
+  flex-wrap: wrap;
+  height: 100%;
+  overflow-y: scroll;
+  position: absolute;
+  top: 0;
 }
 .meidaitem{
   width:300px; height: 200px;
@@ -62,6 +67,7 @@ export default {
   mounted() {
     this.width = document.documentElement.clientWidth - 40;
     this.height = document.documentElement.clientHeight - 40;
+    console.log(this.filterAddedMediaList)
   },
   methods: {
   }
