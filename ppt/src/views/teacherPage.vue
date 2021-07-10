@@ -15,6 +15,7 @@
           :showResponse="showResponse"
           :currentAnswerCount="currentAnswerCount"
           :responseContentList="responseContentList"
+          :filterAddedMediaList="filterAddedMediaList"
         />
 
         <DashboardPage
@@ -405,7 +406,8 @@ type: "slide"*/
       mode: 1,
       showStudentPacedNotePage: false,
       questionModalVisiable: false,
-      markupslist: [] // ppt comment列表
+      markupslist: [], // ppt comment列表
+      allAddedMediaList: [],
     };
   },
   mounted() {
@@ -427,6 +429,11 @@ type: "slide"*/
         );
       }
     );
+
+
+    EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, (url) => {
+      this.addMediaList(url);
+    });
   },
   computed: {
     currentPageId() {
@@ -445,6 +452,13 @@ type: "slide"*/
         return list;
       }
       return [];
+    },
+    filterAddedMediaList() {
+      if (this.slides[this.currentIndex]) {
+        return this.slides[this.currentIndex].elements;
+      } else {
+        return [];
+      }
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -467,6 +481,19 @@ type: "slide"*/
   },
 
   methods: {
+    addMediaList({url, type}) {
+      const page_id = this.currentPageId
+      this.slides[this.currentIndex].elements.push({
+        page_id,
+        url,
+        type
+      })
+      const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"height": 0}});
+      this.currentSo.emit(
+        SocketEventsEnum.TEACHER_ADD_MEDIA,
+        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
+      );
+    },
     onLineStatusChanged(status) {
       this.onLine = status;
     },
@@ -1029,11 +1056,12 @@ type: "slide"*/
       Promise.all([
         initTeacherData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([alldata, list]) => {
+      ]).then(([alldata, {pages: list, elements = []}]) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
+        this.allAddedMediaList = elements
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;

@@ -5,6 +5,7 @@
         v-if="!showResponse"
         :url="currentItemData.thumbnail_url"
         :teacher="true"
+        :filterAddedMediaList="filterAddedMediaList"
       />
       <teacherIndexItem
         v-else-if="currentItemData && currentItemData.items[0]"
@@ -48,6 +49,12 @@ export default {
       default: 0,
     },
     responseContentList: {
+      type: Array,
+      function() {
+        return [];
+      },
+    },
+    filterAddedMediaList: {
       type: Array,
       function() {
         return [];

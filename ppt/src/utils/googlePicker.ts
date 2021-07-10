@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-import { getTeacherStoreToken } from "@/model/store.teacher"
+import { getTeacherClientStoreToken, saveTeacherClientStoreToken } from "@/model/store.teacher"
 import { showLoading } from "./loading"
 
 /* eslint-disable quote-props */
@@ -13,7 +13,7 @@ class LoadPicker {
   ]
 
   private developerKey = 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
-  private oauthToken = null
+  private oauthToken = getTeacherClientStoreToken()
   private pickerApiLoaded = false
   private classCallback: any = null
 
@@ -22,10 +22,36 @@ class LoadPicker {
     this.classCallback = callback
   }
 
+  private async checkLogin() {
+    if(!this.oauthToken) return Promise.reject()
+    return new Promise((res, rej) => {
+      gapi.client.init({
+          'apiKey': this.developerKey,
+          'clientId': this.clientId,
+          'scope': this.scope.join(' '),
+      }).then(() => {
+          const GoogleAuth = gapi.auth2.getAuthInstance();
+
+          // Listen for sign-in state changes.
+          const status = GoogleAuth.isSignedIn.get()
+          if(status) {
+            res(true)
+          } else {
+              rej()
+          }
+      });
+    })
+  }
+
   private loadPicker() {
     console.log('=====')
-    window.gapi.load('client:auth2', {'callback': this.onAuthApiLoad});
-    window.gapi.load('picker', {'callback': this.onPickerApiLoad});
+    this.checkLogin()
+    .then(() => {
+      window.gapi.load('picker', {'callback': this.onPickerApiLoad});
+    }).catch(() => {
+      window.gapi.load('client:auth2', {'callback': this.onAuthApiLoad});
+      window.gapi.load('picker', {'callback': this.onPickerApiLoad});
+    })
   }
 
   private onPickerApiLoad = () => {
@@ -46,6 +72,7 @@ class LoadPicker {
   private handleAuthResult = (authResult: any) => {
     if(authResult && !authResult.error) {
       this.oauthToken = authResult.access_token;
+      saveTeacherClientStoreToken(this.oauthToken)
       this.createPicker();
     }
   }

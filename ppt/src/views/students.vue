@@ -35,7 +35,7 @@
           class="full_screen"
           @click="showFullScreen(false)"
         >
-          <pptcontent :url="currentItemData.thumbnail_url" />
+          <pptcontent :url="currentItemData.thumbnail_url" :filterAddedMediaList="filterAddedMediaList"/>
         </div>
         <el-main
           v-if="
@@ -46,7 +46,7 @@
           "
         >
           <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-            <pptcontent :url="currentItemData.thumbnail_url" />
+            <pptcontent :url="currentItemData.thumbnail_url" :filterAddedMediaList="filterAddedMediaList"/>
           </div>
         </el-main>
         <el-aside
@@ -342,8 +342,27 @@ export default {
       currentScreenWidth: 700,
       smallWindow: false,
       smallWindowValue: 800,
-      link: ""
+      link: "",
+      allAddedMediaList: [],
     };
+  },
+  computed: {
+    filterMarkupList() {
+      if (this.slides) {
+        const list = this.marks.filter(
+          item => item.page_id === this.slides[this.currentIndex].page_id
+        );
+        return list;
+      }
+      return [];
+    },
+    filterAddedMediaList() {
+      if (this.slides[this.currentIndex]) {
+        return this.slides[this.currentIndex].elements;
+      } else {
+        return [];
+      }
+    }
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
@@ -398,17 +417,6 @@ export default {
       }
       vm.initWithToken();
     });
-  },
-  computed: {
-    filterMarkupList() {
-      if (this.slides) {
-        const list = this.marks.filter(
-          item => item.page_id === this.slides[this.currentIndex].page_id
-        );
-        return list;
-      }
-      return [];
-    }
   },
   methods: {
     loadDiyPainter() {
@@ -512,7 +520,7 @@ export default {
       Promise.all([
         initStudentData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([allA, list]) => {
+      ]).then(([allA, {pages: list}]) => {
         console.log(list, "========");
         this.slides = list;
         this.getItemData();
@@ -748,6 +756,9 @@ export default {
         // 获取评论id，用于删除
         this.marks[this.marks.length - 1].id = d.id
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
+      } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
+        this.slides[this.currentIndex].elements.push(d.data)
+        console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
       }
     },
     // 收到评论
