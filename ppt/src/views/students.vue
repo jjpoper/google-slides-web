@@ -757,7 +757,8 @@ export default {
         this.marks[this.marks.length - 1].id = d.id
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        this.slides[this.currentIndex].elements.push(d.data)
+        const index = this.slides.findIndex(item => d.page_id === item.page_id)
+        this.slides[index].elements.push(d.data)
         console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
       }
     },

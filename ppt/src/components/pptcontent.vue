@@ -7,7 +7,7 @@
         <div v-for="item in filterAddedMediaList" :key="item.url">
           <div v-if="item.type === 'image'" class="meidaitem teacherppt" :style="`background-image:url(${item.url})`"></div>
           <div v-if="item.type === 'iframe'" class="meidaitem teacherppt" >
-            <iframe width="300" height="200" :src="item.url" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe width="300" height="200" :src="getIframe(item.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>
         </div> 
       </div>
@@ -70,6 +70,13 @@ export default {
     console.log(this.filterAddedMediaList)
   },
   methods: {
+    getIframe(url){
+      const formatId = url.split('?v=')[1]
+      if(formatId) {
+        return `https://www.youtube.com/embed/${formatId}`
+      }
+      return url
+    }
   }
 };
 </script>

@@ -141,13 +141,15 @@ export default {
     },
     addDrive() {
       GooglePicker.init((type, res) => {
-        // console.log('===done', data, d)
-        const {data} = JSON.parse(res)
-        EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
-          type: 'image',
-          url: data
-        });
-        hideLoading()
+        if(res) {
+          // console.log('===done', data, d)
+          const {data} = JSON.parse(res)
+          EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+            type: 'image',
+            url: data
+          });
+          hideLoading()
+        }
       })
     },
     searchImage() {
@@ -170,7 +172,7 @@ export default {
         hideLoading()
         console.log(d.items)
         if(d.items.length > 0) {
-          this.imagesList = this.imagesList
+          this.imagesList = d.items
         }
       }).catch(() => {
         hideLoading()

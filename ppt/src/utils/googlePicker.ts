@@ -5,7 +5,8 @@ import { showLoading } from "./loading"
 
 /* eslint-disable quote-props */
 class LoadPicker {
-  private clientId = '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com'
+  // private clientId = '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com' // dev
+  private clientId = '909953111628-pi3hq11ioecpr49ordr9am0c7va533dj.apps.googleusercontent.com' // test
   private appId = '909953111628'
   private scope = [
     'https://www.googleapis.com/auth/drive',
@@ -13,7 +14,7 @@ class LoadPicker {
   ]
 
   private developerKey = 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
-  private oauthToken = getTeacherClientStoreToken()
+  private oauthToken = ''
   private pickerApiLoaded = false
   private classCallback: any = null
 
@@ -23,7 +24,7 @@ class LoadPicker {
   }
 
   private async checkLogin() {
-    if(!this.oauthToken) return Promise.reject()
+    if(!this.oauthToken || this.oauthToken === '') return Promise.reject()
     return new Promise((res, rej) => {
       gapi.client.init({
           'apiKey': this.developerKey,
