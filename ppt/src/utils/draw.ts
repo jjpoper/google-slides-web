@@ -48,6 +48,7 @@ export default class Draw {
   private isEarse = false // 橡皮擦
   private beginTime: any;
 
+
   private drawType: DrawType = 'draw'
   private onDrawBack: onDrawBack = () => null
   private imageData: any
@@ -59,6 +60,13 @@ export default class Draw {
   }
   private lastImageData = ''
   private currentIndex = -1;
+
+  //为了防止双击的时候先执行mouse down 和mouse up，定义两个timer，延时up down的操作，当双击时取消timer就可以屏蔽up down的操作了。
+  private timerDown: any;
+  private timerUp: any;
+  private event: any;
+  // private lastMouseDownTime = 0;
+  // private lastMouseUpTime = 0;
 
   private isDrawing = false
 
@@ -94,34 +102,46 @@ export default class Draw {
     this.cxt.lineJoin = "round";
     // this.cxt.shadowBlur = 10;
     this.canvas.onmousedown = () => {
-      console.log(this.polygonStartPoint.beginX)
-      if (this.drawType == "polygon" && this.polygonStartPoint.beginX != -1 && this.polygonStartPoint.beginY != -1) {
+
+      this.event = event;
+      clearTimeout(this.timerDown);
+      //如果是绘制多边形，则需要判断是否是双击，所以需要执行延时操作。
+      if (this.drawType == 'polygon') {
+        let _this = this;
         this.saveImageData();
         this.pointer.beginX = this.pointer.endX;
         this.pointer.beginY = this.pointer.endY;
-        if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
-          // this.pointer.endY = this.polygonStartPoint.beginX;
-          // this.pointer.endY = this.polygonStartPoint.beginY;
-          // this.drawPolygon();
-          this.isDrawing = false
-          this.drawEnd();
-          this.polygonStartPoint.beginY = -1;
-          this.polygonStartPoint.beginX = -1;
-        }
+        this.timerDown = setTimeout(function () {
+          _this.onMouseDown();
+        }, 300);
       } else {
-        console.log('drawBegin')
-        this.drawBegin(event);
+        this.onMouseDown();
       }
     };
     this.canvas.onmouseup = () => {
-      //console.log('========= 1')
-      if (this.drawType != "polygon") {//多边形的结束判断方式和其他方式不一样。
-        this.isDrawing = false
-        this.drawEnd();
+      clearTimeout(this.timerUp);
+      if (this.drawType == 'polygon') {
+        let _this = this;
+        this.timerUp = setTimeout(function () {
+          _this.onMouseUp()
+        }, 300);
+      } else {
+        this.onMouseUp();
       }
 
-      // ws.send('stop')
+
     };
+    let _this = this;
+    this.canvas.addEventListener('dblclick', function () {
+      clearTimeout(_this.timerDown);
+      clearTimeout(_this.timerUp);
+      if (_this.drawType == "polygon") {//双击结束多边形的绘制
+        _this.isDrawing = false
+        _this.drawEnd();
+        _this.polygonStartPoint.beginY = -1;
+        _this.polygonStartPoint.beginX = -1;
+      }
+    }, true);
     document.onmouseup = () => {
       // console.log('========= 2')
       // this.drawEnd()
@@ -139,6 +159,32 @@ export default class Draw {
       const base64Url = this.canvas.toDataURL("image/png");
       window.drawPool.splice(++this.currentIndex, 0, base64Url);
     }
+
+  }
+
+  onMouseDown() {
+    //  console.log(this.polygonStartPoint.beginX, 'onmousedown', this.drawType)
+    if (this.drawType == "polygon" && this.polygonStartPoint.beginX != -1 && this.polygonStartPoint.beginY != -1) {
+      if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
+        this.isDrawing = false
+        this.drawEnd();
+        this.polygonStartPoint.beginY = -1;
+        this.polygonStartPoint.beginX = -1;
+      }
+    } else {
+      this.drawBegin(this.event);
+    }
+
+  }
+
+  onMouseUp() {
+    //   console.log('========= onmouseup')
+    if (this.drawType != "polygon") {//多边形的结束判断方式和其他方式不一样。
+      this.isDrawing = false
+      this.drawEnd();
+    }
+
+    // ws.send('stop')
 
   }
 
@@ -507,6 +553,8 @@ export default class Draw {
     this.addHistory();
     this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.drawEnd();
+    this.polygonStartPoint.beginY = -1;
+    this.polygonStartPoint.beginX = -1;
   }
 
   earse() {
