@@ -15,8 +15,10 @@ import {
 import {
   BarChart
 } from 'echarts/charts'
+import VueDragResize from 'vue-drag-resize'
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent])
+Vue.component('vue-drag-resize', VueDragResize)
 
 // 挂载到$message上
 Vue.prototype.$message = Message

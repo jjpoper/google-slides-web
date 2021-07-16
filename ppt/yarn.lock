@@ -7885,6 +7885,12 @@ vue-demi@^0.7.4:
   version "0.7.5"
   resolved "https://registry.nlark.com/vue-demi/download/vue-demi-0.7.5.tgz?cache=0&sync_timestamp=1620293067552&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue-demi%2Fdownload%2Fvue-demi-0.7.5.tgz#88dee7492fc99a0f911ff03fc02c658fa2a79af8"
 
+vue-drag-resize@^1.5.0-rc3, vue-drag-resize@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.nlark.com/vue-drag-resize/download/vue-drag-resize-1.5.4.tgz#f583f40f356e5792aa89109b3d13ba4407c25198"
+  dependencies:
+    vue-drag-resize "^1.5.0-rc3"
+
 vue-echarts@^6.0.0-rc.5:
   version "6.0.0-rc.5"
   resolved "https://registry.nlark.com/vue-echarts/download/vue-echarts-6.0.0-rc.5.tgz?cache=0&sync_timestamp=1619779972525&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue-echarts%2Fdownload%2Fvue-echarts-6.0.0-rc.5.tgz#4e06289927d03d289c368fa09b740d82e6ded528"
