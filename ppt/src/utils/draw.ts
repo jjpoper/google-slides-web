@@ -18,6 +18,7 @@ type DrawType = 'line' | 'draw' | 'text' | 'marker' | 'rect' | 'circle' | 'polyg
 type onDrawBack = (data: any) => void
 window.canvasPool = []
 window.drawPool = []
+window.textPool = []
 
 export default class Draw {
   private el: any
@@ -47,6 +48,9 @@ export default class Draw {
   private canvasHeight = document.documentElement.clientHeight - 40;
   private isEarse = false // 橡皮擦
   private beginTime: any;
+
+  //当前被选中的text
+  private currentSelectEditableDiv: any;
 
 
   private drawType: DrawType = 'draw'
@@ -250,6 +254,92 @@ export default class Draw {
     return textarea;
   }
 
+  //创建一个可以编辑的div
+  createEditableDiv() {
+
+    var editableDiv = document.createElement('div');
+    editableDiv.setAttribute("contenteditable", "true");
+
+    editableDiv.id = "editable_div_" + window.textPool.length;
+
+    editableDiv.style.position = 'absolute';
+    editableDiv.style.left = `${this.pointer.beginX}px`;
+    editableDiv.style.top = `${this.pointer.beginY}px`;
+    editableDiv.style.zIndex = '11';
+    editableDiv.style.fontSize = Math.max(18, this.lineWidth) + "px";
+    editableDiv.style.fontFamily = this.fontFamily;
+    editableDiv.style.background = "00000000";
+    editableDiv.style.color = this.strokeColor;
+    editableDiv.style.lineHeight = this.getLineHeight();
+    editableDiv.style.outline = "0";
+    editableDiv.style.minWidth = "20px";
+    editableDiv.style.height = "auto";
+    editableDiv.style.minHeight = this.getLineHeight();
+    editableDiv.style.padding = '10px 5px 10px 5px'
+    editableDiv.style.border = "2px solid #c2d4fd";
+    editableDiv.style.borderRadius = '2px';
+    editableDiv.style.textAlign = "left";
+    let _this = this;
+    editableDiv.onmousedown = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
+      }
+      if (_this.currentSelectEditableDiv) {
+        if (_this.currentSelectEditableDiv == editableDiv) {
+          editableDiv.setAttribute("contenteditable", "true");
+        } else {
+          _this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          editableDiv.setAttribute("contenteditable", "false");
+        }
+      }
+      _this.currentSelectEditableDiv = editableDiv;
+      editableDiv.style.border = "2px solid #c2d4fd";
+    }
+
+    editableDiv.onmouseenter = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
+      }
+      editableDiv.style.cursor = 'move';
+    }
+    editableDiv.onmouseleave = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
+      }
+
+      // editableDiv.setAttribute("contenteditable", "false");
+
+    }
+    editableDiv.onmousemove = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
+      }
+      var e = ev || event;
+      // editableDiv.style.left = `${e.clientX}px`;
+      // editableDiv.style.top = `${e.clientY}px`;
+    }
+
+    editableDiv.onmouseup = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
+      }
+    }
+    editableDiv.addEventListener('input', function () {
+      console.log(editableDiv.innerText)
+    })
+
+    let fontSize = Math.max(18, this.lineWidth) + "px";
+    this.cxt.font = `${fontSize}px ${this.fontFamily}`;
+    this.canvasParant.appendChild(editableDiv);
+    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+
+    window.textPool.push(editableDiv);
+    return editableDiv.id;
+
+
+
+  }
+
   getLineHeight() {
     console.log(Math.max(18, this.lineWidth) + "px")
     return Math.max(18, this.lineWidth) + "px";
@@ -303,28 +393,30 @@ export default class Draw {
   }
 
   drawText() {
-    if (this.canTextarea) {
 
-      // 添加textarea文本框
-      const textarea = this.createDom();
-      // @ts-ignore
-      document.getElementById('textarea').focus();
-      this.canTextarea = false;
-    } else {
-      // 绘制textarea文本
-      const textarea = document.getElementById('textarea');
-      // @ts-ignore
-      const tValue = textarea.value
-      if (tValue) {
-        console.log('text end draw!!')
-        this.addHistory();
-        const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor, this.fontFamily);
-        text.draw(this.cxt);
-        //  this.drawEnd() 防止重复调用
-      }
-      this.canvasParant.removeChild(textarea);
-      this.canTextarea = true;
-    }
+    this.createEditableDiv();
+    // if (this.canTextarea) {
+
+    //   // 添加textarea文本框
+    //   const textarea = this.createDom();
+    //   // @ts-ignore
+    //   document.getElementById('textarea').focus();
+    //   this.canTextarea = false;
+    // } else {
+    //   // 绘制textarea文本
+    //   const textarea = document.getElementById('textarea');
+    //   // @ts-ignore
+    //   const tValue = textarea.value
+    //   if (tValue) {
+    //     console.log('text end draw!!')
+    //     this.addHistory();
+    //     const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor, this.fontFamily);
+    //     text.draw(this.cxt);
+    //     //  this.drawEnd() 防止重复调用
+    //   }
+    //   this.canvasParant.removeChild(textarea);
+    //   this.canTextarea = true;
+    // }
   }
 
   drawTextDirect(event: any) {
