@@ -51,6 +51,10 @@ export default class Draw {
 
   //当前被选中的text
   private currentSelectEditableDiv: any;
+  private currentMouseOnEditableDeiv = false;
+  private currentSelectEditableLeft = 0;
+  private currentSelectEditableTop = 0;
+  private isMouseDown = false;
 
 
   private drawType: DrawType = 'draw'
@@ -168,6 +172,17 @@ export default class Draw {
 
   onMouseDown() {
     //  console.log(this.polygonStartPoint.beginX, 'onmousedown', this.drawType)
+    if (this.drawType != "text") {
+      this.currentMouseOnEditableDeiv = false;
+      if (this.currentSelectEditableDiv) {
+        if (!this.currentSelectEditableDiv.innerText || this.currentSelectEditableDiv.innerText.length < 1) {
+          this.deleteEditableDiv(this.currentSelectEditableDiv.id);
+        } else {
+          this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+        }
+      }
+      this.currentSelectEditableDiv = null;
+    }
     if (this.drawType == "polygon" && this.polygonStartPoint.beginX != -1 && this.polygonStartPoint.beginY != -1) {
       if (Math.abs(this.polygonStartPoint.beginX - this.pointer.endX) < 5 && Math.abs(this.polygonStartPoint.beginY - this.pointer.endY) < 5) {
         this.isDrawing = false
@@ -178,6 +193,8 @@ export default class Draw {
     } else {
       this.drawBegin(this.event);
     }
+
+
 
   }
 
@@ -257,12 +274,24 @@ export default class Draw {
   //创建一个可以编辑的div
   createEditableDiv() {
 
+    if (this.currentSelectEditableDiv) {
+      if (!this.currentMouseOnEditableDeiv) {
+        if (!this.currentSelectEditableDiv.innerText || this.currentSelectEditableDiv.innerText.length < 1) {
+          this.deleteEditableDiv(this.currentSelectEditableDiv.id);
+        } else {
+          this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+        }
+        this.currentSelectEditableDiv = null;
+        return;
+      }
+    }
+
     var editableDiv = document.createElement('div');
     editableDiv.setAttribute("contenteditable", "true");
 
     editableDiv.id = "editable_div_" + window.textPool.length;
 
-    editableDiv.style.position = 'absolute';
+    editableDiv.style.position = 'fixed';
     editableDiv.style.left = `${this.pointer.beginX}px`;
     editableDiv.style.top = `${this.pointer.beginY}px`;
     editableDiv.style.zIndex = '11';
@@ -279,6 +308,9 @@ export default class Draw {
     editableDiv.style.border = "2px solid #c2d4fd";
     editableDiv.style.borderRadius = '2px';
     editableDiv.style.textAlign = "left";
+
+    this.currentSelectEditableLeft = this.pointer.beginX;
+    this.currentSelectEditableTop = this.pointer.beginY;
     let _this = this;
     editableDiv.onmousedown = function (ev) {
       if (_this.drawType != 'text') {
@@ -288,12 +320,19 @@ export default class Draw {
         if (_this.currentSelectEditableDiv == editableDiv) {
           editableDiv.setAttribute("contenteditable", "true");
         } else {
+          if (!_this.currentSelectEditableDiv.innerText || _this.currentSelectEditableDiv.innerText.length < 1) {
+            _this.deleteEditableDiv(_this.currentSelectEditableDiv.id);
+          }
           _this.currentSelectEditableDiv.style.border = "2px solid #00000000";
           editableDiv.setAttribute("contenteditable", "false");
         }
       }
+      let e = ev || event;
+      _this.isMouseDown = true;
       _this.currentSelectEditableDiv = editableDiv;
       editableDiv.style.border = "2px solid #c2d4fd";
+      _this.currentSelectEditableLeft = e.clientX;
+      _this.currentSelectEditableTop = e.clientY;
     }
 
     editableDiv.onmouseenter = function (ev) {
@@ -301,31 +340,43 @@ export default class Draw {
         return;
       }
       editableDiv.style.cursor = 'move';
+      _this.currentMouseOnEditableDeiv = true;
     }
     editableDiv.onmouseleave = function (ev) {
       if (_this.drawType != 'text') {
         return;
       }
-
+      editableDiv.style.cursor = 'default';
+      _this.currentMouseOnEditableDeiv = false;
       // editableDiv.setAttribute("contenteditable", "false");
-
     }
     editableDiv.onmousemove = function (ev) {
-      if (_this.drawType != 'text') {
+      if (_this.drawType != 'text' || !_this.isMouseDown) {
         return;
       }
       var e = ev || event;
-      // editableDiv.style.left = `${e.clientX}px`;
-      // editableDiv.style.top = `${e.clientY}px`;
+
+
+      let left = parseInt(editableDiv.style.left) ? parseInt(editableDiv.style.left) : 0;
+      let top = parseInt(editableDiv.style.top);
+      left += (e.clientX - _this.currentSelectEditableLeft);
+      top += (e.clientY - _this.currentSelectEditableTop);
+
+      editableDiv.style.left = `${left}px`;
+      editableDiv.style.top = `${top}px`;
+      _this.currentSelectEditableLeft = e.clientX;
+      _this.currentSelectEditableTop = e.clientY;
     }
 
     editableDiv.onmouseup = function (ev) {
+      _this.isMouseDown = false;
       if (_this.drawType != 'text') {
         return;
       }
     }
     editableDiv.addEventListener('input', function () {
       console.log(editableDiv.innerText)
+
     })
 
     let fontSize = Math.max(18, this.lineWidth) + "px";
@@ -333,10 +384,20 @@ export default class Draw {
     this.canvasParant.appendChild(editableDiv);
     this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
 
+    this.currentSelectEditableDiv = editableDiv;
     window.textPool.push(editableDiv);
     return editableDiv.id;
+  }
 
-
+  deleteEditableDiv(_id: any) {
+    console.log('delete', _id);
+    for (let i = 0; i < window.textPool.length; i++) {
+      if (window.textPool[i].id == _id) {
+        this.canvasParant.removeChild(window.textPool[i])
+        window.textPool.splice(i, 1);
+        break;
+      }
+    }
 
   }
 
