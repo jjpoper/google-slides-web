@@ -42,6 +42,11 @@ html, button, input, select, textarea {
     }
   }
 }
+
+/*显示文字*/
+.metrial .el-switch__label {
+  color: #fff
+}
 </style>
 <script>
 import "./utils/pptConfig";

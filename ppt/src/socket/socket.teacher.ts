@@ -77,6 +77,11 @@ export const createSo = (room: string, token: string, classId: string, callback:
     console.log("收到学生删除ppt信息", JSON.parse(data));
     callback({ type: SocketEventsEnum.STUDENT_DELETE_PPT, ...JSON.parse(data) })
   });
+
+  socket.on('add-element', (data: any) => {
+    console.log("收到老师添加的 media", JSON.parse(data));
+    callback({ type: SocketEventsEnum.STUDENT_ADD_MEDIA, ...JSON.parse(data) })
+  });
   return socket
 
 }

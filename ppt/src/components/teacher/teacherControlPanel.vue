@@ -33,7 +33,7 @@
     </button>
 
 
-    <UploadEnter />
+    <UploadEnter v-if="meterialVisiable"/>
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
       <svg
@@ -97,6 +97,15 @@
       <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
     </div>
 
+
+    <el-switch
+      style="display: block;"
+      class="metrial"
+      v-model="meterialVisiable"
+      active-color="#13ce66"
+      inactive-color="#999"
+      active-text="meterial on"
+    ></el-switch>
     <div
       :class="isLoked() ? 'button_area back_red' : (isLokeEnable()?'button_area':'button_area button_grey')"
       v-if="!isClosed && current_model != 'Student-Paced'"
@@ -183,7 +192,7 @@
 
 
 <script>
-import { ClassRoomModelEnum } from "@/socket/socketEvents";
+import { ClassRoomModelEnum, ModalEventsNameEnum } from "@/socket/socketEvents";
 import dashboardMenu from "./teacherDashboardMenu";
 import UploadEnter from '@/components/uploadFile/uploadEnter.vue'
 export default {
@@ -270,13 +279,19 @@ export default {
       }
     }
   },
+  watch: {
+    meterialVisiable() {
+      EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
+    }
+  },
   components: {
     dashboardMenu,
     UploadEnter
   },
   data() {
     return {
-      dialogVisible: false
+      dialogVisible: false,
+      meterialVisiable: false
     };
   },
   methods: {

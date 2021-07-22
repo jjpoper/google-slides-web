@@ -90,6 +90,13 @@
             inactive-color="#999"
             active-text="comment"
           ></el-switch>
+          <el-switch
+            style="display: block; margin-left: 10px"
+            v-model="questionModalVisiable"
+            active-color="#13ce66"
+            inactive-color="#999"
+            active-text="overview slides"
+          ></el-switch>
         </div>
       </el-tooltip>
     </div>
@@ -289,6 +296,7 @@
   width: 100%;
 }
 .readchat {
+  display: flex;
 }
 </style>
 
@@ -483,11 +491,11 @@ type: "slide"*/
   methods: {
     addMediaList({url, type}) {
       const page_id = this.currentPageId
-      this.slides[this.currentIndex].elements.push({
-        page_id,
-        url,
-        type
-      })
+      // this.slides[this.currentIndex].elements.push({
+      //   page_id,
+      //   url,
+      //   type
+      // })
       const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"height": 0}});
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
@@ -945,6 +953,12 @@ type: "slide"*/
         this.markupslist.splice(index, 1);
         this.$forceUpdate()
         return;
+      } else if (d.type === SocketEventsEnum.STUDENT_ADD_MEDIA) {
+        // const index = this.slides.findIndex(item => d.page_id === item.page_id)
+        // this.slides[index].elements.push(d.data)
+        console.log('this.allAddedMediaList', 'STUDENT_ADD_MEDIA')
+        // const page_id = this.currentPageId
+        this.slides[this.currentIndex].elements.push(d.data)
       }
 
       // 回答问题
