@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <div class="page">
+    <div class="page" :style="`min-height:${height - 50}px`">
       <div class="left" v-if="slides">
         <div v-for="(item, index) in slides" :key="index" class="ppt_content">
           <div
@@ -59,29 +59,35 @@
 
       <div class="divider"></div>
 
-      <div
-        :class="
-          showResponse &&
-          currentItemData &&
-          currentItemData.items &&
-          currentItemData.items[0] &&
-          currentItemData.items[0].type != 'website' &&
-          page_model != 'Student-Paced'
-            ? 'content_parent content_parent--border'
-            : 'content_parent'
-        "
-      >
-        <div class="content_main">
-          <teacherIndexItem
-            v-if="currentItemData && currentItemData.items[0]"
-            :data="currentItemData"
-            :type="currentItemData.items[0].type"
-            :flag_1="true"
-            :currentAnswerCount="currentAnswerCount"
-            :textList="responseContentList"
-            :pptUrl="currentItemData.thumbnail_url"
-          />
+      <div style="flex: 1; display: flex; position: relative">
+        <div
+          :class="
+            showResponse &&
+            currentItemData &&
+            currentItemData.items &&
+            currentItemData.items[0] &&
+            currentItemData.items[0].type != 'website' &&
+            page_model != 'Student-Paced'
+              ? 'content_parent content_parent--border'
+              : 'content_parent'
+          "
+        >
+          <div class="content_main">
+            <teacherIndexItem
+              v-if="currentItemData && currentItemData.items[0]"
+              :data="currentItemData"
+              :type="currentItemData.items[0].type"
+              :flag_1="true"
+              :currentAnswerCount="currentAnswerCount"
+              :textList="responseContentList"
+              :pptUrl="currentItemData.thumbnail_url"
+            />
+          </div>
         </div>
+        <dashboard-meterial
+          :pptUrl="currentItemData.thumbnail_url"
+          :filterAddedMediaList="filterAddedMediaList"
+        />
       </div>
     </div>
   </div>
@@ -217,9 +223,10 @@ svg {
 
 <script>
 import pptcontent from "../pptcontent.vue";
+import DashboardMeterial from './dashboardMeterial.vue';
 import teacherIndexItem from "./Index.vue";
 export default {
-  components: { pptcontent, teacherIndexItem },
+  components: { pptcontent, teacherIndexItem, DashboardMeterial },
   props: {
     currentItemData: {
       type: Object,
@@ -272,9 +279,17 @@ export default {
     getStudentName: {
       type: Function,
     },
+    filterAddedMediaList: {
+      type: Array,
+      function() {
+        return [];
+      },
+    },
   },
   data() {
-    return {};
+    return {
+      height: window.winHeight
+    };
   },
   created() {},
   mounted() {

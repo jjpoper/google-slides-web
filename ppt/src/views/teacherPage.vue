@@ -31,6 +31,7 @@
           :getPageStudent="getPageStudent"
           :getStudentName="getStudentName"
           :page_model="page_model"
+          :filterAddedMediaList="filterAddedMediaList"
           v-else-if="currentItemData && slides"
         />
       </div>
@@ -89,6 +90,13 @@
             active-color="#13ce66"
             inactive-color="#999"
             active-text="comment"
+          ></el-switch>
+          <el-switch
+            style="display: block; margin-left: 10px"
+            v-model="questionModalVisiable"
+            active-color="#13ce66"
+            inactive-color="#999"
+            active-text="overview slides"
           ></el-switch>
         </div>
       </el-tooltip>
@@ -182,115 +190,6 @@
     </el-dialog>
   </div>
 </template>
-
-<style lang="scss">
-.custom-dialog.el-dialog {
-  padding: 0;
-  .el-dialog__header {
-    display: none;
-  }
-  .el-dialog__body {
-    padding: 0;
-  }
-}
-</style>
-
-<style scoped>
-.page {
-  width: 100%;
-  height: 100%;
-}
-.student_note_page {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  left: 0%;
-  top: 0%;
-  z-index: 9999;
-}
-.content {
-  width: 100%;
-  height: 100%;
-  background-color: #e0e0e0;
-}
-.control {
-  width: 100%;
-  height: 60px;
-  position: fixed;
-  bottom: 0%;
-  left: 0%;
-  background-color: #000000af;
-}
-.top_btn {
-  width: auto;
-  position: fixed;
-  left: 20px;
-  height: 50px;
-  top: 0;
-  align-items: center;
-  display: flex;
-  z-index: 999;
-}
-.share_room {
-  width: 100px;
-  height: 30px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  color: white;
-  border-radius: 5px;
-  padding-top: 13px;
-  cursor: pointer;
-  margin-right: 20px;
-  font-size: 14px;
-}
-.online_status {
-  width: 50px;
-  height: 43px;
-  font-size: 30px;
-  line-height: 43px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-  margin-right: 20px;
-}
-
-.number_info {
-  width: 150px;
-  height: 30px;
-  background-color: #409eff;
-  color: white;
-  font-size: 14px;
-  border-radius: 5px;
-  text-align: center;
-  padding-top: 13px;
-  cursor: pointer;
-  margin-right: 20px;
-}
-
-.dialog_page {
-  display: flex;
-  flex-direction: column;
-}
-
-.opts {
-  display: flex;
-  flex-direction: row-reverse;
-  padding-top: 20px;
-}
-.leave_btn {
-  color: #ffffff;
-}
-.confirm_btn {
-  color: #000000;
-  margin-right: 20px;
-}
-.pptContent {
-  height: 100%;
-  width: 100%;
-}
-.readchat {
-}
-</style>
 
 <script>
 import copy from "copy-to-clipboard";
@@ -434,6 +333,9 @@ type: "slide"*/
     EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, (url) => {
       this.addMediaList(url);
     });
+    EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, (data) => {
+      this.updateMediaList(data);
+    });
   },
   computed: {
     currentPageId() {
@@ -483,15 +385,23 @@ type: "slide"*/
   methods: {
     addMediaList({url, type}) {
       const page_id = this.currentPageId
-      this.slides[this.currentIndex].elements.push({
-        page_id,
-        url,
-        type
-      })
-      const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"height": 0}});
+      // this.slides[this.currentIndex].elements.push({
+      //   page_id,
+      //   url,
+      //   type
+      // })
+      const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"h": 0}});
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
+      );
+    },
+    updateMediaList(data) {
+      const page_id = this.currentPageId
+      const itemData = JSON.stringify({"page_id": page_id, ...data});
+      this.currentSo.emit(
+        SocketEventsEnum.TEACHER_UPDATE_MEDIA,
+        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "id": "${data.id}", "data": ${itemData}}`
       );
     },
     onLineStatusChanged(status) {
@@ -945,6 +855,12 @@ type: "slide"*/
         this.markupslist.splice(index, 1);
         this.$forceUpdate()
         return;
+      } else if (d.type === SocketEventsEnum.STUDENT_ADD_MEDIA) {
+        // const index = this.slides.findIndex(item => d.page_id === item.page_id)
+        // this.slides[index].elements.push(d.data)
+        console.log('this.allAddedMediaList', 'STUDENT_ADD_MEDIA')
+        // const page_id = this.currentPageId
+        this.slides[this.currentIndex].elements.push(d.data)
       }
 
       // 回答问题
@@ -1061,7 +977,7 @@ type: "slide"*/
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
-        this.allAddedMediaList = elements
+        this.allAddedMediaList = elements.filter(item => item.type !== 'tip')
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;
@@ -1504,5 +1420,115 @@ type: "slide"*/
     }
   }
 };
-</script>,
+</script>
+
+<style lang="scss">
+.custom-dialog.el-dialog {
+  padding: 0;
+  .el-dialog__header {
+    display: none;
+  }
+  .el-dialog__body {
+    padding: 0;
+  }
+}
+</style>
+
+<style scoped>
+.page {
+  width: 100%;
+  height: 100%;
+}
+.student_note_page {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0%;
+  top: 0%;
+  z-index: 9999;
+}
+.content {
+  width: 100%;
+  height: 100%;
+  background-color: #e0e0e0;
+}
+.control {
+  width: 100%;
+  height: 60px;
+  position: fixed;
+  bottom: 0%;
+  left: 0%;
+  background-color: #000000af;
+}
+.top_btn {
+  width: auto;
+  position: fixed;
+  left: 20px;
+  height: 50px;
+  top: 0;
+  align-items: center;
+  display: flex;
+  z-index: 999;
+}
+.share_room {
+  width: 100px;
+  height: 30px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 5px;
+  padding-top: 13px;
+  cursor: pointer;
+  margin-right: 20px;
+  font-size: 14px;
+}
+.online_status {
+  width: 50px;
+  height: 43px;
+  font-size: 30px;
+  line-height: 43px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin-right: 20px;
+}
+
+.number_info {
+  width: 150px;
+  height: 30px;
+  background-color: #409eff;
+  color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  text-align: center;
+  padding-top: 13px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.dialog_page {
+  display: flex;
+  flex-direction: column;
+}
+
+.opts {
+  display: flex;
+  flex-direction: row-reverse;
+  padding-top: 20px;
+}
+.leave_btn {
+  color: #ffffff;
+}
+.confirm_btn {
+  color: #000000;
+  margin-right: 20px;
+}
+.pptContent {
+  height: 100%;
+  width: 100%;
+}
+.readchat {
+  display: flex;
+}
+</style>
     
