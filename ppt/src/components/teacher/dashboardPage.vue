@@ -59,7 +59,7 @@
 
       <div class="divider"></div>
 
-      <div style="flex: 1; display: flex">
+      <div style="flex: 1; display: flex; position: relative">
         <div
           :class="
             showResponse &&
@@ -84,6 +84,10 @@
             />
           </div>
         </div>
+        <dashboard-meterial
+          :pptUrl="currentItemData.thumbnail_url"
+          :filterAddedMediaList="filterAddedMediaList"
+        />
       </div>
     </div>
   </div>
@@ -219,9 +223,10 @@ svg {
 
 <script>
 import pptcontent from "../pptcontent.vue";
+import DashboardMeterial from './dashboardMeterial.vue';
 import teacherIndexItem from "./Index.vue";
 export default {
-  components: { pptcontent, teacherIndexItem },
+  components: { pptcontent, teacherIndexItem, DashboardMeterial },
   props: {
     currentItemData: {
       type: Object,
@@ -273,6 +278,12 @@ export default {
     },
     getStudentName: {
       type: Function,
+    },
+    filterAddedMediaList: {
+      type: Array,
+      function() {
+        return [];
+      },
     },
   },
   data() {

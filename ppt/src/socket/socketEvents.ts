@@ -24,7 +24,8 @@ export enum SocketEventsEnum {
   GET_COMMENT_ID = 'GET_COMMENT_ID',
   STUDENT_DELETE_PPT = 'STUDENT_DELETE_PPT',
   STUDENT_ADD_MEDIA = 'STUDENT_ADD_MEDIA',
-  TEACHER_ADD_MEDIA = 'add-element'
+  TEACHER_ADD_MEDIA = 'add-element',
+  TEACHER_UPDATE_MEDIA = 'update-element'
 }
 
 export enum ModalEventsNameEnum {
@@ -35,7 +36,8 @@ export enum ModalEventsNameEnum {
   SHOW_STAR_ANSWER = 'SHOW_STAR_ANSWER', // 老师给答案点星星，或者取消星星,或者老师确定隐藏某个答案
   GET_COMMENT_ID = 'GET_COMMENT_ID',
   ADD_NEW_MEDIA = 'ADD_NEW_MEDIA', // 显示新的 media 内容
-  MEDIA_MODAL_VISIBLE = 'MEDIA_MODAL_VISABLE'
+  MEDIA_MODAL_VISIBLE = 'MEDIA_MODAL_VISABLE',
+  UPDATE_MEDIA_ELEMENT = 'UPDATE_MEDIA_ELEMENT', // 更新element
 }
 
 // 评论类型

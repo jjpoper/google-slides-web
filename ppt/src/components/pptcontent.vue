@@ -3,7 +3,7 @@
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
     <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
-    <div class="medialist" v-if="meterialVisiable && rectMediaList && rectMediaList.length > 0">
+    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && rectMediaList && rectMediaList.length > 0">
         <VueDragResize v-for="(rect, index) in rectMediaList"
             :key="rect.url"
             :w="rect.width"
@@ -92,15 +92,26 @@ export default {
         return [];
       },
     },
+    defaultShowMeterial: {
+      type: Boolean,
+      default: false,
+    }
   },
   computed: {
     rectMediaList () {
       const list = this.filterAddedMediaList.map((item) => {
+        const {position: {
+          x = 0,
+          y = 0,
+          w = 150,
+          h = 150,
+          height = 150
+        }} = item
         return {
-          'width': 300,
-          'height': 200,
-          'top': 10,
-          'left': 10,
+          'width': w || 150,
+          'height': h || height || 150,
+          'top': y,
+          'left': x,
           'draggable': true,
           'resizable': true,
           'minw': 50,
@@ -126,17 +137,22 @@ export default {
     return {
       width: 0,
       height: 0,
-      meterialVisiable: false
+      meterialVisiable: false,
     }
+  },
+  created() {
+    this.rectingDelay = null
+    this.sizeDelay = null
   },
   mounted() {
     this.width = document.documentElement.clientWidth - 40;
     this.height = document.documentElement.clientHeight - 40;
-    console.log(this.filterAddedMediaList)
-    EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
-      this.meterialVisiable = status
-      console.log(status)
-    })
+    if(!this.defaultShowMeterial) {
+      EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
+        this.meterialVisiable = status
+        console.log(status)
+      })
+    }
   },
   methods: {
     getIframe(url){
@@ -153,18 +169,40 @@ export default {
         // this.$store.dispatch('rect/unsetActive', {id: index});
     },
     changePosition(newRect, index) {
-      console.log(newRect)
+        // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
+        // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
+        // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
+        // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
+      this.update(newRect, this.filterAddedMediaList[index])
+    },
+    changeSize(newRect, index) {
+      this.update(newRect, this.filterAddedMediaList[index])
         // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
         // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
         // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
         // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
     },
-    changeSize(newRect, index) {
-      console.log(newRect)
-        // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
-        // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
-        // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
-        // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
+    update(newRect, data) {
+      if(this.rectingDelay) clearTimeout(this.rectingDelay)
+      this.rectingDelay = setTimeout(() => {
+        console.log(newRect, data)
+        const {
+          height: h,
+          left: x,
+          top: y,
+          width: w,
+        } = newRect
+        const upData = {
+          ...data,
+          position: {
+            x,
+            y,
+            w,
+            h
+          }
+        }
+        EventBus.$emit(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, upData);
+      }, 300)
     }
   }
 }
