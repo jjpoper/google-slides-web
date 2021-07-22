@@ -774,7 +774,7 @@ export default {
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         const index = this.slides.findIndex(item => d.page_id === item.page_id)
-        this.slides[index].elements.push(d.data)
+        this.slides[index].elements.push({id: d.id, ...d.data})
         console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
@@ -786,6 +786,13 @@ export default {
         this.slides[index].elements.splice(itemIndex, 1, d.data)
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
+      } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
+        // this.slides[index].elements.push(d.data)
+        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
+        const {id} = d
+        const list = this.slides[this.currentIndex].elements
+        const itemIndex = list.findIndex(item => id === item.id)
+        this.slides[this.currentIndex].elements.splice(itemIndex, 1)
       }
     },
     // 收到评论

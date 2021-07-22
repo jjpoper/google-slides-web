@@ -336,6 +336,9 @@ type: "slide"*/
     EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, (data) => {
       this.updateMediaList(data);
     });
+    EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, (data) => {
+      this.deleteMedia(data);
+    });
   },
   computed: {
     currentPageId() {
@@ -403,6 +406,18 @@ type: "slide"*/
         SocketEventsEnum.TEACHER_UPDATE_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "id": "${data.id}", "data": ${itemData}}`
       );
+    },
+    deleteMedia(id) {
+      // delete-element 
+      // request: {"token": "", "class_id", "id": 1}
+      console.log(id)
+      this.currentSo.emit(
+        SocketEventsEnum.TEACHER_DELETE_MEDIA,
+        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${this.currentPageId}", "id": "${id}"}`
+      );
+      const list = this.slides[this.currentIndex].elements
+      const itemIndex = list.findIndex(item => id === item.id)
+      this.slides[this.currentIndex].elements.splice(itemIndex, 1)
     },
     onLineStatusChanged(status) {
       this.onLine = status;
@@ -860,14 +875,14 @@ type: "slide"*/
         // this.slides[index].elements.push(d.data)
         console.log('this.allAddedMediaList', 'STUDENT_ADD_MEDIA')
         // const page_id = this.currentPageId
-        this.slides[this.currentIndex].elements.push(d.data)
+        this.slides[this.currentIndex].elements.push(({id: d.id, ...d.data}))
       } else if (d.type === SocketEventsEnum.UPDATE_MEDIA_ELEMENT) {
         // this.slides[index].elements.push(d.data)
         console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
-        const {id, page_id} = d
-        const list = this.slides[slidesIndex].elements
+        const {id} = d.data
+        const list = this.slides[this.currentIndex].elements
         const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[slidesIndex].elements[itemIndex] = d
+        this.slides[this.currentIndex].elements[itemIndex] = d.data
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
       }

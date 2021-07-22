@@ -14,7 +14,7 @@
             :parentW="width"
             :parentH="height"
             :axis="rect.axis"
-            :isActive="rect.active"
+            :isActive="false"
             :minw="rect.minw"
             :minh="rect.minh"
             :isDraggable="rect.draggable"
@@ -28,14 +28,41 @@
             v-on:deactivated="deactivateEv(index)"
             v-on:dragging="changePosition($event, index)"
             v-on:resizing="changeSize($event, index)"
+            dragHandle=".dragitem"
           >
-              <div v-if="rect.type === 'image'" class="meidaitem teacherppt" :style="`width:100%; height: 100%;`">
-                <img :src="rect.url" :style="`width:100%; height: 100%;`"/>
+           <el-popover
+            placement="bottom-start"
+            trigger="hover"
+            :append-to-body="false"
+            :popper-options="{
+              boundariesElement: 'body',
+              gpuAcceleration: true,
+              positionFixed: true,
+              preventOverflow: true
+            }">
+              <div class="dragselector">
+                <i
+                  class="el-icon-rank dragitem"
+                  style="font-size: 30px; color: #777"
+                ></i>
+                <i
+                  v-if="rect.source !== 'add-on'"
+                  class="el-icon-delete"
+                  style="font-size: 30px; margin-left:10px; color: #777"
+                  @click="deleteMedia(index)"
+                ></i>
               </div>
-              <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt" style="width:100%; height: 100%;">
-                <iframe style="width:100%; height: 100%;" width="300" height="200" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <div class="mask"></div>
+              <div class="full" slot="reference">
+                <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
+                  <img :src="rect.url" class="full"/>
+                </div>
+                <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
+                  <iframe
+                  class="full" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <!-- <div class="mask"></div> -->
+                </div>
               </div>
+            </el-popover>
           </VueDragResize>
         </template>
         <template v-else>
@@ -47,47 +74,13 @@
                 <img :src="rect.url" :style="`width:100%; height: 100%;`"/>
               </div>
               <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt" style="width:100%; height: 100%;">
-                <iframe style="width:100%; height: 100%;" width="300" height="200" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <div class="mask"></div>
+                <iframe style="width:100%; height: 100%;" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               </div>
           </div>
         </template>
     </div>
   </div>
 </template>
-<style scoped>
-.teacherppt{
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center
-}
-.ppt{
-  width: 100%;
-  height: 100%;
-  display: flow-root;
-}
-.medialist{
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  flex-wrap: wrap;
-  height: 100%;
-  overflow-y: scroll;
-  position: absolute;
-  top: 0;
-}
-.meidaitem{
-  width:300px; height: 200px;
-}
-.mask{
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
-}
-</style>
 
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
@@ -117,8 +110,8 @@ export default {
     rectMediaList () {
       const list = this.filterAddedMediaList.map((item) => {
         const {position: {
-          x = 0,
-          y = 0,
+          x = 200,
+          y = 200,
           w = 150,
           h = 150,
           height = 150
@@ -180,6 +173,7 @@ export default {
     },
     activateEv(index) {
         // this.$store.dispatch('rect/setActive', {id: index});
+        console.log(index)
     },
     deactivateEv(index) {
         // this.$store.dispatch('rect/unsetActive', {id: index});
@@ -219,7 +213,68 @@ export default {
         }
         EventBus.$emit(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, upData);
       }, 300)
+    },
+    deleteMedia(index) {
+      const {id} = this.filterAddedMediaList[index]
+      EventBus.$emit(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, id);
     }
   }
 }
 </script>
+
+<style scoped>
+.teacherppt{
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center
+}
+.ppt{
+  width: 100%;
+  height: 100%;
+  display: flow-root;
+}
+.medialist{
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 100%;
+  overflow-y: scroll;
+  position: absolute;
+  top: 0;
+}
+.meidaitem{
+  width:300px; height: 200px;
+}
+.mask{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 999;
+}
+.full{
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.dragselector{
+  /* position: absolute;
+  top: -60px; */
+  /* left: 50%; */
+  /* height: 50px; */
+  /* transform: translateX(-50%); */
+  /* display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #777;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  z-index: 999; */
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+</style>

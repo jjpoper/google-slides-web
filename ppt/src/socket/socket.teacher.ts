@@ -86,6 +86,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
     console.log("update-element media", JSON.parse(data));
     callback({ type: SocketEventsEnum.TEACHER_UPDATE_MEDIA, ...JSON.parse(data) })
   });
+  socket.on('delete-element', (data: any) => {
+    console.log("update-element media", JSON.parse(data));
+    callback({ type: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
+  });
   return socket
 
 }

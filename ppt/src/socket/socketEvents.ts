@@ -25,7 +25,8 @@ export enum SocketEventsEnum {
   STUDENT_DELETE_PPT = 'STUDENT_DELETE_PPT',
   STUDENT_ADD_MEDIA = 'STUDENT_ADD_MEDIA',
   TEACHER_ADD_MEDIA = 'add-element',
-  TEACHER_UPDATE_MEDIA = 'update-element'
+  TEACHER_UPDATE_MEDIA = 'update-element',
+  TEACHER_DELETE_MEDIA = 'delete-element',
 }
 
 export enum ModalEventsNameEnum {
@@ -38,6 +39,7 @@ export enum ModalEventsNameEnum {
   ADD_NEW_MEDIA = 'ADD_NEW_MEDIA', // 显示新的 media 内容
   MEDIA_MODAL_VISIBLE = 'MEDIA_MODAL_VISABLE',
   UPDATE_MEDIA_ELEMENT = 'UPDATE_MEDIA_ELEMENT', // 更新element
+  DELETE_MEDIA_ELEMENT = 'DELETE_MEDIA_ELEMENT', // 删除element
 }
 
 // 评论类型
