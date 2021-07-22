@@ -773,9 +773,19 @@ export default {
         this.marks[this.marks.length - 1].id = d.id;
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        const index = this.slides.findIndex(item => d.page_id === item.page_id);
-        this.slides[index].elements.push(d.data);
-        console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
+        const index = this.slides.findIndex(item => d.page_id === item.page_id)
+        this.slides[index].elements.push(d.data)
+        console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
+      } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
+        // this.slides[index].elements.push(d.data)
+        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
+        const {id} = d.data
+        const index = this.slides.findIndex(item => d.page_id === item.page_id)
+        const list = this.slides[index].elements
+        const itemIndex = list.findIndex(item => id === item.id)
+        this.slides[index].elements.splice(itemIndex, 1, d.data)
+        // const page_id = this.currentPageId
+        // this.slides[this.currentIndex].elements.push(d.data)
       }
     },
     // 收到评论

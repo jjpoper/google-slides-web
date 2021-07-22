@@ -4,7 +4,8 @@
     </div>
     <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && rectMediaList && rectMediaList.length > 0">
-        <VueDragResize v-for="(rect, index) in rectMediaList"
+        <template v-if="teacher">
+          <VueDragResize v-for="(rect, index) in rectMediaList"
             :key="rect.url"
             :w="rect.width"
             :h="rect.height"
@@ -36,7 +37,22 @@
                 <div class="mask"></div>
               </div>
           </VueDragResize>
-      </div>
+        </template>
+        <template v-else>
+          <div v-for="rect in rectMediaList"
+            :key="rect.url"
+            :style="`width:${rect.width}px; height: ${rect.height}px; left:${rect.left}px;top:${rect.top}px;z-index:1;position: absolute`"
+          >
+              <div v-if="rect.type === 'image'" class="meidaitem teacherppt" :style="`width:100%; height: 100%;`">
+                <img :src="rect.url" :style="`width:100%; height: 100%;`"/>
+              </div>
+              <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt" style="width:100%; height: 100%;">
+                <iframe style="width:100%; height: 100%;" width="300" height="200" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="mask"></div>
+              </div>
+          </div>
+        </template>
+    </div>
   </div>
 </template>
 <style scoped>
@@ -112,8 +128,8 @@ export default {
           'height': h || height || 150,
           'top': y,
           'left': x,
-          'draggable': true,
-          'resizable': true,
+          'draggable': this.teacher,
+          'resizable': this.teacher,
           'minw': 50,
           'minh': 50,
           'axis': 'both',

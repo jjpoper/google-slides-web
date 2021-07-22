@@ -43,6 +43,17 @@
         </el-checkbox>
       </div>
     </div>
+
+    <div class="aligncenter">
+      <el-switch
+        style="display: block;"
+        class="metrial"
+        v-model="meterialVisiable"
+        active-color="#13ce66"
+        inactive-color="#999"
+        active-text="meterial on"
+      ></el-switch> 
+    </div>
     <i
       class="el-icon-chat-dot-round readchat"
       @click="showStudentModal"
@@ -53,6 +64,71 @@
     </div>
   </div>
 </template>
+<script>
+import { ClassRoomModelEnum, ModalEventsNameEnum } from "../../socket/socketEvents";
+export default {
+  props: {
+    currentPage: {
+      type: Number,
+      default: 0,
+    },
+    totalPage: {
+      type: Number,
+      default: 0,
+    },
+    lastPage: {
+      type: Function,
+    },
+    nextPage: {
+      type: Function,
+    },
+    currentModel: {
+      type: String,
+      default: ClassRoomModelEnum.TEACHER_MODEL,
+    },
+    currentAnswerd: {
+      type: Boolean,
+    },
+    unread: {
+      type: Boolean,
+      default: false,
+    },
+    showStudentModal: {
+      type: Function,
+    },
+    fullScreenWidth: {
+      type: Number,
+      default: 0,
+    },
+    screenWidth: {
+      type: Number,
+      default: 900,
+    },
+    isShowQuestion: {
+      type: Boolean,
+      default: true,
+    },
+    changeShowOrAnswer: {
+      type: Function,
+    },
+    smallWindow: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  watch: {
+    meterialVisiable() {
+      EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
+    }
+  },
+  data() {
+    return {
+      questionVisiable: false,
+      meterialVisiable: false
+    };
+  },
+};
+</script>
 
 <style scoped>
 .question_area {
@@ -171,6 +247,10 @@
   align-items: center;
   margin-right: 50px;
 }
+.aligncenter{
+  display: flex;
+  align-items: center;
+}
 .comment {
   background: #fff;
   height: 40px;
@@ -179,62 +259,3 @@
   border-radius: 4px;
 }
 </style>
-<script>
-import { ClassRoomModelEnum } from "../../socket/socketEvents";
-export default {
-  props: {
-    currentPage: {
-      type: Number,
-      default: 0,
-    },
-    totalPage: {
-      type: Number,
-      default: 0,
-    },
-    lastPage: {
-      type: Function,
-    },
-    nextPage: {
-      type: Function,
-    },
-    currentModel: {
-      type: String,
-      default: ClassRoomModelEnum.TEACHER_MODEL,
-    },
-    currentAnswerd: {
-      type: Boolean,
-    },
-    unread: {
-      type: Boolean,
-      default: false,
-    },
-    showStudentModal: {
-      type: Function,
-    },
-    fullScreenWidth: {
-      type: Number,
-      default: 0,
-    },
-    screenWidth: {
-      type: Number,
-      default: 900,
-    },
-    isShowQuestion: {
-      type: Boolean,
-      default: true,
-    },
-    changeShowOrAnswer: {
-      type: Function,
-    },
-    smallWindow: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      questionVisiable: false,
-    };
-  },
-};
-</script>
