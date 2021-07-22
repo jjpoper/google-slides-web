@@ -15,12 +15,7 @@
         ></span>
       </div>
       <div class="canvasfooter">
-        <el-popover
-          placement="top"
-          width="200"
-          trigger="hover"
-          class="dropdown-icon"
-        >
+        <el-popover placement="top" width="200" trigger="hover" class="dropdown-icon">
           <div class="shape_area">
             <svg
               t="1619161258814"
@@ -82,13 +77,7 @@
             class="shape_icon"
           >
             <circle v-if="currentShape == '1'" cx="516" cy="516" r="350" />
-            <rect
-              v-if="currentShape == '0'"
-              x="162"
-              y="162"
-              height="700"
-              width="700"
-            />
+            <rect v-if="currentShape == '0'" x="162" y="162" height="700" width="700" />
             <polygon
               v-if="currentShape == '2'"
               points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
@@ -101,7 +90,7 @@
           :style="`background-color: ${color}`"
           @click="showModal"
         ></div>
-      </el-tooltip>-->
+        </el-tooltip>-->
 
         <el-popover placement="top" width="300" trigger="hover">
           <draw-line-width-panel
@@ -172,9 +161,7 @@
                 :style="`color:${
                   currentFont == index ? color : 'rgb(212 208 208)'
                 }; font-family:${item}`"
-              >
-                AaBbCcDd1234
-              </p>
+              >AaBbCcDd1234</p>
             </div>
           </div>
           <div class="eraser" @click="edit" slot="reference">
@@ -292,16 +279,17 @@ export default {
   components: { drawLineWidthPanel },
   props: {
     sendCanvas: { type: Function },
+    sendDrawText: { type: Function },
     data: {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     url: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
@@ -318,7 +306,7 @@ export default {
         "#81d3f8",
         "#8080ff",
         "#c280ff",
-        "#02a3ee",
+        "#02a3ee"
       ],
       widthValue: 3,
       currentTab: 1,
@@ -328,8 +316,8 @@ export default {
         "Microsoft YaHei",
         "Arial",
         "Kirang Haerang",
-        "Dancing Script",
-      ],
+        "Dancing Script"
+      ]
     };
   },
   created() {},
@@ -345,7 +333,9 @@ export default {
     this.$nextTick(() => {
       this.draw.init(
         this.onDrawBack,
-        initData && initData[0] ? initData[0].content : ""
+        this.onDrawTextBack,
+        initData && initData[0] ? initData[0].content : "",
+        this.data.page_id
       );
     });
 
@@ -436,6 +426,9 @@ export default {
     onDrawBack(dataStr) {
       this.sendCanvas(dataStr);
     },
+    onDrawTextBack(stringContent){
+      this.sendDrawText(stringContent);
+    },
     showModal() {
       //   this.modalVisable = true;
     },
@@ -443,7 +436,7 @@ export default {
       this.modalVisable = false;
     },
     showDiy() {
-      colorSelector.show(this.color, (rgb) => {
+      colorSelector.show(this.color, rgb => {
         // console.log(d)
         const selectorColor = colorSelector.utils.rgb2txt(rgb);
         console.log(selectorColor);
@@ -470,8 +463,8 @@ export default {
       this.currentFont = index;
       this.draw.setFontFamily(this.fontFamilies[index]);
       this.edit();
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>
@@ -504,7 +497,7 @@ export default {
   background-position: center;
 }
 
-.colorList{
+.colorList {
   width: 60%;
   height: 40px;
   display: flex;
