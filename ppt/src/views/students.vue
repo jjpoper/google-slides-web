@@ -35,7 +35,10 @@
           class="full_screen"
           @click="showFullScreen(false)"
         >
-          <pptcontent :url="currentItemData.thumbnail_url" :filterAddedMediaList="filterAddedMediaList"/>
+          <pptcontent
+            :url="currentItemData.thumbnail_url"
+            :filterAddedMediaList="filterAddedMediaList"
+          />
         </div>
         <el-main
           v-if="
@@ -46,7 +49,10 @@
           "
         >
           <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
-            <pptcontent :url="currentItemData.thumbnail_url" :filterAddedMediaList="filterAddedMediaList"/>
+            <pptcontent
+              :url="currentItemData.thumbnail_url"
+              :filterAddedMediaList="filterAddedMediaList"
+            />
           </div>
         </el-main>
         <el-aside
@@ -60,6 +66,7 @@
             :method="answerText"
             :answer="answerChoice"
             :sendCanvas="sendCanvas"
+            :sendDrawText="sendDrawText"
             :url="currentItemData.thumbnail_url"
             :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
             :link="link"
@@ -343,7 +350,7 @@ export default {
       smallWindow: false,
       smallWindowValue: 800,
       link: "",
-      allAddedMediaList: [],
+      allAddedMediaList: []
     };
   },
   computed: {
@@ -420,11 +427,11 @@ export default {
   },
   methods: {
     loadDiyPainter() {
-       this.$nextTick(() => {
-          const selector = document.getElementById("diycolor_comment");
-          console.log(selector, 'selector')
-          colorSelector.init(selector);
-       })
+      this.$nextTick(() => {
+        const selector = document.getElementById("diycolor_comment");
+        console.log(selector, "selector");
+        colorSelector.init(selector);
+      });
     },
     changeShowOrAnswer() {
       this.isShowQuestion = !this.isShowQuestion;
@@ -520,13 +527,13 @@ export default {
       Promise.all([
         initStudentData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([allA, {pages: list}]) => {
+      ]).then(([allA, { pages: list }]) => {
         console.log(list, "========");
         this.slides = list;
         this.getItemData();
         this.afterLogin(profile);
         hideLoading();
-        this.loadDiyPainter()
+        this.loadDiyPainter();
       });
     },
     sendCanvas(base64Url) {
@@ -539,6 +546,15 @@ export default {
       this.emitSo(
         "response",
         `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}"}`
+      );
+      this.currentAnswerd = true;
+    },
+    sendDrawText(textContent) {
+      const { page_id, items } = this.currentItemData;
+      const { type } = items[0];
+      this.emitSo(
+        "response",
+        `{"room": "${this.class_id}", "type":"draw_text", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":${textContent}}`
       );
       this.currentAnswerd = true;
     },
@@ -754,12 +770,12 @@ export default {
         this.onGetTeacherComment(d);
       } else if (d.mtype === SocketEventsEnum.GET_COMMENT_ID) {
         // 获取评论id，用于删除
-        this.marks[this.marks.length - 1].id = d.id
+        this.marks[this.marks.length - 1].id = d.id;
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        const index = this.slides.findIndex(item => d.page_id === item.page_id)
-        this.slides[index].elements.push(d.data)
-        console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
+        const index = this.slides.findIndex(item => d.page_id === item.page_id);
+        this.slides[index].elements.push(d.data);
+        console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
       }
     },
     // 收到评论
@@ -850,7 +866,9 @@ export default {
         type,
         background,
         page_id,
-        width = 0, height = 0, pointType
+        width = 0,
+        height = 0,
+        pointType
       } = data;
       this.emitSo(
         "comment-ppt",
@@ -868,12 +886,12 @@ export default {
     },
     delQuestion(id) {
       this.emitSo(
-        'delete-ppt-comment',
+        "delete-ppt-comment",
         `{"token":"${this.token}","class_id":"${this.class_id}","id":${id}}`
-      )
-      const index = this.marks.findIndex(item => item.id == id)
-      console.log(index, 'index')
-      this.marks.splice(index, 1)
+      );
+      const index = this.marks.findIndex(item => item.id == id);
+      console.log(index, "index");
+      this.marks.splice(index, 1);
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();

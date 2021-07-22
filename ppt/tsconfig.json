@@ -21,8 +21,12 @@
       "@util/": [
         "src/util"
       ],
-      "@api/": ["./src/api"],
-      "@model/": ["./src/model"],
+      "@api/": [
+        "./src/api"
+      ],
+      "@model/": [
+        "./src/model"
+      ],
     },
     "lib": [
       "esnext",
@@ -37,7 +41,9 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "./typings", "src/utils/googleAuth.js", "src/utils/drawText.js",
+    "./typings",
+    "src/utils/googleAuth.js",
+    "src/utils/drawText.js"
   ],
   "exclude": [
     "node_modules"

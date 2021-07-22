@@ -3,6 +3,7 @@
 import { showToast } from "@/utils/loading";
 // @ts-ignore
 import Text from './drawText'
+import DrawTextItem from './drawTextItem'
 
 export enum DrawTypeData {
   line = 'line',
@@ -16,6 +17,7 @@ export enum DrawTypeData {
 
 type DrawType = 'line' | 'draw' | 'text' | 'marker' | 'rect' | 'circle' | 'polygon'
 type onDrawBack = (data: any) => void
+type onDrawTextBack = (data: any) => void
 window.canvasPool = []
 window.drawPool = []
 window.textPool = []
@@ -70,6 +72,7 @@ export default class Draw {
 
   private drawType: DrawType = 'draw'
   private onDrawBack: onDrawBack = () => null
+  private onDrawTextBack: onDrawTextBack = () => null
   private imageData: any
   private canTextarea = true;
   private canvasParant: any
@@ -79,6 +82,7 @@ export default class Draw {
   }
   private lastImageData = ''
   private currentIndex = -1;
+  private page_id = "";
 
   //为了防止双击的时候先执行mouse down 和mouse up，定义两个timer，延时up down的操作，当双击时取消timer就可以屏蔽up down的操作了。
   private timerDown: any;
@@ -111,11 +115,13 @@ export default class Draw {
   //   };
   // }
 
-  init(onDrawBack: onDrawBack, initUrl: string) {
+  init(onDrawBack: onDrawBack, onDrawTextBack: onDrawTextBack, initUrl: string, page_id: string) {
     this.canvas.width = this.canvasWidth
     this.canvas.height = this.canvasHeight
     // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
     this.onDrawBack = onDrawBack;
+    this.onDrawTextBack = onDrawTextBack;
+    this.page_id = page_id;
 
     this.cxt.lineCap = "round";
     this.cxt.lineJoin = "round";
@@ -190,6 +196,7 @@ export default class Draw {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          this.changeEditableDiv();
         }
       }
       this.currentSelectEditableDiv = null;
@@ -243,6 +250,7 @@ export default class Draw {
       if (this.currentSelectEditableDiv) {
         this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+        this.changeEditableDiv();
       }
     }
 
@@ -265,6 +273,7 @@ export default class Draw {
     if (this.drawType == 'text') {
       if (this.currentSelectEditableDiv) {
         this.currentSelectEditableDiv.style.color = color;
+        this.changeEditableDiv();
       }
     }
     // this.cxt.globalCompositeOperation = "source-over";
@@ -314,6 +323,7 @@ export default class Draw {
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
         }
+        this.changeEditableDiv();
         this.currentSelectEditableDiv = null;
         return;
       }
@@ -322,7 +332,7 @@ export default class Draw {
     let editableDiv = document.createElement('div');
     editableDiv.setAttribute("contenteditable", "true");
 
-    editableDiv.id = "editable_div_" + window.textPool.length;
+    editableDiv.id = "editable_div_" + this.page_id + "_" + window.textPool.length;
 
     editableDiv.style.position = 'fixed';
     editableDiv.style.left = `${this.pointer.beginX}px`;
@@ -358,6 +368,7 @@ export default class Draw {
       if (_this.drawType != 'text') {
         return;
       }
+      _this.isMouseDown = true;
       if (_this.currentSelectEditableDiv) {
         if (_this.currentSelectEditableDiv == editableDiv) {
           editableDiv.setAttribute("contenteditable", "true");
@@ -370,7 +381,6 @@ export default class Draw {
         }
       }
       let e = ev || event;
-      _this.isMouseDown = true;
       _this.currentSelectEditableDiv = editableDiv;
       editableDiv.style.border = "2px solid #c2d4fd";
       _this.currentSelectEditableLeft = e.clientX;
@@ -384,41 +394,34 @@ export default class Draw {
         }
         //   console.log('onmousemove', editableDiv.id);
         var e = ev || event;
-
-
         let left = parseInt(editableDiv.style.left) ? parseInt(editableDiv.style.left) : 0;
         let top = parseInt(editableDiv.style.top);
         left += (e.clientX - _this.currentSelectEditableLeft);
         top += (e.clientY - _this.currentSelectEditableTop);
-
-        console.log(left, top, 'id==' + editableDiv.id);
-
         editableDiv.style.left = `${left}px`;
         editableDiv.style.top = `${top}px`;
         _this.currentSelectEditableLeft = e.clientX;
         _this.currentSelectEditableTop = e.clientY;
+
       }
+    }
 
-      editableDiv.onmouseenter = function (ev) {
-        if (_this.drawType != 'text') {
-          return;
-        }
-        console.log('onmouseenter', editableDiv.id);
-        editableDiv.style.cursor = 'move';
-        _this.currentMouseOnEditableDeiv = true;
+    editableDiv.onmouseenter = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
       }
-      editableDiv.onmouseleave = function (ev) {
-        if (_this.drawType != 'text') {
-          return;
-        }
-        console.log('onmouseleave', editableDiv.id);
-        editableDiv.style.cursor = 'default';
-        _this.currentMouseOnEditableDeiv = false;
-        // editableDiv.setAttribute("contenteditable", "false");
+      console.log('onmouseenter', editableDiv.id);
+      editableDiv.style.cursor = 'move';
+      _this.currentMouseOnEditableDeiv = true;
+    }
+    editableDiv.onmouseleave = function (ev) {
+      if (_this.drawType != 'text') {
+        return;
       }
-
-
-
+      console.log('onmouseleave', editableDiv.id);
+      editableDiv.style.cursor = 'default';
+      _this.currentMouseOnEditableDeiv = false;
+      // editableDiv.setAttribute("contenteditable", "false");
     }
 
 
@@ -430,15 +433,10 @@ export default class Draw {
       console.log('onmouseup', editableDiv.id);
       _this.isMouseDown = false;
       editableDiv.onmousemove = null;
-      editableDiv.onmouseenter = null;
-      editableDiv.onmouseleave = null;
+      // _this.changeEditableDiv();
     }
-
-
-
-
     editableDiv.addEventListener('input', function () {
-
+      //  _this.changeEditableDiv()
     })
 
     let fontSize = Math.max(18, this.lineWidth) + "px";
@@ -447,19 +445,49 @@ export default class Draw {
     this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
 
     this.currentSelectEditableDiv = editableDiv;
-    window.textPool.push(editableDiv);
+
+    var drawTextItem = new DrawTextItem(this.page_id, editableDiv.id, this.pointer.beginX, this.pointer.beginY,
+      this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
+    window.textPool.push(drawTextItem);
     return editableDiv.id;
   }
 
   deleteEditableDiv(_id: any) {
     console.log('delete', _id);
+    var children = this.canvasParant.children;
     for (let i = 0; i < window.textPool.length; i++) {
       if (window.textPool[i].id == _id) {
-        this.canvasParant.removeChild(window.textPool[i])
         window.textPool.splice(i, 1);
         break;
       }
     }
+    for (let i = 0; i < children.length; i++) {
+      if (children[i].id == _id) {
+        this.canvasParant.removeChild(children[i]);
+        break;
+      }
+    }
+  }
+
+  //改变值
+  changeEditableDiv() {
+
+    if (this.currentSelectEditableDiv) {
+      for (let i = 0; i < window.textPool.length; i++) {
+        if (window.textPool[i].id == this.currentSelectEditableDiv.id) {
+          window.textPool[i].left = parseInt(this.currentSelectEditableDiv.style.left);
+          window.textPool[i].top = parseInt(this.currentSelectEditableDiv.style.top);
+          window.textPool[i].color = this.currentSelectEditableDiv.style.color;
+          window.textPool[i].fontFamily = this.currentSelectEditableDiv.style.fontFamily;
+          window.textPool[i].innerText = this.currentSelectEditableDiv.innerText;
+          window.textPool[i].fontSize = this.lineWidth;
+          // this.callBackDrawText(JSON.stringify(window.textPool[i]));
+          console.log(window.textPool[i]);
+          break;
+        }
+      }
+    }
+
 
   }
 
@@ -473,7 +501,6 @@ export default class Draw {
     window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty();
     this.cxt.strokeStyle = this.strokeColor;
     // console.log(this.cxt.lineWidth)
-
     this.pointer.beginX = e.clientX - this.stage_info.left
     this.pointer.beginY = e.clientY - this.stage_info.top
     if (this.drawType === 'draw' || this.drawType === 'marker') {
@@ -515,6 +542,7 @@ export default class Draw {
     this.fontFamily = font;
     if (this.currentSelectEditableDiv) {
       this.currentSelectEditableDiv.style.fontFamily = this.fontFamily;
+      this.changeEditableDiv();
     }
   }
 
@@ -748,12 +776,6 @@ export default class Draw {
 
   drawEnd() {
     console.log('========= drawEnd', this.canTextarea);
-
-    // if (this.drawType == "marker") {
-    //   this.cxt.stroke();
-    //   this.cxt.restore();
-    // }
-
     this.canvas.onmousemove = null;
     // // console.log();
     const base64Url = this.canvas.toDataURL("image/png");
@@ -820,4 +842,9 @@ export default class Draw {
     this.onDrawBack(str);
     this.saveImageData()
   }
+  callBackDrawText(str: DrawTextItem) {
+    this.onDrawTextBack(str);
+    console.log(str, 'send msg ======>>>');
+  }
+
 }
