@@ -861,6 +861,15 @@ type: "slide"*/
         console.log('this.allAddedMediaList', 'STUDENT_ADD_MEDIA')
         // const page_id = this.currentPageId
         this.slides[this.currentIndex].elements.push(d.data)
+      } else if (d.type === SocketEventsEnum.UPDATE_MEDIA_ELEMENT) {
+        // this.slides[index].elements.push(d.data)
+        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
+        const {id, page_id} = d
+        const list = this.slides[slidesIndex].elements
+        const itemIndex = list.findIndex(item => id === item.id)
+        this.slides[slidesIndex].elements[itemIndex] = d
+        // const page_id = this.currentPageId
+        // this.slides[this.currentIndex].elements.push(d.data)
       }
 
       // 回答问题
