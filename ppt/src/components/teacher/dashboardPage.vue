@@ -89,6 +89,7 @@
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
         />
+        <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
     </div>
   </div>
@@ -223,11 +224,12 @@ svg {
 </style>
 
 <script>
+import TipsList from '../common/tipsList.vue';
 import pptcontent from "../pptcontent.vue";
 import DashboardMeterial from './dashboardMeterial.vue';
 import teacherIndexItem from "./Index.vue";
 export default {
-  components: { pptcontent, teacherIndexItem, DashboardMeterial },
+  components: { pptcontent, teacherIndexItem, DashboardMeterial, TipsList },
   props: {
     currentItemData: {
       type: Object,
@@ -287,6 +289,16 @@ export default {
       },
     },
     meterialVisiable: {
+      type: Boolean,
+      default: false,
+    },
+    filterTips: {
+      type: Array,
+      function() {
+        return [];
+      },
+    },
+    overviewModalVisiable: {
       type: Boolean,
       default: false,
     },

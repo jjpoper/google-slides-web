@@ -101,7 +101,7 @@
     <el-switch
       style="display: block;"
       class="metrial"
-      v-model="meterialVisiable"
+      v-model="meterialSwitchVisiable"
       active-color="#13ce66"
       inactive-color="#999"
       active-text="meterial on"
@@ -281,12 +281,19 @@ export default {
     changeShowMetrial: {
       type: Function,
     },
+    meterialVisiable: {
+      type: Boolean,
+      default: false
+    },
   },
   watch: {
-    meterialVisiable() {
+    meterialSwitchVisiable() {
       // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialVisiable)
+      this.changeShowMetrial(this.meterialSwitchVisiable)
     }
+  },
+  created() {
+    this.meterialSwitchVisiable = this.meterialVisiable
   },
   components: {
     dashboardMenu,
@@ -295,7 +302,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      meterialVisiable: false
+      meterialSwitchVisiable: false
     };
   },
   methods: {

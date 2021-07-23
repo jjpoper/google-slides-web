@@ -61,7 +61,7 @@
 </template>
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
-import VueDragResize from '@/components/resize/index';
+import VueDragResize from 'vue-drag-resize';
 export default {
   props: {
     rect: {

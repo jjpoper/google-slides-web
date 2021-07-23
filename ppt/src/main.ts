@@ -15,7 +15,7 @@ import {
 import {
   BarChart
 } from 'echarts/charts'
-import VueDragResize from './components/resize/index.js'
+import VueDragResize from 'vue-drag-resize'
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent])
 Vue.component('vue-drag-resize', VueDragResize)

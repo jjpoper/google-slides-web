@@ -34,6 +34,8 @@
           :page_model="page_model"
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
+          :filterTips="filterTips"
+          :overviewModalVisiable="overviewModalVisiable"
           v-else-if="currentItemData && slides"
         />
       </div>
@@ -64,6 +66,7 @@
           :currentItemData="currentItemData"
           :setTimeDialogShow="setTimeDialogShow"
           :changeShowMetrial="changeShowMetrial"
+          :meterialVisiable="meterialVisiable"
         />
       </div>
     </div>
@@ -96,7 +99,7 @@
           ></el-switch>
           <el-switch
             style="display: block; margin-left: 10px"
-            v-model="questionModalVisiable"
+            v-model="overviewModalVisiable"
             active-color="#13ce66"
             inactive-color="#999"
             active-text="overview slides"
@@ -310,7 +313,8 @@ type: "slide"*/
       questionModalVisiable: false,
       markupslist: [], // ppt comment列表
       allAddedMediaList: [],
-      meterialVisiable: false
+      meterialVisiable: false,
+      overviewModalVisiable: false,
     };
   },
   mounted() {
@@ -363,7 +367,14 @@ type: "slide"*/
     },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements;
+        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip");
+      } else {
+        return [];
+      }
+    },
+    filterTips() {
+      if (this.slides[this.currentIndex]) {
+        return this.slides[this.currentIndex].elements.filter(item => item.type === "tip");
       } else {
         return [];
       }
@@ -1031,6 +1042,7 @@ type: "slide"*/
         // hideLoading()
         this.slides = list;
         this.allAddedMediaList = elements.filter(item => item.type !== "tip");
+        // this.allTips = elements.filter(item => item.type === "tip");
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;
