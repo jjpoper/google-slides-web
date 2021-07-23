@@ -887,16 +887,23 @@ type: "slide"*/
         // this.slides[index].elements.push(d.data)
         console.log("this.allAddedMediaList", "STUDENT_ADD_MEDIA");
         // const page_id = this.currentPageId
-        this.slides[this.currentIndex].elements.push({ id: d.id, ...d.data });
-      } else if (d.type === SocketEventsEnum.UPDATE_MEDIA_ELEMENT) {
+        this.slides[this.currentIndex].elements.push(({id: d.id, ...d.data}))
+      } else if (d.type === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
-        const { id } = d.data;
-        const list = this.slides[this.currentIndex].elements;
-        const itemIndex = list.findIndex(item => id === item.id);
-        this.slides[this.currentIndex].elements[itemIndex] = d.data;
+        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
+        const {id} = d.data
+        const list = this.slides[this.currentIndex].elements
+        const itemIndex = list.findIndex(item => id === item.id)
+        this.slides[this.currentIndex].elements.splice(itemIndex, 1, {id: d.id, ...d.data})
+        console.log(this.slides[this.currentIndex].elements, 'UPDATE_MEDIA_ELEMENT')
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
+      } else if (d.type === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
+        // this.slides[index].elements.push(d.data)
+        const {id} = d
+        const list = this.slides[this.currentIndex].elements
+        const itemIndex = list.findIndex(item => id === item.id)
+        this.slides[this.currentIndex].elements.splice(itemIndex, 1)
       }
 
       // 回答问题
