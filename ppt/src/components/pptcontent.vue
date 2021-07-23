@@ -5,65 +5,10 @@
     <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && rectMediaList && rectMediaList.length > 0">
         <template v-if="teacher">
-          <VueDragResize v-for="(rect, index) in rectMediaList"
-            :key="rect.id"
-            :w="rect.width"
-            :h="rect.height"
-            :x="rect.left"
-            :y="rect.top"
-            :parentW="width"
-            :parentH="height"
-            :axis="rect.axis"
-            :isActive="false"
-            :minw="rect.minw"
-            :minh="rect.minh"
-            :isDraggable="rect.draggable"
-            :isResizable="rect.resizable"
-            :parentLimitation="rect.parentLim"
-            :snapToGrid="rect.snapToGrid"
-            :aspectRatio="rect.aspectRatio"
-            :z="rect.zIndex"
-            :contentClass="rect.class"
-            v-on:activated="activateEv(index)"
-            v-on:deactivated="deactivateEv(index)"
-            v-on:dragging="changePosition($event, index)"
-            v-on:resizing="changeSize($event, index)"
-            dragHandle=".dragitem"
-          >
-           <el-popover
-            placement="bottom-start"
-            trigger="hover"
-            :append-to-body="false"
-            :popper-options="{
-              boundariesElement: 'body',
-              gpuAcceleration: true,
-              positionFixed: true,
-              preventOverflow: true
-            }">
-              <div class="dragselector">
-                <i
-                  class="el-icon-rank dragitem cursor"
-                  style="font-size: 30px; color: #777"
-                ></i>
-                <i
-                  v-if="rect.source !== 'add-on'"
-                  class="el-icon-delete cursor"
-                  style="font-size: 30px; margin-left:10px; color: #777"
-                  @click="deleteMedia(index)"
-                ></i>
-              </div>
-              <div class="full" slot="reference">
-                <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
-                  <img :src="rect.url" class="full"/>
-                </div>
-                <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
-                  <iframe
-                  class="full" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                  <!-- <div class="mask"></div> -->
-                </div>
-              </div>
-            </el-popover>
-          </VueDragResize>
+          <element-drag v-for="(rect, index) in rectMediaList" :key="rect.id"
+            :index="index" :rect="rect" :update="update" :deleteMedia="deleteMedia"
+            :parentWidth="width"
+            :parentHeight="height"/>
         </template>
         <template v-else>
           <div v-for="rect in rectMediaList"
@@ -85,6 +30,7 @@
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
 import VueDragResize from 'vue-drag-resize';
+import ElementDrag from './drag/elementDrag.vue';
 export default {
   props: {
     url: {
@@ -108,7 +54,11 @@ export default {
     meterialVisiable: {
       type: Boolean,
       default: false,
-    }
+    },
+    widthOffset: {
+      type: Number,
+      default: 40,
+    },
   },
   computed: {
     rectMediaList () {
@@ -144,7 +94,7 @@ export default {
     }
   },
   components: {
-    VueDragResize
+    ElementDrag
   },
   data() {
     return {
@@ -157,7 +107,7 @@ export default {
     this.sizeDelay = null
   },
   mounted() {
-    this.width = document.documentElement.clientWidth - 40;
+    this.width = document.documentElement.clientWidth - this.widthOffset;
     this.height = document.documentElement.clientHeight - 40;
     // if(!this.defaultShowMeterial) {
     //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
@@ -165,13 +115,6 @@ export default {
     //     console.log(status)
     //   })
     // }
-
-    setTimeout(() => {
-      console.log('=====')
-      // this.rectMediaList[1].left = 0
-      this.$set(this.rectMediaList[1], 'left', 0)
-      // this.$forceUpdate()
-    }, 5000)
   },
   methods: {
     getIframe(url){
@@ -181,29 +124,9 @@ export default {
       }
       return url
     },
-    activateEv(index) {
-        // this.$store.dispatch('rect/setActive', {id: index});
-        console.log(index)
-    },
-    deactivateEv(index) {
-        // this.$store.dispatch('rect/unsetActive', {id: index});
-    },
-    changePosition(newRect, index) {
-        // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
-        // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
-        // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
-        // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
-      this.update(newRect, this.filterAddedMediaList[index])
-    },
-    changeSize(newRect, index) {
-      this.update(newRect, this.filterAddedMediaList[index])
-        // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
-        // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
-        // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
-        // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
-    },
-    update(newRect, data) {
+    update(newRect, index) {
       if(this.rectingDelay) clearTimeout(this.rectingDelay)
+      const data = this.filterAddedMediaList[index]
       this.rectingDelay = setTimeout(() => {
         console.log(newRect, data)
         const {

@@ -4,8 +4,8 @@
       :url="pptUrl"
       :teacher="true"
       :filterAddedMediaList="filterAddedMediaList"
-      :meterialVisiable="meterialVisiable"
       :defaultShowMeterial="true"
+      :widthOffset="270"
     />
   </div>
 </template>
@@ -31,17 +31,6 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      meterialVisiable: false
-    };
-  },
-  mounted() {
-    EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
-      this.meterialVisiable = status
-      console.log(status)
-    })
-  },
 };
 </script>
 <style scoped>
@@ -52,5 +41,6 @@ export default {
   top:0;
   bottom: 0;
   z-index: 9;
+  background-color: #e0e0e0;
 }
 </style>

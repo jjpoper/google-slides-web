@@ -73,8 +73,11 @@
             :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
             :link="link"
           />
-          <student-comment />
         </el-aside>
+        <div class="right-fix-area">
+          <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
+          <student-comment />
+        </div>
 
         <div class="sfooter" v-if="slides && slides.length > 0">
           <student-control-panel
@@ -114,6 +117,13 @@
             inactive-color="#999"
             @change="showStudentQuestions"
             active-text="comment"
+          ></el-switch>
+          <el-switch
+            style="display: block; margin-left: 10px"
+            v-model="overviewModalVisiable"
+            active-color="#13ce66"
+            inactive-color="#999"
+            active-text="overview slides"
           ></el-switch>
         </div>
       </el-tooltip>
@@ -190,6 +200,7 @@ import studentControlPanel from "@/components/students/studentControlPanel.vue";
 import pageLockedNote from "@/components/students/pageLockedNote.vue";
 import StudentQuestions from "@/components/students/studentQuestions.vue";
 import colorSelector from "@/utils/color";
+import TipsList from '@/components/common/tipsList.vue';
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 export default {
@@ -233,7 +244,8 @@ export default {
       smallWindowValue: 800,
       link: "",
       allAddedMediaList: [],
-      meterialVisiable: false
+      meterialVisiable: false,
+      overviewModalVisiable: false,
     };
   },
   computed: {
@@ -248,7 +260,14 @@ export default {
     },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements;
+        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip");
+      } else {
+        return [];
+      }
+    },
+    filterTips() {
+      if (this.slides[this.currentIndex]) {
+        return this.slides[this.currentIndex].elements.filter(item => item.type === "tip");;
       } else {
         return [];
       }
@@ -290,7 +309,8 @@ export default {
     ClassRoomClosed,
     studentControlPanel,
     pageLockedNote,
-    StudentQuestions
+    StudentQuestions,
+    TipsList
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -1031,6 +1051,7 @@ export default {
 .readchat {
   font-size: 30px;
   cursor: pointer;
+  display: flex;
 }
 .full_screen {
   background-color: #000000;

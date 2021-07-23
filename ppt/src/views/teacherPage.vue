@@ -34,6 +34,8 @@
           :page_model="page_model"
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
+          :filterTips="filterTips"
+          :overviewModalVisiable="overviewModalVisiable"
           v-else-if="currentItemData && slides"
         />
       </div>
@@ -64,6 +66,7 @@
           :currentItemData="currentItemData"
           :setTimeDialogShow="setTimeDialogShow"
           :changeShowMetrial="changeShowMetrial"
+          :meterialVisiable="meterialVisiable"
         />
       </div>
     </div>
@@ -96,7 +99,7 @@
           ></el-switch>
           <el-switch
             style="display: block; margin-left: 10px"
-            v-model="questionModalVisiable"
+            v-model="overviewModalVisiable"
             active-color="#13ce66"
             inactive-color="#999"
             active-text="overview slides"
@@ -310,7 +313,8 @@ type: "slide"*/
       questionModalVisiable: false,
       markupslist: [], // ppt comment列表
       allAddedMediaList: [],
-      meterialVisiable: false
+      meterialVisiable: false,
+      overviewModalVisiable: false,
     };
   },
   mounted() {
@@ -363,7 +367,14 @@ type: "slide"*/
     },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements;
+        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip");
+      } else {
+        return [];
+      }
+    },
+    filterTips() {
+      if (this.slides[this.currentIndex]) {
+        return this.slides[this.currentIndex].elements.filter(item => item.type === "tip");
       } else {
         return [];
       }
@@ -423,9 +434,6 @@ type: "slide"*/
         SocketEventsEnum.TEACHER_DELETE_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${this.currentPageId}", "id": "${id}"}`
       );
-      const list = this.slides[this.currentIndex].elements;
-      const itemIndex = list.findIndex(item => id === item.id);
-      this.slides[this.currentIndex].elements.splice(itemIndex, 1);
     },
     onLineStatusChanged(status) {
       this.onLine = status;
@@ -890,12 +898,22 @@ type: "slide"*/
         this.slides[this.currentIndex].elements.push(({id: d.id, ...d.data}))
       } else if (d.type === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
         const {id} = d.data
         const list = this.slides[this.currentIndex].elements
         const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[this.currentIndex].elements.splice(itemIndex, 1, {id: d.id, ...d.data})
-        console.log(this.slides[this.currentIndex].elements, 'UPDATE_MEDIA_ELEMENT')
+        const nextData = {id: d.id, ...d.data}
+        if(!window.isWindowActive) {
+          this.slides[this.currentIndex].elements.splice(itemIndex, 1)
+          this.$nextTick(() => {
+            this.slides[this.currentIndex].elements.splice(itemIndex, 0, nextData)
+          })
+        } else {
+          this.slides[this.currentIndex].elements.splice(itemIndex, 1, nextData)
+        }
+        // this.$nextTick(() => {
+        //   console.log('notUpdate ==== window elementNotUpdate')
+        //   window.elementNotUpdate = false
+        // })
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
       } else if (d.type === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
@@ -1024,6 +1042,7 @@ type: "slide"*/
         // hideLoading()
         this.slides = list;
         this.allAddedMediaList = elements.filter(item => item.type !== "tip");
+        // this.allTips = elements.filter(item => item.type === "tip");
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;

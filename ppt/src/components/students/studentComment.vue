@@ -27,12 +27,7 @@
 </template>
 <style scoped>
 .studentComment {
-  position: absolute;
-  width: 100%;
-  height: 100%;
   overflow-y: scroll;
-  top: 0;
-  right: 0;
   border-left: 1px solid #999;
   box-sizing: border-box;
   padding: 20px;
@@ -40,6 +35,10 @@
   line-height: 50px;
   text-align: left;
   z-index: 9998;
+  position: fixed;
+  top:0;
+  right:0;
+  width: 40%;
 }
 .title {
   height: 50px;
