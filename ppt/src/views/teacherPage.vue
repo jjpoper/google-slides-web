@@ -423,9 +423,6 @@ type: "slide"*/
         SocketEventsEnum.TEACHER_DELETE_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${this.currentPageId}", "id": "${id}"}`
       );
-      const list = this.slides[this.currentIndex].elements;
-      const itemIndex = list.findIndex(item => id === item.id);
-      this.slides[this.currentIndex].elements.splice(itemIndex, 1);
     },
     onLineStatusChanged(status) {
       this.onLine = status;
@@ -890,12 +887,22 @@ type: "slide"*/
         this.slides[this.currentIndex].elements.push(({id: d.id, ...d.data}))
       } else if (d.type === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
         const {id} = d.data
         const list = this.slides[this.currentIndex].elements
         const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[this.currentIndex].elements.splice(itemIndex, 1, {id: d.id, ...d.data})
-        console.log(this.slides[this.currentIndex].elements, 'UPDATE_MEDIA_ELEMENT')
+        const nextData = {id: d.id, ...d.data}
+        if(!window.isWindowActive) {
+          this.slides[this.currentIndex].elements.splice(itemIndex, 1)
+          this.$nextTick(() => {
+            this.slides[this.currentIndex].elements.splice(itemIndex, 0, nextData)
+          })
+        } else {
+          this.slides[this.currentIndex].elements.splice(itemIndex, 1, nextData)
+        }
+        // this.$nextTick(() => {
+        //   console.log('notUpdate ==== window elementNotUpdate')
+        //   window.elementNotUpdate = false
+        // })
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
       } else if (d.type === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
