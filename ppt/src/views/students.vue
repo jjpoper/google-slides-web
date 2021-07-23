@@ -38,6 +38,7 @@
           <pptcontent
             :url="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
+            :meterialVisiable="meterialVisiable"
           />
         </div>
         <el-main
@@ -52,6 +53,7 @@
             <pptcontent
               :url="currentItemData.thumbnail_url"
               :filterAddedMediaList="filterAddedMediaList"
+              :meterialVisiable="meterialVisiable"
             />
           </div>
         </el-main>
@@ -89,6 +91,7 @@
             :fullScreenWidth="screenWidth"
             :screenWidth="currentScreenWidth"
             :smallWindow="smallWindow"
+            :changeShowMetrial="changeShowMetrial"
           />
         </div>
       </el-container>
@@ -150,127 +153,6 @@
     <div id="diycolor_comment"></div>
   </div>
 </template>
-<style scoped>
-#diycolor_comment {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  display: none;
-  opacity: 0;
-  transition: opacity 150ms linear;
-  z-index: 9999;
-}
-.icon {
-  cursor: pointer;
-  z-index: 999;
-  position: fixed;
-  top: 60px;
-  right: 45%;
-}
-.deadline_info {
-  background-color: red;
-  opacity: 0.6;
-  height: 43px;
-  width: auto;
-  padding-left: 10px;
-  padding-right: 10px;
-  display: flex;
-  margin-left: 20px;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  border-radius: 5px;
-}
-.top_btn {
-  height: 50px;
-  width: auto;
-  position: fixed;
-  left: 20px;
-  top: 0;
-  align-items: center;
-  display: flex;
-  z-index: 999;
-}
-.online_status {
-  width: 50px;
-  height: 43px;
-  font-size: 30px;
-  line-height: 43px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-  margin-right: 20px;
-}
-.page {
-  width: 100%;
-  height: 100%;
-  min-width: 600px;
-  background-color: #e9eef3;
-}
-.block {
-  width: 100%;
-  height: 100%;
-}
-.scroll-student {
-  max-height: 700px;
-  background-color: #999;
-  overflow-y: scroll;
-}
-.scroll-mask {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: transparent;
-  z-index: 99999;
-}
-.sfooter {
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  background: #000000aa;
-  color: #fff;
-  z-index: 9999;
-}
-.sfooter div {
-  margin: 0 20px;
-}
-.page_index {
-  position: relative;
-  flex: 1;
-  padding-top: 20px;
-}
-.checkboxs {
-  margin-right: 10px;
-}
-.website {
-  width: 90%;
-  height: 100%;
-}
-.readchat {
-  font-size: 30px;
-  cursor: pointer;
-}
-.full_screen {
-  background-color: #000000;
-  opacity: 0.98;
-  z-index: 99999;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  cursor: pointer;
-}
-</style>
 <script>
 import pptcontent from "../components/pptcontent";
 import {
@@ -350,7 +232,8 @@ export default {
       smallWindow: false,
       smallWindowValue: 800,
       link: "",
-      allAddedMediaList: []
+      allAddedMediaList: [],
+      meterialVisiable: false
     };
   },
   computed: {
@@ -1033,7 +916,131 @@ export default {
         content: link
       });
       this.currentAnswerd = true;
+    },
+    changeShowMetrial(status) {
+      this.meterialVisiable = status
     }
   }
 };
 </script>
+<style scoped>
+#diycolor_comment {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: none;
+  opacity: 0;
+  transition: opacity 150ms linear;
+  z-index: 9999;
+}
+.icon {
+  cursor: pointer;
+  z-index: 999;
+  position: fixed;
+  top: 60px;
+  right: 45%;
+}
+.deadline_info {
+  background-color: red;
+  opacity: 0.6;
+  height: 43px;
+  width: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  margin-left: 20px;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 5px;
+}
+.top_btn {
+  height: 50px;
+  width: auto;
+  position: fixed;
+  left: 20px;
+  top: 0;
+  align-items: center;
+  display: flex;
+  z-index: 999;
+}
+.online_status {
+  width: 50px;
+  height: 43px;
+  font-size: 30px;
+  line-height: 43px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  margin-right: 20px;
+}
+.page {
+  width: 100%;
+  height: 100%;
+  min-width: 600px;
+  background-color: #e9eef3;
+}
+.block {
+  width: 100%;
+  height: 100%;
+}
+.scroll-student {
+  max-height: 700px;
+  background-color: #999;
+  overflow-y: scroll;
+}
+.scroll-mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  z-index: 99999;
+}
+.sfooter {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background: #000000aa;
+  color: #fff;
+  z-index: 9999;
+}
+.sfooter div {
+  margin: 0 20px;
+}
+.page_index {
+  position: relative;
+  flex: 1;
+  padding-top: 20px;
+}
+.checkboxs {
+  margin-right: 10px;
+}
+.website {
+  width: 90%;
+  height: 100%;
+}
+.readchat {
+  font-size: 30px;
+  cursor: pointer;
+}
+.full_screen {
+  background-color: #000000;
+  opacity: 0.98;
+  z-index: 99999;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+</style>
