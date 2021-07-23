@@ -2,8 +2,8 @@
 /* 白板实例 */
 import { showToast } from "@/utils/loading";
 // @ts-ignore
-import Text from './drawText'
-import DrawTextItem from './drawTextItem'
+import Text from './drawText';
+import DrawTextItem from './drawTextItem';
 
 export enum DrawTypeData {
   line = 'line',
@@ -16,7 +16,7 @@ export enum DrawTypeData {
 }
 
 type DrawType = 'line' | 'draw' | 'text' | 'marker' | 'rect' | 'circle' | 'polygon'
-type onDrawBack = (data: any) => void
+type onDrawBack = (data: any, str: any) => void
 type onDrawTextBack = (data: any) => void
 window.canvasPool = []
 window.drawPool = []
@@ -28,6 +28,9 @@ export default class Draw {
   private lineWidth = 2
   private canvas: any
   private cxt: any
+
+  private canvasText: any
+  private cxtText: any
   private stage_info = {
     left: 20,
     top: 20
@@ -93,11 +96,15 @@ export default class Draw {
 
   private isDrawing = false
 
-  constructor(el: string) {
+  constructor(el: string, elText: string) {
     // // console.log(el)
     this.el = el;
     this.canvas = document.getElementById(this.el);
     this.cxt = this.canvas.getContext("2d");
+
+    this.canvasText = document.getElementById(elText);
+    this.cxtText = this.canvasText.getContext("2d");
+
     this.canvasParant = this.canvas.parentNode
     // // console.log(this.stage_info.left, this.stage_info.top)
   }
@@ -118,6 +125,9 @@ export default class Draw {
   init(onDrawBack: onDrawBack, onDrawTextBack: onDrawTextBack, initUrl: string, page_id: string) {
     this.canvas.width = this.canvasWidth
     this.canvas.height = this.canvasHeight
+
+    this.canvasText.width = this.canvasWidth
+    this.canvasText.height = this.canvasHeight
     // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
     this.onDrawBack = onDrawBack;
     this.onDrawTextBack = onDrawTextBack;
@@ -778,10 +788,17 @@ export default class Draw {
     console.log('========= drawEnd', this.canTextarea);
     this.canvas.onmousemove = null;
     // // console.log();
+
     const base64Url = this.canvas.toDataURL("image/png");
-    this.callBackData(base64Url)
+    this.drawTextOnCanvas();
+    const imageUrl = this.canvasText.toDataURL("image/png");
+
+    this.callBackData(base64Url, imageUrl);
     // this.lastImageData = base64Url;
     // this.canvas.onmousemove = null
+
+
+
     window.drawPool.splice(++this.currentIndex, 0, base64Url);
   }
 
@@ -792,9 +809,40 @@ export default class Draw {
     // }
     this.addHistory();
     this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    this.cxtText.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    this.deleteChild();
+    window.textPool = [];
+
+
     this.drawEnd();
     this.polygonStartPoint.beginY = -1;
     this.polygonStartPoint.beginX = -1;
+  }
+
+  deleteChild() {
+    var e = this.canvasParant.childNodes;
+    for (let i = 0; i < e.length; i++) {
+      if (e[i].id.indexOf('editable_div') > -1) {
+        this.canvasParant.removeChild(e[i]);
+      }
+    }
+  }
+
+  drawTextOnCanvas() {
+    this.cxtText.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    for (let i = 0; i < window.textPool.length; i++) {
+      var item = window.textPool[i];
+      var pointer = {
+        x: item.left,
+        y: item.top
+      }
+      const text = new Text(pointer, item.innerText, item.fontSize, item.color, item.fontFamily);
+      text.draw(this.cxtText);
+
+    }
+
   }
 
   earse() {
@@ -804,6 +852,8 @@ export default class Draw {
     this.drawType = 'draw'
     this.cxt.globalCompositeOperation = "destination-out";
   }
+
+
 
   //更改undo的逻辑，不采用进出栈的方式，而是采用工作指针的方式
   //这样可以方便的进行撤销操作和撤销撤销的操作
@@ -824,7 +874,7 @@ export default class Draw {
     } else {
       const current = window.drawPool[--this.currentIndex] || ''
       this.initByBase64(current);
-      this.callBackData(current);
+      this.callBackData(current, '');
     }
   }
   redo() {
@@ -834,12 +884,12 @@ export default class Draw {
     } else {
       const current = window.drawPool[++this.currentIndex] || ''
       this.initByBase64(current);
-      this.callBackData(current);
+      this.callBackData(current, '');
     }
   }
 
-  callBackData(str: string) {
-    this.onDrawBack(str);
+  callBackData(str: string, text: string) {
+    this.onDrawBack(str, text);
     this.saveImageData()
   }
   callBackDrawText(str: DrawTextItem) {

@@ -255,7 +255,7 @@ export default {
     feedbackTimePanel,
     copyLinkDialog,
     StudentPacedNote,
-    StudentsQsModal,
+    StudentsQsModal
   },
 
   /*author: "yujj085@gmail.com"
@@ -333,14 +333,13 @@ type: "slide"*/
       }
     );
 
-
-    EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, (url) => {
+    EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, url => {
       this.addMediaList(url);
     });
-    EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, data => {
       this.updateMediaList(data);
     });
-    EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, data => {
       this.deleteMedia(data);
     });
   },
@@ -390,38 +389,43 @@ type: "slide"*/
   },
 
   methods: {
-    addMediaList({url, type}) {
-      const page_id = this.currentPageId
+    addMediaList({ url, type }) {
+      const page_id = this.currentPageId;
       // this.slides[this.currentIndex].elements.push({
       //   page_id,
       //   url,
       //   type
       // })
-      const itemData = JSON.stringify({"page_id": page_id,"url": url,"type": type, "position": {"x": 0,"y": 0, "w": 0,"h": 0}});
+      const itemData = JSON.stringify({
+        page_id: page_id,
+        url: url,
+        type: type,
+        position: { x: 0, y: 0, w: 0, h: 0 }
+      });
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
       );
     },
     updateMediaList(data) {
-      const page_id = this.currentPageId
-      const itemData = JSON.stringify({"page_id": page_id, ...data});
+      const page_id = this.currentPageId;
+      const itemData = JSON.stringify({ page_id: page_id, ...data });
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_UPDATE_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "id": "${data.id}", "data": ${itemData}}`
       );
     },
     deleteMedia(id) {
-      // delete-element 
+      // delete-element
       // request: {"token": "", "class_id", "id": 1}
-      console.log(id)
+      console.log(id);
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_DELETE_MEDIA,
         `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${this.currentPageId}", "id": "${id}"}`
       );
-      const list = this.slides[this.currentIndex].elements
-      const itemIndex = list.findIndex(item => id === item.id)
-      this.slides[this.currentIndex].elements.splice(itemIndex, 1)
+      const list = this.slides[this.currentIndex].elements;
+      const itemIndex = list.findIndex(item => id === item.id);
+      this.slides[this.currentIndex].elements.splice(itemIndex, 1);
     },
     onLineStatusChanged(status) {
       this.onLine = status;
@@ -480,16 +484,18 @@ type: "slide"*/
             } else if (itemData[0].type == "draw") {
               const user_id = studentId;
               const content = responseList[i].content;
+              const content1 = responseList[i].content1;
               const user_name = responseList[i].user_name;
               addTeacherData(pageId, itemData[0].type, {
                 user_id,
                 content,
+                content1,
                 user_name,
                 star: responseList[i].star,
                 show: responseList[i].show,
                 key: user_id
               });
-              EventBus.$emit("draw", { user_id, content, user_name });
+              EventBus.$emit("draw", { user_id, content, content1, user_name });
             } else if (
               itemData[0].type == "text" ||
               itemData[0].type == "number" ||
@@ -498,11 +504,13 @@ type: "slide"*/
             ) {
               const user_id = studentId;
               const content = responseList[i].content;
+              const content1 = responseList[i].content1;
               const user_name = responseList[i].user_name;
               const item_id = responseList[i].item_id;
               addTeacherData(pageId, itemData[0].type, {
                 user_id,
                 content,
+                content1,
                 user_name,
                 item_id,
                 star: responseList[i].star,
@@ -869,24 +877,24 @@ type: "slide"*/
         return;
       } else if (d.type === SocketEventsEnum.STUDENT_DELETE_PPT) {
         // 删除评论ppt消息
-        const index = this.markupslist.findIndex(item => item.id === d.id)
-        console.log('删除', index)
+        const index = this.markupslist.findIndex(item => item.id === d.id);
+        console.log("删除", index);
         this.markupslist.splice(index, 1);
-        this.$forceUpdate()
+        this.$forceUpdate();
         return;
       } else if (d.type === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         // const index = this.slides.findIndex(item => d.page_id === item.page_id)
         // this.slides[index].elements.push(d.data)
-        console.log('this.allAddedMediaList', 'STUDENT_ADD_MEDIA')
+        console.log("this.allAddedMediaList", "STUDENT_ADD_MEDIA");
         // const page_id = this.currentPageId
-        this.slides[this.currentIndex].elements.push(({id: d.id, ...d.data}))
+        this.slides[this.currentIndex].elements.push({ id: d.id, ...d.data });
       } else if (d.type === SocketEventsEnum.UPDATE_MEDIA_ELEMENT) {
         // this.slides[index].elements.push(d.data)
-        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
-        const {id} = d.data
-        const list = this.slides[this.currentIndex].elements
-        const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[this.currentIndex].elements[itemIndex] = d.data
+        console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
+        const { id } = d.data;
+        const list = this.slides[this.currentIndex].elements;
+        const itemIndex = list.findIndex(item => id === item.id);
+        this.slides[this.currentIndex].elements[itemIndex] = d.data;
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
       }
@@ -924,16 +932,17 @@ type: "slide"*/
         });
         EventBus.$emit(d.type, { user_id, page_id, item_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
-        const { content, type, user_id, user_name } = d;
+        const { content, content1, type, user_id, user_name } = d;
         addTeacherData(page_id, type, {
           user_id,
           content,
+          content1,
           star: false,
           show: true,
           key: user_id,
           user_name
         });
-        EventBus.$emit("draw", { user_id, content, user_name });
+        EventBus.$emit("draw", { user_id, content, content1, user_name });
       } else if (
         d.type == SocketEventsEnum.AUDIO_INPUT ||
         d.type == SocketEventsEnum.VIDEO_INPUT
@@ -985,7 +994,7 @@ type: "slide"*/
             //   hideLoading();
             // }
             this.getAllSlides();
-              hideLoading();
+            hideLoading();
           })
           .catch(res => {
             this.getAllSlides();
@@ -1002,12 +1011,12 @@ type: "slide"*/
       Promise.all([
         initTeacherData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([alldata, {pages: list, elements = []}]) => {
+      ]).then(([alldata, { pages: list, elements = [] }]) => {
         console.log(list);
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
-        this.allAddedMediaList = elements.filter(item => item.type !== 'tip')
+        this.allAddedMediaList = elements.filter(item => item.type !== "tip");
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;
@@ -1449,7 +1458,7 @@ type: "slide"*/
       this.stepOneDialog = false;
     },
     changeShowMetrial(status) {
-      this.meterialVisiable = status
+      this.meterialVisiable = status;
     }
   }
 };

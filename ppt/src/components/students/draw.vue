@@ -1,6 +1,10 @@
 <template>
   <div id="canvasouter">
-    <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
+    <div style="position:relative">
+      <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
+
+      <canvas id="textCanvas"></canvas>
+    </div>
 
     <!-- 颜色，多边形图形，直线，画笔，荧光笔，text box, 橡皮，朝左undo朝右恢复（参考classdojo), 清除键。 -->
 
@@ -325,7 +329,7 @@ export default {
     let outer = document.getElementById("canvasouter");
     outer.style.width = document.documentElement.clientWidth - 40 + "px";
     outer.style.height = document.documentElement.clientHeight - 40 + "px";
-    this.draw = new Draw("canvas");
+    this.draw = new Draw("canvas", "textCanvas");
     const initData = getStudentCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type
@@ -423,10 +427,10 @@ export default {
       this.draw.clearCanvas();
       this.hideModal();
     },
-    onDrawBack(dataStr) {
-      this.sendCanvas(dataStr);
+    onDrawBack(dataStr,str) {
+      this.sendCanvas(dataStr,str);
     },
-    onDrawTextBack(stringContent){
+    onDrawTextBack(stringContent) {
       this.sendDrawText(stringContent);
     },
     showModal() {
@@ -495,6 +499,9 @@ export default {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .colorList {
