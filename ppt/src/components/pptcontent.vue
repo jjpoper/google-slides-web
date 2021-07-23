@@ -6,7 +6,7 @@
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && rectMediaList && rectMediaList.length > 0">
         <template v-if="teacher">
           <VueDragResize v-for="(rect, index) in rectMediaList"
-            :key="rect.url"
+            :key="rect.id"
             :w="rect.width"
             :h="rect.height"
             :x="rect.left"
@@ -42,12 +42,12 @@
             }">
               <div class="dragselector">
                 <i
-                  class="el-icon-rank dragitem"
+                  class="el-icon-rank dragitem cursor"
                   style="font-size: 30px; color: #777"
                 ></i>
                 <i
                   v-if="rect.source !== 'add-on'"
-                  class="el-icon-delete"
+                  class="el-icon-delete cursor"
                   style="font-size: 30px; margin-left:10px; color: #777"
                   @click="deleteMedia(index)"
                 ></i>
@@ -165,6 +165,13 @@ export default {
     //     console.log(status)
     //   })
     // }
+
+    setTimeout(() => {
+      console.log('=====')
+      // this.rectMediaList[1].left = 0
+      this.$set(this.rectMediaList[1], 'left', 0)
+      // this.$forceUpdate()
+    }, 5000)
   },
   methods: {
     getIframe(url){
@@ -279,5 +286,8 @@ export default {
   display: flex;
   width: 100%;
   justify-content: center;
+}
+.cursor{
+  cursor: pointer;
 }
 </style>
