@@ -87,6 +87,7 @@
         <dashboard-meterial
           :pptUrl="currentItemData.thumbnail_url"
           :filterAddedMediaList="filterAddedMediaList"
+          :meterialVisiable="meterialVisiable"
         />
       </div>
     </div>
@@ -284,6 +285,10 @@ export default {
       function() {
         return [];
       },
+    },
+    meterialVisiable: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

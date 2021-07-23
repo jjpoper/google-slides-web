@@ -6,6 +6,7 @@
         :url="currentItemData.thumbnail_url"
         :teacher="true"
         :filterAddedMediaList="filterAddedMediaList"
+        :meterialVisiable="meterialVisiable"
       />
       <teacherIndexItem
         v-else-if="currentItemData && currentItemData.items[0]"
@@ -41,6 +42,10 @@ export default {
       },
     },
     showResponse: {
+      type: Boolean,
+      default: false,
+    },
+    meterialVisiable: {
       type: Boolean,
       default: false,
     },

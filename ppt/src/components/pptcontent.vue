@@ -104,6 +104,10 @@ export default {
     defaultShowMeterial: {
       type: Boolean,
       default: false,
+    },
+    meterialVisiable: {
+      type: Boolean,
+      default: false,
     }
   },
   computed: {
@@ -146,7 +150,6 @@ export default {
     return {
       width: 0,
       height: 0,
-      meterialVisiable: false,
     }
   },
   created() {
@@ -156,12 +159,12 @@ export default {
   mounted() {
     this.width = document.documentElement.clientWidth - 40;
     this.height = document.documentElement.clientHeight - 40;
-    if(!this.defaultShowMeterial) {
-      EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
-        this.meterialVisiable = status
-        console.log(status)
-      })
-    }
+    // if(!this.defaultShowMeterial) {
+    //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
+    //     this.meterialVisiable = status
+    //     console.log(status)
+    //   })
+    // }
   },
   methods: {
     getIframe(url){

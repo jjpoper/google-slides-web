@@ -16,6 +16,7 @@
           :currentAnswerCount="currentAnswerCount"
           :responseContentList="responseContentList"
           :filterAddedMediaList="filterAddedMediaList"
+          :meterialVisiable="meterialVisiable"
         />
 
         <DashboardPage
@@ -32,6 +33,7 @@
           :getStudentName="getStudentName"
           :page_model="page_model"
           :filterAddedMediaList="filterAddedMediaList"
+          :meterialVisiable="meterialVisiable"
           v-else-if="currentItemData && slides"
         />
       </div>
@@ -61,6 +63,7 @@
           :reopenClass="_reopenClass"
           :currentItemData="currentItemData"
           :setTimeDialogShow="setTimeDialogShow"
+          :changeShowMetrial="changeShowMetrial"
         />
       </div>
     </div>
@@ -307,6 +310,7 @@ type: "slide"*/
       questionModalVisiable: false,
       markupslist: [], // ppt comment列表
       allAddedMediaList: [],
+      meterialVisiable: false
     };
   },
   mounted() {
@@ -972,14 +976,16 @@ type: "slide"*/
       if (count < 20) {
         queryRefreshResult(code, token)
           .then(res => {
-            if (res.data.status === "processing") {
-              setTimeout(function() {
-                _this.queryResult(code, token, ++count);
-              }, 1000);
-            } else {
-              this.getAllSlides();
+            // if (res.data.status === "processing") {
+            //   setTimeout(function() {
+            //     _this.queryResult(code, token, ++count);
+            //   }, 1000);
+            // } else {
+            //   this.getAllSlides();
+            //   hideLoading();
+            // }
+            this.getAllSlides();
               hideLoading();
-            }
           })
           .catch(res => {
             this.getAllSlides();
@@ -1441,6 +1447,9 @@ type: "slide"*/
         });
       this.stepTwoDialog = true;
       this.stepOneDialog = false;
+    },
+    changeShowMetrial(status) {
+      this.meterialVisiable = status
     }
   }
 };

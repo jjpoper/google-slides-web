@@ -277,11 +277,15 @@ export default {
       default: () => {
         return {};
       }
-    }
+    },
+    changeShowMetrial: {
+      type: Function,
+    },
   },
   watch: {
     meterialVisiable() {
-      EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
+      // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
+      this.changeShowMetrial(this.meterialVisiable)
     }
   },
   components: {

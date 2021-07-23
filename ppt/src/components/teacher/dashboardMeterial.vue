@@ -4,6 +4,7 @@
       :url="pptUrl"
       :teacher="true"
       :filterAddedMediaList="filterAddedMediaList"
+      :meterialVisiable="meterialVisiable"
       :defaultShowMeterial="true"
     />
   </div>
@@ -24,7 +25,11 @@ export default {
     pptUrl: {
       type: String,
       default: ''
-    }
+    },
+    meterialVisiable: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
