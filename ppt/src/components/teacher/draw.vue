@@ -27,7 +27,12 @@
           <div
             class="canvasouterimg"
             :style="`width: ${width}px; height: ${height}px; background-image:url(${item.content})`"
-          ></div>
+          >
+            <div
+              class="canvasouterimg"
+              :style="`width: ${width}px; height: ${height}px; background-image:url(${item.content1})`"
+            ></div>
+          </div>
         </div>
         <student-response-opt-bar
           v-if="flag_1"
@@ -94,14 +99,15 @@ export default {
     // this.height = document.documentElement.clientHeight - 40;
   },
   methods: {
-    draw({ user_id, content, user_name }) {
+    draw({ user_id, content, content1, user_name }) {
       // console.log(data)
       // const cxt = this.cxt
       const index = this.imgUrls.findIndex(item => item.user_id === user_id);
       if (index > -1) {
         this.imgUrls[index].content = content;
+        this.imgUrls[index].content1 = content1;
       } else {
-        this.imgUrls.unshift({ user_id, content, user_name });
+        this.imgUrls.unshift({ user_id, content, content1, user_name });
       }
     },
     //返回当前这个item是否应该show出来
