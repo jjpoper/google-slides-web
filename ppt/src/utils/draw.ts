@@ -874,6 +874,8 @@ export default class Draw {
     } else {
       const current = window.drawPool[--this.currentIndex] || ''
       this.initByBase64(current);
+
+
       this.callBackData(current, '');
     }
   }
@@ -884,6 +886,8 @@ export default class Draw {
     } else {
       const current = window.drawPool[++this.currentIndex] || ''
       this.initByBase64(current);
+
+      
       this.callBackData(current, '');
     }
   }
