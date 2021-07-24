@@ -4,6 +4,8 @@ import { showToast } from "@/utils/loading";
 // @ts-ignore
 import Text from './drawText';
 import DrawTextItem from './drawTextItem';
+import { addElementItem, deleteElementItem } from '../model/index'
+import { connect } from 'echarts/core';
 
 export enum DrawTypeData {
   line = 'line',
@@ -28,6 +30,7 @@ export default class Draw {
   private lineWidth = 2
   private canvas: any
   private cxt: any
+  private sildeId = ""
 
   private canvasText: any
   private cxtText: any
@@ -40,17 +43,6 @@ export default class Draw {
   private polygonStartPoint = {//记录多边形的起始点
     beginX: -1,
     beginY: -1,
-  }
-
-  private editItem = {
-    id: '',
-    fontFamily: '',
-    top: '',
-    left: '',
-    content: '',
-    color: '',
-    fontSize: '',
-
   }
 
   private pointer = {
@@ -96,6 +88,8 @@ export default class Draw {
 
   private isDrawing = false
 
+  private textItems = [];
+
   constructor(el: string, elText: string) {
     // // console.log(el)
     this.el = el;
@@ -122,7 +116,7 @@ export default class Draw {
   //   };
   // }
 
-  init(onDrawBack: onDrawBack, onDrawTextBack: onDrawTextBack, initUrl: string, page_id: string) {
+  init(onDrawBack: onDrawBack, onDrawTextBack: onDrawTextBack, initUrl: string, page_id: string, sildeId: string, textItems: any) {
     this.canvas.width = this.canvasWidth
     this.canvas.height = this.canvasHeight
 
@@ -132,7 +126,10 @@ export default class Draw {
     this.onDrawBack = onDrawBack;
     this.onDrawTextBack = onDrawTextBack;
     this.page_id = page_id;
+    this.sildeId = sildeId;
+    this.textItems = textItems;
 
+    this.initTextItems();
     this.cxt.lineCap = "round";
     this.cxt.lineJoin = "round";
     // this.cxt.shadowBlur = 10;
@@ -291,39 +288,44 @@ export default class Draw {
 
   //可以使用两层 canvas
   //上面一层当drawType是text时才显现，用来保存图片的
-  createDom() {
-    let fontSize = Math.max(18, this.lineWidth) + "px";
-    const textarea = document.createElement('textarea');
-    textarea.id = 'textarea';
-    textarea.setAttribute("contenteditable", "true");
-    textarea.setAttribute("placeholder", "Please insert text");
-    textarea.setAttribute("rows", "3");
-    // textarea.autofocus = true;
-    //   textarea.placeholder = 'Please insert text';
-    textarea.style.position = 'absolute';
-    textarea.style.left = `${this.pointer.beginX}px`;
-    textarea.style.top = `${this.pointer.beginY}px`;
-    textarea.style.zIndex = '11';
-    textarea.style.fontSize = Math.max(18, this.lineWidth) + "px";
-    textarea.style.fontFamily = this.fontFamily;
-    textarea.style.background = "00000000";
-    textarea.style.color = this.strokeColor;
-    textarea.style.lineHeight = this.getLineHeight();
-    textarea.style.outline = "0";
-    textarea.style.minWidth = "20px";
-    textarea.style.minHeight = "auto";
+  // createDom() {
+  //   let fontSize = Math.max(18, this.lineWidth) + "px";
+  //   const textarea = document.createElement('textarea');
+  //   textarea.id = 'textarea';
+  //   textarea.setAttribute("contenteditable", "true");
+  //   textarea.setAttribute("placeholder", "Please insert text");
+  //   textarea.setAttribute("rows", "3");
+  //   // textarea.autofocus = true;
+  //   //   textarea.placeholder = 'Please insert text';
+  //   textarea.style.position = 'absolute';
+  //   textarea.style.left = `${this.pointer.beginX}px`;
+  //   textarea.style.top = `${this.pointer.beginY}px`;
+  //   textarea.style.zIndex = '11';
+  //   textarea.style.fontSize = Math.max(18, this.lineWidth) + "px";
+  //   textarea.style.fontFamily = this.fontFamily;
+  //   textarea.style.background = "00000000";
+  //   textarea.style.color = this.strokeColor;
+  //   textarea.style.lineHeight = this.getLineHeight();
+  //   textarea.style.outline = "0";
+  //   textarea.style.minWidth = "20px";
+  //   textarea.style.minHeight = "auto";
 
-    //  textarea.style.border = "2px solid #c2d4fd";
-    textarea.style.textAlign = "left";
-    this.cxt.font = `${fontSize}px ${this.fontFamily}`;
-    this.canvasParant.appendChild(textarea);
-    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
-    //   textarea.focus();
-    return textarea;
-  }
+  //   //  textarea.style.border = "2px solid #c2d4fd";
+  //   textarea.style.textAlign = "left";
+  //   this.cxt.font = `${fontSize}px ${this.fontFamily}`;
+  //   this.canvasParant.appendChild(textarea);
+  //   this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+  //   //   textarea.focus();
+  //   return textarea;
+  // }
 
+
+  //可以使用两层 canvas
+  //上面一层当drawType是text时才显现，用来保存图片的
   //创建一个可以编辑的div
-  createEditableDiv() {
+  createEditableDiv(textItem: any) {
+
+
 
     if (this.currentSelectEditableDiv) {
       if (!this.currentMouseOnEditableDeiv) {
@@ -340,39 +342,57 @@ export default class Draw {
     }
 
     let editableDiv = document.createElement('div');
-    editableDiv.setAttribute("contenteditable", "true");
 
-    editableDiv.id = "editable_div_" + this.page_id + "_" + window.textPool.length;
 
+
+
+    if (!textItem) {
+      var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
+      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX, this.pointer.beginY,
+        this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
+      // var drawTextItem = new DrawTextItem(this.page_id, editableDiv.id, this.pointer.beginX, this.pointer.beginY,
+      //   this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
+
+      this.currentSelectEditableDiv = editableDiv;
+      editableDiv.setAttribute("contenteditable", "true");
+
+      this.currentSelectEditableLeft = textItem.left;
+      this.currentSelectEditableTop = textItem.top;
+
+      let fontSize = Math.max(18, this.lineWidth) + "px";
+      this.cxt.font = `${fontSize}px ${this.fontFamily}`;
+      editableDiv.style.border = "2px solid #c2d4fd";
+
+      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+    } else {
+      editableDiv.style.border = "2px solid #c2d4fd00";
+    }
+
+
+    window.textPool.push(textItem);
+    editableDiv.id = textItem.self_id;
     editableDiv.style.position = 'fixed';
-    editableDiv.style.left = `${this.pointer.beginX}px`;
-    editableDiv.style.top = `${this.pointer.beginY}px`;
-    editableDiv.style.zIndex = '' + window.textPool.length;
-    editableDiv.style.fontFamily = this.fontFamily;
-    editableDiv.style.background = "00000000";
-    editableDiv.style.color = this.strokeColor;
+    editableDiv.style.left = `${textItem.left}px`;
+    editableDiv.style.top = `${textItem.top}px`;
+    // editableDiv.style.zIndex = '' + window.textPool.length;
+    editableDiv.style.fontFamily = textItem.fontFamily;
+    editableDiv.style.background = "#00000000";
+    editableDiv.style.color = textItem.color;
     editableDiv.style.outline = "0";
     editableDiv.style.minWidth = "20px";
     editableDiv.style.height = "auto";
-    editableDiv.style.fontSize = Math.max(18, this.lineWidth) + "px";
-    editableDiv.style.lineHeight = this.getLineHeight();
-    editableDiv.style.minHeight = this.getLineHeight();
+    editableDiv.style.fontSize = Math.max(18, textItem.fontSize) + "px";
+    editableDiv.style.lineHeight = Math.max(18, textItem.fontSize) + "px";
+    editableDiv.style.minHeight = Math.max(18, textItem.fontSize) + "px";
     editableDiv.style.padding = '10px 5px 10px 5px'
-    editableDiv.style.border = "2px solid #c2d4fd";
     editableDiv.style.borderRadius = '2px';
     editableDiv.style.textAlign = "left";
     editableDiv.style.userSelect = "none";
     editableDiv.style.msUserSelect = 'none';
-    // if (typeof editableDiv.onselectstart != 'undefined') {
-    //   editableDiv.onselectstart = function () { return false; };
-    // } else if (typeof editableDiv.style.msUserSelect != 'undefined') {
-    //   editableDiv.style.msUserSelect = 'none';
-    // } else {
-    //   editableDiv.onmousedown = function () { return false; }
-    // }
+    editableDiv.innerText = textItem.innerText;
 
-    this.currentSelectEditableLeft = this.pointer.beginX;
-    this.currentSelectEditableTop = this.pointer.beginY;
+
+
     let _this = this;
     editableDiv.onmousedown = function (ev) {
       if (_this.drawType != 'text') {
@@ -449,16 +469,8 @@ export default class Draw {
       //  _this.changeEditableDiv()
     })
 
-    let fontSize = Math.max(18, this.lineWidth) + "px";
-    this.cxt.font = `${fontSize}px ${this.fontFamily}`;
     this.canvasParant.appendChild(editableDiv);
-    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
 
-    this.currentSelectEditableDiv = editableDiv;
-
-    var drawTextItem = new DrawTextItem(this.page_id, editableDiv.id, this.pointer.beginX, this.pointer.beginY,
-      this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
-    window.textPool.push(drawTextItem);
     return editableDiv.id;
   }
 
@@ -466,7 +478,7 @@ export default class Draw {
     console.log('delete', _id);
     var children = this.canvasParant.children;
     for (let i = 0; i < window.textPool.length; i++) {
-      if (window.textPool[i].id == _id) {
+      if (window.textPool[i].self_id == _id) {
         window.textPool.splice(i, 1);
         break;
       }
@@ -479,19 +491,32 @@ export default class Draw {
     }
   }
 
+  initTextItems() {
+    window.textPool = [];
+    for (let i = 0; i < this.textItems.length; i++) {
+      var { type, content, id } = this.textItems[i];
+      if (type == "text") {
+        var text = JSON.parse(content);
+        text.id = id + "";
+        var result = this.createEditableDiv(text);
+        console.log(result);
+      }
+
+    }
+  }
+
   //改变值
   changeEditableDiv() {
 
     if (this.currentSelectEditableDiv) {
       for (let i = 0; i < window.textPool.length; i++) {
-        if (window.textPool[i].id == this.currentSelectEditableDiv.id) {
+        if (window.textPool[i].self_id == this.currentSelectEditableDiv.id) {
           window.textPool[i].left = parseInt(this.currentSelectEditableDiv.style.left);
           window.textPool[i].top = parseInt(this.currentSelectEditableDiv.style.top);
           window.textPool[i].color = this.currentSelectEditableDiv.style.color;
           window.textPool[i].fontFamily = this.currentSelectEditableDiv.style.fontFamily;
           window.textPool[i].innerText = this.currentSelectEditableDiv.innerText;
           window.textPool[i].fontSize = this.lineWidth;
-          // this.callBackDrawText(JSON.stringify(window.textPool[i]));
           console.log(window.textPool[i]);
           break;
         }
@@ -558,7 +583,7 @@ export default class Draw {
 
   drawText() {
 
-    this.createEditableDiv();
+    this.createEditableDiv(null);
     // if (this.canTextarea) {
 
     //   // 添加textarea文本框
@@ -581,29 +606,6 @@ export default class Draw {
     //   this.canvasParant.removeChild(textarea);
     //   this.canTextarea = true;
     // }
-  }
-
-  drawTextDirect(event: any) {
-    console.log(event.key);
-    if (this.drawType != "text") {
-      this.textString = "";
-      return;
-    }
-    let keyStr = event.key;
-    if (event.keyCode == 8 || event.keyCode == 46) {//删除
-      if (this.textString.length > 0) {
-        this.textString = this.textString.substring(0, this.textString.length - 1);
-      }
-    } else if (event.keyCode == 13) {//回车
-      this.textString += "\n";
-    } else {
-      this.textString += keyStr;
-    }
-    this.restoreImageData(this.imageData)
-    this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
-    const text = new Text(this.textPostion, this.textString, this.lineWidth, this.strokeColor, this.fontFamily);
-    text.draw(this.cxt);
-
   }
 
   drawing(e: any) {
@@ -798,7 +800,6 @@ export default class Draw {
     // this.canvas.onmousemove = null
 
 
-
     window.drawPool.splice(++this.currentIndex, 0, base64Url);
   }
 
@@ -813,6 +814,9 @@ export default class Draw {
     this.cxtText.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     this.deleteChild();
+    for (let i = 0; i < window.textPool.length; i++) {
+      this.deleteElementTextItem(window.textPool[i]);
+    }
     window.textPool = [];
 
 
@@ -840,7 +844,7 @@ export default class Draw {
       }
       const text = new Text(pointer, item.innerText, item.fontSize, item.color, item.fontFamily);
       text.draw(this.cxtText);
-
+      this.updateElementTextItem(item);
     }
 
   }
@@ -887,7 +891,7 @@ export default class Draw {
       const current = window.drawPool[++this.currentIndex] || ''
       this.initByBase64(current);
 
-      
+
       this.callBackData(current, '');
     }
   }
@@ -899,6 +903,37 @@ export default class Draw {
   callBackDrawText(str: DrawTextItem) {
     this.onDrawTextBack(str);
     console.log(str, 'send msg ======>>>');
+  }
+
+  addElementTextItem(content: DrawTextItem) {
+    addElementItem(this.sildeId, this.page_id, "text", JSON.stringify(content)).then((res: string) => {
+      content.id = res;
+    })
+  }
+
+  deleteElementTextItem(content: DrawTextItem) {
+
+    if (!content.id || content.id == "") {
+      console.log('not commit');
+      return;
+    }
+    deleteElementItem(parseInt(content.id)).then((res: string) => {
+      console.log(res);
+    })
+
+  }
+
+  updateElementTextItem(content: DrawTextItem) {
+    if (!content.id || content.id == "") {
+      this.addElementTextItem(content);
+      return;
+    }
+    deleteElementItem(parseInt(content.id)).then((res: string) => {
+      if (res == "ok") {
+        content.id = "";
+        this.addElementTextItem(content);
+      }
+    })
   }
 
 }

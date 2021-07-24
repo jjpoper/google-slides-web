@@ -5,8 +5,9 @@ class DrawTextItem {
     public fontFamily: string;
     public innerText: string;
     public color: string;
-    public id: string;
+    public self_id: string;
     public page_id: string;
+    public id="";
     constructor(page_id: string, id: string, left: number, top: number, fontSize: number, fontFamily: string, innerText: string, color: string) {
         this.left = left;
         this.top = top;
@@ -14,7 +15,7 @@ class DrawTextItem {
         this.fontFamily = fontFamily;
         this.innerText = innerText;
         this.color = color;
-        this.id = id;
+        this.self_id = id;
         this.page_id = page_id;
     }
 

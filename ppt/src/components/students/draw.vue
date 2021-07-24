@@ -293,6 +293,10 @@ export default {
     url: {
       type: String,
       default: ""
+    },
+    slide_id: {
+      type: String,
+      default: ""
     }
   },
   data() {
@@ -339,7 +343,9 @@ export default {
         this.onDrawBack,
         this.onDrawTextBack,
         initData && initData[0] ? initData[0].content : "",
-        this.data.page_id
+        this.data.page_id,
+        this.slide_id,
+        this.data.elements
       );
     });
 
@@ -427,8 +433,8 @@ export default {
       this.draw.clearCanvas();
       this.hideModal();
     },
-    onDrawBack(dataStr,str) {
-      this.sendCanvas(dataStr,str);
+    onDrawBack(dataStr, str) {
+      this.sendCanvas(dataStr, str);
     },
     onDrawTextBack(stringContent) {
       this.sendDrawText(stringContent);

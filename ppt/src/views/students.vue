@@ -69,6 +69,7 @@
             :answer="answerChoice"
             :sendCanvas="sendCanvas"
             :sendDrawText="sendDrawText"
+            :slide_id="slide_id"
             :url="currentItemData.thumbnail_url"
             :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
             :link="link"

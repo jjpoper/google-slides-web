@@ -1,5 +1,6 @@
 import axios from 'axios';
 import PPT from '../utils/pptConfig'
+import { connect } from 'echarts/core';
 
 export const getItem = ({
   slideid,
@@ -18,13 +19,13 @@ export const getAllPPTS = async (slideid: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/get_all`, {
     slide_id: slideid,
   })
-  let {pages = []} = data.data.data
+  let { pages = [] } = data.data.data
   // console.log(data.data.data)
   try {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'
     // })
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return {
@@ -377,8 +378,47 @@ export const getOnlineImage = async (url: string) => {
   let result = ''
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
   }
   return result;
+}
+
+
+export const addElementItem = async (slideId: string, pageId: string, type: string, content: string) => {
+
+
+  var param = {
+    type: type,
+    content: content
+  }
+  const data = await axios.post(`${PPT.requestUrl}slide/elements/add`, {
+    slide_id: slideId,
+    page_id: pageId,
+    data: param
+  })
+  let result = ''
+  try {
+    result = data.data.data.id
+  } catch (e) {
+    // console.log(e)
+  }
+  return result;
+
+}
+
+export const deleteElementItem = async (id: number) => {
+
+  const data = await axios.post(`${PPT.requestUrl}slide/elements/delete`, {
+    id: id
+  })
+  let result = ''
+  console.log(data)
+  try {
+    result = data.data.code
+  } catch (e) {
+    // console.log(e)
+  }
+  return result;
+
 }
