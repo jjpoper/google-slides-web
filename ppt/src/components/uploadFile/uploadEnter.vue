@@ -48,6 +48,10 @@
         <div v-if="showIframe" class="iframeyoutube">
           <iframe width="400" height="300" :src="withKeyUrl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
+        <div class="time">
+          <el-input v-model="starttime" placeholder="start" type="number"/>
+          <el-input v-model="endtime" placeholder="end" type="number" style="margin-left:10px"/>
+        </div>
         <el-button type="primary" @click="nextYoutube">next</el-button>
       </div>
     </el-dialog>
@@ -96,7 +100,9 @@ export default {
       showImageSearch: false,
       imagesList: [],
       imageName: '',
-      imageSelectedIndex: -1
+      imageSelectedIndex: -1,
+      starttime: 0,
+      endtime: 0
     }
   },
   mounted() {
@@ -127,9 +133,10 @@ export default {
     },
     nextYoutube() {
       if(this.withKeyUrl) {
+        const url = `${this.withKeyUrl}?start=${this.starttime}`
         EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
           type: 'iframe',
-          url: this.withKeyUrl
+          url: this.endtime > 0 ? `${url}&end=${this.endtime}` : url,
         });
         this.showYoutube = false
       }
@@ -138,6 +145,8 @@ export default {
       this.youtubeurl = null
       this.withKeyUrl = null
       this.showIframe = false
+      this.endtime = 0
+      this.starttime = 0
     },
     addDrive() {
       GooglePicker.init((type, res) => {
@@ -253,5 +262,11 @@ export default {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+}
+.time{
+  display: flex;
+  flex-direction: row;
+  width: 200px;
+  align-items: center;
 }
 </style>
