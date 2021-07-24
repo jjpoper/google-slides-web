@@ -403,7 +403,7 @@ export const addElementItem = async (slideId: string, pageId: string, type: stri
   } catch (e) {
     // console.log(e)
   }
-  return result;
+  return parseInt(result);
 
 }
 
@@ -413,7 +413,26 @@ export const deleteElementItem = async (id: number) => {
     id: id
   })
   let result = ''
-  console.log(data)
+  try {
+    result = data.data.code
+  } catch (e) {
+    // console.log(e)
+  }
+  return result;
+
+}
+
+export const updateElementItem = async (id: number, content: string, type: string) => {
+
+  var param = {
+    type: type,
+    content: content
+  }
+  const data = await axios.post(`${PPT.requestUrl}slide/elements/update`, {
+    id: id,
+    data: param
+  })
+  let result = ''
   try {
     result = data.data.code
   } catch (e) {

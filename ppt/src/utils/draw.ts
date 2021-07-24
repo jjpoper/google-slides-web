@@ -4,7 +4,7 @@ import { showToast } from "@/utils/loading";
 // @ts-ignore
 import Text from './drawText';
 import DrawTextItem from './drawTextItem';
-import { addElementItem, deleteElementItem } from '../model/index'
+import { addElementItem, deleteElementItem, updateElementItem } from '../model/index'
 import { connect } from 'echarts/core';
 
 export enum DrawTypeData {
@@ -23,6 +23,7 @@ type onDrawTextBack = (data: any) => void
 window.canvasPool = []
 window.drawPool = []
 window.textPool = []
+window.textOptsPool = []
 
 export default class Draw {
   private el: any
@@ -190,8 +191,21 @@ export default class Draw {
       window.drawPool = [];
       const base64Url = this.canvas.toDataURL("image/png");
       window.drawPool.splice(++this.currentIndex, 0, base64Url);
+
+      window.textOptsPool = [];
+      window.textOptsPool.splice(this.currentIndex, 0, this.copyWindowTextPool());
     }
 
+  }
+  copyWindowTextPool() {
+    var list = [];
+    for (let i = 0; i < window.textPool.length; i++) {
+      var item = new DrawTextItem(window.textPool[i].page_id, window.textPool[i].self_id, window.textPool[i].left,
+        window.textPool[i].top, window.textPool[i].fontSize, window.textPool[i].fontFamily, window.textPool[i].innerText, window.textPool[i].color);
+      item.id = window.textPool[i].id;
+      list.push(item);
+    }
+    return list;
   }
 
   onMouseDown() {
@@ -257,7 +271,6 @@ export default class Draw {
       if (this.currentSelectEditableDiv) {
         this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
-        this.changeEditableDiv();
       }
     }
 
@@ -327,7 +340,7 @@ export default class Draw {
 
 
 
-    if (this.currentSelectEditableDiv) {
+    if (this.currentSelectEditableDiv && !textItem) {
       if (!this.currentMouseOnEditableDeiv) {
         this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
         if (!this.currentSelectEditableDiv.innerText || this.currentSelectEditableDiv.innerText.length < 1) {
@@ -350,8 +363,6 @@ export default class Draw {
       var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
       textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX, this.pointer.beginY,
         this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
-      // var drawTextItem = new DrawTextItem(this.page_id, editableDiv.id, this.pointer.beginX, this.pointer.beginY,
-      //   this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
 
       this.currentSelectEditableDiv = editableDiv;
       editableDiv.setAttribute("contenteditable", "true");
@@ -479,6 +490,7 @@ export default class Draw {
     var children = this.canvasParant.children;
     for (let i = 0; i < window.textPool.length; i++) {
       if (window.textPool[i].self_id == _id) {
+        this.deleteElementTextItem(window.textPool[i]);
         window.textPool.splice(i, 1);
         break;
       }
@@ -498,6 +510,7 @@ export default class Draw {
       if (type == "text") {
         var text = JSON.parse(content);
         text.id = id + "";
+        console.log(text);
         var result = this.createEditableDiv(text);
         console.log(result);
       }
@@ -517,11 +530,12 @@ export default class Draw {
           window.textPool[i].fontFamily = this.currentSelectEditableDiv.style.fontFamily;
           window.textPool[i].innerText = this.currentSelectEditableDiv.innerText;
           window.textPool[i].fontSize = this.lineWidth;
-          console.log(window.textPool[i]);
           break;
         }
       }
     }
+
+
 
 
   }
@@ -584,28 +598,6 @@ export default class Draw {
   drawText() {
 
     this.createEditableDiv(null);
-    // if (this.canTextarea) {
-
-    //   // 添加textarea文本框
-    //   const textarea = this.createDom();
-    //   // @ts-ignore
-    //   document.getElementById('textarea').focus();
-    //   this.canTextarea = false;
-    // } else {
-    //   // 绘制textarea文本
-    //   const textarea = document.getElementById('textarea');
-    //   // @ts-ignore
-    //   const tValue = textarea.value
-    //   if (tValue) {
-    //     console.log('text end draw!!')
-    //     this.addHistory();
-    //     const text = new Text(this.textPostion, tValue, this.lineWidth, this.strokeColor, this.fontFamily);
-    //     text.draw(this.cxt);
-    //     //  this.drawEnd() 防止重复调用
-    //   }
-    //   this.canvasParant.removeChild(textarea);
-    //   this.canTextarea = true;
-    // }
   }
 
   drawing(e: any) {
@@ -647,15 +639,6 @@ export default class Draw {
     }
 
     this.drawLine();
-    // let current = new Date().getTime();
-    // if (current - this.beginTime < 800) {
-    //   this.beginTime = current;
-    // } else {
-    //   this.saveImageData();
-    //   this.beginTime = current;
-    //   this.pointer.beginX = this.pointer.endX;
-    //   this.pointer.beginY = this.pointer.endY;
-    // }
   }
 
   // 画椭圆
@@ -784,6 +767,7 @@ export default class Draw {
     // console.log('====== addHistory')
     const base64Url = this.canvas.toDataURL("image/png");
     window.canvasPool.push(base64Url);
+    //保存当前text的
   }
 
   drawEnd() {
@@ -801,6 +785,8 @@ export default class Draw {
 
 
     window.drawPool.splice(++this.currentIndex, 0, base64Url);
+
+    window.textOptsPool.splice(this.currentIndex, 0, this.copyWindowTextPool());
   }
 
   clearCanvas() {
@@ -827,9 +813,12 @@ export default class Draw {
 
   deleteChild() {
     var e = this.canvasParant.childNodes;
-    for (let i = 0; i < e.length; i++) {
+    for (let i = 0; i < e.length;) {
+      console.log(e[i].id)
       if (e[i].id.indexOf('editable_div') > -1) {
         this.canvasParant.removeChild(e[i]);
+      } else {
+        i++;
       }
     }
   }
@@ -842,8 +831,10 @@ export default class Draw {
         x: item.left,
         y: item.top
       }
-      const text = new Text(pointer, item.innerText, item.fontSize, item.color, item.fontFamily);
-      text.draw(this.cxtText);
+      if (item.innerText && item.innerText.length > 0) {
+        const text = new Text(pointer, item.innerText, item.fontSize, item.color, item.fontFamily);
+        text.draw(this.cxtText);
+      }
       this.updateElementTextItem(item);
     }
 
@@ -872,7 +863,8 @@ export default class Draw {
     // } else {
     //   showToast("this is last step");
     // }
-    console.log(window.drawPool.length, this.currentIndex, "---");
+
+    console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "---");
     if (this.currentIndex <= 0) {
       showToast("this is last step");
     } else {
@@ -880,20 +872,54 @@ export default class Draw {
       this.initByBase64(current);
 
 
-      this.callBackData(current, '');
+      this.resetTextChildren();
+      this.drawTextOnCanvas();
+
+
+      const imageUrl = this.canvasText.toDataURL("image/png");
+
+
+      this.callBackData(current, imageUrl);
     }
   }
   redo() {
-    console.log(window.drawPool.length, this.currentIndex, "++++");
+    console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "+++");
     if (this.currentIndex == window.drawPool.length - 1) {
       showToast("this is last step");
     } else {
       const current = window.drawPool[++this.currentIndex] || ''
+
+
       this.initByBase64(current);
 
+      this.resetTextChildren();
+      this.drawTextOnCanvas();
+      const imageUrl = this.canvasText.toDataURL("image/png");
 
-      this.callBackData(current, '');
+
+      this.callBackData(current, imageUrl);
     }
+  }
+
+  resetTextChildren() {
+    //第一步把所有的text item都删除掉
+
+    this.deleteChild();
+    for (let i = 0; i < window.textPool.length; i++) {
+      this.deleteElementTextItem(window.textPool[i]);
+    }
+    window.textPool = [];
+
+
+    //第二步，取出存储的text item
+    var textContent = window.textOptsPool[this.currentIndex];
+
+    // console.log(textContent, "resetTextChildren")
+    for (let i = 0; i < textContent.length; i++) {
+      this.createEditableDiv(textContent[i]);
+    }
+    // console.log(window.textPool, "resetTextChildren")
+
   }
 
   callBackData(str: string, text: string) {
@@ -905,35 +931,60 @@ export default class Draw {
     console.log(str, 'send msg ======>>>');
   }
 
+
+
   addElementTextItem(content: DrawTextItem) {
-    addElementItem(this.sildeId, this.page_id, "text", JSON.stringify(content)).then((res: string) => {
+    addElementItem(this.sildeId, this.page_id, "text", JSON.stringify(content)).then((res: number) => {
       content.id = res;
+      //更新相关item的id
+      for (let i = 0; i < window.textOptsPool.length; i++) {
+        var list = window.textOptsPool[i];
+        for (let j = 0; j < list.length; j++) {
+          if (list[j].self_id == content.self_id) {
+            list[j].id = res;
+          }
+        }
+      }
+      this.updateElementTextItem(content);
     })
   }
 
   deleteElementTextItem(content: DrawTextItem) {
 
-    if (!content.id || content.id == "") {
+    console.log(content, "deleteElementTextItem")
+    if (!content.id || content.id < 0) {
       console.log('not commit');
       return;
     }
-    deleteElementItem(parseInt(content.id)).then((res: string) => {
+    deleteElementItem(content.id).then((res: string) => {
       console.log(res);
     })
 
   }
 
   updateElementTextItem(content: DrawTextItem) {
-    if (!content.id || content.id == "") {
-      this.addElementTextItem(content);
-      return;
-    }
-    deleteElementItem(parseInt(content.id)).then((res: string) => {
-      if (res == "ok") {
-        content.id = "";
+
+
+    console.log(content, "updateElementTextItem");
+    if (!content.id || content.id < 0) {
+      if (content.innerText && content.innerText.length > 0) {
         this.addElementTextItem(content);
       }
+      return;
+    }
+
+    if (!content.innerText || content.innerText.length < 1) {
+      this.deleteElementTextItem(content);
+      return;
+    }
+
+    updateElementItem(content.id, JSON.stringify(content), "text").then((res) => {
+      console.log(res);
+    }).catch((res) => {
+      console.log("updata element error!" + res);
+      this.addElementTextItem(content);
     })
+
   }
 
 }
