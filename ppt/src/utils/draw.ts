@@ -6,6 +6,7 @@ import Text from './drawText';
 import DrawTextItem from './drawTextItem';
 import { addElementItem, deleteElementItem, updateElementItem } from '../model/index'
 import { connect } from 'echarts/core';
+import copy from "copy-to-clipboard";
 
 export enum DrawTypeData {
   line = 'line',
@@ -399,7 +400,6 @@ export default class Draw {
     editableDiv.style.borderRadius = '2px';
     editableDiv.style.textAlign = "left";
     editableDiv.style.userSelect = "none";
-    editableDiv.style.msUserSelect = 'none';
     editableDiv.innerText = textItem.innerText;
 
 
@@ -490,14 +490,13 @@ export default class Draw {
     var children = this.canvasParant.children;
     for (let i = 0; i < window.textPool.length; i++) {
       if (window.textPool[i].self_id == _id) {
-        this.deleteElementTextItem(window.textPool[i]);
         window.textPool.splice(i, 1);
         break;
       }
     }
     for (let i = 0; i < children.length; i++) {
       if (children[i].id == _id) {
-        this.canvasParant.removeChild(children[i]);
+        children[i].style.display = "none";
         break;
       }
     }
@@ -799,10 +798,7 @@ export default class Draw {
 
     this.cxtText.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.deleteChild();
-    for (let i = 0; i < window.textPool.length; i++) {
-      this.deleteElementTextItem(window.textPool[i]);
-    }
+    this.hindChildren();
     window.textPool = [];
 
 
@@ -811,14 +807,11 @@ export default class Draw {
     this.polygonStartPoint.beginX = -1;
   }
 
-  deleteChild() {
+  hindChildren() {
     var e = this.canvasParant.childNodes;
-    for (let i = 0; i < e.length;) {
-      console.log(e[i].id)
+    for (let i = 0; i < e.length; i++) {
       if (e[i].id.indexOf('editable_div') > -1) {
-        this.canvasParant.removeChild(e[i]);
-      } else {
-        i++;
+        e[i].style.display = "none";
       }
     }
   }
@@ -835,7 +828,6 @@ export default class Draw {
         const text = new Text(pointer, item.innerText, item.fontSize, item.color, item.fontFamily);
         text.draw(this.cxtText);
       }
-      this.updateElementTextItem(item);
     }
 
   }
@@ -854,16 +846,6 @@ export default class Draw {
   //这样可以方便的进行撤销操作和撤销撤销的操作
   //
   undo() {
-    //  console.log(window.canvasPool, '=========');
-    // if (window.canvasPool.length > 0) {
-    //   const current = window.canvasPool.pop() || ''
-    //   this.initByBase64(current);
-    //   this.callBackData(current);
-    //   window.drawPool.push(current);
-    // } else {
-    //   showToast("this is last step");
-    // }
-
     console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "---");
     if (this.currentIndex <= 0) {
       showToast("this is last step");
@@ -902,21 +884,40 @@ export default class Draw {
   }
 
   resetTextChildren() {
-    //第一步把所有的text item都删除掉
+    //第一步把所有的text 都隐藏掉
 
-    this.deleteChild();
-    for (let i = 0; i < window.textPool.length; i++) {
-      this.deleteElementTextItem(window.textPool[i]);
+    var e = this.canvasParant.childNodes;
+    for (let i = 0; i < e.length; i++) {
+      if ((e[i].id.indexOf('editable_div') > -1)) {
+        e[i].style.display = 'none';
+      }
     }
     window.textPool = [];
 
-
     //第二步，取出存储的text item
     var textContent = window.textOptsPool[this.currentIndex];
-
     // console.log(textContent, "resetTextChildren")
     for (let i = 0; i < textContent.length; i++) {
-      this.createEditableDiv(textContent[i]);
+      var copyItem = new DrawTextItem(textContent[i].page_id, textContent[i].self_id, textContent[i].left, textContent[i].top, textContent[i].fontSize, textContent[i].fontFamily,
+        textContent[i].innerText, textContent[i].color);
+      copyItem.id = textContent[i].id;
+      window.textPool.push(copyItem);
+      for (let j = 0; j < e.length; j++) {
+        if (e[j].id == textContent[i].self_id) {
+          var editableDiv = e[j];
+          e[j].style.display = "block";
+          editableDiv.style.left = `${copyItem.left}px`;
+          editableDiv.style.top = `${copyItem.top}px`;
+          editableDiv.style.fontFamily = copyItem.fontFamily;
+          editableDiv.style.background = "#00000000";
+          editableDiv.style.color = copyItem.color;
+          editableDiv.style.fontSize = Math.max(18, copyItem.fontSize) + "px";
+          editableDiv.style.lineHeight = Math.max(18, copyItem.fontSize) + "px";
+          editableDiv.style.minHeight = Math.max(18, copyItem.fontSize) + "px";
+          editableDiv.innerText = copyItem.innerText;
+          break;
+        }
+      }
     }
     // console.log(window.textPool, "resetTextChildren")
 
@@ -984,6 +985,38 @@ export default class Draw {
       console.log("updata element error!" + res);
       this.addElementTextItem(content);
     })
+
+  }
+
+  //在用户关闭或者刷新页面时进行提交操作
+  //这时候，window.textOptPool的第一个元素存储了所有的已经在服务器上的text 元素
+  //windwo.textPool中存储的是当前的元素，我们需要做一个对比，该更新的更新，该新添的新添，该删除的删除
+
+  commitTextItem() {
+    console.log('do net work commit');
+    var initialTexts = window.textOptsPool[0];//最开始从服务器上拉取下来的
+    var currentTexts = window.textPool;//当前页面上有的
+    //1 判断是否需要删除
+    if (initialTexts) {
+      for (let i = 0; i < initialTexts.length; i++) {
+        var item = initialTexts[i];
+        var find = false;
+        for (let j = 0; j < currentTexts.length; j++) {
+          if (item.self_id == currentTexts[j].self_id) {
+            find = true;
+            break;
+          }
+        }
+        //如果没有找到说明已经被删除了。
+        if (!find) {
+          this.deleteElementTextItem(item);
+        }
+      }
+    }
+
+    for (let i = 0; i < currentTexts.length; i++) {
+      this.updateElementTextItem(currentTexts[i]);
+    }
 
   }
 
