@@ -40,7 +40,7 @@
           style="font-size: 30px; color: #777"
         ></i>
         <i
-          v-if="rect.source !== 'add-on'"
+          v-if="rect.source !== 'add-on' && teacher"
           class="el-icon-delete cursor"
           style="font-size: 30px; margin-left:10px; color: #777"
           @click="deleteMedia(index)"
@@ -89,6 +89,10 @@ export default {
     deleteMedia: {
       type: Function,
       default: () => null
+    },
+    teacher: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -103,7 +107,7 @@ export default {
       return url
     },
     changeData(newRect, index) {
-      if(window.isWindowActive) {
+      if(this.teacher && window.isWindowActive) {
         this.update(newRect, index)
       }
     },

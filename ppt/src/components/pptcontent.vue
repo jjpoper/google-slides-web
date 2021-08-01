@@ -4,13 +4,14 @@
     </div>
     <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && rectMediaList && rectMediaList.length > 0">
-        <template v-if="teacher">
+        <template>
           <element-drag v-for="(rect, index) in rectMediaList" :key="rect.id"
             :index="index" :rect="rect" :update="update" :deleteMedia="deleteMedia"
             :parentWidth="width"
+            :teacher="teacher"
             :parentHeight="height"/>
         </template>
-        <template v-else>
+        <!-- <template v-else>
           <div v-for="rect in rectMediaList"
             :key="rect.url"
             :style="`width:${rect.width}px; height: ${rect.height}px; left:${rect.left}px;top:${rect.top}px;z-index:1;position: absolute`"
@@ -22,7 +23,7 @@
                 <iframe style="width:100%; height: 100%;" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               </div>
           </div>
-        </template>
+        </template> -->
     </div>
   </div>
 </template>
@@ -70,13 +71,21 @@ export default {
           h = 150,
           height = 150
         }} = item
-        return {
+        const params = this.teacher ? {
           'width': w || 150,
           'height': h || height || 150,
           'top': y,
           'left': x,
-          'draggable': this.teacher,
-          'resizable': this.teacher,
+        } : {
+          'width': 150,
+          'height': 150,
+          'top': 0,
+          'left': 0
+        }
+        return {
+          ...params,
+          'draggable': true,
+          'resizable': true,
           'minw': 50,
           'minh': 50,
           'axis': 'both',
