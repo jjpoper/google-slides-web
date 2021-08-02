@@ -231,6 +231,7 @@ export default {
   background-image: url(../../assets/picture/exchange.png);
   background-repeat: no-repeat;
   background-size: 50px 50px;
+  cursor: pointer;
 }
 .pptimage{
   width: 321px;
