@@ -249,7 +249,7 @@ export default {
   cursor: pointer;
   display: flex;
   align-items: center;
-  margin-right: 50px;
+  margin: 0 25px;
 }
 .aligncenter{
   display: flex;

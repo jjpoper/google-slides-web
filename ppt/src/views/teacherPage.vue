@@ -559,7 +559,7 @@ type: "slide"*/
         value,
         commentType,
         teacherName,
-        slideIndex: this.currentIndex + 1,
+        slideIndex: parseInt(this.currentIndex) + 1,
         room: this.slide_id
       });
       console.log(itemData);

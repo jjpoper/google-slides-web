@@ -77,7 +77,11 @@
         </el-aside>
         <div class="right-fix-area">
           <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
-          <student-comment />
+          <student-comment
+            :currentIndex="parseInt(currentIndex)"
+            :slides="slides"
+            :hidePropsStudentModal="showStudentModal"
+          />
         </div>
 
         <div class="sfooter" v-if="slides && slides.length > 0">
