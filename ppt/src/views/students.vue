@@ -708,15 +708,7 @@ export default {
       const {
         item: {
           studentId,
-          pageId,
-          itemId,
-          title,
-          time,
-          value,
-          teacherName,
-          slideIndex
-        },
-        user_id
+        }
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid

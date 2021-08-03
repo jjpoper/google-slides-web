@@ -553,6 +553,7 @@ type: "slide"*/
         type: SocketEventsEnum.TEACHER_COMMENT,
         studentId,
         pageId,
+        page_id: pageId,
         itemId,
         title,
         time,

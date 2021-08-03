@@ -5,50 +5,70 @@
       <i @click="hidecomment"></i>
     </div>
     <div class="feeditem" v-for="(item, index) in commentList" :key="index.toString()">
-      <p class="itemtile">slide {{item.slideIndex}}</p>
-      <div class="feedinner">
-        <div class="rightcontent">
-          <div v-show="!slidesVisiable[index]">
-            <div class="right-answer" v-if="item.title.indexOf('data:image/') > -1">
-              <div class="pptimage">
-                <base64image :url="item.title" />
+      <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
+      <div :class="`readed ${unreadIdList.indexOf(item.id) > -1 ? 'unread' : ''}`">
+        <div class="feedinner">
+          <div class="rightcontent">
+            <div v-show="!slidesVisiable[index]">
+              <div class="right-answer" v-if="item.title.indexOf('data:image/') > -1">
+                <div class="pptimage">
+                  <base64image :url="item.title" />
+                </div>
               </div>
-            </div>
-            <div class="right-answer" v-else-if="item.title.indexOf('[') > -1">
-              <p v-for="(text,index) in JSON.parse(item.title)" :key="index">{{text}}</p>
-            </div>
-            <div class="right-answer" v-else>{{item.title}}</div>
-          </div>
-          <template v-if="getUrl(item.slideIndex)">
-            <div class="pptitemouter" v-show="slidesVisiable[index]">
-              <div class="pptitem" >
-                <div class="pptimage" :style="`background-image:url(${getUrl(item.slideIndex)})`"></div>
+              <div class="right-answer" v-else-if="item.title.indexOf('.mp3') > -1">
+                <div class="pptimage">
+                  <audio
+                    preload="meta"
+                    controlslist="nodownload" controls=""
+                    :src="item.title" style="width:80%;"/>
+                </div>
               </div>
-              <div class="stpage">{{item.slideIndex}} / {{slides.length}}</div>
+              <div class="right-answer" v-else-if="item.title.indexOf('.webm') > -1">
+                <div class="pptimage">
+                  <video
+                    controlslist="nodownload" controls=""
+                    preload="meta"
+                    :src="item.title" style="width:80%;"/>
+                </div>
+              </div>
+              <div class="right-answer" v-else-if="item.title.indexOf('[') > -1">
+                <p v-for="(text,index) in JSON.parse(item.title)" :key="index">{{text}}</p>
+              </div>
+              <div class="right-answer" v-else>{{item.title}}</div>
             </div>
-          </template>
-          <div class="rightbutton" @click="setVis(index)" v-if="getButtonVis(item.slideIndex)"></div>
-        </div>
-        <div class="rightcomment">
-          <div class="puserinfo">
-            <p class="uname">{{item.teacherName}}</p>
-            <p class="utime">{{item.time}}</p>
-            <i class="uicon">{{item.teacherName.split("")[0]}}</i>
+            <template v-if="getUrl(item.pageId)">
+              <div class="pptitemouter" v-show="slidesVisiable[index]">
+                <div class="pptitem" >
+                  <div class="pptimage" :style="`background-image:url(${getUrl(item.pageId)})`"></div>
+                </div>
+                <div class="stpage">{{getIndex(item.pageId)}} / {{slides.length}}</div>
+              </div>
+            </template>
+            <div class="rightbutton" @click="setVis(index)" v-if="getButtonVis(item.pageId)"></div>
           </div>
-          <div class="rightcommentmediadetail"
-            v-if="item.commentType === 'video' || item.commentType === 'audio'">
-            <video
-              v-if="item.commentType === 'video'"
-              controlslist="nodownload" controls="" 
-              :src="item.value" style="width:80%;"/>
-            <audio
-              v-else-if="item.commentType === 'audio'"
+          <div class="rightcomment">
+            <div class="puserinfo">
+              <p class="uname">{{item.teacherName}}</p>
+              <p class="utime">{{item.time}}</p>
+              <i class="uicon">{{item.teacherName.split("")[0]}}</i>
+            </div>
+            <div class="rightcommentmediadetail"
+              v-if="item.commentType === 'video' || item.commentType === 'audio'">
+              <video
+                v-if="item.commentType === 'video'"
+                preload="meta"
+                controlslist="nodownload" controls="" 
+                :src="item.value" style="width:80%;"/>
+              <audio
+                v-else-if="item.commentType === 'audio'"
+                preload="meta"
                 controlslist="nodownload" controls=""
                 :src="item.value" style="width:80%;"/>
-          </div>
-          <div class="rightcommenttextdetail"
-            v-else>
-            {{ item.value }}
+            </div>
+            <div class="rightcommenttextdetail"
+              v-else>
+              {{ item.value }}
+            </div>
           </div>
         </div>
       </div>
@@ -57,7 +77,7 @@
 </template>
 <script>
 import { ModalEventsNameEnum } from "@/socket/socketEvents";
-import { getStudentCommentList } from "@/model/store.student";
+import { getStudentCommentList, getUnreadStudentCommentIds, removeUnreadStudentCommentId } from "@/model/store.student";
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
 export default {
@@ -82,7 +102,8 @@ export default {
       modalVisibale: false,
       commentList: [],
       webHeight: window.winHeight  - 50,
-      slidesVisiable: []
+      slidesVisiable: [],
+      unreadIdList: []
     }
   },
   components: { base64image },
@@ -102,23 +123,7 @@ export default {
   },
   methods: {
     showStudentModal() {
-      const list = getStudentCommentList();
-      // let newMap = {}
-      // for(let i = 0; i < list.length; i++) {
-      //   const item = list[i]
-      //   const {itemId, slideIndex} = item
-      //   if(newMap[itemId]) {
-      //     newMap[itemId].items.push(item)
-      //   } else {
-      //     newMap[itemId] = {
-      //       slideIndex,
-      //       items: [item]
-      //     }
-      //   }
-      // }
-
-      this.commentList = list;
-      console.log(list);
+      this.refreshList()
       this.modalVisibale = true;
     },
     hideStudentModal() {
@@ -127,20 +132,25 @@ export default {
     },
     refreshList() {
       const list = getStudentCommentList();
+      this.unreadIdList = getUnreadStudentCommentIds()
       this.commentList = list;
+      console.log(list, this.unreadIdList);
       showToast("new messages loaded");
     },
-    getUrl(slideIndex) {
-      const index = parseInt(slideIndex)
-      const item = this.slides[index]
+    getIndex(page_id) {
+      const index = this.slides.findIndex(item => item.page_id === page_id)
+      return index + 1
+    },
+    getUrl(page_id) {
+      const item = this.slides.filter(item => item.page_id === page_id)[0]
       return item ? item.thumbnail_url : false
       return "https://dev.api.newzealand.actself.me/20210801094156/SLIDES_API539350515_0.png"
       // return item.thumbnail_url
     },
-    getButtonVis(slideIndex) {
-      const index = parseInt(slideIndex)
+    getButtonVis(page_id) {
+      const index = this.slides.findIndex(item => item.page_id === page_id)
       if(index == this.currentIndex) return false
-      return this.getUrl(slideIndex)
+      return this.getUrl(page_id)
     },
     setVis(index){
       this.slidesVisiable[index] = !this.slidesVisiable[index]
@@ -202,11 +212,26 @@ export default {
   opacity: 1;
 }
 .feedinner{
+  width: 477px;
+  background: #FFFFFF;
+  opacity: 1;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.readed{
+  border: 1px solid #DBDBDB;
   width: 489px;
   background: #FFFFFF;
-  border: 1px solid #DBDBDB;
-  opacity: 1;
+  overflow: hidden;
   border-radius: 6px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+.unread{
+  border-color: #15C39A;
+  background: #d0f3eb;
 }
 .rightcontent{
   border-bottom: 1px solid #DBDBDB;
@@ -219,15 +244,12 @@ export default {
 .right-answer {
   margin: 21px;
 }
-.feedinner{
-  position: relative;
-}
 .rightbutton{
   width: 50px;
   height: 50px;
   position: absolute;
   top:21px;
-  right: 25px;
+  right: 19px;
   background-image: url(../../assets/picture/exchange.png);
   background-repeat: no-repeat;
   background-size: 50px 50px;
@@ -244,6 +266,9 @@ export default {
   background-size: contain;
   background-position: center;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .stpage{
   min-width: 60px;
@@ -265,7 +290,7 @@ export default {
   word-wrap: break-word;
   line-height: 20px;
   margin-top: 42px;
-  padding: 0 25px 21px 21px;
+  padding: 0 21px 21px 21px;
 }
 .puserinfo{
   width: 100%;
@@ -326,5 +351,8 @@ export default {
   align-items: center;
   padding: 10px;
   box-sizing: border-box;
+}
+video{
+  width: 100%; height: 100%; object-fit: cover
 }
 </style>

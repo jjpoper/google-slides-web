@@ -238,8 +238,8 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
   try {
-    result = data.data.data
-  } catch (e) {
+    result = data.data.data.filter((item: any) => item.page_id)
+  } catch(e) {
     // console.log(e)
   }
   return result.reverse()
@@ -255,8 +255,8 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   // // let list = data.data.data.pages
   // // // console.log(data.data.data)
   try {
-    result = data.data.data
-  } catch (e) {
+    result = data.data.data.filter((item: any) => item.page_id)
+  } catch(e) {
     // console.log(e)
   }
   return result.reverse()
