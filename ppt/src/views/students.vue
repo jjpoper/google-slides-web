@@ -707,12 +707,16 @@ export default {
     onGetTeacherComment(d) {
       const {
         item: {
-          studentId,
-        }
+          studentId
+        },
+        comment_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
-        addStudentComment(d.item);
+        addStudentComment({
+          ...d.item,
+          id: comment_id 
+        });
         unreadStudentComment();
         this.unread = true;
       }

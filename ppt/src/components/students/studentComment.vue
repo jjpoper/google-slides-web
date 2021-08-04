@@ -6,7 +6,7 @@
     </div>
     <div class="feeditem" v-for="(item, index) in commentList" :key="index.toString()">
       <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
-      <div :class="`readed ${unreadIdList.indexOf(item.id) > -1 ? 'unread' : ''}`">
+      <div :class="`readed ${item.id && unreadIdList.indexOf(item.id) > -1 ? 'unread' : ''}`" @mouseenter="enterRead(item.id)">
         <div class="feedinner">
           <div class="rightcontent">
             <div v-show="!slidesVisiable[index]">
@@ -158,6 +158,12 @@ export default {
     },
     hidecomment() {
       this.hidePropsStudentModal()
+    },
+    enterRead(id) {
+      if(id) {
+        removeUnreadStudentCommentId(id)
+        this.unreadIdList = getUnreadStudentCommentIds()
+      }
     }
   }
 };
