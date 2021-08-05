@@ -1030,7 +1030,7 @@ export default {
   position: fixed;
   left: 0;
   bottom: 0;
-  background: #000000aa;
+  background:#D9DFE4;
   color: #fff;
   z-index: 9999;
 }
