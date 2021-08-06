@@ -553,13 +553,14 @@ type: "slide"*/
         type: SocketEventsEnum.TEACHER_COMMENT,
         studentId,
         pageId,
+        page_id: pageId,
         itemId,
         title,
         time,
         value,
         commentType,
         teacherName,
-        slideIndex: this.currentIndex + 1,
+        slideIndex: parseInt(this.currentIndex) + 1,
         room: this.slide_id
       });
       console.log(itemData);

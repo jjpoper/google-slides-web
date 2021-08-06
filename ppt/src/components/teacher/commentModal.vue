@@ -2,10 +2,12 @@
   <div class="fixModal" v-if="modalVisiable">
     <div class="commentModal">
       <div class="header">
-        Messages
-        <div class="close" @click="closeModal">
-          <i class="el-icon-close"></i>
-        </div>
+        <p class="title">Feedback for Shen Apple</p>
+        <img
+          src="../../assets/picture/closecom.png"
+          class="close" 
+          @click="closeModal"
+        />
       </div>
       <div class="mbox" v-if="commentData.pageId">
         <div class="left">
@@ -100,37 +102,44 @@
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.3);
+  z-index: 99999999;
 }
 .commentModal {
-  width: 800px;
-  height: 600px;
+  width: 1000px;
+  height: 822px;
   position: relative;
   top: 50%;
   left: 50%;
-  margin-left: -400px;
-  margin-top: -300px;
+  margin-left: -500px;
+  margin-top: -411px;
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  border-radius: 10px;
+  /* transform: scale(0.8); */
 }
 .header {
-  height: 70px;
+  height: 95px;
   width: 100%;
-  text-align: left;
-  padding-left: 30px;
-  line-height: 70px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 34px;
+  padding-right: 24px;
+  border-bottom:1px solid #D8D8D8;
   box-sizing: border-box;
 }
+.title{
+  font-size: 20px;
+  font-family: Inter-Bold;
+  color: #000000;
+  opacity: 1;
+}
 .close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   width: 30px;
   height: 30px;
   cursor: pointer;
-  line-height: 30px;
-  text-align: center;
-  font-size: 30px;
 }
 .mbox {
   height: 525px;

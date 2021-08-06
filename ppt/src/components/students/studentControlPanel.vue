@@ -54,11 +54,14 @@
         active-text="meterial on"
       ></el-switch> 
     </div>
-    <i
-      class="el-icon-chat-dot-round readchat"
-      @click="showStudentModal"
-      :style="{ color: unread ? 'red' : '#fff' }"
-    />
+    <div class="readchatouter">
+      <img
+        src="../../assets/picture/liaotian_icon.png"
+        class="readchat"
+        @click="showStudentModal"
+      />
+      <i :class="`${unread && 'unread'}`"></i>
+    </div> 
     <div class="question_area" v-if="smallWindow" @click="changeShowOrAnswer()">
       {{ isShowQuestion ? "Answer " : "Show " }}Question
     </div>
@@ -243,13 +246,27 @@ export default {
   flex: 1;
   justify-content: center;
 }
-
-.readchat {
-  font-size: 30px;
+.readchatouter{
+  width: 24px;
+  height: 24px;
+  margin: 13px 25px;
+  position: relative;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  margin-right: 50px;
+}
+.readchat {
+  width: 24px;
+  height: 24px;
+}
+.unread{
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #FF1A0E;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 .aligncenter{
   display: flex;

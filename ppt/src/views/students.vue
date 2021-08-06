@@ -77,7 +77,11 @@
         </el-aside>
         <div class="right-fix-area">
           <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
-          <student-comment />
+          <student-comment
+            :currentIndex="parseInt(currentIndex)"
+            :slides="slides"
+            :hidePropsStudentModal="showStudentModal"
+          />
         </div>
 
         <div class="sfooter" v-if="slides && slides.length > 0">
@@ -682,12 +686,12 @@ export default {
         console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
-        const {id} = d.data
-        const index = this.slides.findIndex(item => d.page_id === item.page_id)
-        const list = this.slides[index].elements
-        const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[index].elements.splice(itemIndex, 1, d.data)
+        // console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
+        // const {id} = d.data
+        // const index = this.slides.findIndex(item => d.page_id === item.page_id)
+        // const list = this.slides[index].elements
+        // const itemIndex = list.findIndex(item => id === item.id)
+        // this.slides[index].elements.splice(itemIndex, 1, d.data)
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
       } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
@@ -703,20 +707,16 @@ export default {
     onGetTeacherComment(d) {
       const {
         item: {
-          studentId,
-          pageId,
-          itemId,
-          title,
-          time,
-          value,
-          teacherName,
-          slideIndex
+          studentId
         },
-        user_id
+        comment_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
-        addStudentComment(d.item);
+        addStudentComment({
+          ...d.item,
+          id: comment_id 
+        });
         unreadStudentComment();
         this.unread = true;
       }
@@ -1030,7 +1030,7 @@ export default {
   position: fixed;
   left: 0;
   bottom: 0;
-  background: #000000aa;
+  background:#D9DFE4;
   color: #fff;
   z-index: 9999;
 }

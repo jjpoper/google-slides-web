@@ -7,6 +7,7 @@ import {getStudentCurrentItemCommentList, addStudentCommentData} from './comment
 const slideId = getUrlParam("slide_id")
 const UID_KEY = `${slideId}_sid`
 let studentId = ''
+let unreadList: number[] = []
 
 // 学生端数据结构
 // key: slideId_studentid
@@ -95,6 +96,7 @@ interface StudentCommentItem {
   value: string,
   teacherName: string,
   slideIndex: string
+  id: number
 }
 
 // 学生端评论列表
@@ -113,6 +115,8 @@ export const addStudentComment = (data: StudentCommentItem) => {
   // // }
   // list.unshift(data)
   // saveStudentStore('commentList', list)
+  console.log(data)
+  unreadList.push(data.id)
   addStudentCommentData(data)
 }
 
@@ -125,4 +129,11 @@ export const unreadStudentComment = () => {
 }
 export const readStudentComment = () => {
   saveStudentStore('comment_status', '0')
+}
+export const getUnreadStudentCommentIds = () => {
+  return unreadList
+}
+export const removeUnreadStudentCommentId = (id: number) => {
+  const index = unreadList.indexOf(id)
+  unreadList.splice(index, 1)
 }
