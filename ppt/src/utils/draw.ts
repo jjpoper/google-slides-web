@@ -397,7 +397,6 @@ export default class Draw {
     closeImg.addEventListener('click', function () {
       //删除掉这个text item
       _this.deleteEditableDiv(editableDiv.id);
-      _this.canvasParant.removeChild(closeImg);
     })
 
 
@@ -914,7 +913,6 @@ export default class Draw {
 
   resetTextChildren() {
     //第一步把所有的text 都隐藏掉
-
     var e = this.canvasParant.childNodes;
     for (let i = 0; i < e.length; i++) {
       if ((e[i].id.indexOf('editable_div') > -1)) {
