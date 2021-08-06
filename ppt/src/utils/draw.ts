@@ -270,7 +270,7 @@ export default class Draw {
     console.log(drawType)
     if (drawType != DrawTypeData.text) {
       if (this.currentSelectEditableDiv) {
-        this.currentSelectEditableDiv.setAttribute("contenteditable", false);
+        //    this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
       }
     }
@@ -343,11 +343,16 @@ export default class Draw {
 
     if (this.currentSelectEditableDiv && !textItem) {
       if (!this.currentMouseOnEditableDeiv) {
-        this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+        //     this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
         if (!this.currentSelectEditableDiv.innerText || this.currentSelectEditableDiv.innerText.length < 1) {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          this.currentSelectEditableDiv.focus();
+          this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
+          var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
+          if (deleteImage)
+            deleteImage.style.display = "none";
         }
         this.changeEditableDiv();
         this.currentSelectEditableDiv = null;
@@ -356,14 +361,12 @@ export default class Draw {
     }
 
     let editableDiv = document.createElement('div');
-
-
-
+    let _this = this;
 
     if (!textItem) {
       var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
       textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX, this.pointer.beginY,
-        this.lineWidth, this.fontFamily, editableDiv.innerText, this.strokeColor);
+        this.lineWidth, this.fontFamily, editableDiv.innerText + " ", this.strokeColor);
 
       this.currentSelectEditableDiv = editableDiv;
       editableDiv.setAttribute("contenteditable", "true");
@@ -379,6 +382,23 @@ export default class Draw {
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
     }
+
+    var closeImg = document.createElement('img');
+    closeImg.id = textItem.self_id + "_close_btn";
+    closeImg.style.position = 'fixed';
+    closeImg.style.cursor = "pointer";
+    closeImg.setAttribute('src', "https://dev.api.newzealand.actself.me/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
+    closeImg.style.left = `${textItem.left - 10}px`;
+    closeImg.style.top = `${textItem.top - 10}px`;
+    closeImg.width = 20;
+    closeImg.height = 20;
+    closeImg.style.display = 'none';
+
+    closeImg.addEventListener('click', function () {
+      //删除掉这个text item
+      _this.deleteEditableDiv(editableDiv.id);
+      _this.canvasParant.removeChild(closeImg);
+    })
 
 
     window.textPool.push(textItem);
@@ -402,9 +422,10 @@ export default class Draw {
     editableDiv.style.userSelect = "none";
     editableDiv.innerText = textItem.innerText;
 
+    editableDiv.setAttribute("contenteditable", "true");
 
 
-    let _this = this;
+
     editableDiv.onmousedown = function (ev) {
       if (_this.drawType != 'text') {
         return;
@@ -415,7 +436,10 @@ export default class Draw {
           editableDiv.setAttribute("contenteditable", "true");
         } else {
           _this.currentSelectEditableDiv.style.border = "2px solid #00000000";
-          _this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+          //   _this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+          var deleteImage = document.getElementById(_this.currentSelectEditableDiv.id + "_close_btn");
+          if (deleteImage)
+            deleteImage.style.display = "none";
           if (!_this.currentSelectEditableDiv.innerText || _this.currentSelectEditableDiv.innerText.length < 1) {
             _this.deleteEditableDiv(_this.currentSelectEditableDiv.id);
           }
@@ -426,6 +450,10 @@ export default class Draw {
       editableDiv.style.border = "2px solid #c2d4fd";
       _this.currentSelectEditableLeft = e.clientX;
       _this.currentSelectEditableTop = e.clientY;
+
+      var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
+      if (deleteImage)
+        deleteImage.style.display = "block";
 
 
       editableDiv.onmousemove = function (ev) {
@@ -451,9 +479,9 @@ export default class Draw {
       if (_this.drawType != 'text') {
         return;
       }
-      console.log('onmouseenter', editableDiv.id);
       editableDiv.style.cursor = 'move';
       _this.currentMouseOnEditableDeiv = true;
+      editableDiv.setAttribute("contenteditable", "true");
     }
     editableDiv.onmouseleave = function (ev) {
       if (_this.drawType != 'text') {
@@ -481,12 +509,16 @@ export default class Draw {
     })
 
     this.canvasParant.appendChild(editableDiv);
+    this.canvasParant.appendChild(closeImg);
 
     return editableDiv.id;
   }
 
   deleteEditableDiv(_id: any) {
     console.log('delete', _id);
+    var deleteImage = document.getElementById(_id + "_close_btn");
+    if (deleteImage)
+      deleteImage.style.display = "block";
     var children = this.canvasParant.children;
     for (let i = 0; i < window.textPool.length; i++) {
       if (window.textPool[i].self_id == _id) {
@@ -533,9 +565,6 @@ export default class Draw {
         }
       }
     }
-
-
-
 
   }
 
