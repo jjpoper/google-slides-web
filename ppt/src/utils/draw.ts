@@ -218,6 +218,9 @@ export default class Draw {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
+          if (deleteImage)
+            deleteImage.style.display = "none";
           this.changeEditableDiv();
         }
       }
@@ -272,6 +275,12 @@ export default class Draw {
       if (this.currentSelectEditableDiv) {
         //    this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+        var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
+        if (deleteImage) {
+          console.log('hide delete');
+          deleteImage.style.display = "none";
+        }
+
       }
     }
 
@@ -363,6 +372,10 @@ export default class Draw {
     let editableDiv = document.createElement('div');
     let _this = this;
 
+    var closeImg = document.createElement('img');
+
+
+
     if (!textItem) {
       var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
       textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX, this.pointer.beginY,
@@ -377,13 +390,13 @@ export default class Draw {
       let fontSize = Math.max(18, this.lineWidth) + "px";
       this.cxt.font = `${fontSize}px ${this.fontFamily}`;
       editableDiv.style.border = "2px solid #c2d4fd";
-
+      closeImg.style.display = 'block';
       this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
+      closeImg.style.display = 'block';
     }
 
-    var closeImg = document.createElement('img');
     closeImg.id = textItem.self_id + "_close_btn";
     closeImg.style.position = 'fixed';
     closeImg.style.cursor = "pointer";
@@ -392,12 +405,13 @@ export default class Draw {
     closeImg.style.top = `${textItem.top - 10}px`;
     closeImg.width = 20;
     closeImg.height = 20;
-    closeImg.style.display = 'none';
 
     closeImg.addEventListener('click', function () {
       //删除掉这个text item
       _this.deleteEditableDiv(editableDiv.id);
+      _this.drawEnd();
     })
+
 
 
     window.textPool.push(textItem);
@@ -451,8 +465,12 @@ export default class Draw {
       _this.currentSelectEditableTop = e.clientY;
 
       var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
-      if (deleteImage)
+
+      if (deleteImage) {
+        console.log("show delete Image")
         deleteImage.style.display = "block";
+      }
+
 
 
       editableDiv.onmousemove = function (ev) {
@@ -470,6 +488,14 @@ export default class Draw {
         editableDiv.style.top = `${top}px`;
         _this.currentSelectEditableLeft = e.clientX;
         _this.currentSelectEditableTop = e.clientY;
+
+        var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
+
+        if (deleteImage) {
+          deleteImage.style.left = `${left - 10}px`;
+          deleteImage.style.top = `${top - 10}px`;
+        }
+
 
       }
     }
@@ -517,7 +543,7 @@ export default class Draw {
     console.log('delete', _id);
     var deleteImage = document.getElementById(_id + "_close_btn");
     if (deleteImage)
-      deleteImage.style.display = "block";
+      deleteImage.style.display = "none";
     var children = this.canvasParant.children;
     for (let i = 0; i < window.textPool.length; i++) {
       if (window.textPool[i].self_id == _id) {
