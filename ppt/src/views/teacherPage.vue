@@ -1055,7 +1055,7 @@ type: "slide"*/
       // this.options = [];
       this.currentItemData = null;
       this.$nextTick(() => {
-        this.currentItemData = this.slides[this.currentIndex];
+        this.currentItemData = this.slides[this.currentIndex] || this.slides[0];
         this.currentItemData.flag = this.isDashboard;
         this.getResponeCount();
       });

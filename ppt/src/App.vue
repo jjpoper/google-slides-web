@@ -47,6 +47,19 @@ html, button, input, select, textarea {
 .metrial .el-switch__label {
   color: #fff
 }
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.transformmask{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
 </style>
 <script>
 import "./utils/pptConfig";
