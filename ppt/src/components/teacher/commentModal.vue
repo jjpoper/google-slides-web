@@ -12,7 +12,12 @@
       <div class="mbox" v-if="commentData.pageId">
         <div class="left">
           <teacher-res :item="commentData" :userData="commentData" />
-          <div class="edit-area shadow">
+          <div v-if="(commentList && commentList.length > 0) && !addmore" class="footer-button-more"
+            @click="addmoreFeed">
+            <p class="more-feed">Add More Feedback</p>
+            <img src="../../assets/picture/send.png" class="more-icon"/>
+          </div>
+          <div class="edit-area shadow" v-else>
             <div class="textarea-box">
               <textarea
                 class="textarea"
@@ -25,7 +30,7 @@
                 Lonve feedback for this response……
               </div>
             </div>
-            <div class="footer-button">
+            <div class="footer-button" @click="sendMessage">
               <div :class="`send-button ${!showPlaceholder && 'active'}`">Send Feedback</div>
             </div>
           </div>
@@ -52,27 +57,22 @@
             :item="item"
             :userData="commentData"
             :key="index.toString()">
+            <div class="feed-item feed-media" v-if="item.commentType === 'video'">
+              <video preload="meta" controls="false" :src="item.title" style="width:100%;" />
+            </div>
+            <div class="feed-item feed-media feed-media-audio" v-else-if="item.commentType === 'audio'">
+              <audio preload="none" controls="false" :src="item.title" style="width:100%;" />
+            </div>
+            <div v-else class="feed-item feed-text">
+              {{ item.value }}
+            </div>
           </teacher-res>
-          <div >
-            <!-- <div class="rightcomment">
-              <p>{{ item.teacherName }} {{ item.time }}</p>
-              <video
-                v-if="item.commentType === 'video'"
-                controlslist="nodownload"
-                controls
-                :src="item.value"
-                style="width:60%;"
-              />
-              <audio
-                v-else-if="item.commentType === 'audio'"
-                controlslist="nodownload"
-                controls
-                :src="item.value"
-                style="width:60%;"
-              />
-              <p v-else>{{ item.value }}</p>
-            </div> -->
-          </div>
+          <div class="transformmask"></div>
+        </div>
+        <div v-else class="empty">
+          <img src="../../assets/picture/empty-feed.png" class="empty-img"/>
+          <p class="title">No Feedback Yet</p>
+          <p class="empty-tip">Go to add your first reply</p>
         </div>
       </div>
     </div>
@@ -112,7 +112,8 @@ export default {
       isRecording: false,
       endRecording: false,
       commentList: [], // {time: '',value: ''}
-      textFocus: false
+      textFocus: false,
+      addmore: false
     };
   },
   computed: {
@@ -177,7 +178,11 @@ export default {
         title,
         ...data
       });
-      this.commentList.unshift(data);
+      this.commentList.unshift({
+        ...this.commentData,
+        ...data,
+      });
+      console.log(this.commentList)
       EventBus.$emit(ModalEventsNameEnum.TEACHER_SEND_COMMENT, {
         studentId,
         pageId,
@@ -185,6 +190,10 @@ export default {
         title,
         ...data
       });
+      this.addmore = false
+    },
+    addmoreFeed() {
+      this.addmore = true
     },
     sendVideoOrAudio(url, type = "text") {
       this.sendComment(url, type);
@@ -219,7 +228,11 @@ export default {
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  transform: scale(0.8);
+}
+@media screen and (max-width: 1599px) {
+  .commentModal {
+    transform: scale(0.85);
+  }
 }
 .header {
   height: 95px;
@@ -284,6 +297,7 @@ export default {
   overflow-y: scroll;
   padding: 3px;
   box-sizing: border-box;
+  position: relative;
 }
 .rightmtitle {
   width: 100%;
@@ -340,6 +354,17 @@ video{
   display: flex;
   justify-content: center;
 }
+.footer-button-more{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #15C39A;
+  box-shadow: 0px 6px 10px 0px rgb(21 195 154 / 30%);
+  border-radius: 30px;
+  width: 402px;
+  height: 60px;
+  cursor: pointer;
+}
 .send-button{
   width: 180px;
   height: 40px;
@@ -356,6 +381,7 @@ video{
   background-size: 22px 18.33px;
   background-position: bottom 9px right 20px;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 .send-button.active{
   background: #15C39A;
@@ -364,5 +390,62 @@ video{
   background-size: 22px 18.33px;
   background-position: bottom 9px right 20px;
   background-repeat: no-repeat;
+}
+.feed-item{
+  width: 360px;
+  height: 100px;
+  background: rgba(228,228,228, 0.2);
+  border-radius: 8px;
+  margin-top: 17px;
+  box-sizing: border-box;
+  position: relative;
+  overflow-y: scroll;
+}
+.feed-text{
+  padding: 15px 22px;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  text-align: justify;
+}
+.feed-media{
+  padding: 5px;
+  height: 180px;
+  background: rgba(228,228,228, 0.2);
+}
+.feed-media-audio{
+  height: 62px;
+}
+.empty{
+  width: 400px;
+  height: 630px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.empty-img{
+  width: 285px;
+  height: 190px;
+  margin-bottom: 21px;
+}
+.empty-tip{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  margin-top: 20px;
+}
+.more-feed{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #FFFFFF;
+}
+.more-icon{
+  width: 22px;
+  height: 18.33px;
+  margin-left: 10px;
 }
 </style>

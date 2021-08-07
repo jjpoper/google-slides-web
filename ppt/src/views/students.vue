@@ -80,7 +80,7 @@
           <student-comment
             :currentIndex="parseInt(currentIndex)"
             :slides="slides"
-            :hidePropsStudentModal="showStudentModal"
+            :hidePropsStudentModal="hideStudentModal"
           />
         </div>
 
@@ -179,7 +179,7 @@ import {
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
-import { showLoading, hideLoading } from "../utils/loading";
+import { showLoading, hideLoading, showToast } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
 import { createSo } from "../socket/socket.student";
 import {
@@ -251,6 +251,7 @@ export default {
       allAddedMediaList: [],
       meterialVisiable: false,
       overviewModalVisiable: false,
+      studentCommentLoaded: false
     };
   },
   computed: {
@@ -265,7 +266,7 @@ export default {
     },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip");
+        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip" && item.position);
       } else {
         return [];
       }
@@ -431,7 +432,9 @@ export default {
     },
     getAllSlides(profile) {
       console.log("list", "========");
-      initStudentCommentData(this.class_id, this.token);
+      initStudentCommentData(this.class_id, this.token).then(() => {
+        this.studentCommentLoaded = true
+      });
       Promise.all([
         initStudentData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
@@ -722,6 +725,9 @@ export default {
       }
     },
     showStudentModal() {
+      if(!this.studentCommentLoaded) {
+        return showToast('data not ready', 'warning')
+      }
       if (!this.modalVisiable) {
         this.unread = false;
         readStudentComment();
@@ -734,10 +740,13 @@ export default {
       }
       this.modalVisiable = !this.modalVisiable;
     },
+    hideStudentModal() {
+      EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
+      this.modalVisiable = false
+    },
     showStudentQuestions() {
       // 与评论互斥, 需要关闭
-      EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
-      this.modalVisiable = false;
+      this.hideStudentModal()
       // this.questionModalVisiable = !this.questionModalVisiable;
     },
     answerChoice(v, locked, typeParam) {
@@ -1022,7 +1031,7 @@ export default {
   z-index: 99999;
 }
 .sfooter {
-  height: 50px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;

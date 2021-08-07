@@ -1,9 +1,9 @@
 <template>
   <div class="mediaenter">
     <el-dropdown>
-      <span class="el-dropdown-link mediaenter">
+      <strong class="el-dropdown-link mediaenter">
         Add Media
-      </span>
+      </strong>
       <el-dropdown-menu slot="dropdown" style="text-align: center">
         <el-tooltip content="my computer" placement="right">
           <el-upload
@@ -219,7 +219,7 @@ export default {
 </script>
 <style scoped>
 .mediaenter{
-  color: #fff;
+  color: #36425A;
   margin-left: 20px;
   font-weight: bold;
   cursor: pointer;

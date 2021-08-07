@@ -60,6 +60,14 @@ html, button, input, select, textarea {
   bottom: 0;
   z-index: 999;
 }
+.fullbgimg{
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  position: absolute;
+}
 </style>
 <script>
 import "./utils/pptConfig";

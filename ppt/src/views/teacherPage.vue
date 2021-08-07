@@ -365,9 +365,10 @@ type: "slide"*/
       }
       return [];
     },
+    // meterial 数据
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip");
+        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip" && item.position);
       } else {
         return [];
       }
@@ -563,7 +564,7 @@ type: "slide"*/
         slideIndex: parseInt(this.currentIndex) + 1,
         room: this.slide_id
       });
-      console.log(itemData);
+      // console.log(itemData);
       this.currentSo.emit(
         "comment",
         `{"user_id":"${studentId}","token": "${this.token}","class_id":"${this.class_id}", "item": ${itemData}}`
@@ -1528,6 +1529,7 @@ type: "slide"*/
   bottom: 0%;
   left: 0%;
   background-color: #000000af;
+  z-index: 99999;
 }
 .top_btn {
   width: auto;
