@@ -29,7 +29,7 @@
       <div class="usericon">{{userData.sname.split("")[0]}}</div>
       <div class="info">
         <p class="uname">{{userData.sname}}</p>
-        <p class="utime">时间数据暂无</p>
+        <!-- <p class="utime">时间数据暂无</p> -->
       </div>
     </div>
     <slot />

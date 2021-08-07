@@ -3,13 +3,20 @@
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
     <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
-    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && rectMediaList && rectMediaList.length > 0">
+    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
+        <template v-if="leftSortList && leftSortList.length">
+          <element-drag v-for="rect in leftSortList" :key="rect.id"
+              :index="rect.sortIndex" :rect="rect" :update="update" :deleteMedia="deleteMedia"
+              :parentWidth="width"
+              :teacher="teacher"
+              :parentHeight="parentHeight"/>
+        </template>
         <template>
-          <element-drag v-for="(rect, index) in rectMediaList" :key="rect.id"
-            :index="index" :rect="rect" :update="update" :deleteMedia="deleteMedia"
+          <element-drag v-for="rect in rectMediaList" :key="rect.id"
+            :index="rect.sortIndex" :rect="rect" :update="update" :deleteMedia="deleteMedia"
             :parentWidth="width"
             :teacher="teacher"
-            :parentHeight="height"/>
+            :parentHeight="parentHeight"/>
         </template>
         <!-- <template v-else>
           <div v-for="rect in rectMediaList"
@@ -61,11 +68,47 @@ export default {
       default: 40,
     },
   },
-  computed: {
-    rectMediaList () {
-      if(!this.filterAddedMediaList) return []
-      const list = this.filterAddedMediaList.map((item) => {
-        console.log(item)
+  watch: {
+    filterAddedMediaList () {
+     this.filterList()
+    }
+  },
+  components: {
+    ElementDrag
+  },
+  data() {
+    return {
+      width: 0,
+      height: 0,
+      parentHeight: 0,
+      rectMediaList: [],
+      leftSortList: [],
+      hasData: false
+    }
+  },
+  created() {
+    this.rectingDelay = null
+    this.sizeDelay = null
+    this.filterList()
+  },
+  mounted() {
+    this.width = document.documentElement.clientWidth - this.widthOffset;
+    this.height = document.documentElement.clientHeight - 40;
+    this.parentHeight = this.height - 76
+    // if(!this.defaultShowMeterial) {
+    //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
+    //     this.meterialVisiable = status
+    //     console.log(status)
+    //   })
+    // }
+  },
+  methods: {
+    filterList () {
+      let i = 0
+      let rectList = []
+      let leftList = []
+      for(i ; i < this.filterAddedMediaList.length ; i ++) {
+        const item = this.filterAddedMediaList[i]
         const {position: {
           x = 200,
           y = 200,
@@ -84,7 +127,7 @@ export default {
           'top': 0,
           'left': 0
         }
-        return {
+        const listItem = {
           ...params,
           'draggable': true,
           'resizable': true,
@@ -97,37 +140,23 @@ export default {
           'zIndex': 1,
           'color': '#EF9A9A',
           'active': false,
+          sortIndex: i,
           ...item
         }
-      })
-      console.log(list)
-      return list
-    }
-  },
-  components: {
-    ElementDrag
-  },
-  data() {
-    return {
-      width: 0,
-      height: 0,
-    }
-  },
-  created() {
-    this.rectingDelay = null
-    this.sizeDelay = null
-  },
-  mounted() {
-    this.width = document.documentElement.clientWidth - this.widthOffset;
-    this.height = document.documentElement.clientHeight - 40;
-    // if(!this.defaultShowMeterial) {
-    //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
-    //     this.meterialVisiable = status
-    //     console.log(status)
-    //   })
-    // }
-  },
-  methods: {
+        if(params.top === 0 && params.left === 0) {
+          listItem.top = leftList.length * 60 + 60
+          // listItem.left = leftList.length * 30
+          listItem.width = 60
+          listItem.height = 60
+          leftList.push(listItem)
+        } else {
+          rectList.push(listItem)
+        }
+      }
+      this.hasData = leftList.length > 0 || rectList.length > 0
+      this.rectMediaList = rectList
+      this.leftSortList = leftList
+    },
     getIframe(url){
       const formatId = url.split('?v=')[1]
       if(formatId) {
@@ -223,5 +252,14 @@ export default {
 }
 .cursor{
   cursor: pointer;
+}
+.leftView{
+  width: 150px;
+  position: absolute;
+  left: 0;
+  overflow-y: scroll;
+}
+.innerleftView{
+
 }
 </style>
