@@ -394,7 +394,7 @@ export default class Draw {
       this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
-      closeImg.style.display = 'block';
+      closeImg.style.display = 'none';
     }
 
     closeImg.id = textItem.self_id + "_close_btn";
