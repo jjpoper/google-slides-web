@@ -157,10 +157,10 @@
       <stepOneView :openTwo="openTwo" :hideStepOne="hideStepOne" />
     </el-dialog>
 
+    <!-- @close="closeCopyLinkDialog()" -->
     <el-dialog
       :title="getStepTwoTitle()"
       :visible.sync="stepTwoDialog"
-      @close="closeCopyLinkDialog()"
       @open="openCopyLinkDialog()"
     >
       <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" />
@@ -174,13 +174,12 @@
       />
     </el-dialog>
 
-    <!-- custom-class="custom-dialog" -->
+    <!-- custom-class="custom-dialog" @open="openCopyLinkDialog()" -->
 
     <el-dialog
       title="Share this link with your students"
       :visible.sync="showCopyLinkDialog"
       @close="closeCopyLinkDialog()"
-      @open="openCopyLinkDialog()"
     >
       <copyLinkDialog
         v-if="classRoomInfo"
@@ -314,7 +313,7 @@ type: "slide"*/
       markupslist: [], // ppt comment列表
       allAddedMediaList: [],
       meterialVisiable: false,
-      overviewModalVisiable: false,
+      overviewModalVisiable: false
     };
   },
   mounted() {
@@ -368,14 +367,18 @@ type: "slide"*/
     // meterial 数据
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip" && item.position);
+        return this.slides[this.currentIndex].elements.filter(
+          item => item.type !== "tip" && item.position
+        );
       } else {
         return [];
       }
     },
     filterTips() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(item => item.type === "tip");
+        return this.slides[this.currentIndex].elements.filter(
+          item => item.type === "tip"
+        );
       } else {
         return [];
       }
@@ -897,20 +900,28 @@ type: "slide"*/
         // this.slides[index].elements.push(d.data)
         console.log("this.allAddedMediaList", "STUDENT_ADD_MEDIA");
         // const page_id = this.currentPageId
-        this.slides[this.currentIndex].elements.push(({id: d.id, ...d.data}))
+        this.slides[this.currentIndex].elements.push({ id: d.id, ...d.data });
       } else if (d.type === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        const {id} = d.data
-        const list = this.slides[this.currentIndex].elements
-        const itemIndex = list.findIndex(item => id === item.id)
-        const nextData = {id: d.id, ...d.data}
-        if(!window.isWindowActive) {
-          this.slides[this.currentIndex].elements.splice(itemIndex, 1)
+        const { id } = d.data;
+        const list = this.slides[this.currentIndex].elements;
+        const itemIndex = list.findIndex(item => id === item.id);
+        const nextData = { id: d.id, ...d.data };
+        if (!window.isWindowActive) {
+          this.slides[this.currentIndex].elements.splice(itemIndex, 1);
           this.$nextTick(() => {
-            this.slides[this.currentIndex].elements.splice(itemIndex, 0, nextData)
-          })
+            this.slides[this.currentIndex].elements.splice(
+              itemIndex,
+              0,
+              nextData
+            );
+          });
         } else {
-          this.slides[this.currentIndex].elements.splice(itemIndex, 1, nextData)
+          this.slides[this.currentIndex].elements.splice(
+            itemIndex,
+            1,
+            nextData
+          );
         }
         // this.$nextTick(() => {
         //   console.log('notUpdate ==== window elementNotUpdate')
@@ -920,10 +931,10 @@ type: "slide"*/
         // this.slides[this.currentIndex].elements.push(d.data)
       } else if (d.type === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        const {id} = d
-        const list = this.slides[this.currentIndex].elements
-        const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[this.currentIndex].elements.splice(itemIndex, 1)
+        const { id } = d;
+        const list = this.slides[this.currentIndex].elements;
+        const itemIndex = list.findIndex(item => id === item.id);
+        this.slides[this.currentIndex].elements.splice(itemIndex, 1);
       }
 
       // 回答问题
@@ -1461,6 +1472,7 @@ type: "slide"*/
 
     closeCopyLinkDialog() {
       // if (this.firstCloseCopyLinkDialog) {
+      console.log("close copy link dialog!!");
       this.firstCloseCopyLinkDialog = false;
       this.emitSo(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
