@@ -45,14 +45,15 @@
     </div>
 
     <div class="aligncenter">
-      <el-switch
-        style="display: block;"
-        class="metrial"
-        v-model="meterialVisiable"
-        active-color="#13ce66"
-        inactive-color="#999"
-        active-text="meterial on"
-      ></el-switch> 
+      <div
+        class="button_area"
+        @click="changeMeterial"
+      >
+        <div class="meterialimage">
+          <div :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"></div>
+        </div>
+        <strong class="button_text">{{meterialSwitchVisiable ? 'Material hiding' : 'Display material'}}</strong>
+      </div>
     </div>
     <div class="readchatouter">
       <img
@@ -123,17 +124,22 @@ export default {
     },
   },
   watch: {
-    meterialVisiable() {
+    meterialSwitchVisiable() {
       // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialVisiable)
+      this.changeShowMetrial(this.meterialSwitchVisiable)
     }
   },
   data() {
     return {
       questionVisiable: false,
-      meterialVisiable: false
+      meterialSwitchVisiable: false
     };
   },
+  methods: {
+    changeMeterial() {
+      this.meterialSwitchVisiable = !this.meterialSwitchVisiable
+    },
+  }
 };
 </script>
 
@@ -278,5 +284,26 @@ export default {
   padding: 0 5px;
   margin-top: 5px;
   border-radius: 4px;
+}
+.button_area{
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #36425A;
+  overflow: hidden;
+  cursor: pointer;
+}
+.meterialimage{
+  width: 30px;
+  height: 30px;
+  position: relative;
+}
+.me-show{
+  background-image:url(../../assets/picture/m-show.png)
+}
+.me-hide{
+  background-image:url(../../assets/picture/m-hide.png)
 }
 </style>

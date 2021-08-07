@@ -63,7 +63,9 @@ export default {
   },
   computed: {
     rectMediaList () {
+      if(!this.filterAddedMediaList) return []
       const list = this.filterAddedMediaList.map((item) => {
+        console.log(item)
         const {position: {
           x = 200,
           y = 200,

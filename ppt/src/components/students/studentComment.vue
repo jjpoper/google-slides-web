@@ -6,7 +6,7 @@
     </div>
     <div class="feeditem" v-for="(item, index) in commentList" :key="index.toString()">
       <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
-      <div :class="`readed ${item.id && unreadIdList.indexOf(item.id) > -1 ? 'unread' : ''}`" @mouseenter="enterRead(item.id)">
+      <div :class="`readed ${item.id && unreadIdList.indexOf(item.id) > -1 ? 'unreadborder' : ''}`">
         <div class="feedinner">
           <div class="rightcontent">
             <div v-show="!slidesVisiable[index]">
@@ -37,7 +37,7 @@
               <div class="right-answer" v-else>{{item.title}}</div>
             </div>
             <template v-if="getUrl(item.pageId)">
-              <div class="pptitemouter" v-show="slidesVisiable[index]">
+              <div class="right-answer pptitemouter" v-show="slidesVisiable[index]">
                 <div class="pptitem" >
                   <div class="pptimage" :style="`background-image:url(${getUrl(item.pageId)})`"></div>
                 </div>
@@ -46,6 +46,7 @@
             </template>
             <div class="rightbutton" @click="setVis(index)" v-if="getButtonVis(item.pageId)"></div>
           </div>
+          <div class="border-line"></div>
           <div class="rightcomment">
             <div class="puserinfo">
               <p class="uname">{{item.teacherName}}</p>
@@ -71,6 +72,7 @@
             </div>
           </div>
         </div>
+        <div v-if="item.id && unreadIdList.indexOf(item.id) > -1" class="unread" @click="enterRead(item.id)"></div>
       </div>
     </div>
   </div>
@@ -118,6 +120,7 @@ export default {
     });
 
     EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL_REFRESH, () => {
+      showToast("new messages loaded");
       this.refreshList();
     });
   },
@@ -135,7 +138,6 @@ export default {
       this.unreadIdList = getUnreadStudentCommentIds()
       this.commentList = list;
       console.log(list, this.unreadIdList);
-      showToast("new messages loaded");
     },
     getIndex(page_id) {
       const index = this.slides.findIndex(item => item.page_id === page_id)
@@ -218,7 +220,7 @@ export default {
   opacity: 1;
 }
 .feedinner{
-  width: 477px;
+  width: 489px;
   background: #FFFFFF;
   opacity: 1;
   position: relative;
@@ -232,18 +234,35 @@ export default {
   background: #FFFFFF;
   overflow: hidden;
   border-radius: 6px;
-  padding: 5px;
   box-sizing: border-box;
+  position: relative;
+}
+.readed.unreadborder{
+  border-color: rgba(21,195,154, 0.2);
+  /* border-width: 6px; */
 }
 .unread{
   border-color: #15C39A;
-  background: #d0f3eb;
+  background: transparent;
+  padding: 5px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: 6px solid rgba(21,195,154, 0.2);
+  cursor: pointer;
 }
-.rightcontent{
-  border-bottom: 1px solid #DBDBDB;
+.border-line{
+  width: 489px;
+  height: 1px;
+  background-color: #DBDBDB;
+}
+.unreadborder .border-line{
+  width: 475px;
+  margin-left: 6px;
 }
 .pptitemouter{
-  margin: 24px 0 0 45px;
   width: 321px;
   overflow: hidden;
 }
@@ -275,6 +294,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
 }
 .stpage{
   min-width: 60px;

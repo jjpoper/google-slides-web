@@ -1,5 +1,5 @@
 <template>
-  <div class="left-answer shadow">
+  <div class="left-answer shadow" v-if="item.title">
     <div class="answerdetail">
       <div class="answer-media flex-center" v-if="item.title.indexOf('data:image/') > -1">
         <div class="inner-media" >
@@ -10,13 +10,13 @@
         <div class="inner-media" >
           <audio preload="none" controls="false" :src="item.title" style="width:100%;" />
         </div>
-        <div class="transformmask"></div>
+        <!-- <div class="transformmask"></div> -->
       </div>
       <div class="answer-media flex-center"  v-else-if="item.title.indexOf('.webm') > -1">
         <div class="inner-media">
           <video  preload="meta" controls="false" :src="item.title" style="width:100%;" />
         </div>
-        <div class="transformmask"></div>
+        <!-- <div class="transformmask"></div> -->
       </div>
       <div class="answer-text" v-else-if="item.title.indexOf('[') > -1">
         <div v-for="(text, index) in getAnswer(item.title)" :key="index">{{ text }}</div>
@@ -29,7 +29,7 @@
       <div class="usericon">{{userData.sname.split("")[0]}}</div>
       <div class="info">
         <p class="uname">{{userData.sname}}</p>
-        <p class="utime">7/19/21:6:10 PM</p>
+        <p class="utime">时间数据暂无</p>
       </div>
     </div>
     <slot />
@@ -66,7 +66,7 @@ export default {
 .left-answer {
   width: 402px;
   background-color: #fff;
-  padding: 16px 21px 40px 16px;
+  padding: 16px 21px 30px 16px;
   box-sizing: border-box;
   margin-bottom: 20px;
   /* border: 1px solid #999; */
@@ -77,12 +77,14 @@ export default {
   border-radius: 10px;
   background-color: rgba(228,228,228, 0.3);
   position: relative;
-  padding: 2px;
+  /* padding: 2px; */
 }
 .inner-media{
   width: 100%;
   height: 100%;
   position: relative;
+  border-radius: 8px;
+  overflow: hidden;
 }
 .answer-text{
   flex: 1;
