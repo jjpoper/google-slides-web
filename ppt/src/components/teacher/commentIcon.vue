@@ -23,8 +23,8 @@ export default {
   },
   methods: {
     showCommentModal() {
-      const {pageId, itemId, studentId, title} = this.data
-      EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {pageId, itemId, title, studentId})
+      const {pageId, itemId, studentId, title, name} = this.data
+      EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {pageId, itemId, title, studentId, name})
     }
   }
 }
