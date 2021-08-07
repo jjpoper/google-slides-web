@@ -29,13 +29,14 @@
       <div class="usericon">{{userData.sname.split("")[0]}}</div>
       <div class="info">
         <p class="uname">{{userData.sname}}</p>
-        <!-- <p class="utime">时间数据暂无</p> -->
+        <p class="utime">{{getTimeText(item.answertime)}}</p>
       </div>
     </div>
     <slot />
   </div>
 </template>
 <script>
+import { getTimeValue } from '@/utils/help';
 import base64image from "../../base64image.vue";
 export default {
   props: {
@@ -54,6 +55,20 @@ export default {
       console.log(JSON.parse(answer));
       return JSON.parse(answer);
     },
+    getTimeText(time) {
+      if(time > 0) {
+        const {
+          year,
+          month,
+          date,
+          minutes,
+          hours,
+          seconds
+        } = getTimeValue(time*1000)
+        return `${date}/${month}/${year} ${hours}:${minutes}:${seconds}`
+      }
+      return ''
+    }
   }
 };
 </script>

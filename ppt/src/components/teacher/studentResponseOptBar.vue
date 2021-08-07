@@ -257,14 +257,16 @@ export default {
       this.showComment(ModalEventsTypeEnum.TEXT)
     },
     showComment(type) {
-      const { pageId, itemId, studentId, title, name } = this.data;
+      const { pageId, itemId, studentId, title, name, answertime } = this.data;
+      console.log(answertime)
       EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
         pageId,
         itemId,
         title,
         studentId,
         type,
-        name
+        name,
+        answertime
       });
     },
     hideResponse() {

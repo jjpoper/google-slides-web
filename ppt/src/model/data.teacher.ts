@@ -3,6 +3,7 @@ import { getTeacherClassAnswers } from './index'
 type ItemType = "text" | "draw" | "choice" | 'number' | 'audio' | 'video'
 
 interface TeacherDataItem {
+  updated_at: any
   class_id: string
   data: string
   id: number
@@ -16,6 +17,7 @@ let teacherData: TeacherDataItem[] = []
 
 export const initTeacherData = async (classId: string, token: string) => {
   const list = await getTeacherClassAnswers(classId, token)
+  // console.log(list, 'listlistlist')
   teacherData = list
   return list
 }
@@ -54,9 +56,11 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
     return {
       star: false,
       show: true,
+      updated_at: item.updated_at,
       ...JSON.parse(item.data)
     }
   })
+  // console.log(mapData, teacherData)
   return mapData
 }
 

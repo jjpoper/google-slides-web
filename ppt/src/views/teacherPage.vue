@@ -548,7 +548,8 @@ type: "slide"*/
       time,
       value,
       teacherName,
-      commentType
+      commentType,
+      answertime
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -562,7 +563,8 @@ type: "slide"*/
         commentType,
         teacherName,
         slideIndex: parseInt(this.currentIndex) + 1,
-        room: this.slide_id
+        room: this.slide_id,
+        answertime
       });
       // console.log(itemData);
       this.currentSo.emit(

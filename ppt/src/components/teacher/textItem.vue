@@ -24,6 +24,7 @@
             isStar: item.star,
             isShowRes: item.show,
             name: item.user_name,
+            answertime: item.updated_at
           }"
         />
       </div>
