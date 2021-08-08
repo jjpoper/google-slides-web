@@ -201,6 +201,7 @@ export default class Draw {
   copyWindowTextPool() {
     var list = [];
     for (let i = 0; i < window.textPool.length; i++) {
+      console.log(window.textPool[i].innerText);
       var item = new DrawTextItem(window.textPool[i].page_id, window.textPool[i].self_id, window.textPool[i].left,
         window.textPool[i].top, window.textPool[i].fontSize, window.textPool[i].fontFamily, window.textPool[i].innerText, window.textPool[i].color);
       item.id = window.textPool[i].id;
@@ -218,6 +219,7 @@ export default class Draw {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          this.currentSelectEditableDiv.setAttribute("contenteditable", false);
           var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
           if (deleteImage)
             deleteImage.style.display = "none";
@@ -273,7 +275,7 @@ export default class Draw {
     console.log(drawType)
     if (drawType != DrawTypeData.text) {
       if (this.currentSelectEditableDiv) {
-        //    this.currentSelectEditableDiv.setAttribute("contenteditable", false);
+        this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
         var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
         if (deleteImage) {
@@ -352,13 +354,13 @@ export default class Draw {
 
     if (this.currentSelectEditableDiv && !textItem) {
       if (!this.currentMouseOnEditableDeiv) {
-        //     this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+        this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
         if (!this.currentSelectEditableDiv.innerText || this.currentSelectEditableDiv.innerText.length < 1) {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
           this.currentSelectEditableDiv.focus();
-          this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
+          this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
           var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
           if (deleteImage)
             deleteImage.style.display = "none";
@@ -370,6 +372,7 @@ export default class Draw {
     }
 
     let editableDiv = document.createElement('div');
+    this.canvasParant.appendChild(editableDiv);
     let _this = this;
 
     var closeImg = document.createElement('img');
@@ -391,9 +394,12 @@ export default class Draw {
       this.cxt.font = `${fontSize}px ${this.fontFamily}`;
       editableDiv.style.border = "2px solid #c2d4fd";
       closeImg.style.display = 'block';
+      editableDiv.setAttribute("contenteditable", "true");
+      editableDiv.focus();
       this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
+      editableDiv.setAttribute("contenteditable", "false");
       closeImg.style.display = 'none';
     }
 
@@ -408,9 +414,10 @@ export default class Draw {
 
     closeImg.addEventListener('click', function () {
       //删除掉这个text item
+      _this.changeEditableDiv();
       _this.deleteEditableDiv(editableDiv.id);
       _this.drawEnd();
-    })
+    });
 
 
 
@@ -449,7 +456,7 @@ export default class Draw {
           editableDiv.setAttribute("contenteditable", "true");
         } else {
           _this.currentSelectEditableDiv.style.border = "2px solid #00000000";
-          //   _this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+          _this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
           var deleteImage = document.getElementById(_this.currentSelectEditableDiv.id + "_close_btn");
           if (deleteImage)
             deleteImage.style.display = "none";
@@ -463,6 +470,8 @@ export default class Draw {
       editableDiv.style.border = "2px solid #c2d4fd";
       _this.currentSelectEditableLeft = e.clientX;
       _this.currentSelectEditableTop = e.clientY;
+      _this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
+      _this.currentSelectEditableDiv.focus();
 
       var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
 
@@ -506,7 +515,7 @@ export default class Draw {
       }
       editableDiv.style.cursor = 'move';
       _this.currentMouseOnEditableDeiv = true;
-      editableDiv.setAttribute("contenteditable", "true");
+      // editableDiv.setAttribute("contenteditable", "true");
     }
     editableDiv.onmouseleave = function (ev) {
       if (_this.drawType != 'text') {
@@ -515,7 +524,7 @@ export default class Draw {
       console.log('onmouseleave', editableDiv.id);
       editableDiv.style.cursor = 'default';
       _this.currentMouseOnEditableDeiv = false;
-      // editableDiv.setAttribute("contenteditable", "false");
+      //   editableDiv.setAttribute("contenteditable", "false");
     }
 
 
@@ -533,7 +542,7 @@ export default class Draw {
       //  _this.changeEditableDiv()
     })
 
-    this.canvasParant.appendChild(editableDiv);
+
     this.canvasParant.appendChild(closeImg);
 
     return editableDiv.id;
@@ -580,6 +589,7 @@ export default class Draw {
     if (this.currentSelectEditableDiv) {
       for (let i = 0; i < window.textPool.length; i++) {
         if (window.textPool[i].self_id == this.currentSelectEditableDiv.id) {
+          console.log("change text!!!!" + this.currentSelectEditableDiv.innerText);
           window.textPool[i].left = parseInt(this.currentSelectEditableDiv.style.left);
           window.textPool[i].top = parseInt(this.currentSelectEditableDiv.style.top);
           window.textPool[i].color = this.currentSelectEditableDiv.style.color;
@@ -827,6 +837,9 @@ export default class Draw {
     console.log('========= drawEnd', this.canTextarea);
     this.canvas.onmousemove = null;
     // // console.log();
+    if (this.currentSelectEditableDiv) {
+      this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+    }
 
     const base64Url = this.canvas.toDataURL("image/png");
     this.drawTextOnCanvas();
@@ -963,6 +976,7 @@ export default class Draw {
           editableDiv.style.top = `${copyItem.top}px`;
           editableDiv.style.fontFamily = copyItem.fontFamily;
           editableDiv.style.background = "#00000000";
+          editableDiv.style.border = "2px solid #00000000";
           editableDiv.style.color = copyItem.color;
           editableDiv.style.fontSize = Math.max(18, copyItem.fontSize) + "px";
           editableDiv.style.lineHeight = Math.max(18, copyItem.fontSize) + "px";
