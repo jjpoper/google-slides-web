@@ -124,9 +124,9 @@ export default {
   mounted() {
     EventBus.$on(
       ModalEventsNameEnum.TEACHER_COMMENT_MODAL,
-      ({ pageId, itemId, title, studentId, type, name }) => {
+      ({ pageId, itemId, title, studentId, type, name, answertime }) => {
         // 通知展示当前pageid，当前itemid的评论框
-        this.showModal({ pageId, itemId, title, studentId, type, name });
+        this.showModal({ pageId, itemId, title, studentId, type, name, answertime });
       }
     );
   },
@@ -137,14 +137,15 @@ export default {
     blur() {
       this.textFocus = false
     },
-    showModal({ pageId, itemId, title, studentId, type, name }) {
+    showModal({ pageId, itemId, title, studentId, type, name, answertime }) {
       this.commentData = {
         title,
         pageId,
         itemId,
         studentId,
         type,
-        sname: name
+        sname: name,
+        answertime
       };
       this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
       this.modalVisiable = true;
@@ -170,12 +171,13 @@ export default {
         commentType,
         teacherName: getTeacherUserName()
       };
-      const { pageId, itemId, studentId, title } = this.commentData;
+      const { pageId, itemId, studentId, title, answertime } = this.commentData;
       addTeacherComment({
         studentId,
         pageId,
         itemId,
         title,
+        answertime,
         ...data
       });
       this.commentList.unshift({
@@ -188,6 +190,7 @@ export default {
         pageId,
         itemId,
         title,
+        answertime,
         ...data
       });
       this.addmore = false

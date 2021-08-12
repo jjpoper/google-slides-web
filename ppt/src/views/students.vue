@@ -115,7 +115,7 @@
       >Deadline time remain: {{ getDeadLineStr(countDownMin) }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
         <div class="readchat comment">
-          <el-switch
+          <!-- <el-switch
             style="display: block"
             v-model="questionModalVisiable"
             active-color="#13ce66"
@@ -129,7 +129,7 @@
             active-color="#13ce66"
             inactive-color="#999"
             active-text="overview slides"
-          ></el-switch>
+          ></el-switch> -->
         </div>
       </el-tooltip>
       <div

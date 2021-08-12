@@ -1,11 +1,10 @@
 <template>
-  <div v-if="currentAnswerCount > 0" class="page">
+  <div v-if="currentAnswerCount > 0" class="answer-box">
     <choiceItem v-if="type === 'choice'" v-bind="$attrs" :flag_1="flag_1" />
     <textItem
       v-else-if="type === 'text' || type === 'number'"
       v-bind="$attrs"
       :flag_1="flag_1"
-      class="item"
     />
     <draw v-else-if="type === 'draw'" v-bind="$attrs" :flag_1="flag_1" />
 
@@ -28,12 +27,9 @@
 </template>
 
 <style scoped>
-.page {
-  display: flex;
+.answer-box {
   width: 100%;
-  height: auto;
-  padding-top: 70px;
-  justify-content: center;
+  height: 100%;
 }
 .center {
   height: 100%;
