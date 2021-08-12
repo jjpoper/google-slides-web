@@ -48,12 +48,12 @@ export const getTeacherCurrentItemCommentList = (pageId: string, itemId: string,
     return false
   })
   const mapData = filterData.map((item) => {
+    console.log(item, '=====')
     return {
       ...JSON.parse(item.data),
       // @ts-ignore
       teacherName: window.currentTeacherName
     }
   })
-  // console.log(mapData, '=====')
   return mapData
 }

@@ -1,85 +1,135 @@
 <template>
-  <div class="parent" v-if="textList && textList.length > 0">
-    <div v-for="(item, index) in textList" :key="index">
-      <div
-        v-if="shouldShow(item)"
-        :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
-      >
-        <div class="text_area">
-          <div class="text_content">
-            {{ getText(item) }}
-          </div>
-
-          <div class="text_static" v-if="flag_1 && textList.length > 1">
-            {{ index + 1 + " of " + textList.length }}
+  <div class="text-answer-container" v-if="textList && textList.length > 0">
+    <div class="text-answer-tab">123
+    </div>
+    <div class="text-answer-list">
+      <div class="colume5" v-for="(item, index) in textList" :key="index">
+        <div class="text-item-outer5">
+          <div
+            v-if="shouldShow(item)"
+            :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
+          >
+            <div class="text_area">
+              {{ getText(item) }}
+              <span class="text_static" v-if="flag_1 && textList.length > 1">
+                {{ index + 1 + " of " + textList.length }}
+              </span>
+            </div>
+            <div class="text-footer">
+              <student-response-opt-bar
+                v-if="flag_1"
+                :data="{
+                  pageId: data.page_id,
+                  itemId: item.item_id,
+                  studentId: item.user_id,
+                  title: item.content,
+                  isStar: item.star,
+                  isShowRes: item.show,
+                  name: item.user_name,
+                  answertime: item.updated_at
+                }"
+              />
+            </div>
           </div>
         </div>
-        <student-response-opt-bar
-          v-if="flag_1"
-          :data="{
-            pageId: data.page_id,
-            itemId: item.item_id,
-            studentId: item.user_id,
-            title: item.content,
-            isStar: item.star,
-            isShowRes: item.show,
-            name: item.user_name,
-          }"
-        />
       </div>
-    </div>
+    </div> 
   </div>
 </template>
 
 <style scoped>
-.parent {
+.text-answer-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 20px;
   display: flex;
-  width: 90%;
+  flex-direction: column;
+}
+.text-answer-tab{
+  width: 100%;
+  height: 40px;
+}
+.text-answer-list{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
   flex-wrap: wrap;
+  flex: 1;
+  overflow: scroll;
+}
+.colume5{
+  /* -webkit-column-count:  5;
+  -moz-column-count:  5;
+  column-count:  5;
+  -webkit-column-gap:  5px;
+  -moz-column-gap:  5px;
+  column-gap:  5px; */
+  width: 20%;
+  padding: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.colume1{
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
 }
 /* 有星标时的bg */
 .star_bg {
   border: 3px solid #f7d567;
   background-color: #f8f1d3;
 }
-.parent_1 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 350px;
-  flex-wrap: wrap;
-  height: 250px;
-  border-radius: 8px;
-  margin-right: 20px;
-  border: 1px solid #cfcfcf;
-}
-.text_content {
+.text-item-outer1{
+  height: 290px;
   width: 100%;
-  height: 85%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
+}
+.text-item-outer5{
+  width: 100%;
+  padding-bottom: 85%;
+  position: relative;
+}
+.text-list-item {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  margin-right: 10px;
+  border: 1px solid #F1F1F1;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .text_static {
-  width: 100%;
-  height: 15%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  position: absolute;
+  bottom: 10px;
+  right: 7px;
 }
 .text_area {
-  width: 80%;
-  height: 70%;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  margin-left: 20px;
-  margin-right: 20px;
-  background-color: white;
-  color: cadetblue;
-  display: flex;
-  flex-direction: column;
-  padding-right: 10px;
+  width: 100%;
+  height: 59%;
+  background: #E4E4E4;
+  opacity: 0.3;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  box-sizing: border-box;
+  padding:7px 7px 30px 7px;
+  overflow: scroll;
+  position: relative;
+  text-align: left;
+}
+.text-footer{
+  width: 100%;
+  height: 41%;
 }
 </style>
 

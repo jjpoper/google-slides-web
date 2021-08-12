@@ -1,84 +1,20 @@
 <template>
-  <div class="page" v-if="data">
+  <div class="answer-footer" v-if="data">
     <div class="emoji_area">
-      <svg
-        t="1620958411185"
-        class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="1979"
-        :width="size"
-        :height="size"
-        fill="#1296db"
-      >
-        <path
-          d="M371.044 348.321c22.973 0 36.607 48.99 39.31 71.347 1.418 11.993 11.604 20.823 23.41 20.823 0.908 0 1.842-0.046 2.774-0.153 12.949-1.522 22.216-13.246 20.705-26.194-4.911-41.978-28.602-113.041-86.198-113.041-57.995 0-80.175 71.394-84.13 113.585-1.229 12.973 8.309 24.494 21.295 25.71 12.973 1.216 24.481-8.311 25.711-21.297 2.087-22.181 14.331-70.78 37.123-70.78zM514.912 755.809c155.052 0 167.931-112.325 168.06-113.478 1.266-12.857-8.052-24.202-20.896-25.632a23.73 23.73 0 0 0-26.062 20.706c-0.364 2.9-10.154 71.171-121.103 71.171-110.483 0-120.646-67.676-121.083-71.123-1.405-12.859-12.949-22.24-25.793-20.931-12.973 1.285-22.453 12.831-21.177 25.816 0.106 1.121 12.985 113.471 168.054 113.471zM730.795 419.644c1.416 12.006 11.604 20.847 23.407 20.847 0.918 0 1.841-0.046 2.773-0.165 12.96-1.522 22.227-13.246 20.709-26.194-4.914-41.978-28.604-113.043-86.213-113.043-57.986 0-80.165 71.396-84.128 113.584-1.216 12.975 8.309 24.495 21.295 25.71 13.146 1.159 24.49-8.311 25.72-21.294 2.091-22.181 14.322-70.782 37.125-70.782 22.973 0.001 36.607 48.979 39.312 71.337z"
-          p-id="1980"
-        />
-        <path
-          d="M208.768 707.111c-46.429-62.225-73.947-139.261-73.947-222.602 0-206.074 168.123-373.724 374.789-373.724 206.667 0 374.789 167.649 374.789 373.724 0 83.341-27.517 160.377-73.946 222.602 17.528 0.875 34.091 5.242 49.048 12.489 45.511-67.169 72.104-148.086 72.104-235.091 0-232.103-189.31-420.942-422.006-420.942-232.693 0-421.995 188.829-421.995 420.931 0 87.002 26.596 167.925 72.104 235.094 14.967-7.238 31.528-11.619 49.06-12.481z"
-          p-id="1981"
-        />
-        <path
-          d="M804.074 707.076c-64.936 0-118.656 48.679-126.517 111.374 0.022-0.014 0.048-0.021 0.07-0.035-0.651 5.22-1.1 10.51-1.1 15.915 0-5.379 0.377-10.673 1.029-15.88-50.557 25.396-107.585 39.785-167.96 39.785-60.365 0-117.391-14.389-167.947-39.785 0.654 5.207 1.029 10.501 1.029 15.88 0-5.396-0.448-10.683-1.099-15.915 0.022 0.014 0.046 0.021 0.069 0.035-7.863-62.695-61.582-111.374-126.509-111.374-70.32 0-127.539 57.086-127.539 127.254 0 70.17 57.218 127.255 127.539 127.255 58.323 0 107.6-39.288 122.728-92.72-0.016-0.005-0.03-0.014-0.042-0.019a130.023 130.023 0 0 0 4.454-24.921 126.446 126.446 0 0 1-4.411 24.939c52.509 23.434 110.595 36.575 171.741 36.575 61.144 0 119.224-13.137 171.733-36.571a126.067 126.067 0 0 1-4.416-24.975c0.669 8.579 2.206 16.92 4.465 24.952-0.017 0.009-0.035 0.014-0.049 0.022 15.126 53.433 64.404 92.716 122.731 92.716 70.32 0 127.539-57.085 127.539-127.255 0.001-70.166-57.217-127.252-127.538-127.252z m-588.933 207.29c-44.292 0-80.32-35.92-80.32-80.044 0-44.13 36.028-80.041 80.32-80.041 44.292 0 80.319 35.924 80.319 80.049 0 44.126-36.04 80.036-80.319 80.036z m588.933 0c-44.289 0-80.329-35.92-80.329-80.044 0-44.13 36.04-80.041 80.329-80.041 44.295 0 80.324 35.924 80.324 80.049 0 44.126-36.029 80.036-80.324 80.036z"
-          p-id="1982"
-        />
-      </svg>
+      <!-- <div class="user_icon">
+        {{ data ? data.name.substr(0, 1) : " " }}
+      </div> -->
+      <span>{{ data ? data.name : " " }}</span>
     </div>
-
-    <div class="user_info">{{ data ? data.name : " " }}</div>
     <div class="opt_area">
       <el-tooltip
         :class="data.isShowRes ? 'item' : 'item hide'"
         effect="dark"
         content="Star Answer"
         placement="top-start"
-        v-if="!data.isStar"
       >
-        <svg
-          t="1620959419776"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="5507"
-          :width="size"
-          :height="size"
-          @click="starAnswer()"
-        >
-          <path
-            d="M280.9 958.7c-14.2 0-28.3-4.3-40.4-12.9-23-16.2-34.5-43.8-29.9-72l38-233.8L87.5 474.8c-19.3-19.8-25.9-48.6-17-75.1 8.7-25.9 30.5-44.4 57-48.5l221.1-33.8L447.8 106c12-25.5 36.6-41.4 64.3-41.4 27.7 0 52.4 15.9 64.3 41.4l99.2 211.4 221.1 33.8c26.5 4 48.3 22.6 57 48.5 8.9 26.5 2.4 55.3-17 75.1L775.6 640l38.1 233.7c4.6 28.2-6.9 55.8-29.9 72.1-22.2 15.6-50.7 17.2-74.5 4.1l-197.2-109-197.2 109c-10.7 5.8-22.4 8.8-34 8.8z m231.2-201.6c11.7 0 23.3 2.9 34 8.8l183.5 101.4-35.6-218c-3.8-23.1 3.6-46.9 19.9-63.5l152.5-156.3-208.9-31.9c-23.4-3.6-43.5-18.7-53.8-40.6l-91.6-195.1L420.5 357c-10.2 21.8-30.4 37-53.8 40.6l-208.9 31.9 152.5 156.3c16.2 16.6 23.6 40.3 19.9 63.5l-35.6 218 183.5-101.4c10.7-5.9 22.3-8.8 34-8.8z"
-            p-id="5508"
-            fill="#1296db"
-          />
-        </svg>
-      </el-tooltip>
-
-      <el-tooltip
-        :class="data.isShowRes ? 'item' : 'item hide'"
-        effect="dark"
-        content="Star Answer"
-        placement="top-start"
-        v-if="data.isStar"
-      >
-        <svg
-          t="1620959540802"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="5714"
-          :width="size"
-          :height="size"
-          @click="starAnswer()"
-        >
-          <path
-            d="M949.12 386.592c-4.864-15.008-17.856-25.952-33.44-28.192l-256.992-37.344-114.944-232.896c-6.976-14.144-21.376-23.104-37.152-23.104-15.776 0-30.176 8.96-37.152 23.104l-114.944 232.896L97.472 358.4c-15.616 2.272-28.576 13.184-33.44 28.192s-0.8 31.456 10.496 42.464l185.984 181.28-43.904 255.968c-2.656 15.552 3.712 31.264 16.48 40.544 12.768 9.28 29.664 10.496 43.648 3.136l229.888-120.864 229.856 120.864c6.048 3.168 12.672 4.768 19.264 4.768 8.576 0 17.152-2.656 24.352-7.904 12.768-9.28 19.136-24.992 16.48-40.544l-43.904-255.968 185.984-181.28C949.92 418.048 953.984 401.6 949.12 386.592z"
-            p-id="5715"
-            fill="#1296db"
-          />
-        </svg>
+        <i @click="starAnswer"
+          :class="`answer-footer-button ${data.isStar ? 'star' : 'unstar'}`"></i>
       </el-tooltip>
 <!-- 
       <el-tooltip class="item" effect="dark" content="Audio" placement="top-start">
@@ -90,38 +26,8 @@
       </el-tooltip> -->
 
       <el-tooltip class="item" effect="dark" content="Feedback" placement="top-start">
-        <svg
-          @click="comment()"
-          t="1620959839822"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="7007"
-          :width="size"
-          :height="size"
-        >
-          <path
-            d="M512 0C229.259636 0 0 229.236364 0 512s229.236364 512 512 512c109.381818 0 210.501818-34.536727 293.701818-92.974545l167.121455 41.774545-41.774546-167.121455A509.137455 509.137455 0 0 0 1024 512C1024 229.236364 794.786909 0 512 0m0 947.2C271.662545 947.2 76.8 752.337455 76.8 512S271.662545 76.8 512 76.8c240.384 0 435.223273 194.862545 435.223273 435.2a433.338182 433.338182 0 0 1-103.424 281.297455l25.041454 77.91709-76.8-26.274909A433.221818 433.221818 0 0 1 512 947.2"
-            p-id="7008"
-            fill="#1296db"
-          />
-          <path
-            d="M308.363636 525.568m-60.113454 0a60.113455 60.113455 0 1 0 120.226909 0 60.113455 60.113455 0 1 0-120.226909 0Z"
-            p-id="7009"
-            fill="#1296db"
-          />
-          <path
-            d="M517.818182 525.568m-60.113455 0a60.113455 60.113455 0 1 0 120.226909 0 60.113455 60.113455 0 1 0-120.226909 0Z"
-            p-id="7010"
-            fill="#1296db"
-          />
-          <path
-            d="M727.272727 525.568m-60.113454 0a60.113455 60.113455 0 1 0 120.226909 0 60.113455 60.113455 0 1 0-120.226909 0Z"
-            p-id="7011"
-            fill="#1296db"
-          />
-        </svg>
+        <i @click="comment"
+          :class="`answer-footer-button unmessage`"></i>
       </el-tooltip>
 
       <el-popover placement="top-start" width="100" trigger="hover">
@@ -129,7 +35,7 @@
           class="response_opt"
           @click="hideResponse()"
         >{{ data.isShowRes ? "Hide" : "Show" }} Response</div>
-        <svg
+        <!-- <svg
           slot="reference"
           t="1620960073835"
           class="icon"
@@ -155,7 +61,8 @@
             fill="#1296db"
             p-id="10084"
           />
-        </svg>
+        </svg> -->
+        <i slot="reference" class="answer-footer-button pop"></i>
       </el-popover>
     </div>
   </div>
@@ -163,14 +70,32 @@
 
 
 <style scoped>
-.page {
+.answer-footer {
   width: 100%;
-  height: 50px;
+  height: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 0 9px;
 }
 .emoji_area {
-  height: 20px;
+  height: 52px;
+  font-size: 16px;
+  font-family: PingFang SC;
+  font-weight: bold;
+  line-height: 52px;
+  color: #15C39A;
+  display: flex;
+}
+.user_icon{
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  background-color: red;
+  overflow: hidden;
+  line-height: 52px;
+  text-align: center;
   margin-left: 5px;
 }
 .user_info {
@@ -189,9 +114,10 @@
 /* flex-start | flex-end | center | space-between |  */
 .opt_area {
   display: flex;
-  height: auto;
-  width: 160px;
-  justify-content: space-around;
+  height: 100%;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
 }
 .response_opt {
   display: flex;
@@ -203,8 +129,36 @@
   cursor: pointer;
 }
 
-.icon {
+.answer-footer-button {
   cursor: pointer;
+  width: 20px;
+  height: 20px;
+  background-position: 0 0;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  display: block;
+}
+.answer-footer-button.star{
+  background-image: url(../../assets/picture/started.png);
+  margin-right: 16px;
+}
+.answer-footer-button.unstar{
+  background-image: url(../../assets/picture/unstar.png);
+  margin-right: 16px;
+}
+.answer-footer-button.message{
+  background-image: url(../../assets/picture/message-selected.png);
+  /* margin-right: 8px; */
+}
+.answer-footer-button.unmessage{
+  background-image: url(../../assets/picture/message.png);
+  /* margin-right: 8px; */
+}
+.answer-footer-button.pop{
+  background-image: url(../../assets/picture/pop-icon.png);
+  background-size: 4px 20px;
+  background-position: 16px 0;
+  width: 20px;
 }
 .video{
   width: 200px;
@@ -213,7 +167,6 @@
   top:100px;
   left: 300px;
   z-index: 999;
-  background-color: red;
 }
 </style>
 
@@ -257,14 +210,16 @@ export default {
       this.showComment(ModalEventsTypeEnum.TEXT)
     },
     showComment(type) {
-      const { pageId, itemId, studentId, title, name } = this.data;
+      const { pageId, itemId, studentId, title, name, answertime } = this.data;
+      console.log(answertime)
       EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
         pageId,
         itemId,
         title,
         studentId,
         type,
-        name
+        name,
+        answertime
       });
     },
     hideResponse() {

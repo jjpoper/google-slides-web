@@ -25,7 +25,7 @@
     ref="vueDrag"
   >
     <el-popover
-    placement="bottom-start"
+    placement="right"
     trigger="hover"
     :append-to-body="false"
     :popper-options="{
@@ -112,10 +112,10 @@ export default {
       }
     },
     positiveChange(name) {
-      console.log('notUpdate ==== changePosition positive change', name)
+      // console.log('notUpdate ==== changePosition positive change', name)
     },
     deactivated(name) {
-      console.log('notUpdate ==== changePosition deactivated change', name)
+      // console.log('notUpdate ==== changePosition deactivated change', name)
     }
   }
 }
@@ -157,6 +157,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  line-height: 0;
 }
 .dragselector{
   /* position: absolute;

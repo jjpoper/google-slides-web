@@ -1,14 +1,13 @@
 <template>
   <div class="dashboard">
-    <div class="page" :style="`min-height:${height - 50}px`">
-      <div class="left" v-if="slides">
-        <div v-for="(item, index) in slides" :key="index" class="ppt_content">
-          <div
-            v-bind:class="
+    <div class="dashboardpage" :style="`height:${height - 110}px`">
+      <div class="left" :style="`height:${height - 110}px`" v-if="slides">
+        <div v-for="(item, index) in slides" :key="index" v-bind:class="
               isFocus[index]
-                ? 'image_parent image_parent_focus'
-                : 'image_parent '
-            "
+                ? 'ppt_content image_parent_focus'
+                : 'ppt_content '">
+          <div
+            class="image_parent"
             @click="giveFocus(index)"
             :style="`background-image:url(${item.thumbnail_url})`"
           >
@@ -48,19 +47,17 @@
             </el-popover>
           </div>
 
-          <div class="response_flag">
+          <!-- <div class="response_flag">
             <div
               class="top"
               :style="'width:' + responsePercentage[index] + '%'"
             ></div>
-          </div>
+          </div> -->
         </div>
       </div>
 
-      <div class="divider"></div>
-
-      <div style="flex: 1; display: flex; position: relative">
-        <div
+      <div class="dash-right" :style="`height:${height - 110}px`">
+        <template
           :class="
             showResponse &&
             currentItemData &&
@@ -72,18 +69,16 @@
               : 'content_parent'
           "
         >
-          <div class="content_main">
-            <teacherIndexItem
-              v-if="currentItemData && currentItemData.items[0]"
-              :data="currentItemData"
-              :type="currentItemData.items[0].type"
-              :flag_1="true"
-              :currentAnswerCount="currentAnswerCount"
-              :textList="responseContentList"
-              :pptUrl="currentItemData.thumbnail_url"
-            />
-          </div>
-        </div>
+          <teacherIndexItem
+            v-if="currentItemData && currentItemData.items[0]"
+            :data="currentItemData"
+            :type="currentItemData.items[0].type"
+            :flag_1="true"
+            :currentAnswerCount="currentAnswerCount"
+            :textList="responseContentList"
+            :pptUrl="currentItemData.thumbnail_url"
+          />
+        </template>
         <dashboard-meterial
           :pptUrl="currentItemData.thumbnail_url"
           :filterAddedMediaList="filterAddedMediaList"
@@ -95,133 +90,6 @@
   </div>
 </template>
 
-<style scoped>
-.dashboard {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background-color: #edf0f4;
-  flex-direction: column;
-}
-.page {
-  width: 100%;
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  margin-bottom: 60px;
-}
-.student_flag {
-  background-color: rgba(74, 172, 213, 0.9);
-  width: 40px;
-  height: 40px;
-  border-top-right-radius: 5px;
-  margin-top: 90px;
-  cursor: pointer;
-  fill: white;
-  /* margin-top:-50px; */
-}
-svg {
-  opacity: 0.35;
-}
-
-.student_name {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.student_count {
-  color: black;
-  opacity: 0.9;
-  font-size: 20px;
-  z-index: 999;
-}
-
-.left {
-  min-height: 100%;
-  width: 250px;
-  overflow: scroll;
-  padding: 10px;
-}
-
-.left::-webkit-scrollbar {
-  display: none;
-}
-.ppt_content {
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.divider {
-  height: auto;
-  min-height: 100%;
-  background-color: #e0e0e0;
-  width: 1px;
-  position: fixed;
-  top: 0px;
-  left: 250px;
-}
-
-.content_parent {
-  display: flex;
-  flex: 1;
-  overflow-x: hidden;
-  border: 5px solid white;
-  border-radius: 10px;
-}
-
-.content_parent--border {
-  border: 5px solid red;
-}
-
-.content_main {
-  height: auto;
-  width: 100%;
-  background-color: white;
-  display: flex;
-  padding-left: 5px;
-  padding-right: 10px;
-  /* justify-content: center;
-  align-items: center;
-  flex-wrap: wrap; */
-}
-
-.image_parent {
-  /* display: flex;
-  flex-direction: column; */
-  overflow: hidden;
-  border: 1px solid white;
-  width: 230px;
-  height: 130px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-}
-.image_parent_focus {
-  border: 1px solid #409eff;
-}
-/* image {
-  width: 228px;
-  height: 130px;
-  display: block;
-} */
-.response_flag {
-  width: 230px;
-  height: 6px;
-  background-color: white;
-  border: 1px solid #909090;
-}
-.top {
-  background-color: #67c23a;
-  height: 6px;
-}
-
-.control_panel {
-  width: 100%;
-}
-</style>
 
 <script>
 import TipsList from '../common/tipsList.vue';
@@ -319,3 +187,121 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.dashboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: #edf0f4;
+  flex-direction: column;
+}
+.dashboardpage {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  margin-bottom: 60px;
+  padding-top: 50px;
+  background-color: #fff;
+}
+.student_flag {
+  background-color: rgba(74, 172, 213, 0.9);
+  width: 40px;
+  height: 40px;
+  border-top-right-radius: 5px;
+  margin-top: 90px;
+  cursor: pointer;
+  fill: white;
+  /* margin-top:-50px; */
+}
+svg {
+  opacity: 0.35;
+}
+
+.student_name {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.student_count {
+  color: black;
+  opacity: 0.9;
+  font-size: 20px;
+  z-index: 999;
+}
+
+.left {
+  height: 100%;
+  width: 283px;
+  overflow: scroll;
+  padding: 30px;
+  box-sizing: border-box;
+  padding-bottom: 10px;
+}
+
+.left::-webkit-scrollbar {
+  display: none;
+}
+.ppt_content {
+  display: flex;
+  flex-direction: column;
+  width: 223px;
+  height: 136px;
+  padding: 17px 35px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  border: 1px solid #DCDCDC;
+}
+
+.image_parent_focus {
+  border: 5px solid #21A28B;
+  padding: 13px 31px;
+}
+
+.divider {
+  height: auto;
+  min-height: 100%;
+  background-color: #e0e0e0;
+  width: 1px;
+  position: fixed;
+  top: 0px;
+  left: 250px;
+}
+
+.image_parent {
+  /* display: flex;
+  flex-direction: column; */
+  overflow: hidden;
+  width: 153px;
+  height: 102px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+/* image {
+  width: 228px;
+  height: 130px;
+  display: block;
+} */
+/* .response_flag {
+  width: 230px;
+  height: 6px;
+  background-color: white;
+  border: 1px solid #909090;
+} */
+.top {
+  background-color: #67c23a;
+  height: 6px;
+}
+
+.control_panel {
+  width: 100%;
+}
+.dash-right{
+  flex: 1;
+  overflow: hidden;
+}
+</style>
