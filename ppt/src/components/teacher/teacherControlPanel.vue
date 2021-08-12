@@ -398,6 +398,7 @@ export default {
 <style scoped>
 strong {
   color: #36425A;
+  font-size: 14px;
 }
 .panel {
   width: 100%;
@@ -499,6 +500,7 @@ strong {
   margin-right: 20px;
   color: #36425A;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .info_area {

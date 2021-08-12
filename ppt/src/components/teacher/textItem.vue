@@ -4,29 +4,33 @@
     </div>
     <div class="text-answer-list">
       <div class="colume5" v-for="(item, index) in textList" :key="index">
-        <div
-          v-if="shouldShow(item)"
-          :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
-        >
-          <div class="text_area">
-            {{ getText(item) }}
-            <span class="text_static" v-if="flag_1 && textList.length > 1">
-              {{ index + 1 + " of " + textList.length }}
-            </span>
+        <div class="text-item-outer5">
+          <div
+            v-if="shouldShow(item)"
+            :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
+          >
+            <div class="text_area">
+              {{ getText(item) }}
+              <span class="text_static" v-if="flag_1 && textList.length > 1">
+                {{ index + 1 + " of " + textList.length }}
+              </span>
+            </div>
+            <div class="text-footer">
+              <student-response-opt-bar
+                v-if="flag_1"
+                :data="{
+                  pageId: data.page_id,
+                  itemId: item.item_id,
+                  studentId: item.user_id,
+                  title: item.content,
+                  isStar: item.star,
+                  isShowRes: item.show,
+                  name: item.user_name,
+                  answertime: item.updated_at
+                }"
+              />
+            </div>
           </div>
-          <student-response-opt-bar
-            v-if="flag_1"
-            :data="{
-              pageId: data.page_id,
-              itemId: item.item_id,
-              studentId: item.user_id,
-              title: item.content,
-              isStar: item.star,
-              isShowRes: item.show,
-              name: item.user_name,
-              answertime: item.updated_at
-            }"
-          />
         </div>
       </div>
     </div> 
@@ -65,22 +69,42 @@
   width: 20%;
   padding: 5px;
   box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.colume1{
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
 }
 /* 有星标时的bg */
 .star_bg {
   border: 3px solid #f7d567;
   background-color: #f8f1d3;
 }
+.text-item-outer1{
+  height: 290px;
+  width: 100%;
+  position: relative;
+}
+.text-item-outer5{
+  width: 100%;
+  padding-bottom: 85%;
+  position: relative;
+}
 .text-list-item {
   width: 100%;
-  height: 290px;
+  height: 100%;
   border-radius: 8px;
-  margin-right: 20px;
+  margin-right: 10px;
   border: 1px solid #F1F1F1;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);
   background-color: #fff;
   box-sizing: border-box;
-  padding: 4px;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .text_static {
   position: absolute;
@@ -89,7 +113,7 @@
 }
 .text_area {
   width: 100%;
-  height: 149px;
+  height: 59%;
   background: #E4E4E4;
   opacity: 0.3;
   border-radius: 6px;
@@ -102,6 +126,10 @@
   overflow: scroll;
   position: relative;
   text-align: left;
+}
+.text-footer{
+  width: 100%;
+  height: 41%;
 }
 </style>
 
