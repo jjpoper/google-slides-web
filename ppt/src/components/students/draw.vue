@@ -10,15 +10,6 @@
     <!-- <colorPanel style="width:100%;height:50px"></colorPanel> -->
 
     <div class="footer--contenter">
-      <!-- <div class="colorList">
-        <span
-          v-for="item in colors"
-          :key="item"
-          @click="changeColor(item)"
-          :style="`background-color: ${item}`"
-          class="colors"
-        ></span>
-      </div>-->
       <div class="canvasfooter">
         <el-popover placement="top" width="200" trigger="hover" class="dropdown-icon">
           <div class="shape_area">
@@ -212,14 +203,6 @@
                   transform="translate(705.425 783.354)"
                 />
               </g>
-              <!-- <rect
-                  id="矩形_174"
-                  data-name="矩形 174"
-                  class="cls-3"
-                  width="26"
-                  height="26"
-                  transform="translate(797 882)"
-              />-->
             </g>
           </svg>
         </div>
@@ -241,6 +224,7 @@
               width="24"
               height="21.417"
               viewBox="0 0 24 21.417"
+              style="cursor: pointer;"
             >
               <g id="文本" transform="translate(-838.159 -814)">
                 <path
@@ -263,30 +247,38 @@
         </el-popover>
 
         <el-popover placement="top" width="600" trigger="hover">
-          <div class="eraser" slot="reference" @click="clickColor">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+          <div class="colorList">
+            <span
+              v-for="item in colors"
+              :key="item"
+              @click="changeColor(item)"
+              :style="`background-color: ${item}`"
+              class="colors"
+            ></span>
+          </div>
+          <div class="eraser" slot="reference">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="26"
+              height="26"
+              viewBox="0 0 26 26"
+              class="color_flag"
+              style="cursor: pointer;"
+            >
               <g id="吸管" transform="translate(9316 6241)">
                 <path
                   id="路径_603"
                   data-name="路径 603"
-                  :fill="currentTab==7 ? '#ef4e4e' : 'rgb(171, 178, 218)'"
+                  class="color-1-svg"
                   d="M-9314.008-6219.452s-.334,1.841,1.9,1.562c.893-.781,2.214-2.137,2.558-2.309a4.6,4.6,0,0,0,2.619-.944,72.537,72.537,0,0,0,5.415-6.313s-3.334,1.651-5.415,1.717a7.235,7.235,0,0,0-4.207,1.42C-9311.87-6223.762-9314.008-6219.452-9314.008-6219.452Z"
                 />
                 <path
                   id="路径_600"
                   data-name="路径 600"
-                  :fill="currentTab==7 ? '#36425a' : 'rgb(171, 178, 218)'"
+                  class="color-2-svg"
                   d="M22.68,1.411a4.816,4.816,0,0,0-6.812,0L11.951,5.327l-1.62-1.62a.851.851,0,0,0-.615-.257A.875.875,0,0,0,9.1,4.943l2.236,2.233.21.2L3.069,15.866a3.634,3.634,0,0,0-1.035,3.158L.7,20.361a2.156,2.156,0,0,0,0,3.016A2.138,2.138,0,0,0,2.214,24a2.077,2.077,0,0,0,1.5-.626l1.335-1.328a3.526,3.526,0,0,0,.6.053A3.672,3.672,0,0,0,8.23,21.032l8.477-8.486.2.2s.015,0,.015.009l2.221,2.23a.878.878,0,0,0,1.245-1.238l-1.62-1.62L22.68,8.215a4.825,4.825,0,0,0,0-6.8ZM6.985,19.8a1.9,1.9,0,0,1-1.846.486.867.867,0,0,0-.885.1l-.09.074-1.68,1.686a.38.38,0,0,1-.27.111.4.4,0,0,1-.36-.237.392.392,0,0,1,.09-.417l1.62-1.631a.983.983,0,0,0,.15-.173.45.45,0,0,0,.075-.132.914.914,0,0,0,.06-.141,1.1,1.1,0,0,0,.03-.15.953.953,0,0,0-.06-.41,1.862,1.862,0,0,1,.48-1.861l8.477-8.485,2.686,2.692Z"
                   transform="translate(-9315.083 -6241)"
                 />
-                <!-- <rect
-                  id="矩形_173"
-                  data-name="矩形 173"
-                  class="cls-2"
-                  width="26"
-                  height="26"
-                  transform="translate(-9316 -6241)"
-                />-->
               </g>
             </svg>
           </div>
@@ -365,14 +357,6 @@
                     transform="translate(-266.932 -395.813)"
                   />
                 </g>
-                <!-- <rect
-                  id="矩形_171"
-                  data-name="矩形 171"
-                  class="cls-2"
-                  width="26"
-                  height="26"
-                  transform="translate(1090 880)"
-                />-->
               </g>
             </svg>
           </div>
@@ -423,6 +407,20 @@ export default {
         "Arial",
         "Kirang Haerang",
         "Dancing Script"
+      ],
+      colors: [
+        "#FF8D87",
+        "#676EF9",
+        "#FF6B5B",
+        "#BB6EA9",
+        "#FFCE00",
+        "#D67A00",
+        "#B4C817",
+        "#FF9300",
+        "#35B363",
+        "#00A4FC",
+        "#010001",
+        "#FFFFFF"
       ],
       showColor: true
     };
@@ -634,6 +632,23 @@ export default {
   top: 0;
 }
 
+.color_flag {
+  fill: rgb(171, 178, 218);
+}
+
+.color-1-svg {
+  fill: rgb(171, 178, 218);
+}
+.color-2-svg {
+  fill: rgb(171, 178, 218);
+}
+.color_flag:hover .color-1-svg {
+  fill: #ef4e4e;
+}
+.color_flag:hover .color-2-svg {
+  fill: #36425a;
+}
+
 .cls-1-delete {
   fill: rgb(171, 178, 218);
 }
@@ -642,7 +657,7 @@ export default {
 }
 
 .colorList {
-  width: 60%;
+  width: 100%;
   height: 40px;
   display: flex;
   justify-content: space-around;
