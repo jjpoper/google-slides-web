@@ -8,14 +8,14 @@ const getters = {
 
 // actions
 const actions = {
-  setStudentList({commit}, list) {
+  setStudentList({commit}: any, list: any) {
     commit('setStudentList', { list})
   }
 }
 
 // mutations
 const mutations = {
-  setStudentList(nextState, {list }) {
+  setStudentList(nextState: any, {list}: any) {
     nextState.studentList = list
   }
 }

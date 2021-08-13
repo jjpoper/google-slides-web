@@ -36,6 +36,7 @@
           :meterialVisiable="meterialVisiable"
           :filterTips="filterTips"
           :overviewModalVisiable="overviewModalVisiable"
+          :currentIndex="currentIndex"
           v-else-if="currentItemData && slides"
         />
       </div>

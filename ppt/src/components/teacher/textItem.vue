@@ -21,7 +21,7 @@
               :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
             >
               <div class="text_area">
-                {{ getText(item) }} ==== {{item.updated_at}}
+                {{ getText(item) }}
                 <span class="text_static" v-if="flag_1 && textList.length > 1">
                   {{ index + 1 + " of " + textList.length }}
                 </span>
@@ -132,7 +132,6 @@ export default {
       this.data.items[0].type
     );
     this.textList = list
-    this.resortList()
     EventBus.$on(this.data.items[0].type, (data) => {
       // 通知展示当前pageid，当前itemid的评论框
       console.log(data);
@@ -144,6 +143,8 @@ export default {
       this.changeUser = data.user_id;
       this.changeItemId = data.item_id;
       let _this = this;
+
+      this.resortList()
       setTimeout(function () {
         _this.isTextChanging = false;
       }, 3000);
@@ -218,9 +219,9 @@ export default {
             const precontent = prev.content
             const nextcontent = next.content
             if(precontent) {
-                return 1
-            } else if(!precontent && nextcontent) {
                 return -1
+            } else if(!precontent && nextcontent) {
+                return 1
             } else {
               return 0
             }

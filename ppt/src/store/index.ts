@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex, {createLogger} from 'vuex'
-import teacher from './modules/teacher.js'
+import teacher from './modules/teacher'
 
 Vue.use(Vuex)
 
