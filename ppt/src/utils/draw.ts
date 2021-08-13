@@ -915,7 +915,6 @@ export default class Draw {
   undo() {
     console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "---");
     if (this.currentIndex <= 0) {
-      showToast("this is last step");
     } else {
       const current = window.drawPool[--this.currentIndex] || ''
       this.initByBase64(current);
@@ -934,7 +933,6 @@ export default class Draw {
   redo() {
     console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "+++");
     if (this.currentIndex == window.drawPool.length - 1) {
-      showToast("this is last step");
     } else {
       const current = window.drawPool[++this.currentIndex] || ''
 

@@ -7,9 +7,10 @@
     </div>
 
     <!-- 颜色，多边形图形，直线，画笔，荧光笔，text box, 橡皮，朝左undo朝右恢复（参考classdojo), 清除键。 -->
+    <!-- <colorPanel style="width:100%;height:50px"></colorPanel> -->
 
     <div class="footer--contenter">
-      <div class="colorList">
+      <!-- <div class="colorList">
         <span
           v-for="item in colors"
           :key="item"
@@ -17,14 +18,9 @@
           :style="`background-color: ${item}`"
           class="colors"
         ></span>
-      </div>
+      </div>-->
       <div class="canvasfooter">
-        <el-popover
-          placement="top"
-          width="200"
-          trigger="hover"
-          class="dropdown-icon"
-        >
+        <el-popover placement="top" width="200" trigger="hover" class="dropdown-icon">
           <div class="shape_area">
             <svg
               t="1619161258814"
@@ -32,10 +28,10 @@
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               p-id="6029"
-              height="40px"
-              width="40px"
+              height="35px"
+              width="35px"
               viewBox="0 0 1024 1024"
-              :fill="currentShape == 0 ? color : 'rgb(212 208 208)'"
+              :fill="currentShape == 0 ? color : 'rgb(171, 178, 218)'"
               @click="drawRect"
             >
               <rect x="162" y="162" height="700" width="700" />
@@ -46,10 +42,10 @@
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               p-id="6029"
-              height="40px"
-              width="40px"
+              height="35px"
+              width="35px"
               viewBox="0 0 1024 1024"
-              :fill="currentShape == 1 ? color : 'rgb(212 208 208)'"
+              :fill="currentShape == 1 ? color : 'rgb(171, 178, 218)'"
               @click="drawCircle"
             >
               <circle cx="516" cy="516" r="350" />
@@ -61,10 +57,10 @@
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               p-id="6029"
-              height="40px"
-              width="40px"
+              height="35px"
+              width="35px"
               viewBox="0 0 1024 1024"
-              :fill="currentShape == 2 ? color : 'rgb(212 208 208)'"
+              :fill="currentShape == 2 ? color : 'rgb(171, 178, 218)'"
               @click="drawPolygon"
             >
               <polygon
@@ -73,100 +69,160 @@
             </svg>
           </div>
 
-          <svg
-            t="1619161258814"
-            slot="reference"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="6029"
-            height="40px"
-            width="40px"
-            viewBox="0 0 1024 1024"
-            :fill="currentTab == 6 ? color : 'rgb(212 208 208)'"
-            class="shape_icon"
-          >
-            <circle v-if="currentShape == '1'" cx="516" cy="516" r="350" />
-            <rect
-              v-if="currentShape == '0'"
-              x="162"
-              y="162"
-              height="700"
-              width="700"
-            />
-            <polygon
-              v-if="currentShape == '2'"
-              points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
-            />
-          </svg>
-        </el-popover>
-        <!-- <el-tooltip content="change color" placement="right">
-        <div
-          class="red-pencial"
-          :style="`background-color: ${color}`"
-          @click="showModal"
-        ></div>
-        </el-tooltip>-->
-
-        <el-popover placement="top" width="300" trigger="hover">
-          <draw-line-width-panel
-            :color="color"
-            :changeWidth="changeWidth"
-            :widthValue="widthValue"
-            :tabIndex="2"
-          />
-          <div class="eraser" @click="drawLine" slot="reference">
-            <i
-              class="el-icon-minus"
-              :style="`font-size: 30px; color: ${
-                currentTab == 2 ? color : 'rgb(212 208 208)'
-              }`"
-            ></i>
-          </div>
-        </el-popover>
-
-        <el-popover placement="top" width="300" trigger="hover">
-          <draw-line-width-panel
-            :color="color"
-            :changeWidth="changeWidth"
-            :widthValue="widthValue"
-            :tabIndex="1"
-          />
-          <div class="eraser" @click="drawPath" slot="reference">
-            <i
-              class="el-icon-edit"
-              :style="`font-size: 30px; color: ${
-                currentTab == 1 ? color : 'rgb(212 208 208)'
-              }`"
-            ></i>
-          </div>
-        </el-popover>
-
-        <el-popover placement="top" width="300" trigger="hover">
-          <draw-line-width-panel
-            :color="color"
-            :changeWidth="changeWidth"
-            :widthValue="widthValue"
-            :tabIndex="5"
-          />
-          <div class="eraser" @click="drawMark" slot="reference">
+          <div class="eraser" slot="reference">
             <svg
-              t="1622035315247"
-              class="icon"
-              viewBox="0 0 1024 1024"
+              t="1619161258814"
+              slot="reference"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              p-id="5489"
-              width="32"
-              height="32"
+              p-id="6029"
+              width="35px"
+              height="35px"
+              viewBox="0 0 1024 1024"
+              :fill="currentTab == 6 ? color : 'rgb(171, 178, 218)'"
+              class="shape_icon"
+              @click="drawShape"
+              style="margin-top:-10px"
             >
-              <path
-                d="M197.973333 546.133333c-3.413333-3.413333-10.24-6.826667-17.066666-3.413333-6.826667 0-10.24 6.826667-10.24 13.653333-6.826667 68.266667-44.373333 150.186667-98.986667 218.453334-6.826667 6.826667-3.413333 17.066667 0 23.893333l37.546667 37.546667-105.813334 105.813333c-3.413333 6.826667-3.413333 13.653333-3.413333 17.066667 0 6.826667 6.826667 10.24 13.653333 13.653333l136.533334 34.133333h3.413333c3.413333 0 10.24-3.413333 13.653333-3.413333l54.613334-54.613333 20.48 20.48c3.413333 3.413333 6.826667 3.413333 13.653333 3.413333 3.413333 0 6.826667 0 10.24-3.413333l51.2-30.72c58.026667-37.546667 116.053333-61.44 170.666667-68.266667 6.826667 0 13.653333-6.826667 13.653333-10.24 3.413333-6.826667 0-13.653333-3.413333-17.066667L197.973333 546.133333zM993.28 116.053333l-68.266667-68.266666c-34.133333-34.133333-92.16-40.96-133.12-10.24L204.8 477.866667c-3.413333 3.413333-6.826667 6.826667-6.826667 13.653333 0 3.413333 0 10.24 3.413334 13.653333l334.506666 334.506667c3.413333 3.413333 6.826667 3.413333 13.653334 3.413333 3.413333 0 10.24-3.413333 13.653333-6.826666L1003.52 249.173333c30.72-40.96 27.306667-95.573333-10.24-133.12z"
-                :fill="`${currentTab == 5 ? color : 'rgb(212 208 208)'}`"
-                p-id="5490"
+              <circle v-if="currentShape == '1'" cx="516" cy="516" r="350" />
+              <rect v-if="currentShape == '0'" x="162" y="162" height="700" width="700" />
+              <polygon
+                v-if="currentShape == '2'"
+                points="512,162 208.89,337 208.89,687 512,862 815.11,687 815.11,337 512,162"
               />
             </svg>
           </div>
         </el-popover>
+        <div class="eraser" @click="drawLine">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="26"
+            height="26.499"
+            viewBox="0 0 26 26.499"
+          >
+            <g id="直线" transform="translate(-665 -885.502)">
+              <path
+                id="路径_609"
+                data-name="路径 609"
+                :fill="currentTab == 2 ? color : 'rgb(171, 178, 218)'"
+                d="M201.482,174.776H172.721a2.054,2.054,0,0,1,0-4.109h28.761a2.054,2.054,0,1,1,0,4.109Z"
+                transform="matrix(0.695, -0.719, 0.719, 0.695, 423.889, 913.358)"
+              />
+              <rect
+                id="矩形_176"
+                data-name="矩形 176"
+                fill="none"
+                width="26"
+                height="26"
+                transform="translate(665 886)"
+              />
+            </g>
+          </svg>
+        </div>
+        <div class="eraser" @click="drawPath" slot="reference">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+            <g id="钢笔" transform="translate(10333 6109)">
+              <g id="组_1664" data-name="组 1664" transform="translate(-10332.255 -6112.5)">
+                <path
+                  id="路径_747"
+                  data-name="路径 747"
+                  :fill="currentTab == 1 ? color : 'rgb(171, 178, 218)'"
+                  d="M297.327,469.917a2.616,2.616,0,0,0-5.213-.31l0,0s-.31,1.955-.711,2.267l1.176,1.176s2.141-.516,2.534-.514l-.029-.029a2.615,2.615,0,0,0,2.246-2.587Zm-1.773.135a.818.818,0,0,1-.781.7l0,0c-.121,0-1.019,0-1.019,0,.038-.1.13-.649.173-.9a.129.129,0,0,1,0-.029c0-.016.009-.031.011-.047,0-.031.009-.049.009-.049l0,0a.817.817,0,0,1,1.6.319Z"
+                  transform="translate(-283.634 -451.437)"
+                />
+                <path
+                  id="路径_748"
+                  data-name="路径 748"
+                  :fill="currentTab == 1 ? color : 'rgb(171, 178, 218)'"
+                  d="M110.05,676.309l.175-.155,4-3.878-1.176-1.176-3.658,3.878-.294.328C108.7,676,109.173,676.695,110.05,676.309Z"
+                  transform="translate(-105.284 -650.663)"
+                />
+                <path
+                  id="路径_749"
+                  data-name="路径 749"
+                  :fill="currentTab == 1 ? color : 'rgb(171, 178, 218)'"
+                  d="M18.393,190.089a.9.9,0,0,0-1.057.662l-.53,2.094c-.518,1.921-1.674,2.7-3.613,3.142L4.968,198.42l-.2.061c-.891.316-1.187-.3-.949-1.005l.1-.355,2.361-8.229a5.376,5.376,0,0,1,4.013-3.768l5.352-1.012-.759-.824a.85.85,0,0,1-.112-.987l-4.872.922A7.109,7.109,0,0,0,4.6,188.2L1.339,199.553c-.314.931.285,1.629,1.257,1.329l11.142-3.294c2.565-.583,4.093-1.616,4.778-4.156l.568-2.24A.9.9,0,0,0,18.393,190.089Z"
+                  transform="translate(0 -172.833)"
+                />
+                <path
+                  id="路径_750"
+                  data-name="路径 750"
+                  :fill="currentTab == 1 ? color : 'rgb(171, 178, 218)'"
+                  d="M607.826,8.826l-2.48-2.693a1.975,1.975,0,0,0-2.783-.114l-3.521,3.238a.864.864,0,0,0-.049,1.2l.759.824,2.646,2.873.6.649a.852.852,0,0,0,1.061.153.979.979,0,0,0,.137-.1l3.517-3.241a1.976,1.976,0,0,0,.117-2.785Z"
+                  transform="translate(-584.108 0)"
+                />
+              </g>
+              <!-- <rect
+                  id="矩形_262"
+                  data-name="矩形 262"
+                  fill
+                  width="26"
+                  height="26"
+                  transform="translate(-10333 -6109)"
+              />-->
+            </g>
+          </svg>
+        </div>
+        <div class="eraser" @click="drawMark" slot="reference">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+            <g id="画笔" transform="translate(-724 -883)">
+              <g id="组_1163" data-name="组 1163" transform="translate(715.353 875.508)">
+                <path
+                  id="路径_607"
+                  data-name="路径 607"
+                  :fill="currentTab == 5 ? color : 'rgb(171, 178, 218)'"
+                  d="M340.278,25.122a1.022,1.022,0,0,1,.211,1.369,1.022,1.022,0,0,1-1.369-.211l-3.054-2.949a1.022,1.022,0,0,1-.211-1.369,1.022,1.022,0,0,1,1.369.211ZM350.809,9.746a1.666,1.666,0,0,0-1.9.105c-.948.737-7.793,7.372-10.742,10.426-.316.527-.632.843,1.158,2.633,1.474,1.474,2.212,1.369,2.949.737,1.264-1.264,6.53-8.636,8.531-11.479.316-.421.948-1.79,0-2.422Z"
+                  transform="translate(-318.479 0)"
+                />
+                <path
+                  id="路径_608"
+                  data-name="路径 608"
+                  :fill="currentTab == 5 ? color : 'rgb(171, 178, 218)'"
+                  d="M16.217,607.573s-2.949,1.58-3.159,4.213a5.78,5.78,0,0,1-3.37,4.634c-.843.211,11.9.737,10.953-4.739Z"
+                  transform="translate(0 -584.241)"
+                />
+              </g>
+              <!-- <rect
+                id="矩形_175"
+                data-name="矩形 175"
+                class="cls-2"
+                width="26"
+                height="26"
+                transform="translate(724 883)"
+              />-->
+            </g>
+          </svg>
+        </div>
+        <div class="eraser" @click="earse">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+            <g id="橡皮擦" transform="translate(-797 -882)">
+              <g id="组_1162" data-name="组 1162" transform="translate(20 -1)">
+                <path
+                  id="路径_606"
+                  data-name="路径 606"
+                  :fill="currentTab==3 ? '#ef4e4e' : 'rgb(255, 255, 255)'"
+                  d="M-10033.332-6461.843l-4.425,3.772,5.368,5.948h4.643l1.958-1.813Z"
+                  transform="translate(10817 7357)"
+                />
+                <path
+                  id="路径_604"
+                  data-name="路径 604"
+                  :fill="currentTab==3 ? '#36425a' : 'rgb(171, 178, 218)'"
+                  d="M95.317,109.056l-7.122-6.72a2.524,2.524,0,0,0-3.556.087L73.3,114.338a2.521,2.521,0,0,0,0,3.529l4.083,4.085a3.78,3.78,0,0,0,2.672,1.109H93.665a1.26,1.26,0,1,0,0-2.521h-6.3l7.98-7.84.077-.077,0,0A2.523,2.523,0,0,0,95.317,109.056ZM84.5,119.771a2.512,2.512,0,0,1-1.766.718H80.063a1.257,1.257,0,0,1-.895-.365l-4.083-4.083,2.936-3.013,6.63,6.643-.151.1Z"
+                  transform="translate(705.425 783.354)"
+                />
+              </g>
+              <!-- <rect
+                  id="矩形_174"
+                  data-name="矩形 174"
+                  class="cls-3"
+                  width="26"
+                  height="26"
+                  transform="translate(797 882)"
+              />-->
+            </g>
+          </svg>
+        </div>
 
         <el-popover placement="top" width="300" trigger="hover">
           <div v-for="(item, index) in fontFamilies" :key="index">
@@ -174,103 +230,112 @@
               <p
                 class="text-font"
                 :style="`color:${
-                  currentFont == index ? color : 'rgb(212 208 208)'
+                  currentFont == index ? color : 'rgb(171, 178, 218)'
                 }; font-family:${item}`"
-              >
-                AaBbCcDd1234
-              </p>
+              >AaBbCcDd1234</p>
             </div>
           </div>
           <div class="eraser" @click="edit" slot="reference">
             <svg
-              t="1624354530526"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              p-id="2670"
-              width="32"
-              height="32"
-              :fill="`${currentTab == 4 ? color : 'rgb(212 208 208)'}`"
+              width="24"
+              height="21.417"
+              viewBox="0 0 24 21.417"
             >
-              <path
-                d="M960 192 960 128c0-35.392-28.608-64-64-64l-64 0c-35.392 0-64 28.608-64 64L256 128c0-35.392-28.608-64-64-64L128 64C92.608 64 64 92.608 64 128l0 64c0 35.392 28.608 64 64 64l0 512c-35.392 0-64 28.608-64 64l0 64c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l512 0c0 35.328 28.608 64 64 64l64 0c35.392 0 64-28.672 64-64l0-64c0-35.392-28.608-64-64-64L896 256C931.392 256 960 227.392 960 192zM832 768c-35.392 0-64 28.608-64 64L256 832c0-35.392-28.608-64-64-64L192 256c35.392 0 64-28.608 64-64l512 0c0 35.392 28.608 64 64 64L832 768z"
-                p-id="2671"
-              />
-              <path
-                d="M736 320l-448 0C270.336 320 256 334.336 256 352l0 64C256 433.664 270.336 448 288 448S320 433.664 320 416L320 384l128 0 0 256L416 640C398.336 640 384 654.336 384 672S398.336 704 416 704l192 0c17.664 0 32-14.336 32-32S625.664 640 608 640L576 640 576 384l128 0 0 32C704 433.664 718.336 448 736 448S768 433.664 768 416l0-64C768 334.336 753.664 320 736 320z"
-                p-id="2672"
-              />
+              <g id="文本" transform="translate(-838.159 -814)">
+                <path
+                  id="路径_602"
+                  data-name="路径 602"
+                  :fill="currentTab==4 ? '#36425a' : 'rgb(171, 178, 218)'"
+                  d="M10.594,21.479A1.483,1.483,0,0,1,9.111,20V2.713H3.187a1.235,1.235,0,0,1,0-2.469H18.043a1.276,1.276,0,1,1,0,2.552H12.075V20a1.482,1.482,0,0,1-1.483,1.482Z"
+                  transform="translate(836.171 813.756)"
+                />
+                <path
+                  id="路径_605"
+                  data-name="路径 605"
+                  :fill="currentTab==4 ? '#ef4e4e' : 'rgb(171, 178, 218)'"
+                  d="M22.035,17.446H17.1l-1.387,3.4a1.022,1.022,0,0,1-.946.636h-.631a.877.877,0,0,1-.81-1.216L18.152,8.692a1.022,1.022,0,0,1,.944-.629h.714a1.022,1.022,0,0,1,.933.6L25.909,20.2a.907.907,0,0,1-.828,1.277h-.712a1.023,1.023,0,0,1-.947-.636l-1.386-3.4ZM19.483,10.78l-1.975,4.938h3.869L19.483,10.78Z"
+                  transform="translate(836.171 813.937)"
+                />
+              </g>
             </svg>
           </div>
         </el-popover>
 
-        <el-popover placement="top" width="300" trigger="hover">
-          <draw-line-width-panel
-            color="rgb(255,16,16)"
-            :changeWidth="changeWidth"
-            :widthValue="widthValue"
-            :tabIndex="3"
-          />
-          <div class="eraser" @click="earse" slot="reference">
-            <svg
-              t="1621859340302"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="989"
-              width="32"
-              height="32"
-            >
-              <path
-                d="M604.536246 736.222443l288.794439-282.693148-287.777557-270.999007-270.999007 283.201589z m-72.70705 71.181728L264.389275 539.455809 145.922542 660.973188l164.734856 164.734856a50.844091 50.844091 0 0 0 36.099305 14.744786h107.789474a101.688183 101.688183 0 0 0 71.181728-28.981132z m109.314796 35.082423h254.220457a50.844091 50.844091 0 0 1 0 101.688183H346.248262a152.532274 152.532274 0 0 1-107.789474-44.742801l-164.734856-164.734856a101.688183 101.688183 0 0 1 0-142.363456l457.596823-480.476663a101.688183 101.688183 0 0 1 143.380337-3.559086l287.269117 270.999007a101.688183 101.688183 0 0 1 4.067527 143.888778l-3.050646 3.050646z"
-                :fill="`${
-                  currentTab == 3 ? 'rgb(255,16,16)' : 'rgb(212 208 208)'
-                }`"
-                p-id="990"
-              />
+        <el-popover placement="top" width="600" trigger="hover">
+          <div class="eraser" slot="reference" @click="clickColor">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+              <g id="吸管" transform="translate(9316 6241)">
+                <path
+                  id="路径_603"
+                  data-name="路径 603"
+                  :fill="currentTab==7 ? '#ef4e4e' : 'rgb(171, 178, 218)'"
+                  d="M-9314.008-6219.452s-.334,1.841,1.9,1.562c.893-.781,2.214-2.137,2.558-2.309a4.6,4.6,0,0,0,2.619-.944,72.537,72.537,0,0,0,5.415-6.313s-3.334,1.651-5.415,1.717a7.235,7.235,0,0,0-4.207,1.42C-9311.87-6223.762-9314.008-6219.452-9314.008-6219.452Z"
+                />
+                <path
+                  id="路径_600"
+                  data-name="路径 600"
+                  :fill="currentTab==7 ? '#36425a' : 'rgb(171, 178, 218)'"
+                  d="M22.68,1.411a4.816,4.816,0,0,0-6.812,0L11.951,5.327l-1.62-1.62a.851.851,0,0,0-.615-.257A.875.875,0,0,0,9.1,4.943l2.236,2.233.21.2L3.069,15.866a3.634,3.634,0,0,0-1.035,3.158L.7,20.361a2.156,2.156,0,0,0,0,3.016A2.138,2.138,0,0,0,2.214,24a2.077,2.077,0,0,0,1.5-.626l1.335-1.328a3.526,3.526,0,0,0,.6.053A3.672,3.672,0,0,0,8.23,21.032l8.477-8.486.2.2s.015,0,.015.009l2.221,2.23a.878.878,0,0,0,1.245-1.238l-1.62-1.62L22.68,8.215a4.825,4.825,0,0,0,0-6.8ZM6.985,19.8a1.9,1.9,0,0,1-1.846.486.867.867,0,0,0-.885.1l-.09.074-1.68,1.686a.38.38,0,0,1-.27.111.4.4,0,0,1-.36-.237.392.392,0,0,1,.09-.417l1.62-1.631a.983.983,0,0,0,.15-.173.45.45,0,0,0,.075-.132.914.914,0,0,0,.06-.141,1.1,1.1,0,0,0,.03-.15.953.953,0,0,0-.06-.41,1.862,1.862,0,0,1,.48-1.861l8.477-8.485,2.686,2.692Z"
+                  transform="translate(-9315.083 -6241)"
+                />
+                <!-- <rect
+                  id="矩形_173"
+                  data-name="矩形 173"
+                  class="cls-2"
+                  width="26"
+                  height="26"
+                  transform="translate(-9316 -6241)"
+                />-->
+              </g>
             </svg>
           </div>
         </el-popover>
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="1" height="30" viewBox="0 0 1 30">
+          <line
+            id="分割线"
+            y2="30"
+            transform="translate(0.5)"
+            fill="none"
+            stroke="#707070"
+            stroke-dasharray="2"
+          />
+        </svg>
 
         <div class="do_btn">
           <el-tooltip content="undo" placement="top">
             <div class="eraser" @click="undo">
-              <svg
-                t="1624354938536"
-                :fill="draw && draw.canUndo() ? '#000' : 'rgb(212 208 208)'"
-                viewBox="0 0 1024 1024"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                p-id="3471"
-                width="35"
-                height="25"
-              >
-                <path
-                  d="M379.776 635.904c39.36 35.968 48.32 41.344 50.496-25.856 3.968-49.152 0-103.552 0-103.552 1.408-3.072 86.464-35.008 227.072 25.856 140.544 60.928 235.456 251.008 252.16 310.528 1.344 34.368 46.144 100.736 50.432-1.344 0.576-166.656-64.512-341.12-230.336-441.152C574.976 307.072 446.4 316.608 432.192 321.472c-0.256 1.344-0.64 1.856-1.344 1.024-0.192-0.256 0.384-0.64 1.344-1.024 1.216-6.208-2.496-38.272-2.88-98.56 2.368-54.144-12.096-55.808-49.536-26.944C311.168 252.288 128 427.264 128 427.264S311.168 580.608 379.776 635.904z"
-                  p-id="3472"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+                <g id="撤销1" transform="translate(-933 -883)">
+                  <path
+                    id="路径_592"
+                    data-name="路径 592"
+                    :fill="draw && draw.canUndo() ? '#36425a' : 'rgb(171, 178, 218)'"
+                    d="M107.021,26.251a6.312,6.312,0,0,0,2.965-7.38,5.277,5.277,0,0,0-4.127-3.78,12.979,12.979,0,0,0-2.965-.35c-.35,0-.466.059-.466.466v3.9c-.291-.059-.35-.231-.466-.35-2.209-2.206-4.362-4.359-6.511-6.567-.116-.116-.406-.291-.116-.581,2.325-2.325,4.708-4.652,7.092-7.036V7.593c0,.466.059.64.64.64a14.523,14.523,0,0,1,5.408,1.106,8.093,8.093,0,0,1,5.058,7.617,9.293,9.293,0,0,1-5.874,9.239c-.059,0-.116.059-.231.059-.294.113-.409.172-.409,0Zm0,0"
+                    transform="translate(841.789 880.432)"
+                  />
+                </g>
               </svg>
             </div>
           </el-tooltip>
           <el-tooltip content="redo" placement="top">
             <div class="eraser" @click="redo">
               <svg
-                t="1624355467722"
-                class="icon"
-                viewBox="0 0 1024 1024"
-                version="1.1"
+                id="撤销2"
                 xmlns="http://www.w3.org/2000/svg"
-                p-id="4270"
-                width="25"
-                height="25"
-                :fill="draw && draw.canRedo() ? '#000' : 'rgb(212 208 208)'"
+                width="26"
+                height="26"
+                viewBox="0 0 26 26"
               >
                 <path
-                  d="M708.16 635.904c-39.36 35.968-48.32 41.344-50.496-25.856-3.968-49.152 0-103.552 0-103.552-1.408-3.072-86.464-35.008-227.072 25.856C290.048 593.28 195.2 783.36 178.432 842.88 177.088 877.248 132.288 943.616 128 841.472c-0.576-166.656 64.512-341.12 230.336-441.152 154.624-93.248 283.264-83.776 297.408-78.848 0.256 1.344 0.64 1.856 1.344 1.024 0.192-0.256-0.384-0.64-1.344-1.024-1.216-6.208 2.496-38.272 2.88-98.56-2.368-54.144 12.096-55.808 49.536-26.944 68.544 56.32 251.776 231.36 251.776 231.36S776.768 580.608 708.16 635.904z"
-                  p-id="4271"
+                  id="路径_592"
+                  data-name="路径 592"
+                  :fill="draw && draw.canRedo() ? '#36425a' : 'rgb(171, 178, 218)'"
+                  d="M101.74,26.251a6.312,6.312,0,0,1-2.965-7.38,5.277,5.277,0,0,1,4.127-3.78,12.979,12.979,0,0,1,2.965-.35c.35,0,.466.059.466.466v3.9c.291-.059.35-.231.466-.35,2.209-2.206,4.362-4.359,6.511-6.567.116-.116.406-.291.116-.581-2.325-2.325-4.708-4.652-7.092-7.036V7.593c0,.466-.059.64-.64.64a14.523,14.523,0,0,0-5.408,1.106,8.093,8.093,0,0,0-5.058,7.617A9.293,9.293,0,0,0,101.1,26.2c.059,0,.116.059.231.059.294.113.409.172.409,0Zm0,0"
+                  transform="translate(-91.55 -2.568)"
                 />
+                <!-- <rect id="矩形_172" data-name="矩形 172" class="cls-2" width="26" height="26" /> -->
               </svg>
             </div>
           </el-tooltip>
@@ -278,7 +343,38 @@
 
         <el-tooltip content="clear" placement="top">
           <div class="eraser" @click="clear">
-            <i class="el-icon-delete" style="font-size: 30px"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="26"
+              height="26"
+              viewBox="0 0 26 26"
+              class="cls-1-delete"
+            >
+              <g id="删除" transform="translate(-1090 -880)">
+                <g id="组_631" data-name="组 631" transform="translate(1040.632 859.391)">
+                  <path
+                    id="路径_433"
+                    data-name="路径 433"
+                    d="M62.54,21.609a4.441,4.441,0,0,0-4.437,4.3H52.5a1.132,1.132,0,0,0,0,2.264h1.249V40.832c0,2.377,1.611,4.32,3.6,4.32H67.5c1.988,0,3.6-1.932,3.6-4.32V28.178h1.132a1.132,1.132,0,0,0,0-2.264H66.969a4.428,4.428,0,0,0-4.429-4.3Zm-2.317,4.3a2.319,2.319,0,0,1,4.629,0ZM57.348,43.036c-.706,0-1.483-.906-1.483-2.2V28.178H68.98V40.843c0,1.294-.777,2.2-1.483,2.2H57.348Zm0,0"
+                    transform="translate(0 0)"
+                  />
+                  <path
+                    id="路径_434"
+                    data-name="路径 434"
+                    d="M325.931,436.017a1.032,1.032,0,0,0,.908-1.122v-6.4a.929.929,0,1,0-1.816,0v6.4A1.027,1.027,0,0,0,325.931,436.017Zm3.287,0a1.032,1.032,0,0,0,.908-1.122v-6.4a.929.929,0,1,0-1.816,0v6.4A1.034,1.034,0,0,0,329.218,436.017Zm3.458,0a1.032,1.032,0,0,0,.908-1.122v-6.4a.929.929,0,1,0-1.816,0v6.4A1.024,1.024,0,0,0,332.676,436.017Zm0,0"
+                    transform="translate(-266.932 -395.813)"
+                  />
+                </g>
+                <!-- <rect
+                  id="矩形_171"
+                  data-name="矩形 171"
+                  class="cls-2"
+                  width="26"
+                  height="26"
+                  transform="translate(1090 880)"
+                />-->
+              </g>
+            </svg>
           </div>
         </el-tooltip>
       </div>
@@ -291,9 +387,10 @@ import { getStudentCurrentPageAnswerList } from "@/model/store.student";
 import Draw, { DrawTypeData } from "@/utils/draw";
 import colorSelector from "@/utils/color";
 import drawLineWidthPanel from "./drawLineWidthPanel.vue";
+import colorPanel from "./colorPanel.vue";
 
 export default {
-  components: { drawLineWidthPanel },
+  components: { drawLineWidthPanel, colorPanel },
   props: {
     sendCanvas: { type: Function },
     sendDrawText: { type: Function },
@@ -301,34 +398,22 @@ export default {
       type: Object,
       default: () => {
         return {};
-      },
+      }
     },
     url: {
       type: String,
-      default: "",
+      default: ""
     },
     slide_id: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
       modalVisable: false,
       draw: null,
-      color: "#02a3ee",
-      colors: [
-        "#000",
-        "#ec808d",
-        "#facd91",
-        "#ffff80",
-        "#caf982",
-        "#80ffff",
-        "#81d3f8",
-        "#8080ff",
-        "#c280ff",
-        "#02a3ee",
-      ],
+      color: "#00A4FC",
       widthValue: 3,
       currentTab: 1,
       currentShape: 0,
@@ -337,8 +422,9 @@ export default {
         "Microsoft YaHei",
         "Arial",
         "Kirang Haerang",
-        "Dancing Script",
+        "Dancing Script"
       ],
+      showColor: true
     };
   },
   created() {},
@@ -362,7 +448,7 @@ export default {
       );
     });
     const _this = this;
-    window.onbeforeunload = function (event) {
+    window.onbeforeunload = function(event) {
       event = event || window.event;
       event.returnValue = "您输入的内容尚未保存，确定离开此页面吗？";
       _this.draw.commitTextItem();
@@ -472,12 +558,21 @@ export default {
       this.modalVisable = false;
     },
     showDiy() {
-      colorSelector.show(this.color, (rgb) => {
+      colorSelector.show(this.color, rgb => {
         // console.log(d)
         const selectorColor = colorSelector.utils.rgb2txt(rgb);
         console.log(selectorColor);
         this.changeColor(selectorColor);
       });
+    },
+    drawShape() {
+      if (this.currentShape == 0) {
+        this.drawRect();
+      } else if (this.currentShape == 1) {
+        this.drawCircle();
+      } else if (this.currentShape == 2) {
+        this.drawPolygon();
+      }
     },
     drawCircle() {
       this.currentShape = 1;
@@ -500,7 +595,10 @@ export default {
       this.draw.setFontFamily(this.fontFamilies[index]);
       this.edit();
     },
-  },
+    clickColor() {
+      this.currentTab = 7;
+    }
+  }
 };
 </script>
 <style scoped>
@@ -534,6 +632,13 @@ export default {
   position: absolute;
   left: 0;
   top: 0;
+}
+
+.cls-1-delete {
+  fill: rgb(171, 178, 218);
+}
+.cls-1-delete:hover {
+  fill: #36425a;
 }
 
 .colorList {
@@ -573,7 +678,9 @@ export default {
   background-color: #fff;
   align-items: center;
   justify-content: space-around;
-  border: 1px solid #9f9f9f;
+  border: 1px solid rgb(244, 244, 244);
+  border-radius: 6px;
+  box-shadow: 0px 6px 5px 1px rgba(126, 126, 126, 1);
 }
 .canvasfooter > div {
   width: 30px;
