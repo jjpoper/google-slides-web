@@ -16,6 +16,7 @@ import {
   BarChart
 } from 'echarts/charts'
 import VueDragResize from 'vue-drag-resize'
+import store from './store'
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent])
 Vue.component('vue-drag-resize', VueDragResize)
@@ -27,5 +28,6 @@ Vue.config.productionTip = false;
 window.EventBus = new Vue();
 new Vue({
   router,
+  store,
   render: (h) => h(App),
 }).$mount('#app');

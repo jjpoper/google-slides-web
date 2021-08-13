@@ -33,9 +33,114 @@
           </div>
         </div>
       </div>
-    </div> 
+    </div>
+    <div v-for="item in noAnswerStudents" :key="item.user_id">
+      {{item.user_id}}</div>
   </div>
 </template>
+
+<script>
+import { getStundentUidAndName } from "@/model/store.teacher";
+import { getCurrentPageAnswerList } from "@/model/store.teacher";
+import StudentResponseOptBar from "./studentResponseOptBar.vue";
+import { mapState } from 'vuex'
+export default {
+  computed: {
+    // 未答题学生
+    noAnswerStudents() {
+      let noList = []
+      for(let i = 0; i < this.studentList.length; i++) {
+        const currentUser = this.studentList[i]
+        const index = this.textList.findIndex(item => item.user_id === currentUser.user_id)
+        if(index !== -1) {
+          noList.push(currentUser)
+        }
+      }
+      console.log(noList)
+      return noList
+    },
+    ...mapState({
+      studentList: state => state.teacher.studentList
+    })
+  },
+  components: { StudentResponseOptBar },
+  props: {
+    data: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
+    flag_1: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  data() {
+    return {
+      textList: [],
+      isTextChanging: false,
+      changeUser: "", //当前是哪个item发生了变化
+      changeItemId: "", //当前是哪个item发生了变化
+    };
+  },
+  mounted() {
+    //  this.textList = getCurrentPageAnswerList(page_id, items[0].type);
+    this.textList = getCurrentPageAnswerList(
+      this.data.page_id,
+      this.data.items[0].type
+    );
+    EventBus.$on(this.data.items[0].type, (data) => {
+      // 通知展示当前pageid，当前itemid的评论框
+      console.log(data);
+      this.textList = getCurrentPageAnswerList(
+        this.data.page_id,
+        this.data.items[0].type
+      );
+      this.isTextChanging = true;
+      this.changeUser = data.user_id;
+      this.changeItemId = data.item_id;
+      let _this = this;
+      setTimeout(function () {
+        _this.isTextChanging = false;
+      }, 3000);
+    });
+    console.log(this.studentList, this.textList, '===studentList')
+  },
+  methods: {
+    getUname(id) {
+      console.log(getStundentUidAndName(id));
+      const name = getStundentUidAndName(id);
+      return name ? name : id;
+    },
+    getText(item) {
+      if (item.content) {
+        if (this.isTextChanging) {
+          if (
+            item.user_id == this.changeUser &&
+            item.item_id == this.changeItemId
+          ) {
+            return item.content + "....";
+          }
+        }
+        return item.content;
+      }
+      return "Deleted response";
+    },
+    //返回当前这个item是否应该show出来
+    shouldShow(item) {
+      if (this.flag_1) return true; //如果是dashboard 模式，则一定show
+      if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.star) return true; //如果是星标答案，则需要显示
+      for (let i = 0; i < this.textList.length; i++) {
+        if (this.textList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      }
+      return true;
+    },
+  },
+};
+</script>
+
 
 <style scoped>
 .text-answer-container {
@@ -105,6 +210,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  overflow: hidden;
 }
 .text_static {
   position: absolute;
@@ -132,85 +238,3 @@
   height: 41%;
 }
 </style>
-
-<script>
-import { getStundentUidAndName } from "@/model/store.teacher";
-import { getCurrentPageAnswerList } from "@/model/store.teacher";
-import StudentResponseOptBar from "./studentResponseOptBar.vue";
-export default {
-  components: { StudentResponseOptBar },
-  props: {
-    data: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-    flag_1: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  data() {
-    return {
-      textList: [],
-      isTextChanging: false,
-      changeUser: "", //当前是哪个item发生了变化
-      changeItemId: "", //当前是哪个item发生了变化
-    };
-  },
-  mounted() {
-    //  this.textList = getCurrentPageAnswerList(page_id, items[0].type);
-    this.textList = getCurrentPageAnswerList(
-      this.data.page_id,
-      this.data.items[0].type
-    );
-    EventBus.$on(this.data.items[0].type, (data) => {
-      // 通知展示当前pageid，当前itemid的评论框
-      console.log(data);
-      this.textList = getCurrentPageAnswerList(
-        this.data.page_id,
-        this.data.items[0].type
-      );
-      this.isTextChanging = true;
-      this.changeUser = data.user_id;
-      this.changeItemId = data.item_id;
-      let _this = this;
-      setTimeout(function () {
-        _this.isTextChanging = false;
-      }, 3000);
-    });
-  },
-  methods: {
-    getUname(id) {
-      console.log(getStundentUidAndName(id));
-      const name = getStundentUidAndName(id);
-      return name ? name : id;
-    },
-    getText(item) {
-      if (item.content) {
-        if (this.isTextChanging) {
-          if (
-            item.user_id == this.changeUser &&
-            item.item_id == this.changeItemId
-          ) {
-            return item.content + "....";
-          }
-        }
-        return item.content;
-      }
-      return "Deleted response";
-    },
-    //返回当前这个item是否应该show出来
-    shouldShow(item) {
-      if (this.flag_1) return true; //如果是dashboard 模式，则一定show
-      if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
-      if (item.star) return true; //如果是星标答案，则需要显示
-      for (let i = 0; i < this.textList.length; i++) {
-        if (this.textList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
-      }
-      return true;
-    },
-  },
-};
-</script>
