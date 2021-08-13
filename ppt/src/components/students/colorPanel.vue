@@ -45,20 +45,7 @@
 export default {
   data() {
     return {
-      colors: [
-        "#FF8D87",
-        "#676EF9",
-        "#FF6B5B",
-        "#BB6EA9",
-        "#FFCE00",
-        "#D67A00",
-        "#B4C817",
-        "#FF9300",
-        "#35B363",
-        "#00A4FC",
-        "#010001",
-        "#FFFFFF"
-      ]
+
     };
   }
 };
