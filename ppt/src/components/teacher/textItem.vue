@@ -26,9 +26,8 @@
                   {{ index + 1 + " of " + textList.length }}
                 </span>
               </div>
-              <div class="text-footer">
+              <div class="text-footer" v-if="flag_1">
                 <student-response-opt-bar
-                  v-if="flag_1"
                   :data="{
                     pageId: data.page_id,
                     itemId: item.item_id,
@@ -45,7 +44,7 @@
           </div>
         </div>
       </div>
-      <div v-if="noAnswerStudents.length" class="on-as-outer">
+      <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
         <div class="no-as-title">
           <i></i> No Response
         </div>
@@ -103,7 +102,12 @@ export default {
       changeUser: "", //当前是哪个item发生了变化
       changeItemId: "", //当前是哪个item发生了变化
       currentTab: 1,
-      options: [
+      options: [],
+      sortValue: 1
+    };
+  },
+  created() {
+    this.options = this.flag_1 ? [
         {
           value: 1,
           label: 'sort by time'
@@ -116,9 +120,16 @@ export default {
           value: 3,
           label: 'sort by response'
         },
-      ],
-      sortValue: 1
-    };
+      ] : [
+        {
+          value: 1,
+          label: 'sort by time'
+        },
+        {
+          value: 3,
+          label: 'sort by response'
+        },
+      ]
   },
   watch: {
     sortValue() {
@@ -247,6 +258,7 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: #F4F4F4;
 }
 .text-answer-tab{
   width: 100%;

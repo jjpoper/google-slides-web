@@ -3,68 +3,28 @@
 <template>
   <div class="panel">
     <button class="control-bar__button">
-      <div class="control-bar__icon" @click="lastPage()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82">
-          <title>icon-control-btn__arrow</title>
-          <path
-            d="M14.44,31.91A8.54,8.54,0,0,0,17,38l8.93,9L39.47,60.67a5.64,5.64,0,0,0,8.15,0,6.58,6.58,0,0,0,0-8.93l-6.59-7-6.41-7-5.81-5.88,5.81-5.68,6.6-7,6.59-7a6.57,6.57,0,0,0,0-8.92,5.65,5.65,0,0,0-4.07-1.73,5.75,5.75,0,0,0-4.08,1.74L26.1,16.75l-8.93,8.93A8.71,8.71,0,0,0,14.44,31.91Z"
-            transform="translate(-14.44 -1.59)"
-          />
-        </svg>
+      <div class="control-bar__icon left" @click="lastPage()">
       </div>
     </button>
-
-    <button class="control-bar__button--large">
-      <div class="pageIndex">{{ currentPage }} of {{ totalPage }}</div>
-    </button>
-
-    <!-- <strong class="pageIndex"></strong> -->
-
     <button class="control-bar__button">
-      <div class="control-bar__icon" @click="nextPage()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82" class="svg_right">
-          <title>icon-control-btn__arrow</title>
-          <path
-            d="M14.44,31.91A8.54,8.54,0,0,0,17,38l8.93,9L39.47,60.67a5.64,5.64,0,0,0,8.15,0,6.58,6.58,0,0,0,0-8.93l-6.59-7-6.41-7-5.81-5.88,5.81-5.68,6.6-7,6.59-7a6.57,6.57,0,0,0,0-8.92,5.65,5.65,0,0,0-4.07-1.73,5.75,5.75,0,0,0-4.08,1.74L26.1,16.75l-8.93,8.93A8.71,8.71,0,0,0,14.44,31.91Z"
-            transform="translate(-14.44 -1.59)"
-          />
-        </svg>
+      <div class="control-bar__icon right" @click="nextPage()">
       </div>
     </button>
-
-
     <UploadEnter v-if="meterialVisiable"/>
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
-      <svg
-        t="1619161258814"
-        slot="reference"
-        viewBox="0 0 20 40"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        height="40px"
-      >
-        <circle cx="10" cy="20" r="5" fill="#36425A" />
-      </svg>
+      <div class="with-outer">
+        <i :class="`icon-circle ${current_response === 0 && 'red-icon'}`"></i>
+        <strong
+        >{{ current_response == 0 ? "No" : current_response }} Response</strong>
+      </div>
 
-      <strong
-        style="margin-right: 20px"
-      >{{ current_response == 0 ? "No" : current_response }} Response</strong>
-
-      <svg
-        t="1619161258814"
-        slot="reference"
-        viewBox="0 0 20 40"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        height="40px"
-      >
-        <circle cx="10" cy="20" r="5" fill="#36425A" />
-      </svg>
-
-      <strong>{{ isClosed ? "Closed" : current_model }}</strong>
+      <div class="with-outer">
+        <i :class="`icon-circle ${!isClosed && 'green-icon'}`"></i>
+        <strong>{{ isClosed ? "Closed" : current_model }}</strong>
+      </div>
     </div>
-    <div
+    <!-- <div
       :class="isResponseShow ? 'button_area back_red' : 'button_area'"
       @click="showRes()"
       style="margin-right: 20px"
@@ -93,7 +53,27 @@
           fill="#36425A"
         />
       </svg>
+      <img src="../../assets/picture/arrow-r.png"/>
+      <img src="../../assets/picture/arrow-r.png"/>
 
+      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
+    </div> -->
+    <div
+      :class="isResponseShow ? 'button_area back_red' : 'button_area'"
+      style="margin-right: 20px"
+      @click="showRes()"
+      v-if="
+        currentItemData &&
+        currentItemData.items &&
+        currentItemData.items[0] &&
+        currentItemData.items[0].type != 'website' &&
+        !isClosed &&
+        (!isDashboard || current_model == 'Insturctor-Paced')
+      "
+    >
+      <div class="meterialimage">
+        <div class="fullbgimg res-show"></div>
+      </div>
       <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
     </div>
 
@@ -107,7 +87,7 @@
       active-text="meterial on"
     ></el-switch> -->
     <div
-      class="button_area"
+      :class="meterialSwitchVisiable ? 'button_area back_red' : 'button_area'"
       style="margin-right: 20px"
       @click="changeMeterial"
     >
@@ -195,7 +175,7 @@
     </el-popover>
 
     <div class="end_button" @click="endLesson()">
-      <b>{{ isClosed ? "EXIT" : "END" }}</b>
+      <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
     </div>
   </div>
 </template>
@@ -405,7 +385,9 @@ strong {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #D9DFE4
+  background-color: #D9DFE4;
+  box-sizing: border-box;
+  padding-left: 21px;
 }
 .svg_right {
   -webkit-transform: rotate(180deg);
@@ -430,15 +412,19 @@ strong {
   transition: all 0.25s ease;
   cursor: pointer;
 }
-.control-bar__icon,
-.control-bar__icon--flip {
-  display: inline-block;
-  position: relative;
-  vertical-align: middle;
-  width: 0.9em;
-  height: auto;
-  margin-bottom: 0.1875em;
-  fill: #36425A;
+.control-bar__icon {
+  width: 13.34px;
+  height: 24px;
+  background-size: 13.34px 24px;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+.control-bar__icon.left{
+  background-image: url(../../assets/picture/arrow-r.png);
+  margin-right: 20px;
+}
+.control-bar__icon.right{
+  background-image: url(../../assets/picture/arrow-l.png);
 }
 
 .control-bar__icon:hover {
@@ -515,7 +501,7 @@ strong {
   visibility: hidden;
 }
 .button_area {
-  height: 60px;
+  height: 45px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -523,17 +509,19 @@ strong {
   color: #36425A;
   overflow: hidden;
   cursor: pointer;
+  padding: 3px;
 }
 
 .button_grey {
   background-color: #cfcfcf;
 }
 .back_red {
-  background-color: red;
+  background-color: #fff;
+  border-radius: 8px;
 }
 .button_text {
   line-height: 20px;
-  font-size: 15px;
+  font-size: 14px;
 }
 .readchat {
   font-size: 30px;
@@ -559,5 +547,28 @@ strong {
 }
 .me-hide{
   background-image:url(../../assets/picture/m-hide.png)
+}
+.res-show{
+background-image:url(../../assets/picture/hide-res.png)
+}
+.icon-circle{
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-right: 3px;
+  background-color: #36425A;
+}
+.icon-circle.red-icon{
+  background-color: #FF1A0E;
+}
+.icon-circle.green-icon{
+  background-color: rgba(21, 195, 154, 1);
+}
+.with-outer{
+  padding: 3px 13px;
+  border-radius: 16px;
+  background-color: rgba(54, 66, 90, 0.1);
+  margin-right: 20px;
 }
 </style>

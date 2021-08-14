@@ -203,7 +203,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: #edf0f4;
+  background-color: #F4F4F4;
   flex-direction: column;
 }
 .dashboardpage {
@@ -211,9 +211,7 @@ export default {
   display: flex;
   flex: 1;
   overflow: hidden;
-  margin-bottom: 60px;
-  padding-top: 50px;
-  background-color: #fff;
+  background-color: #F4F4F4;
   position: relative;
 }
 .student_flag {
