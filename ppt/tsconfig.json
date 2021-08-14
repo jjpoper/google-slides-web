@@ -44,7 +44,7 @@
     "./typings",
     "src/utils/googleAuth.js",
     "src/utils/drawText.js"
-, "src/components/resize/index.js"  ],
+, "src/components/resize/index.js", "src/store/modules/teacher.js"],
   "exclude": [
     "node_modules"
   ]

@@ -104,6 +104,7 @@ export default {
   },
   methods: {
     filterList () {
+      if(!this.filterAddedMediaList) return
       let i = 0
       let rectList = []
       let leftList = []

@@ -36,6 +36,7 @@
           :meterialVisiable="meterialVisiable"
           :filterTips="filterTips"
           :overviewModalVisiable="overviewModalVisiable"
+          :currentIndex="currentIndex"
           v-else-if="currentItemData && slides"
         />
       </div>
@@ -244,6 +245,7 @@ import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
+import { mapActions } from 'vuex'
 export default {
   components: {
     teacherControlPanel,
@@ -384,6 +386,11 @@ type: "slide"*/
       }
     }
   },
+  watch: {
+    studentList() {
+      this.setStudentList(this.studentList)
+    }
+  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const { slide_id, token, class_id, type } = to.query;
@@ -404,6 +411,9 @@ type: "slide"*/
   },
 
   methods: {
+    ...mapActions('teacher', [
+      'setStudentList'
+    ]),
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
       // this.slides[this.currentIndex].elements.push({

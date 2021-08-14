@@ -1,15 +1,15 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from 'vue'
+import Vuex, {createLogger} from 'vuex'
+import teacher from './modules/teacher'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
+
+const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
+    teacher
   },
-});
+  strict: debug,
+  plugins: debug ? [createLogger()] : []
+})
