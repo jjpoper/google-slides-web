@@ -3,7 +3,19 @@
     <div class="item">
       <span
         class="icon"
-        :style="`width: 10px;height: 10px; background-color: ${widthValue === 3 ? color : 'rgb(212 208 208)'};
+        :style="`width: 10px;height: 10px; background-color: ${
+          widthValue === 3
+            ? tabIndex == 3
+              ? 'red'
+              : color
+            : 'rgb(212 208 208)'
+        };border:1px solid ${
+          widthValue == 3
+            ? color == '#FFFFFF'
+              ? 'red'
+              : '#FFFFFF'
+            : 'rgb(212 208 208)'
+        }
         }`"
         @click="changeWidth(3, tabIndex)"
       ></span>
@@ -13,8 +25,18 @@
     <div class="item">
       <span
         class="icon"
-        :style="`width: 15px;height: 15px; background-color: ${widthValue === 5 ? color : 'rgb(212 208 208)'}; border-color: ${
-          widthValue === 5 ? 'red' : color
+        :style="`width: 15px;height: 15px; background-color: ${
+          widthValue === 5
+            ? tabIndex == 3
+              ? 'red'
+              : color
+            : 'rgb(212 208 208)'
+        }; border-color: ${widthValue === 5 ? 'red' : color};border:1px solid ${
+          widthValue == 5
+            ? color == '#FFFFFF'
+              ? 'red'
+              : '#FFFFFF'
+            : 'rgb(212 208 208)'
         }`"
         @click="changeWidth(5, tabIndex)"
       ></span>
@@ -23,8 +45,20 @@
     <div class="item">
       <span
         class="icon"
-        :style="`width: 20px;height: 20px; background-color: ${widthValue === 10 ? color : 'rgb(212 208 208)'}; border-color: ${
+        :style="`width: 20px;height: 20px; background-color: ${
+          widthValue === 10
+            ? tabIndex == 3
+              ? 'red'
+              : color
+            : 'rgb(212 208 208)'
+        }; border-color: ${
           widthValue === 10 ? 'red' : color
+        };border:1px solid ${
+          widthValue == 10
+            ? color == '#FFFFFF'
+              ? 'red'
+              : '#FFFFFF'
+            : 'rgb(212 208 208)'
         }`"
         @click="changeWidth(10, tabIndex)"
       ></span>
@@ -34,8 +68,20 @@
     <div class="item">
       <span
         class="icon"
-        :style="`width: 25px;height: 25px; background-color: ${widthValue === 20 ? color : 'rgb(212 208 208)'}; border-color: ${
+        :style="`width: 25px;height: 25px; background-color: ${
+          widthValue === 20
+            ? tabIndex == 3
+              ? 'red'
+              : color
+            : 'rgb(212 208 208)'
+        }; border-color: ${
           widthValue === 20 ? 'red' : color
+        };border:1px solid ${
+          widthValue == 20
+            ? color == '#FFFFFF'
+              ? 'red'
+              : '#FFFFFF'
+            : 'rgb(212 208 208)'
         }`"
         @click="changeWidth(20, tabIndex)"
       ></span>
@@ -44,8 +90,20 @@
     <div class="item">
       <span
         class="icon"
-        :style="`width: 30px;height: 30px; background-color: ${widthValue === 30 ? color : 'rgb(212 208 208)'}; border-color: ${
+        :style="`width: 30px;height: 30px; background-color: ${
+          widthValue === 30
+            ? tabIndex == 3
+              ? 'red'
+              : color
+            : 'rgb(212 208 208)'
+        }; border-color: ${
           widthValue === 30 ? 'red' : color
+        };border:1px solid ${
+          widthValue == 30
+            ? color == '#FFFFFF'
+              ? 'red'
+              : '#FFFFFF'
+            : 'rgb(212 208 208)'
         }`"
         @click="changeWidth(30, tabIndex)"
       ></span>
