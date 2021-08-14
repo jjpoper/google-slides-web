@@ -6,11 +6,10 @@
       :confirmModeChange="confirmModeChange"
       :cancelModeChange="cancelModeChange"
     />
-    <div v-show="!questionModalVisiable">
+    <template v-if="!questionModalVisiable">
       <div class="content" v-if="currentItemData">
         <TeacherPPTPage
           v-if="!isDashboard && currentItemData"
-          class="pptContent"
           :currentItemData="currentItemData"
           :showResponse="showResponse"
           :currentAnswerCount="currentAnswerCount"
@@ -20,7 +19,6 @@
         />
 
         <DashboardPage
-          class="pptContent"
           :currentItemData="currentItemData"
           :showResponse="showResponse"
           :currentAnswerCount="currentAnswerCount"
@@ -70,7 +68,7 @@
           :meterialVisiable="meterialVisiable"
         />
       </div>
-    </div>
+    </template>
 
     <students-qs-modal
       v-if="currentItemData && questionModalVisiable"
@@ -1532,6 +1530,9 @@ type: "slide"*/
 .page {
   width: 100%;
   height: 100%;
+  padding-top: 50px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
 }
 .student_note_page {
   width: 100%;
@@ -1544,7 +1545,7 @@ type: "slide"*/
 .content {
   width: 100%;
   height: 100%;
-  background-color: #e0e0e0;
+  background-color: #f4f4f4;
 }
 .control {
   width: 100%;
@@ -1621,6 +1622,8 @@ type: "slide"*/
 .pptContent {
   height: 100%;
   width: 100%;
+  background-color: #f4f4f4;
+  overflow: hidden
 }
 .readchat {
   display: flex;

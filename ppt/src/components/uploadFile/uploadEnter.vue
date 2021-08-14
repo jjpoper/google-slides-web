@@ -1,9 +1,12 @@
 <template>
   <div class="mediaenter">
     <el-dropdown>
-      <strong class="el-dropdown-link mediaenter">
-        Add Media
-      </strong>
+      <div class="">
+        <i class="media-enter-icon"></i>
+        <strong class="el-dropdown-link">
+          Add Media
+        </strong>
+      </div>
       <el-dropdown-menu slot="dropdown" style="text-align: center">
         <el-tooltip content="my computer" placement="right">
           <el-upload
@@ -223,6 +226,18 @@ export default {
   margin-left: 20px;
   font-weight: bold;
   cursor: pointer;
+  font-size: 14px;
+}
+.media-enter-icon{
+  width: 24.64px;
+  height: 22.12px;
+  background-size: 24.64px 22.12px;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-image: url(../../assets/picture/media-add.png);
+  display: block;
+  position: relative;
+  margin: 0 auto;
 }
 .youtubecontaier{
   display: flex;

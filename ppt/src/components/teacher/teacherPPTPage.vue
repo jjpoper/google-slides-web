@@ -1,15 +1,14 @@
 <template>
-  <div class="page">
-    <div v-if="currentItemData && currentItemData.thumbnail_url">
-      <pptcontent
-        v-if="!showResponse"
-        :url="currentItemData.thumbnail_url"
-        :teacher="true"
-        :filterAddedMediaList="filterAddedMediaList"
-        :meterialVisiable="meterialVisiable"
-      />
+  <div v-if="currentItemData && currentItemData.thumbnail_url">
+    <pptcontent
+      v-if="!showResponse"
+      :url="currentItemData.thumbnail_url"
+      :teacher="true"
+      :filterAddedMediaList="filterAddedMediaList"
+      :meterialVisiable="meterialVisiable"
+    />
+    <div v-else-if="currentItemData && currentItemData.items[0]" :style="`height:${height - 110}px`">
       <teacherIndexItem
-        v-else-if="currentItemData && currentItemData.items[0]"
         :data="currentItemData"
         :type="currentItemData.items[0].type"
         :flag="false"
@@ -23,10 +22,7 @@
 </template>
 
 <style scoped>
-.page {
-  width: 100%;
-  height: 100%;
-}
+
 </style>
 
 <script>
@@ -66,9 +62,13 @@ export default {
       },
     },
   },
-
   created() {
     
+  },
+  data() {
+    return {
+      height: window.winHeight
+    };
   },
 };
 </script>

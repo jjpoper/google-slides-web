@@ -28,6 +28,7 @@ html, button, input, select, textarea {
   // width: 100%;
   height: 100%;
   overflow: auto;
+  background-color: #F4F4F4;
 }
 
 #nav {

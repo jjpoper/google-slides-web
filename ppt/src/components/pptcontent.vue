@@ -93,7 +93,7 @@ export default {
   },
   mounted() {
     this.width = document.documentElement.clientWidth - this.widthOffset;
-    this.height = document.documentElement.clientHeight - 40;
+    this.height = document.documentElement.clientHeight - 110;
     this.parentHeight = this.height - 76
     // if(!this.defaultShowMeterial) {
     //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
