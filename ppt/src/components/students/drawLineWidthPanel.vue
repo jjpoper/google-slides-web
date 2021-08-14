@@ -31,7 +31,7 @@
               ? 'red'
               : color
             : 'rgb(212 208 208)'
-        }; border-color: ${widthValue === 5 ? 'red' : color};border:1px solid ${
+        }; border:1px solid ${
           widthValue == 5
             ? color == '#FFFFFF'
               ? 'red'
@@ -51,9 +51,7 @@
               ? 'red'
               : color
             : 'rgb(212 208 208)'
-        }; border-color: ${
-          widthValue === 10 ? 'red' : color
-        };border:1px solid ${
+        }; border:1px solid ${
           widthValue == 10
             ? color == '#FFFFFF'
               ? 'red'
@@ -74,9 +72,7 @@
               ? 'red'
               : color
             : 'rgb(212 208 208)'
-        }; border-color: ${
-          widthValue === 20 ? 'red' : color
-        };border:1px solid ${
+        }; border:1px solid ${
           widthValue == 20
             ? color == '#FFFFFF'
               ? 'red'
@@ -96,9 +92,7 @@
               ? 'red'
               : color
             : 'rgb(212 208 208)'
-        }; border-color: ${
-          widthValue === 30 ? 'red' : color
-        };border:1px solid ${
+        }; border:1px solid ${
           widthValue == 30
             ? color == '#FFFFFF'
               ? 'red'
