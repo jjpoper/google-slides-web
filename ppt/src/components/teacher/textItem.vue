@@ -14,13 +14,13 @@
     </div>
     <div class="text-scroll">
       <div class="text-answer-list">
-        <div :class="`colume${currentTab === 1 ? '1' : '5'}`" v-for="(item, index) in textList" :key="index">
-          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'}`">
+        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in textList" :key="index">
+          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
             <div
               v-if="shouldShow(item)"
               :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
             >
-              <div class="text_area">
+              <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
                 {{ getText(item) }}
                 <span class="text_static" v-if="flag_1 && textList.length > 1">
                   {{ index + 1 + " of " + textList.length }}
@@ -334,6 +334,12 @@ export default {
   padding-bottom: 85%;
   position: relative;
 }
+.text-item-outer1.full-text-area{
+  height: 148px;
+}
+.text-item-outer5.full-text-area{
+  padding-bottom: 45%;
+}
 .text-list-item {
   width: 100%;
   height: 100%;
@@ -369,6 +375,9 @@ export default {
   overflow: scroll;
   position: relative;
   text-align: left;
+}
+.text_area.full-text-area{
+   height: 100%;
 }
 .text-footer{
   width: 100%;
