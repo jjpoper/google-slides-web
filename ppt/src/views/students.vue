@@ -251,7 +251,8 @@ export default {
       allAddedMediaList: [],
       meterialVisiable: false,
       overviewModalVisiable: false,
-      studentCommentLoaded: false
+      studentCommentLoaded: false,
+      firstJoined: true
     };
   },
   computed: {
@@ -320,11 +321,9 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      const { slide_id, token, page } = to.query;
-      console.log(page, "currentIndex");
-      vm.slide_id = slide_id;
-      vm.class_id = to.query.class_id;
-      vm.currentIndex = page && page !== "undefined" ? page : 0;
+      const {id} = vm.$route.params
+      const { token } = to.query;
+      vm.class_id = id;
       if (token) {
         vm.token = token;
         saveStudentStoreToken(token);
@@ -360,6 +359,32 @@ export default {
     },
     onLineStatusChanged(status) {
       this.onLine = status;
+      if(status && this.firstJoined) {
+        this.firstJoined = false
+        if (this.classRoomInfo.status == "live") {
+          this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
+        } else if (this.classRoomInfo.status == "student-paced") {
+          this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
+        }
+        if (this.classRoomInfo.response_limit_mode == 2) {
+          let time = Date.now();
+          let countDown =
+            this.classRoomInfo.response_limit_time - time / 1000;
+          if (countDown <= 0) {
+            this.lock_all_pages = true;
+            return;
+          }
+          this.handleDeadLineEvent(
+            this.classRoomInfo.response_limit_mode,
+            countDown
+          );
+        } else {
+          this.handleDeadLineEvent(
+            this.classRoomInfo.response_limit_mode,
+            this.classRoomInfo.response_limit_time
+          );
+        }
+      }
     },
     initWithToken() {
       showLoading();
@@ -370,7 +395,7 @@ export default {
           if (logout) {
             this.goToLogin();
           } else {
-            this.getAllSlides(profile);
+            this.afterLogin(profile)
           }
         });
       }
@@ -430,7 +455,7 @@ export default {
         }
       }
     },
-    getAllSlides(profile) {
+    getAllSlides() {
       console.log("list", "========");
       initStudentCommentData(this.class_id, this.token).then(() => {
         this.studentCommentLoaded = true
@@ -442,7 +467,6 @@ export default {
         console.log(list, "========");
         this.slides = list;
         this.getItemData();
-        this.afterLogin(profile);
         hideLoading();
         this.loadDiyPainter();
       });
@@ -526,54 +550,39 @@ export default {
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
     },
+    initRoomConfig(res){
+      this.slide_id = res.slide_id;
+      this.currentIndex = 0;
+    },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
         .then(res => {
           this.classRoomInfo = res;
           console.log(this.classRoomInfo);
-          if (this.classRoomInfo.status == "live") {
-            this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
-          } else if (this.classRoomInfo.status == "student-paced") {
-            this.currentModel = ClassRoomModelEnum.STUDENT_MODEL;
-          }
-          if (this.classRoomInfo.response_limit_mode == 2) {
-            let time = Date.now();
-            let countDown =
-              this.classRoomInfo.response_limit_time - time / 1000;
-            if (countDown <= 0) {
-              this.lock_all_pages = true;
-              return;
-            }
-            this.handleDeadLineEvent(
-              this.classRoomInfo.response_limit_mode,
-              countDown
-            );
-          } else {
-            this.handleDeadLineEvent(
-              this.classRoomInfo.response_limit_mode,
-              this.classRoomInfo.response_limit_time
-            );
-          }
+          this.initRoomConfig(res)
+          this.afterConnectRoom()
         })
         .catch(res => {
           console.log(res);
         });
-
-      getAVComment(this.class_id, this.token)
-        .then(res => {
-          console.log(res);
-          if (res.code == "ok") {
-            for (let i = 0; i < res.data.length; i++) {
-              res.data[i].data.fromServie = true; //从服务器处获取
-              res.data[i].data.id = res.data[i].id;
-              this.marks.push(res.data[i].data);
-            }
-          }
-        })
-        .catch(res => {
-          console.log(res);
-        });
+    },
+    afterConnectRoom() {
       this.joinRoom();
+      this.getAllSlides()
+      getAVComment(this.class_id, this.token)
+      .then(res => {
+        console.log(res);
+        if (res.code == "ok") {
+          for (let i = 0; i < res.data.length; i++) {
+            res.data[i].data.fromServie = true; //从服务器处获取
+            res.data[i].data.id = res.data[i].id;
+            this.marks.push(res.data[i].data);
+          }
+        }
+      })
+      .catch(res => {
+        console.log(res);
+      });
     },
     //处理deadline事件
     handleDeadLineEvent(mode, time) {
@@ -830,27 +839,6 @@ export default {
         // console.log(action, message);
         this.currentSo.emit(action, message);
       }
-    },
-    enterUname(status) {
-      MessageBox.prompt("enter a new name", "enter a new name", {
-        confirmButtonText: "Confirm",
-        showCancelButton: false,
-        showClose: false
-      })
-        .then(({ value }) => {
-          if (!value) value = this.uid;
-          this.uname = value;
-          saveStudentUserName(value);
-          if (status) {
-            this.joinRoom();
-          } else {
-            this.emitSo(
-              "rename",
-              `{"room": "${this.class_id}", "user_id": "${this.uid}","token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${value}"}`
-            );
-          }
-        })
-        .catch(() => {});
     },
     lastPage() {
       if (this.currentIndex > 0) {

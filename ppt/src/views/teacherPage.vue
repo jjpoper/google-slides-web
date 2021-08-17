@@ -313,7 +313,8 @@ type: "slide"*/
       markupslist: [], // ppt comment列表
       allAddedMediaList: [],
       meterialVisiable: false,
-      overviewModalVisiable: false
+      overviewModalVisiable: false,
+      firstJoined: true
     };
   },
   mounted() {
@@ -391,13 +392,14 @@ type: "slide"*/
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      const { slide_id, token, class_id, type } = to.query;
-      vm.slide_id = slide_id;
-      vm.class_id = class_id;
-      window.classId = class_id;
-      vm.currentIndex = to.query.page ? to.query.page : 0;
-      vm.isDashboard = type == "dashboard";
-      vm.directFromPlugin = to.query.direct ? true : false;
+      const {id} = vm.$route.params
+      const {token} = to.query;
+      // vm.slide_id = slide_id;
+      vm.class_id = id;
+      window.classId = id;
+      // vm.currentIndex = to.query.page ? to.query.page : 0;
+      // vm.isDashboard = type == "dashboard";
+      // vm.directFromPlugin = to.query.direct ? true : false;
       if (token) {
         vm.token = token;
         saveTeacherStoreToken(token);
@@ -449,6 +451,30 @@ type: "slide"*/
     },
     onLineStatusChanged(status) {
       this.onLine = status;
+      if(status && this.firstJoined) {
+        this.firstJoined = false
+        // 上线后的操作
+        this.classRoomInfo.showResponsePages = new Array();
+        if (this.classRoomInfo.status == "live") {
+          this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
+          if (this.directFromPlugin) {
+            this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+            this.emitSo(
+              `{"room":"${this.class_id}", "type": "${
+                SocketEventsEnum.MODEL_CHANGE
+              }", "token": "${this.token}","class_id":"${
+                this.class_id
+              }","params": {"mode": "${
+                this.page_model === ClassRoomModelEnum.TEACHER_MODEL
+                  ? "insturctor-paced"
+                  : "student-paced"
+              }"}}`
+            );
+          }
+        } else if (this.classRoomInfo.status == "student-paced") {
+          this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
+        }
+      }
     },
     getStepTwoTitle() {
       return "This Session is in " + this.page_model + " Mode";
@@ -632,38 +658,42 @@ type: "slide"*/
       this.uid = email;
       this.startConnectRoom();
     },
+    // 短连接参数配置
+    initShortLinkConfig(res) {
+      // res
+      // author: "yujj085@gmail.com"
+      // class_id: "543aad87"
+      // class_name: "unnamed"
+      // date: 1629208269
+      // file_name: "ClasscipeDev"
+      // id: 359
+      // lock_page: []
+      // mode: "student-paced"
+      // response_limit_mode: 0
+      // response_limit_time: 0
+      // slide_id: "1-oo7FBGrusK0UulTEA4OQpFo_rMWFsrq9cOEEMLNFzM"
+      // status: "live"
+      // type: "slide"
+      this.slide_id = res.slide_id;
+      this.currentIndex = 0;
+      this.isDashboard = false
+      this.directFromPlugin = false;
+    },
     startConnectRoom() {
-      this.joinRoom();
       queryClassStatus(this.class_id, this.token)
         .then(res => {
+          this.initShortLinkConfig(res)
           this.classRoomInfo = res;
           if (this.directFromPlugin) {
           }
-          this.classRoomInfo.showResponsePages = new Array();
-          if (this.classRoomInfo.status == "live") {
-            this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
-            if (this.directFromPlugin) {
-              this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
-              this.emitSo(
-                `{"room":"${this.class_id}", "type": "${
-                  SocketEventsEnum.MODEL_CHANGE
-                }", "token": "${this.token}","class_id":"${
-                  this.class_id
-                }","params": {"mode": "${
-                  this.page_model === ClassRoomModelEnum.TEACHER_MODEL
-                    ? "insturctor-paced"
-                    : "student-paced"
-                }"}}`
-              );
-            }
-          } else if (this.classRoomInfo.status == "student-paced") {
-            this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
-          }
+          this.afterConnectRoom()
         })
         .catch(res => {
           console.log(res);
         });
-
+    },
+    afterConnectRoom() {
+      this.joinRoom();
       requestRefreshPPT(this.slide_id, this.token)
         .then(res => {
           // console.log(res);
@@ -1144,7 +1174,7 @@ type: "slide"*/
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      const url = `${location.origin}${location.pathname}#/students?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}`;
+      const url = `${location.origin}/s/${this.class_id}`;
       return url;
     },
 
