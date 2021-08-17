@@ -5,24 +5,24 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/teacher',
-    name: 'teacher',
+    path: '/t/:id',
+    name: 't',
     component: () => import('../views/teacherPage.vue'),
   },
   {
-    path: '/students',
-    name: 'students',
+    path: '/s/:id',
+    name: 's',
     component: () => import('../views/students.vue'),
   },
   {
-    path: '/dashboard',
-    name: 'dashboard',
+    path: '/d',
+    name: 'd',
     component: () => import('../views/teacherPage.vue'),
   },
 
   {
-    path: '/class',
-    name: 'class',
+    path: '/c/:id',
+    name: 'c',
     component: () => import('../views/teacherPage.vue'),
   },
 
@@ -39,7 +39,7 @@ const routes: Array<RouteConfig> = [
 ];
 
 const router = new VueRouter({
-  // mode: 'history',
+  mode: 'history',
   routes,
 });
 
