@@ -14,6 +14,26 @@
       </div>
     </div>
 
+    <div v-if="tipText&&tipText.length>0" class="tipArea">
+      <img
+        v-if="!showTips"
+        src="../../assets/icon/tip_close.png"
+        width="30"
+        height="30"
+        style="cursor:pointer"
+        @click="showTip()"
+      />
+      <img
+        v-if="showTips"
+        src="../../assets/icon/tip_open.png"
+        width="30"
+        height="30"
+        style="cursor:pointer"
+        @click="showTip()"
+      />
+      <span v-if="showTips" class="textArea">{{tipText}}</span>
+    </div>
+
     <div v-if="showCorrect" class="answer_text">{{data.items[0].data.answer}}</div>
     <el-switch
       v-if="hasAnswer()"
@@ -38,6 +58,16 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
+}
+.textArea {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+}
+.tipArea {
+  display: flex;
+  flex-direction: column;
+  line-height: 20px;
 }
 .el-input__icon {
   position: relative;
@@ -82,6 +112,7 @@ el-button {
 <script>
 import { SocketEventsEnum } from "../../socket/socketEvents";
 import { getCurrentPageStudentAnswerList } from "@/model/data.student";
+import { mapState } from "vuex";
 export default {
   props: {
     method: { type: Function },
@@ -106,11 +137,17 @@ export default {
         SocketEventsEnum.TEXT_INPUT
       ),
       sendDelay: null,
-      showCorrect: false
+      showCorrect: false,
+      tipText: null,
+      showTips: false
     };
   },
+  computed: {
+    ...mapState({
+      elements: state => state.student.elements
+    })
+  },
   created() {
-    console.log("text template created!!", this.arrList);
     if (!this.arrList || this.arrList.length == 0) {
       this.arrList.push({ content: "" });
     } else {
@@ -121,11 +158,21 @@ export default {
       }
     }
     this.inputCount = this.arrList.length;
+    if (this.elements) {
+      for (let i = 0; i < this.elements.length; i++) {
+        if (this.elements[i].type == "tip") {
+          this.tipText = this.elements[i].tip;
+        }
+      }
+    }
   },
   beforeDestroy() {
     this.clearDelay();
   },
   methods: {
+    showTip() {
+      this.showTips = !this.showTips;
+    },
     addInput: function() {
       this.inputCount++;
       var item = { content: "", id: this.inputCount, textSended: false };

@@ -9,6 +9,27 @@
         <el-checkbox :label="item.id" :value="item.id" style="width: 100%">{{item.text}}</el-checkbox>
       </div>
     </el-checkbox-group>
+
+    <div v-if="tipText&&tipText.length>0" class="tipArea">
+      <img
+        v-if="!showTips"
+        src="../../assets/icon/tip_close.png"
+        width="30"
+        height="30"
+        style="cursor:pointer"
+        @click="showTip()"
+      />
+      <img
+        v-if="showTips"
+        src="../../assets/icon/tip_open.png"
+        width="30"
+        height="30"
+        style="cursor:pointer"
+        @click="showTip()"
+      />
+      <span v-if="showTips" class="textArea">{{tipText}}</span>
+    </div>
+
     <template v-if="checkedValues.length > 0">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
         Correct answer:
@@ -43,6 +64,18 @@
   line-height: 50px;
   position: relative;
 }
+.textArea {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+  margin-top: 10px;
+}
+.tipArea {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  line-height: 20px;
+}
 .rightA {
   display: flex;
   flex-direction: column;
@@ -54,6 +87,7 @@
 
 <script>
 import { getStudentCurrentPageAnswerList } from "@/model/store.student";
+import { mapState } from "vuex";
 export default {
   props: {
     data: {
@@ -65,7 +99,7 @@ export default {
     answer: {
       type: Function,
       default: () => {}
-    },
+    }
     // showCorrect: {
     //   type: Boolean,
     //   default: false
@@ -76,7 +110,9 @@ export default {
       optionData: {},
       pageId: "",
       checkedValues: [],
-      showCorrect:false,
+      showCorrect: false,
+      tipText: null,
+      showTips: false
     };
   },
   created() {
@@ -94,11 +130,26 @@ export default {
         this.showCorrect = this.hasAnswer();
       }
     }
+    if (this.elements) {
+      for (let i = 0; i < this.elements.length; i++) {
+        if (this.elements[i].type == "tip") {
+          this.tipText = this.elements[i].tip;
+        }
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      elements: state => state.student.elements
+    })
   },
   methods: {
     handleCheckedValueChange(value) {
       console.log(JSON.stringify(value), this.showCorrect);
       this.answer(JSON.stringify(value), this.showCorrect);
+    },
+    showTip() {
+      this.showTips = !this.showTips;
     },
     changeLocked() {
       this.answer(JSON.stringify(this.checkedValues), true);
