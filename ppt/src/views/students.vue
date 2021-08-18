@@ -76,7 +76,7 @@
           />
         </el-aside>
         <div class="right-fix-area">
-          <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
+          <tips-list v-if="overviewModalVisiable" :filterTips="filterTips" />
           <student-comment
             :currentIndex="parseInt(currentIndex)"
             :slides="slides"
@@ -129,7 +129,7 @@
             active-color="#13ce66"
             inactive-color="#999"
             active-text="overview slides"
-          ></el-switch> -->
+          ></el-switch>-->
         </div>
       </el-tooltip>
       <div
@@ -206,8 +206,10 @@ import studentControlPanel from "@/components/students/studentControlPanel.vue";
 import pageLockedNote from "@/components/students/pageLockedNote.vue";
 import StudentQuestions from "@/components/students/studentQuestions.vue";
 import colorSelector from "@/utils/color";
-import TipsList from '@/components/common/tipsList.vue';
+import TipsList from "@/components/common/tipsList.vue";
 // import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
+
+import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -268,14 +270,18 @@ export default {
     },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(item => item.type !== "tip" && item.position);
+        return this.slides[this.currentIndex].elements.filter(
+          item => item.type !== "tip" && item.position
+        );
       } else {
         return [];
       }
     },
     filterTips() {
       if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(item => item.type === "tip");;
+        return this.slides[this.currentIndex].elements.filter(
+          item => item.type === "tip"
+        );
       } else {
         return [];
       }
@@ -322,10 +328,10 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      const {id} = vm.$route.params
+      const { id } = vm.$route.params;
       const { token } = to.query;
       vm.class_id = id;
-      initStudentStoreSlideId(id)
+      initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
         saveStudentStoreToken(token);
@@ -335,7 +341,18 @@ export default {
       vm.initWithToken();
     });
   },
+  watch: {
+    currentIndex() {
+      console.log("set elements");
+      this.setElements(this.slides[this.currentIndex].elements);
+    },
+    slides() {
+      console.log("set elements");
+      this.setElements(this.slides[this.currentIndex].elements);
+    }
+  },
   methods: {
+    ...mapActions("student", ["setElements"]),
     loadDiyPainter() {
       this.$nextTick(() => {
         const selector = document.getElementById("diycolor_comment");
@@ -361,8 +378,8 @@ export default {
     },
     onLineStatusChanged(status) {
       this.onLine = status;
-      if(status && this.firstJoined) {
-        this.firstJoined = false
+      if (status && this.firstJoined) {
+        this.firstJoined = false;
         if (this.classRoomInfo.status == "live") {
           this.currentModel = ClassRoomModelEnum.TEACHER_MODEL;
         } else if (this.classRoomInfo.status == "student-paced") {
@@ -370,8 +387,7 @@ export default {
         }
         if (this.classRoomInfo.response_limit_mode == 2) {
           let time = Date.now();
-          let countDown =
-            this.classRoomInfo.response_limit_time - time / 1000;
+          let countDown = this.classRoomInfo.response_limit_time - time / 1000;
           if (countDown <= 0) {
             this.lock_all_pages = true;
             return;
@@ -397,7 +413,7 @@ export default {
           if (logout) {
             this.goToLogin();
           } else {
-            this.afterLogin(profile)
+            this.afterLogin(profile);
           }
         });
       }
@@ -460,7 +476,7 @@ export default {
     getAllSlides() {
       console.log("list", "========");
       initStudentCommentData(this.class_id, this.token).then(() => {
-        this.studentCommentLoaded = true
+        this.studentCommentLoaded = true;
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
@@ -473,7 +489,7 @@ export default {
         this.loadDiyPainter();
       });
     },
-    sendCanvas(base64Url,texturl) {
+    sendCanvas(base64Url, texturl) {
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
@@ -552,7 +568,7 @@ export default {
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
     },
-    initRoomConfig(res){
+    initRoomConfig(res) {
       this.slide_id = res.slide_id;
       this.currentIndex = 0;
     },
@@ -561,8 +577,8 @@ export default {
         .then(res => {
           this.classRoomInfo = res;
           console.log(this.classRoomInfo);
-          this.initRoomConfig(res)
-          this.afterConnectRoom()
+          this.initRoomConfig(res);
+          this.afterConnectRoom();
         })
         .catch(res => {
           console.log(res);
@@ -570,21 +586,21 @@ export default {
     },
     afterConnectRoom() {
       this.joinRoom();
-      this.getAllSlides()
+      this.getAllSlides();
       getAVComment(this.class_id, this.token)
-      .then(res => {
-        console.log(res);
-        if (res.code == "ok") {
-          for (let i = 0; i < res.data.length; i++) {
-            res.data[i].data.fromServie = true; //从服务器处获取
-            res.data[i].data.id = res.data[i].id;
-            this.marks.push(res.data[i].data);
+        .then(res => {
+          console.log(res);
+          if (res.code == "ok") {
+            for (let i = 0; i < res.data.length; i++) {
+              res.data[i].data.fromServie = true; //从服务器处获取
+              res.data[i].data.id = res.data[i].id;
+              this.marks.push(res.data[i].data);
+            }
           }
-        }
-      })
-      .catch(res => {
-        console.log(res);
-      });
+        })
+        .catch(res => {
+          console.log(res);
+        });
     },
     //处理deadline事件
     handleDeadLineEvent(mode, time) {
@@ -695,9 +711,9 @@ export default {
         this.marks[this.marks.length - 1].id = d.id;
         EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        const index = this.slides.findIndex(item => d.page_id === item.page_id)
-        this.slides[index].elements.push({id: d.id, ...d.data})
-        console.log(this.allAddedMediaList, 'STUDENT_ADD_MEDIA')
+        const index = this.slides.findIndex(item => d.page_id === item.page_id);
+        this.slides[index].elements.push({ id: d.id, ...d.data });
+        console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         // console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
@@ -710,34 +726,32 @@ export default {
         // this.slides[this.currentIndex].elements.push(d.data)
       } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
-        const {id} = d
-        const list = this.slides[this.currentIndex].elements
-        const itemIndex = list.findIndex(item => id === item.id)
-        this.slides[this.currentIndex].elements.splice(itemIndex, 1)
+        console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
+        const { id } = d;
+        const list = this.slides[this.currentIndex].elements;
+        const itemIndex = list.findIndex(item => id === item.id);
+        this.slides[this.currentIndex].elements.splice(itemIndex, 1);
       }
     },
     // 收到评论
     onGetTeacherComment(d) {
       const {
-        item: {
-          studentId
-        },
+        item: { studentId },
         comment_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
         addStudentComment({
           ...d.item,
-          id: comment_id 
+          id: comment_id
         });
         unreadStudentComment();
         this.unread = true;
       }
     },
     showStudentModal() {
-      if(!this.studentCommentLoaded) {
-        return showToast('data not ready', 'warning')
+      if (!this.studentCommentLoaded) {
+        return showToast("data not ready", "warning");
       }
       if (!this.modalVisiable) {
         this.unread = false;
@@ -753,11 +767,11 @@ export default {
     },
     hideStudentModal() {
       EventBus.$emit(ModalEventsNameEnum.SHOW_STUDENT_MODAL, false);
-      this.modalVisiable = false
+      this.modalVisiable = false;
     },
     showStudentQuestions() {
       // 与评论互斥, 需要关闭
-      this.hideStudentModal()
+      this.hideStudentModal();
       // this.questionModalVisiable = !this.questionModalVisiable;
     },
     answerChoice(v, locked, typeParam) {
@@ -938,7 +952,7 @@ export default {
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {
-      this.meterialVisiable = status
+      this.meterialVisiable = status;
     }
   }
 };
@@ -1029,7 +1043,7 @@ export default {
   position: fixed;
   left: 0;
   bottom: 0;
-  background:#D9DFE4;
+  background: #d9dfe4;
   color: #fff;
   z-index: 9999;
 }
