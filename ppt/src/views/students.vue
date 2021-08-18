@@ -196,7 +196,8 @@ import {
   getStudentCommentUnReadStatus,
   readStudentComment,
   getStudentStoreToken,
-  saveStudentStoreToken
+  saveStudentStoreToken,
+  initStudentStoreSlideId
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -324,6 +325,7 @@ export default {
       const {id} = vm.$route.params
       const { token } = to.query;
       vm.class_id = id;
+      initStudentStoreSlideId(id)
       if (token) {
         vm.token = token;
         saveStudentStoreToken(token);

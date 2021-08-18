@@ -226,10 +226,8 @@ import {
 import {
   getTeacherStoreToken,
   saveTeacherStoreToken,
-  saveAnswerList,
-  getStundentUidAndName,
   saveStepOneStatus,
-  getStepOneStatus
+  initTeacherStoreSlideId
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -400,6 +398,7 @@ type: "slide"*/
       // vm.currentIndex = to.query.page ? to.query.page : 0;
       // vm.isDashboard = type == "dashboard";
       // vm.directFromPlugin = to.query.direct ? true : false;
+      initTeacherStoreSlideId(id)
       if (token) {
         vm.token = token;
         saveTeacherStoreToken(token);

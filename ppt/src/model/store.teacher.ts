@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/camelcase */
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
-import { generateUuid, getUrlParam } from '../utils/help'
+import { generateUuid } from '../utils/help'
 import { getTeacherCurrentPageAnswerList, getStudentsName, addTeacherData } from './data.teacher'
 import { getTeacherCurrentItemCommentList, addTeacherCommentData } from './comment.teacher'
 
-const slideId = getUrlParam("slide_id")
-const UID_KEY = `${slideId}_tid`
+let slideId = ''
+let UID_KEY = ''
 let teacherId = ''
+
+export const initTeacherStoreSlideId = (id: string) => {
+  slideId = id
+  UID_KEY = `${slideId}_tid`
+}
 
 export const getTeacherClientStoreToken = (): string => {
   return getStore('teacher_token_Client')

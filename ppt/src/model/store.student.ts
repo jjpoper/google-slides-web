@@ -1,11 +1,16 @@
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
-import { generateUuid, getUrlParam } from '../utils/help'
+import { generateUuid } from '../utils/help'
 import {getCurrentPageStudentAnswerList, addStudentData} from './data.student'
 import {getStudentCurrentItemCommentList, addStudentCommentData} from './comment.student'
 
-const slideId = getUrlParam("slide_id")
-const UID_KEY = `${slideId}_sid`
+let slideId = ''
+let UID_KEY = ''
+
+export const initStudentStoreSlideId = (id: string) => {
+  slideId = id
+  UID_KEY = `${slideId}_sid`
+}
 let studentId = ''
 let unreadList: number[] = []
 
