@@ -1,3 +1,5 @@
+import { TeacherActionTypes } from "./types"
+
 const state = () => ({
   studentList: []
 })
@@ -9,13 +11,13 @@ const getters = {
 // actions
 const actions = {
   setStudentList({commit}: any, list: any) {
-    commit('setStudentList', { list})
+    commit(TeacherActionTypes.SET_STUDENT_LIST, {list: JSON.parse(JSON.stringify(list))})
   }
 }
 
 // mutations
 const mutations = {
-  setStudentList(nextState: any, {list}: any) {
+  [TeacherActionTypes.SET_STUDENT_LIST](nextState: any, {list}: any) {
     nextState.studentList = list
   }
 }
