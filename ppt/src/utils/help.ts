@@ -16,7 +16,7 @@ export const generateUuid = (prefix: string, length?: number) => {
 export const getUrlParam = (queryKey: string): string => {
   const temp1 = location.href.split('?');
   const pram = temp1[1];
-  if(!pram) return false
+  if(!pram) return ''
   const keyValue = pram.split('&');
   const obj: any = {};
   for(let i = 0; i < keyValue.length; i++) {
