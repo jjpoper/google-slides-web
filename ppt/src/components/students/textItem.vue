@@ -63,6 +63,7 @@
   display: flex;
   width: 100%;
   justify-content: start;
+  margin-top: 10px;
 }
 .tipArea {
   display: flex;
