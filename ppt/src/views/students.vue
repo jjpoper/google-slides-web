@@ -14,14 +14,14 @@
     />
 
     <div style="width: 100%; height: 100%" v-else>
-      <student-questions
+      <!-- <student-questions
         v-if="questionModalVisiable"
         :sendQuestion="sendQuestion"
         :list="filterMarkupList"
         :url="currentItemData && currentItemData.thumbnail_url"
         :pageId="slides[currentIndex].page_id"
         :delQuestion="delQuestion"
-      />
+      /> -->
 
       <div class="student-main" v-show="!questionModalVisiable">
         <div
@@ -210,7 +210,6 @@ import pageLockedNote from "@/components/students/pageLockedNote.vue";
 import StudentQuestions from "@/components/students/studentQuestions.vue";
 import colorSelector from "@/utils/color";
 import TipsList from "@/components/common/tipsList.vue";
-// import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 import { mapActions } from "vuex";
 
@@ -237,7 +236,6 @@ export default {
       uid: "", // uid
       class_id: "",
       classRoomInfo: null,
-      marks: [],
       answerList: [],
       onLine: false, // 在线状态
       deadLineTimer: null,
@@ -262,15 +260,6 @@ export default {
     };
   },
   computed: {
-    filterMarkupList() {
-      if (this.slides) {
-        const list = this.marks.filter(
-          item => item.page_id === this.slides[this.currentIndex].page_id
-        );
-        return list;
-      }
-      return [];
-    },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
         return this.slides[this.currentIndex].elements.filter(
@@ -351,6 +340,7 @@ export default {
       if(this.slides && this.slides[this.currentIndex]) {
         this.setElements(this.slides[this.currentIndex].elements);
       }
+      this.setStudentPageIndex(this.currentIndex)
     },
     slides() {
       console.log("set elements");
@@ -358,7 +348,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions("student", ["setElements"]),
+    ...mapActions("student", [
+      "setElements",
+      "setStudentPageIndex",
+      "setStudentAllSlides"
+    ]),
+    ...mapActions("remark", [
+      "showRemarkModal",
+      "setAllRemarkList",
+      "updateLatestRemarkId"
+    ]),
     loadDiyPainter() {
       this.$nextTick(() => {
         const selector = document.getElementById("diycolor_comment");
@@ -491,6 +490,8 @@ export default {
       ]).then(([allA, { pages: list }]) => {
         console.log(list, "========");
         this.slides = list;
+        // vuex 缓存全局slides
+        this.setStudentAllSlides(list)
         this.getItemData();
         hideLoading();
         this.loadDiyPainter();
@@ -598,11 +599,14 @@ export default {
         .then(res => {
           console.log(res);
           if (res.code == "ok") {
+            let marks = []
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].data.fromServie = true; //从服务器处获取
               res.data[i].data.id = res.data[i].id;
-              this.marks.push(res.data[i].data);
+              marks.push(res.data[i].data);
             }
+            // 初始化remark数据
+            this.setAllRemarkList(marks)
           }
         })
         .catch(res => {
@@ -714,9 +718,8 @@ export default {
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
       } else if (d.mtype === SocketEventsEnum.GET_COMMENT_ID) {
-        // 获取评论id，用于删除
-        this.marks[this.marks.length - 1].id = d.id;
-        EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
+        // 获取发出的评论id，用于删除时候调用
+        this.updateLatestRemarkId(d.id)
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         const index = this.slides.findIndex(item => d.page_id === item.page_id);
         this.slides[index].elements.push({ id: d.id, ...d.data });

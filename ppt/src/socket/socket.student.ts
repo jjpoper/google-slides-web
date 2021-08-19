@@ -5,7 +5,7 @@ import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, token: string,classId:string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
+export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
   socket.on('connect', () => {
     onLineStatusChanged(true)

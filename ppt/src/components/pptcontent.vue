@@ -2,7 +2,9 @@
   <div v-if="url" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
-    <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`"></div>
+    <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
+      <student-questions />
+    </div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
         <template v-if="leftSortList && leftSortList.length">
           <element-drag v-for="rect in leftSortList" :key="rect.id"
@@ -39,6 +41,7 @@
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
 import VueDragResize from 'vue-drag-resize';
 import ElementDrag from './drag/elementDrag.vue';
+import StudentQuestions from './students/studentQuestions.vue';
 export default {
   props: {
     url: {
@@ -74,7 +77,8 @@ export default {
     }
   },
   components: {
-    ElementDrag
+    ElementDrag,
+    StudentQuestions
   },
   data() {
     return {
