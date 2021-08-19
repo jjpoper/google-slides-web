@@ -2,7 +2,7 @@
   <div v-if="url" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
-    <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
+    <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`"></div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
         <template v-if="leftSortList && leftSortList.length">
           <element-drag v-for="rect in leftSortList" :key="rect.id"
@@ -200,7 +200,9 @@ export default {
 .teacherppt{
   background-repeat: no-repeat;
   background-size: contain;
-  background-position: center
+  background-position: center;
+  position: relative;
+  margin: 0 auto;
 }
 .ppt{
   width: 100%;

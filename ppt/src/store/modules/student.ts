@@ -9,7 +9,7 @@ const getters = {
 // actions
 const actions = {
     setElements({ commit }: any, list: any) {
-        commit('setElements', { list })
+        commit('setElements', {list: JSON.parse(JSON.stringify(list))})
     }
 }
 

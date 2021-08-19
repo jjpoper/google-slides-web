@@ -391,11 +391,11 @@ type: "slide"*/
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const {id} = vm.$route.params
-      const {token} = to.query;
+      const {token, p} = to.query;
       // vm.slide_id = slide_id;
       vm.class_id = id;
       window.classId = id;
-      // vm.currentIndex = to.query.page ? to.query.page : 0;
+      vm.currentIndex = to.query.p ? to.query.p : 0;
       // vm.isDashboard = type == "dashboard";
       // vm.directFromPlugin = to.query.direct ? true : false;
       initTeacherStoreSlideId(id)
@@ -408,7 +408,6 @@ type: "slide"*/
       vm.initWithToken();
     });
   },
-
   methods: {
     ...mapActions('teacher', [
       'setStudentList'
@@ -674,7 +673,7 @@ type: "slide"*/
       // status: "live"
       // type: "slide"
       this.slide_id = res.slide_id;
-      this.currentIndex = 0;
+      // this.currentIndex = 0;
       this.isDashboard = false
       this.directFromPlugin = false;
     },

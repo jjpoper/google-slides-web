@@ -13,7 +13,7 @@
       :answerList="answerList"
     />
 
-    <div v-else>
+    <div style="width: 100%; height: 100%" v-else>
       <student-questions
         v-if="questionModalVisiable"
         :sendQuestion="sendQuestion"
@@ -23,7 +23,7 @@
         :delQuestion="delQuestion"
       />
 
-      <el-container v-show="!questionModalVisiable">
+      <div class="student-main" v-show="!questionModalVisiable">
         <div
           v-if="
             fullScreen &&
@@ -41,7 +41,8 @@
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <el-main
+        <div
+          class="student-left"
           v-if="
             currentItemData &&
             currentItemData.thumbnail_url &&
@@ -49,17 +50,19 @@
               currentItemData.items[0].type !== 'draw')
           "
         >
-          <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+          <div class="st-ppt-outer">
             <pptcontent
+              class="ppt-out-line"
+              v-if="currentItemData && currentItemData.thumbnail_url"
               :url="currentItemData.thumbnail_url"
               :filterAddedMediaList="filterAddedMediaList"
               :meterialVisiable="meterialVisiable"
             />
           </div>
-        </el-main>
-        <el-aside
-          :width="`${getWidthPercent(currentItemData.items[0].type)}`"
-          style="position: relative"
+        </div>
+        <div
+          class="student-right"
+          :style="`width: ${getWidthPercent(currentItemData.items[0].type)}`"
           v-if="currentItemData && currentItemData.items[0]"
         >
           <StudentsIndexItem
@@ -74,7 +77,7 @@
             :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
             :link="link"
           />
-        </el-aside>
+        </div>
         <div class="right-fix-area">
           <tips-list v-if="overviewModalVisiable" :filterTips="filterTips" />
           <student-comment
@@ -102,7 +105,7 @@
             :changeShowMetrial="changeShowMetrial"
           />
         </div>
-      </el-container>
+      </div>
     </div>
 
     <div class="top_btn">
@@ -329,8 +332,9 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const { id } = vm.$route.params;
-      const { token } = to.query;
+      const { token, p } = to.query;
       vm.class_id = id;
+      vm.currentIndex = to.query.p ? to.query.p : 0;
       initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
@@ -344,7 +348,9 @@ export default {
   watch: {
     currentIndex() {
       console.log("set elements");
-      this.setElements(this.slides[this.currentIndex].elements);
+      if(this.slides && this.slides[this.currentIndex]) {
+        this.setElements(this.slides[this.currentIndex].elements);
+      }
     },
     slides() {
       console.log("set elements");
@@ -367,6 +373,7 @@ export default {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
+      if (type === "comment") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
           return "0%";
@@ -570,7 +577,7 @@ export default {
     },
     initRoomConfig(res) {
       this.slide_id = res.slide_id;
-      this.currentIndex = 0;
+      // this.currentIndex = 0;
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
@@ -969,6 +976,35 @@ export default {
   transition: opacity 150ms linear;
   z-index: 9999;
 }
+.student-main{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+}
+.student-right{
+  height: 100%;
+  position: relative;
+  background-color: rgba(211, 220, 230, 1);
+}
+.student-left{
+  background-color: #F4F4F4;
+  box-sizing: border-box;
+  padding: 0;
+  flex: 1
+}
+.st-ppt-outer{
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+.ppt-out-line{
+  border: 1px solid #707070;
+  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
+  box-sizing: border-box;
+}
 .icon {
   cursor: pointer;
   z-index: 999;
@@ -1013,8 +1049,9 @@ export default {
 .page {
   width: 100%;
   height: 100%;
-  min-width: 600px;
-  background-color: #e9eef3;
+  padding-top: 50px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
 }
 .block {
   width: 100%;

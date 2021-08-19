@@ -205,7 +205,7 @@ export default {
 
 .control-bar__button--large {
   min-width: 4.375em;
-  min-height: 50px;
+  min-height: 60px;
 }
 
 .control-bar__label {
