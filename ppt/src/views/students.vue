@@ -373,7 +373,7 @@ export default {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
-      if (type === "comment") return "350px";
+      if (type === "comment" || type === "audio") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
           return "0%";

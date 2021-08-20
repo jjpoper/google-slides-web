@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable prefer-template */
 import PPT from '../utils/pptConfig'
@@ -95,11 +96,11 @@ export const createSo = (room: string, token: string, classId: string, callback:
   return socket
 }
 
-const BaseWsRequest = (action: string, message: string) {
+const BaseWsRequest = (action: string, message: string) => {
   if (windowStudentWs) {
     windowStudentWs.emit(action, message);
   }
-},
+}
 
 // 新增 remark 反馈数据
 export const askToAddNewRemarkItem = (data: any) => {
@@ -151,7 +152,6 @@ export const sendAudioOrVideoAnswer = ({
   } = BaseStudentParams
   const params = JSON.stringify({link, mediaType})
   BaseWsRequest(
-    "response",
-    `{"room": "${classId}","type":"audio","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content":{"link":"${link}","mediaType":"${mediaType}"}}`
+    "response", `{"room": "${classId}","type":"audio","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content":{"link":"${link}","mediaType":"${mediaType}"}}`
   );
-},
+}
