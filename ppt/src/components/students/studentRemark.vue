@@ -38,7 +38,7 @@
         </div>
       </li>
       <li
-        :class="`remark-list-item ${currentRemarkIndex === index && 'active-item'}`"
+        :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'}`"
         v-for="(item, index) in marks" :key="index"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
         @click="changeRemarkIndex(index)">
@@ -60,7 +60,8 @@
             controlslist="nodownload"
             controls=""
             :src="item.link"
-            style="width:100%;"
+            width="280"
+            height="150"
             preload="none"
           />
           <audio
@@ -71,7 +72,9 @@
             style="width:100%;"
             preload="none"
           />
-          <p class="remark-text" v-else-if="item.type === 'text'">{{item.link}}</p>
+          <p class="remark-text" v-else-if="item.type === 'text'">
+            {{item.link}}
+          </p>
         </div>
       </li>
     </ul>
@@ -304,7 +307,7 @@ export default {
 }
 .remark-list-item{
   width: 310px;
-  height: 180px;
+  height: auto;
   background: #FFFFFF;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   opacity: 1;
@@ -316,6 +319,9 @@ export default {
 }
 .remark-list-item.record-item{
   height: auto;
+}
+.remark-list-item.text-item{
+  height: 180px;
 }
 .remark-list-item.active-item{
   box-shadow: 0px 3px 6px #15C39A;
@@ -363,8 +369,10 @@ export default {
   width: 310px;
   overflow-y: scroll;
   box-sizing: border-box;
-  padding: 15px;
-  flex: 1
+  padding: 15px 15px 0;
+  margin-bottom: 15px;
+  flex: 1;
+  word-break: break-all;
 }
 .remark-text{
   font-size: 10px;
