@@ -10,11 +10,11 @@
         onselectstart="return false"
         @drag="pauseEvent($event)"
         >
-        <template v-for="(item, index) in marks">
+        <template v-for="(item, index) in marks.concat(currentMark)">
           <div
             :key="item.id"
             v-if="item.pointType !== 'box'" 
-            :class="`markitem ${selectedIndex === index ? 'markitemhover' : ''}`"
+            :class="`markitem ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
             :style="`top:${item.top}px;left:${item.left}px;`"
             @mousedown.stop="selectMark(item, index)"
             @click.stop
@@ -24,7 +24,7 @@
           <div
             :key="item.id"
             v-else-if="item.pointType === 'box'"
-            :class="`markitembox ${selectedIndex === index ? 'markitemhover' : ''}`"
+            :class="`markitembox ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
             :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
             @mousedown.stop="selectMark(item, index)"
             @click.stop
@@ -47,9 +47,6 @@
           border: 2px solid ${this.color}`">
         </div>
       </div>
-      <!-- <div class="right-area">
-        <recordCommentList :isStudent="true" :list="mediaList" :selectedIndex="selectedIndex" :selectMark="selectMark" :del="del"/>
-      </div>
       <div class="record-container"
         v-if="recordVisiable"
       >
@@ -59,7 +56,7 @@
         <div class="del-button" @click="closeRecord">
           <i class="el-icon-delete" style="`font-size: 20px;"></i>
         </div>
-      </div> -->
+      </div>
       <div class="canvasmodal" @mouseleave="leaveModal" v-show="modalVisable">
         <i class="el-icon-circle-close closemodal" style="font-size: 30px" @click="hideModal"></i>
         <div class="colorList">
@@ -67,50 +64,6 @@
         </div>
       </div>
       <div class="canvasfooter">
-        <el-tooltip class="item" effect="dark" content="Audio" placement="top-start">
-          <svg
-            @click="audio"
-            t="1622676486182"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="1217"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M566.215111 899.811556v118.158222h-85.333333v-114.915556C294.4 888.718222 147.342222 735.573333 147.342222 562.688a42.666667 42.666667 0 0 1 85.333334 0c0 134.257778 123.790222 256.113778 276.764444 256.113778s276.707556-121.912889 276.707556-256.113778a42.666667 42.666667 0 1 1 85.333333 0c0 164.067556-132.380444 310.385778-305.265778 337.123556zM510.976 33.336889a170.666667 170.666667 0 0 1 170.666667 170.666667v341.333333a170.666667 170.666667 0 1 1-341.333334 0v-341.333333a170.666667 170.666667 0 0 1 170.666667-170.666667z"
-              :fill="`${inputType == ModalEventsTypeEnum.AUDIO ? color : 'rgb(212 208 208)'}`"
-              p-id="1218"
-            />
-          </svg>
-        </el-tooltip>
-
-        <el-tooltip class="item" effect="dark" content="Video" placement="top-start">
-          <svg
-            @click="video"
-            t="1622676554377"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2348"
-            width="32"
-            height="32"
-          >
-            <path
-              d="M768 648.533333V768H128V256h640v119.466667L896 298.666667v426.666666l-128-76.8z m0-93.866666l42.666667 25.6v-136.533334l-42.666667 25.6v85.333334zM213.333333 341.333333v341.333334h469.333334V341.333333H213.333333z"
-              :fill="`${inputType == ModalEventsTypeEnum.VIDEO ? color : 'rgb(212 208 208)'}`"
-              p-id="2349"
-            />
-          </svg>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="Text" placement="top-start">
-          <svg @click="enterText" t="1624363217137" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3341" width="32" height="32"><path d="M563.2 281.6V870.4a51.2 51.2 0 0 1-102.4 0V281.6H179.2a51.2 51.2 0 1 1 0-102.4h665.6a51.2 51.2 0 0 1 0 102.4H563.2z"
-          :fill="`${inputType == ModalEventsTypeEnum.TEXT ? color : 'rgb(212 208 208)'}`"
-          p-id="3342"></path></svg>
-        </el-tooltip>
         <el-tooltip content="change color" placement="top">
           <div :style="`background-color: ${color}`"  @click="showModal"></div>
         </el-tooltip>
@@ -150,39 +103,17 @@
   </div>
 </template>
 <script>
-import { ModalEventsTypeEnum, ModalEventsNameEnum } from "@/socket/socketEvents";
+import { ModalEventsTypeEnum } from "@/socket/socketEvents";
 import recordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import recordCommentList from "../common/recordCommentList.vue";
 import { showToast } from "@/utils/loading";
 import colorSelector from '@/utils/color'
-import pptcontent from '../pptcontent.vue';
 import RecordText from '../common/recordText.vue';
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import { askToAddNewRemarkItem } from '@/socket/socket.student';
 export default {
-  components: { recordAudio, RecordVideo, pptcontent, recordCommentList, RecordText },
-  props: {
-    sendQuestion: {
-      type: Function
-    },
-    delQuestion: {
-      type: Function
-    },
-    list: {
-      type: Array,
-      default: () => {
-        return [];
-      }
-    },
-    url: {
-      type: String,
-      default: ''
-    },
-    pageId: {
-      type: String,
-      default: ''
-    },
-  },
+  components: { recordAudio, RecordVideo, recordCommentList, RecordText },
   data() {
     return {
       ModalEventsTypeEnum,
@@ -208,20 +139,17 @@ export default {
       color: '#caf982',
       colors: ['#caf982', 'red', '#ec808d', '#facd91', '#ffff80', '#80ffff', '#81d3f8', '#8080ff', '#c280ff'],
       widthValue: 3,
-      selectedIndex: -1,
-      currentPageId: 0,
-      mediaList: [],
-      pptUrl: '',
       markType: 1, // 1 == point  2 = box
       isBoxing: false,
       buttonPosition: {left: 0, top: 0},
-      inputType: ModalEventsTypeEnum.TEXT // text video audio
     };
   },
   computed: {
     ...mapState({
       // currentReamrkList: state => state.remark.currentReamrkList,
       allRemarks: state => state.remark.allRemarks,
+      currentInputType: state => state.remark.currentInputType,
+      currentRemarkIndex: state => state.remark.currentRemarkIndex,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
     }),
@@ -230,7 +158,7 @@ export default {
       console.log(this.studentAllSlides, this.allRemarks, '====allRemarks')
       if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
         list = this.allRemarks.filter(
-          item => item.page_id === this.studentAllSlides[this.currentPageIndex].page_id
+          item => item.page_id === this.currentPageId
         );
       }
       return list;
@@ -238,9 +166,6 @@ export default {
     currentPageId() {
       return this.studentAllSlides[this.currentPageIndex].page_id
     }
-  },
-  created() {
-    this.mediaList = JSON.parse(JSON.stringify(this.list))
   },
   mounted() {
     // const selector = document.getElementById('diycolor_comment');
@@ -252,6 +177,11 @@ export default {
     // document.getElementById('diycolor_comment').innerHTML = ''
   },
   methods: {
+    ...mapActions("remark", [
+      "addOneRemarkItem",
+      "changeRemarkIndex",
+      "deleteOneRemarkItem"
+    ]),
     resetPosition() {
       this.currentPosition = {
         left: 0,
@@ -265,7 +195,7 @@ export default {
       this.nextPosition = {offsetX: 0, offsetY: 0}
     },
     markup(e) {
-      console.log('clicl')
+      console.log('click')
       if(this.markType === 1) {
         // 正在进行 comment 记录，不允许打点
         if(this.recordVisiable) return false
@@ -364,21 +294,12 @@ export default {
       // });
       this.startInputComment()
     },
-    audio() {
-      this.inputType = ModalEventsTypeEnum.AUDIO
-    },
-    video() {
-      this.inputType = ModalEventsTypeEnum.VIDEO
-    },
-    enterText() {
-      this.inputType = ModalEventsTypeEnum.TEXT
-    },
     // 打开纪录框
     startInputComment() {
       // 这次操作未完成发送
       this.sendBusyStatus = true;
       this.recordVisiable = true
-      this.type = this.inputType
+      this.type = this.currentInputType
     },
     closeRecord() {
       console.log("1111");
@@ -405,10 +326,10 @@ export default {
         time: Math.floor(Date.now() / 1000),
         width, height, pointType
       }
-      this.sendQuestion(params);
-      // 增加页面展示
-      this.mediaList.push(params)
-      this.selectedIndex = this.mediaList.length - 1
+      askToAddNewRemarkItem(params)
+      // TODO 增加页面展示
+      this.changeRemarkIndex(this.allRemarks.length)
+      this.addOneRemarkItem(params)
       
       this.sendBusyStatus = false;
       this.closeRecord()
@@ -436,8 +357,7 @@ export default {
       this.resetPosition()
     },
     selectMark(item, index) {
-      this.selectedIndex = index
-      console.log(this.selectedIndex)
+      this.changeRemarkIndex(index)
       if(this.recordVisiable) {
         this.closeRecord();
       }
@@ -447,16 +367,6 @@ export default {
         this.hideModal()
       }
     },
-    del(id) {
-      this.delQuestion(id)
-      const index = this.marks.findIndex(item => item.id == id)
-      this.marks.splice(index, 1)
-      this.mediaList.splice(index, 1)
-      if(index === this.selectedIndex) {
-        this.selectedIndex = -1
-      }
-      this.$forceUpdate()
-    }
   }
 };
 </script>

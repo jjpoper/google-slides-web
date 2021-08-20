@@ -12,6 +12,9 @@ html {
   height: 100%;
   overflow: auto;
 }
+ul,li{
+  list-style: none;
+}
 
 html, button, input, select, textarea {
     font-family: ProximaNovaSoft-Medium, sans-serif;

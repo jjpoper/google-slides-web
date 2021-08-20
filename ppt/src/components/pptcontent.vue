@@ -3,7 +3,7 @@
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
     <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
-      <student-questions />
+      <student-questions v-if="isRemark"/>
     </div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
         <template v-if="leftSortList && leftSortList.length">
@@ -39,7 +39,7 @@
 
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
-import VueDragResize from 'vue-drag-resize';
+import { mapState } from 'vuex'
 import ElementDrag from './drag/elementDrag.vue';
 import StudentQuestions from './students/studentQuestions.vue';
 export default {
@@ -70,6 +70,11 @@ export default {
       type: Number,
       default: 40,
     },
+  },
+  computed: {
+    ...mapState({
+      isRemark: state => state.remark.isRemark,
+    }),
   },
   watch: {
     filterAddedMediaList () {

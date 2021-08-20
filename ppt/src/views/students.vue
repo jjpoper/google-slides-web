@@ -351,7 +351,8 @@ export default {
     ...mapActions("student", [
       "setElements",
       "setStudentPageIndex",
-      "setStudentAllSlides"
+      "setStudentAllSlides",
+      "setStudentUserInfo"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -573,6 +574,10 @@ export default {
     afterLogin({ user_name, email }) {
       this.uname = user_name;
       this.uid = email;
+      this.setStudentUserInfo({
+        name: user_name,
+        uid: email
+      })
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
     },
@@ -807,56 +812,6 @@ export default {
       // this.$set(this.allAnswers, pid, v);
       // // this.$forceUpdate()
       // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
-    },
-    // 发送ppt反馈
-    sendQuestion(data) {
-      // {
-      //   "token": "", // 学生登录凭证
-      //   "class_id": "", // 课堂标识
-      //   "data": {
-      //     "position_x": 123,
-      //     "postion_y": 123,
-      //     "link": "",
-      //     "type": "",
-      //     "content_width": 123,
-      //     "content_height": 123
-      //     }
-      // }
-      const {
-        left,
-        top,
-        link,
-        content_width,
-        content_height,
-        type,
-        background,
-        page_id,
-        width = 0,
-        height = 0,
-        pointType
-      } = data;
-      this.emitSo(
-        "comment-ppt",
-        `{"token": "${this.token}", "class_id": "${this.class_id}",
-        "data":
-        {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
-        "background": "${background}", "content_width": ${content_width},
-        "content_height": ${content_height},
-        "width": ${width},
-        "height": ${height},
-        "pointType": "${pointType}",
-        "page_id": "${page_id}"}}`
-      );
-      this.marks.push(data);
-    },
-    delQuestion(id) {
-      this.emitSo(
-        "delete-ppt-comment",
-        `{"token":"${this.token}","class_id":"${this.class_id}","id":${id}}`
-      );
-      const index = this.marks.findIndex(item => item.id == id);
-      console.log(index, "index");
-      this.marks.splice(index, 1);
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();

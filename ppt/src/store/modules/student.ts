@@ -1,7 +1,12 @@
 const state = () => ({
     elements: [],
     currentPageIndex: 0,
-    studentAllSlides: []
+    studentAllSlides: [],
+    studentUserInfo: {
+        name: '',
+        icon: '',
+        uid: ''
+    }
 })
 
 // getters
@@ -19,6 +24,9 @@ const actions = {
     setStudentAllSlides({ commit }: any, list: any) {
         commit('setAllSlides', JSON.parse(JSON.stringify(list)))
     },
+    setStudentUserInfo({ commit }: any, userInfo: any) {
+        commit('setStudentUserInfo', JSON.parse(JSON.stringify(userInfo)))
+    },
 }
 
 // mutations
@@ -31,6 +39,9 @@ const mutations = {
     },
     setAllSlides(nextState: any, list: any) {
         nextState.studentAllSlides = list
+    },
+    setStudentUserInfo(nextState: any, userInfo: any) {
+        nextState.studentUserInfo = Object.assign(nextState.studentUserInfo, userInfo)
     },
 }
 
