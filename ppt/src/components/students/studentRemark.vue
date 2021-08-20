@@ -18,6 +18,24 @@
       </el-tooltip>
     </div>
     <ul class="remark-list">
+      <li v-if="currentRemarkOptions" class="remark-list-item record-item">
+        <div class="item-header">
+          <div class="user-info">
+            <div class="user-icon">
+              {{userInfo.name ? userInfo.name.substr(0, 1) : ''}}
+            </div>
+            <div>
+              <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
+            </div>
+          </div>
+          <div @click.stop="cancelRecord" class="delete-button"></div>
+        </div>
+        <div class="remark-item-content">
+          <record-video v-if="currentInputType === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
+          <record-audio v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO" :onSend="sendCommentCb" />
+          <record-text v-else-if="currentInputType === ModalEventsTypeEnum.TEXT" :onSend="sendCommentCb" />
+        </div>
+      </li>
       <li
         :class="`remark-list-item ${currentRemarkIndex === index && 'active-item'}`"
         v-for="(item, index) in marks" :key="index"
@@ -61,8 +79,15 @@
 <script>
 import { ModalEventsTypeEnum } from '@/socket/socketEvents'
 import {mapActions, mapState} from 'vuex'
-import { deleteOneRemark } from '@/socket/socket.student'
+import { deleteOneRemark, askToAddNewRemarkItem } from '@/socket/socket.student'
+import RecordAudio from "../common/recordAudio.vue";
+import RecordVideo from "../common/recordVideo.vue";
+import RecordText from '../common/recordText.vue';
+import { showToast } from '@/utils/loading';
 export default {
+  components:{
+    RecordVideo, RecordAudio, RecordText
+  },
   computed: {
     ...mapState({
       // currentReamrkList: state => state.remark.currentReamrkList,
@@ -71,6 +96,7 @@ export default {
       currentInputType: state => state.remark.currentInputType,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
+      currentRemarkOptions: state => state.remark.currentRemarkOptions,
       userInfo: state => state.student.studentUserInfo,
     }),
     marks() {
@@ -103,6 +129,7 @@ export default {
   created() {
     this.setIsRemark(true)
     this.changeRemarkIndex(-1)
+    this.setIsInputing(false)
     this.text()
   },
   destroyed() {
@@ -118,7 +145,10 @@ export default {
       'changeRemarkInputType',
       'changeRemarkIndex',
       'deleteOneRemarkItem',
-      'setIsRemark'
+      'setIsRemark',
+      'setIsInputing',
+      'setCurrentRemarkOptions',
+      'addOneRemarkItem'
     ]),
     audio() {
       this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO)
@@ -174,6 +204,31 @@ export default {
         ":" +
         second
       );
+    },
+    cancelRecord() {
+      this.setCurrentRemarkOptions(null)
+    },
+    sendCommentCb(link, type = "") {
+      // this.sendComment(url, type)
+      const { left, top, content_width, content_height, background, width, height, pointType} = this.currentRemarkOptions;
+      const params = {
+        left,
+        top,
+        link, // 可能为链接或者文字
+        content_width,
+        content_height,
+        type,
+        background,
+        page_id: this.currentPageId,
+        time: Math.floor(Date.now() / 1000),
+        width, height, pointType
+      }
+      askToAddNewRemarkItem(params)
+      // TODO 增加页面展示
+      this.changeRemarkIndex(this.allRemarks.length)
+      this.addOneRemarkItem(params)
+      showToast("send success");
+      this.cancelRecord()
     },
   }
 }
@@ -255,6 +310,11 @@ export default {
   border-radius: 6px;
   margin-bottom: 15px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.remark-list-item.record-item{
+  height: auto;
 }
 .remark-list-item.active-item{
   box-shadow: 0px 3px 6px #15C39A;
@@ -300,10 +360,10 @@ export default {
 }
 .remark-item-content{
   width: 310px;
-  height: 120px;
   overflow-y: scroll;
   box-sizing: border-box;
   padding: 15px;
+  flex: 1
 }
 .remark-text{
   font-size: 10px;

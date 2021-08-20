@@ -47,16 +47,6 @@
           border: 2px solid ${this.color}`">
         </div>
       </div>
-      <div class="record-container"
-        v-if="recordVisiable"
-      >
-        <record-video v-if="type === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
-        <record-audio v-else-if="type === ModalEventsTypeEnum.AUDIO" :onSend="sendCommentCb" />
-        <record-text v-else-if="type === ModalEventsTypeEnum.TEXT" :onSend="sendCommentCb" />
-        <div class="del-button" @click="closeRecord">
-          <i class="el-icon-delete" style="`font-size: 20px;"></i>
-        </div>
-      </div>
       <div class="canvasmodal" @mouseleave="leaveModal" v-show="modalVisable">
         <i class="el-icon-circle-close closemodal" style="font-size: 30px" @click="hideModal"></i>
         <div class="colorList">
@@ -104,16 +94,9 @@
 </template>
 <script>
 import { ModalEventsTypeEnum } from "@/socket/socketEvents";
-import recordAudio from "../common/recordAudio.vue";
-import RecordVideo from "../common/recordVideo.vue";
-import recordCommentList from "../common/recordCommentList.vue";
-import { showToast } from "@/utils/loading";
 import colorSelector from '@/utils/color'
-import RecordText from '../common/recordText.vue';
 import { mapState, mapActions } from 'vuex'
-import { askToAddNewRemarkItem } from '@/socket/socket.student';
 export default {
-  components: { recordAudio, RecordVideo, recordCommentList, RecordText },
   data() {
     return {
       ModalEventsTypeEnum,
@@ -133,7 +116,6 @@ export default {
       nextPosition: {offsetX: 0, offsetY: 0},
       buttonVisiable: false,
       recordVisiable: false,
-      type: "",
       sendBusyStatus: false,
       modalVisable: false,
       color: '#caf982',
@@ -150,6 +132,7 @@ export default {
       allRemarks: state => state.remark.allRemarks,
       currentInputType: state => state.remark.currentInputType,
       currentRemarkIndex: state => state.remark.currentRemarkIndex,
+      currentRemarkOptions: state => state.remark.currentRemarkOptions,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
     }),
@@ -167,6 +150,14 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].page_id
     }
   },
+  watch: {
+    currentRemarkOptions() {
+      if(!this.currentRemarkOptions && this.sendBusyStatus) {
+        // sendBusyStatus 表示当前有一次操作未完成
+        this.closeRecord()
+      }
+    }
+  },
   mounted() {
     // const selector = document.getElementById('diycolor_comment');
     // colorSelector.init(selector);
@@ -180,7 +171,8 @@ export default {
     ...mapActions("remark", [
       "addOneRemarkItem",
       "changeRemarkIndex",
-      "deleteOneRemarkItem"
+      "deleteOneRemarkItem",
+      "setCurrentRemarkOptions"
     ]),
     resetPosition() {
       this.currentPosition = {
@@ -299,41 +291,16 @@ export default {
       // 这次操作未完成发送
       this.sendBusyStatus = true;
       this.recordVisiable = true
-      this.type = this.currentInputType
+      this.setCurrentRemarkOptions(this.currentPosition)
     },
     closeRecord() {
-      console.log("1111");
-      this.type = "";
+      console.log("end record");
       this.recordVisiable = false;
       if (this.sendBusyStatus) {
         // 没有发送要删除这次打点
         this.currentMark = [];
       }
       this.sendBusyStatus = false
-    },
-    sendCommentCb(link, type = "") {
-      // this.sendComment(url, type)
-      const { left, top, content_width, content_height, background, width, height, pointType} = this.currentPosition;
-      const params = {
-        left,
-        top,
-        link, // 可能为链接或者文字
-        content_width,
-        content_height,
-        type,
-        background,
-        page_id: this.currentPageId,
-        time: Math.floor(Date.now() / 1000),
-        width, height, pointType
-      }
-      askToAddNewRemarkItem(params)
-      // TODO 增加页面展示
-      this.changeRemarkIndex(this.allRemarks.length)
-      this.addOneRemarkItem(params)
-      
-      this.sendBusyStatus = false;
-      this.closeRecord()
-      showToast("send success");
     },
     showModal() {
       this.modalVisable = true

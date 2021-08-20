@@ -15,4 +15,6 @@ export const RemarkActionTypes = {
   ADD_ONE_REMARK_ITEM: 'addONERemarkItem',
   DELETE_ONE_REMARK_ITEM: 'deleteONERemarkItem',
   SET_IS_REMARK: 'setIsRemark',
+  SET_IS_INPUTING: 'setIsInputing',
+  SET_CURRENT_REMARK_OPTIONS: 'setCurrentRemarkOptions',
 }

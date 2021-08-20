@@ -8,7 +8,9 @@ const state = () => ({
   currentReamrkList: [],
   enablePointer: false,
   currentInputType: ModalEventsTypeEnum.TEXT,
-  currentRemarkIndex: -1 // 默认不选中
+  currentRemarkIndex: -1, // 默认不选中
+  isInputing: false,
+  currentRemarkOptions: null
 })
 
 // getters
@@ -17,8 +19,15 @@ const getters = {
 
 // actions
 const actions = {
+  // 缓存待提交的 remark 数据
+  setCurrentRemarkOptions({commit}: any, options: any) {
+    commit(RemarkActionTypes.SET_CURRENT_REMARK_OPTIONS, JSON.parse(JSON.stringify(options)))
+  },
   setIsRemark({commit}: any, isRemark: boolean) {
     commit(RemarkActionTypes.SET_IS_REMARK, isRemark)
+  },
+  setIsInputing({commit}: any, isInputing: boolean) {
+    commit(RemarkActionTypes.SET_IS_INPUTING, isInputing)
   },
   showRemarkModal({commit}: any, visible: boolean) {
     commit(RemarkActionTypes.SHOW_REMARK_MODAL, visible)
@@ -51,8 +60,14 @@ const actions = {
 
 // mutations
 const mutations = {
+  [RemarkActionTypes.SET_CURRENT_REMARK_OPTIONS](nextState: any, options: any) {
+    nextState.currentRemarkOptions = options
+  },
   [RemarkActionTypes.SET_IS_REMARK](nextState: any, isRemark: boolean) {
     nextState.isRemark = isRemark
+  },
+  [RemarkActionTypes.SET_IS_INPUTING](nextState: any, isInputing: boolean) {
+    nextState.isInputing = isInputing
   },
   [RemarkActionTypes.SHOW_REMARK_MODAL](nextState: any, showRemarkModal: any) {
     nextState.showRemarkModal = showRemarkModal
