@@ -565,11 +565,16 @@ export default {
       });
     },
     pageChange(page) {
-      console.log(page, "pageChange");
-      this.currentIndex = page - 1;
-      this.getItemData();
-      this.isShowRightAnswer();
-      this.isShowQuestion = true;
+      console.log(page, "pageChange", this.currentIndex);
+      const nextPage = page - 1;
+      if(this.currentIndex != nextPage) {
+        this.currentIndex = nextPage;
+        this.getItemData();
+        this.isShowRightAnswer();
+        this.isShowQuestion = true;
+      } else {
+        console.log('已是当前页码，不用切换', "pageChange");
+      }
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;

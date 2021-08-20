@@ -292,6 +292,7 @@ export default {
       this.sendBusyStatus = true;
       this.recordVisiable = true
       this.setCurrentRemarkOptions(this.currentPosition)
+      this.changeRemarkIndex(-1)
     },
     closeRecord() {
       console.log("end record");

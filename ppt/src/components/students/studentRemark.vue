@@ -18,7 +18,8 @@
       </el-tooltip>
     </div>
     <ul class="remark-list">
-      <li v-if="currentRemarkOptions" class="remark-list-item record-item">
+      <!--输入区域item-->
+      <li v-if="currentRemarkOptions" class="remark-list-item record-item active-item">
         <div class="item-header">
           <div class="user-info">
             <div class="user-icon">
