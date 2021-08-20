@@ -6,7 +6,8 @@ const state = () => ({
         name: '',
         icon: '',
         uid: ''
-    }
+    },
+    answerdPage: {}, // 已回答page
 })
 
 // getters
@@ -27,6 +28,9 @@ const actions = {
     setStudentUserInfo({ commit }: any, userInfo: any) {
         commit('setStudentUserInfo', JSON.parse(JSON.stringify(userInfo)))
     },
+    updateAnswerdPage({ commit }: any, pageIndex: string) {
+        commit('updateAnswerdPage', pageIndex)
+    },
 }
 
 // mutations
@@ -42,6 +46,11 @@ const mutations = {
     },
     setStudentUserInfo(nextState: any, userInfo: any) {
         nextState.studentUserInfo = Object.assign(nextState.studentUserInfo, userInfo)
+    },
+    updateAnswerdPage(nextState: any, pageIndex: number) {
+        const {answerdPage} = nextState
+        answerdPage[pageIndex] = true
+        nextState.answerdPage = JSON.parse(JSON.stringify(answerdPage))
     },
 }
 

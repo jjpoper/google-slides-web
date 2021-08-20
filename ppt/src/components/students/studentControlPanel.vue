@@ -14,7 +14,7 @@
       </button>
 
       <button class="control-bar__button--large">
-        <div class="pageIndex">{{ currentPage }} of {{ totalPage }}</div>
+        <div class="pageIndex">{{ parseInt(currentPageIndex) + 1 }} of {{ totalPage }}</div>
       </button>
 
       <!-- <strong class="pageIndex"></strong> -->
@@ -39,7 +39,7 @@
     <div class="info_area">
       <div class="checkboxs">
         <el-checkbox :value="currentAnswerd" style="color: #fff">
-          slide {{ currentPage }}/{{ totalPage }}
+          slide {{ parseInt(currentPageIndex) + 1 }}/{{ totalPage }}
         </el-checkbox>
       </div>
     </div>
@@ -69,13 +69,20 @@
   </div>
 </template>
 <script>
-import { ClassRoomModelEnum, ModalEventsNameEnum } from "../../socket/socketEvents";
+import { ClassRoomModelEnum } from "../../socket/socketEvents";
+import {mapState} from 'vuex'
 export default {
+  computed: {
+    ...mapState({
+      answerdPage: state => state.student.answerdPage,
+      currentPageIndex: state => state.student.currentPageIndex,
+    }),
+    currentAnswerd() {
+      console.log(this.answerdPage[this.currentPageIndex])
+      return this.answerdPage[this.currentPageIndex]
+    }
+  },
   props: {
-    currentPage: {
-      type: Number,
-      default: 0,
-    },
     totalPage: {
       type: Number,
       default: 0,
@@ -89,9 +96,6 @@ export default {
     currentModel: {
       type: String,
       default: ClassRoomModelEnum.TEACHER_MODEL,
-    },
-    currentAnswerd: {
-      type: Boolean,
     },
     unread: {
       type: Boolean,

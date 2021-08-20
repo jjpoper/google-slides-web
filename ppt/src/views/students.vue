@@ -91,10 +91,8 @@
           <student-control-panel
             :lastPage="lastPage"
             :nextPage="nextPage"
-            :currentPage="parseInt(currentIndex) + 1"
             :totalPage="slides.length"
             :currentModel="currentModel"
-            :currentAnswerd="currentAnswerd"
             :unread="unread"
             :showStudentModal="showStudentModal"
             :isShowQuestion="isShowQuestion"
@@ -352,7 +350,8 @@ export default {
       "setElements",
       "setStudentPageIndex",
       "setStudentAllSlides",
-      "setStudentUserInfo"
+      "setStudentUserInfo",
+      "updateAnswerdPage"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -461,16 +460,26 @@ export default {
         }
       });
     },
+    getCurrentPageAnswer(page_id, type) {
+      if(type !== 'comment') {
+        return getStudentCurrentPageAnswerList(
+            page_id,
+            type
+          )
+      } else {
+        // comment remark 特殊，数据不在answer内
+        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+      }
+    },
     checkCurrentAnswerd() {
       if (this.currentItemData) {
         const { page_id, items } = this.currentItemData;
         if (items[0]) {
-          this.answerList = getStudentCurrentPageAnswerList(
-            page_id,
-            items[0].type
-          );
+          const type = items[0].type
+          this.answerList = this.getCurrentPageAnswer(page_id, type)
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
+            this.updateAnswerdPage(this.currentIndex)
             if (this.answerList[0].type == "audio") {
               this.link = this.answerList[0].content;
             }
@@ -509,6 +518,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}"}`
       );
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     sendDrawText(textContent) {
@@ -518,6 +528,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw_text", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":${textContent}}`
       );
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     // 发送text
@@ -534,6 +545,7 @@ export default {
         key: index,
         content: msg
       });
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     getItemData() {
@@ -808,6 +820,7 @@ export default {
           key: "item_1",
           answer: v
         });
+        this.updateAnswerdPage(this.currentIndex)
         this.currentAnswerd = true;
       } else if (typeParam && typeParam == "text") {
       }
@@ -919,6 +932,7 @@ export default {
         key: 0,
         content: link
       });
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {

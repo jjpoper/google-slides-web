@@ -138,7 +138,6 @@ export default {
     }),
     marks() {
       let list = []
-      console.log(this.studentAllSlides, this.allRemarks, '====allRemarks')
       if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
         list = this.allRemarks.filter(
           item => item.page_id === this.currentPageId

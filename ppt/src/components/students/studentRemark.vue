@@ -13,7 +13,7 @@
       </el-tooltip>
        <el-tooltip content="Text Comment" placement="top">
          <div :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.TEXT && 'active'}`">
-          <img @click="text" src="../../assets/picture/message-selected.png" class="remark-button"/>
+          <img @click="text" src="../../assets/picture/new-comment.png" class="remark-button"/>
          </div>
       </el-tooltip>
     </div>
@@ -154,6 +154,9 @@ export default {
       'setCurrentRemarkOptions',
       'addOneRemarkItem'
     ]),
+    ...mapActions('student', [
+      'updateAnswerdPage',
+    ]),
     audio() {
       this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO)
     },
@@ -233,6 +236,7 @@ export default {
       this.addOneRemarkItem(params)
       showToast("send success");
       this.cancelRecord()
+      this.updateAnswerdPage(this.currentPageIndex)
     },
   }
 }
