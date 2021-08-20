@@ -8,10 +8,31 @@ const state = () => ({
         uid: ''
     },
     answerdPage: {}, // 已回答page
+    allAnswerList: [], // 全部回答数据
 })
 
 // getters
 const getters = {
+    // 本页的全部回答数据
+    currentPageAnswerList: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+            allAnswerList
+        } = currentState
+        const {items, page_id} = studentAllSlides[currentPageIndex]
+        if(items.length === 0) return []
+        const {type} = items[0]
+        const answers = allAnswerList.filter((item: any) => item.page_id === page_id && item.type === type)
+        return answers
+    },
+    currentPageId: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        return studentAllSlides[currentPageIndex].page_id
+    },
 }
 
 // actions
@@ -30,6 +51,12 @@ const actions = {
     },
     updateAnswerdPage({ commit }: any, pageIndex: string) {
         commit('updateAnswerdPage', pageIndex)
+    },
+    updateAllAnswerdList({ commit }: any, item: any) {
+        commit('updateAllAnswerdList', JSON.parse(JSON.stringify(item)))
+    },
+    setAllAnswerdList({ commit }: any, list: any) {
+        commit('setAllAnswerdList', JSON.parse(JSON.stringify(list)))
     },
 }
 
@@ -51,6 +78,12 @@ const mutations = {
         const {answerdPage} = nextState
         answerdPage[pageIndex] = true
         nextState.answerdPage = JSON.parse(JSON.stringify(answerdPage))
+    },
+    updateAllAnswerdList(nextState: any, item: any) {
+        nextState.allAnswerList.push(item)
+    },
+    setAllAnswerdList(nextState: any, list: any) {
+        nextState.allAnswerList = list
     },
 }
 

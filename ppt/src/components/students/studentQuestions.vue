@@ -346,6 +346,7 @@ export default {
   bottom: 0;
   right: 0;
   z-index: 1000;
+  overflow: hidden;
 }
 .remark-mask-inner{
   position: relative;

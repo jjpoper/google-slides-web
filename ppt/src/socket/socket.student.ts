@@ -5,9 +5,32 @@ import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d: any) => void
 
-const BaseStudentParams = {
+interface BaseParams {
+  classId: string
+  token: string
+  uid: string
+  uname: string
+}
+
+let BaseStudentParams: BaseParams = {
   classId: '',
-  token: ''
+  token: '',
+  uid: '',
+  uname: ''
+}
+
+export const setStudentWxBaseParams = ({
+  classId,
+  token,
+  uid,
+  uname,
+}: BaseParams) => {
+  BaseStudentParams = {
+    classId,
+    token,
+    uid,
+    uname,
+  }
 }
 
 let windowStudentWs: any = null
@@ -113,3 +136,22 @@ export const deleteOneRemark = (id: string) => {
     `{"token":"${BaseStudentParams.token}","class_id":"${BaseStudentParams.classId}","id":${id}}`
   );
 }
+
+// 发送 media 答案
+export const sendAudioOrVideoAnswer = ({
+  link,
+  mediaType = 'audio',
+  page_id,
+}: any) => {
+  const {
+    classId,
+    token,
+    uid,
+    uname
+  } = BaseStudentParams
+  const params = JSON.stringify({link, mediaType})
+  BaseWsRequest(
+    "response",
+    `{"room": "${classId}","type":"audio","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content":{"link":"${link}","mediaType":"${mediaType}"}}`
+  );
+},

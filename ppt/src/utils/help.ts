@@ -4,9 +4,9 @@ export const generateUuid = (prefix: string, length?: number) => {
   const len = !length ? uuidStr.length : length
   let date = Date.now()
   const uuid = uuidStr.replace(/[xy]/g, (c) => {
-      const r = (date + Math.random() * 16) % 16 | 0 // eslint-disable-line no-bitwise
-      date = Math.floor(date / 16)
-      return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16) // eslint-disable-line no-bitwise
+    const r = (date + Math.random() * 16) % 16 | 0 // eslint-disable-line no-bitwise
+    date = Math.floor(date / 16)
+    return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16) // eslint-disable-line no-bitwise
   })
   const id = `${!prefix ? '' : prefix}${uuid.slice(0, len)}`
   // console.log(id)
@@ -16,10 +16,10 @@ export const generateUuid = (prefix: string, length?: number) => {
 export const getUrlParam = (queryKey: string): string => {
   const temp1 = location.href.split('?');
   const pram = temp1[1];
-  if(!pram) return ''
+  if (!pram) return ''
   const keyValue = pram.split('&');
   const obj: any = {};
-  for(let i = 0; i < keyValue.length; i++) {
+  for (let i = 0; i < keyValue.length; i++) {
     const item = keyValue[i].split('=');
     const key = item[0];
     const value = item[1];
@@ -38,4 +38,15 @@ export const getTimeValue = (value: number) => {
     minutes: `0${date.getMinutes()}`.substr(-2),
     seconds: `0${date.getSeconds()}`.substr(-2),
   }
+}
+
+export const getAnswerTimeStr = (time: number) => {
+  const {
+    year,
+    month,
+    date,
+    hours,
+    minutes
+  } = getTimeValue(time)
+  return `${year}-${month}-${date} ${hours}:${minutes}`
 }

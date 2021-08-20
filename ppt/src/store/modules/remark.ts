@@ -5,7 +5,6 @@ const state = () => ({
   isRemark: false,
   allRemarks: [], // 全部remark数据
   showRemarkModal: false,
-  currentReamrkList: [],
   enablePointer: false,
   currentInputType: ModalEventsTypeEnum.TEXT,
   currentRemarkIndex: -1, // 默认不选中
@@ -31,9 +30,6 @@ const actions = {
   },
   showRemarkModal({commit}: any, visible: boolean) {
     commit(RemarkActionTypes.SHOW_REMARK_MODAL, visible)
-  },
-  setCurrentRemarkList({commit}: any, list: any) {
-    commit(RemarkActionTypes.SET_REMARK_LIST, JSON.parse(JSON.stringify(list)))
   },
   setAllRemarkList({commit}: any, list: any) {
     commit(RemarkActionTypes.SET_ALL_REMARK_LIST, JSON.parse(JSON.stringify(list)))
@@ -71,9 +67,6 @@ const mutations = {
   },
   [RemarkActionTypes.SHOW_REMARK_MODAL](nextState: any, showRemarkModal: any) {
     nextState.showRemarkModal = showRemarkModal
-  },
-  [RemarkActionTypes.SET_REMARK_LIST](nextState: any, list: any) {
-    nextState.currentReamrkList = list
   },
   [RemarkActionTypes.SET_ALL_REMARK_LIST](nextState: any, list: any) {
     nextState.allRemarks = list

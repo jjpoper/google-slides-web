@@ -182,7 +182,7 @@ import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
-import { createSo } from "../socket/socket.student";
+import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -351,7 +351,8 @@ export default {
       "setStudentPageIndex",
       "setStudentAllSlides",
       "setStudentUserInfo",
-      "updateAnswerdPage"
+      "updateAnswerdPage",
+      "setAllAnswerdList"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -499,6 +500,8 @@ export default {
         getAllPPTS(this.slide_id)
       ]).then(([allA, { pages: list }]) => {
         console.log(list, "========");
+        // vuex缓存答案
+        this.setAllAnswerdList(allA)
         this.slides = list;
         // vuex 缓存全局slides
         this.setStudentAllSlides(list)
@@ -699,6 +702,12 @@ export default {
         },
         this.onLineStatusChanged
       );
+      setStudentWxBaseParams({
+        classId: this.class_id,
+        uid: this.uid,
+        token: this.token,
+        uname: this.uname
+      })
     },
     msgListener(d) {
       console.log(d, d.mtype, "====收到消息命令");
