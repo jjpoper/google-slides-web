@@ -422,6 +422,7 @@ type: "slide"*/
       "setStudentPageIndex",
       "updateAllAnswerdList",
       "setAllAnswerdList",
+      "deleteOnAnswerById"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -994,6 +995,9 @@ type: "slide"*/
         const list = this.slides[this.currentIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+      } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
+        this.deleteOnAnswerById(d.response_id)
+        this.getResponeCount()
       }
 
       // 回答问题
@@ -1058,7 +1062,7 @@ type: "slide"*/
         EventBus.$emit(d.mtype, { user_id, page_id, item_id });
       }
 
-      this.getResponeCount();
+      this.getResponeCount()
     },
 
     pageChange(value, notSend) {
@@ -1139,7 +1143,9 @@ type: "slide"*/
       const {type} = this.currentItemData.items[0]
       const {page_id} = this.currentItemData
       if(type !== 'comment') {
-        return this.$store.state.student.allAnswerList.filter(item => item.page_id === page_id)
+        let list = this.$store.state.student.allAnswerList.filter(item => item.page_id === page_id)
+        console.log(list, 'lentth')
+        return list
       } else {
         // comment remark 特殊，数据不在answer内
         return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)

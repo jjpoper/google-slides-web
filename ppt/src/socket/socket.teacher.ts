@@ -90,6 +90,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
     console.log("update-element media", JSON.parse(data));
     callback({ mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
   });
+  socket.on('delete-response', (data: any) => {
+    console.log("删除答案" + data);
+    callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
+  });
   return socket
 
 }

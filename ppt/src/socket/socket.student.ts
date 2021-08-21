@@ -96,6 +96,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
     console.log("收到自己发来的答案：" + data);
     callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
   });
+  socket.on('delete-response', (data: any) => {
+    console.log("删除答案" + data);
+    callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
+  });
   windowStudentWs = socket
   return socket
 }

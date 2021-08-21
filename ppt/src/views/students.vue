@@ -353,7 +353,8 @@ export default {
       "setStudentUserInfo",
       "updateAnswerdPage",
       "setAllAnswerdList",
-      "updateAllAnswerdList"
+      "updateAllAnswerdList",
+      "deleteOnAnswerById"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -777,6 +778,8 @@ export default {
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d)
+      } else if(d.mtype === SocketEventsEnum.DELETE_QUESTION) {
+        this.deleteOnAnswerById(d.response_id)
       }
     },
     // 收到评论
