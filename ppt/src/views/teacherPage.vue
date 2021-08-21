@@ -81,30 +81,32 @@
       <div class="online_status">
         <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="share_room" @click="copyUrl()">Share Class</div>
-
-      <div
-        class="number_info"
-        @click="showStudents()"
-      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
-      <el-tooltip content="mark up and send comment" placement="top">
-        <div class="readchat comment" v-if="isDashboard">
-          <el-switch
-            style="display: block"
-            v-model="questionModalVisiable"
-            active-color="#13ce66"
-            inactive-color="#999"
-            active-text="comment"
-          ></el-switch>
-          <el-switch
-            style="display: block; margin-left: 10px"
-            v-model="overviewModalVisiable"
-            active-color="#13ce66"
-            inactive-color="#999"
-            active-text="overview slides"
-          ></el-switch>
-        </div>
-      </el-tooltip>
+      <div style="display: flex;">
+        <div class="share_room" @click="copyUrl()">Share Class</div>
+        <div
+          class="number_info"
+          @click="showStudents()"
+        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
+        <el-tooltip content="mark up and send comment" placement="top">
+          <div class="readchat comment" v-if="isDashboard">
+            <el-switch
+              style="display: block"
+              v-model="questionModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="comment"
+            ></el-switch>
+            <el-switch
+              style="display: block; margin-left: 10px"
+              v-model="overviewModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="overview slides"
+            ></el-switch>
+          </div>
+        </el-tooltip>
+      </div>
+      
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -1615,14 +1617,16 @@ type: "slide"*/
   z-index: 99999;
 }
 .top_btn {
-  width: auto;
   position: fixed;
-  left: 20px;
+  padding:0 20px;
   height: 50px;
   top: 0;
   align-items: center;
-  display: flex;
   z-index: 999;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
 }
 .share_room {
   width: 100px;
