@@ -143,6 +143,7 @@ export const sendAudioOrVideoAnswer = ({
   link,
   mediaType = 'audio',
   page_id,
+  fileName = ''
 }: any) => {
   const {
     classId,
@@ -150,8 +151,8 @@ export const sendAudioOrVideoAnswer = ({
     uid,
     uname
   } = BaseStudentParams
-  const params = JSON.stringify({link, mediaType})
+  const content = `{"link":"${link}","mediaType":"${mediaType}", "fileName": "${fileName}"}`
   BaseWsRequest(
-    "response", `{"room": "${classId}","type":"audio","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content":{"link":"${link}","mediaType":"${mediaType}"}}`
+    "response", `{"room": "${classId}","type":"media","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content": ${content}}`
   );
 }

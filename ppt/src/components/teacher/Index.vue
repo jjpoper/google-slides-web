@@ -9,9 +9,7 @@
     <draw v-else-if="type === 'draw'" v-bind="$attrs" :flag_1="flag_1" />
     <remark-item v-else-if="type === 'comment'" v-bind="$attrs" :flag_1="flag_1" />
 
-    <AudioItem v-else-if="type === 'audio'" v-bind="$attrs" :flag_1="flag_1" />
-
-    <VideoItem v-else-if="type === 'video'" v-bind="$attrs" :flag_1="flag_1" />
+    <AudioItem v-else-if="type === 'media'" v-bind="$attrs" :flag_1="flag_1" />
   </div>
   <div class="page center" v-else-if="type!='website'">
     <div class="loadEffect">

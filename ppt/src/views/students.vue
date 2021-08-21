@@ -373,7 +373,7 @@ export default {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
-      if (type === "comment" || type === "audio") return "350px";
+      if (type === "comment" || type === "media") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
           return "0%";
@@ -482,7 +482,7 @@ export default {
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
             this.updateAnswerdPage(this.currentIndex)
-            if (this.answerList[0].type == "audio") {
+            if (this.answerList[0].type == "media") {
               this.link = this.answerList[0].content;
             }
           }

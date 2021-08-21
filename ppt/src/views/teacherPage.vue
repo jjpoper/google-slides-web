@@ -554,8 +554,7 @@ type: "slide"*/
             } else if (
               itemData[0].type == "text" ||
               itemData[0].type == "number" ||
-              itemData[0].type == "audio" ||
-              itemData[0].type == "video"
+              itemData[0].type == "media"
             ) {
               const user_id = studentId;
               const content = responseList[i].content;
@@ -1040,8 +1039,7 @@ type: "slide"*/
         });
         EventBus.$emit("draw", { user_id, content, content1, user_name });
       } else if (
-        d.type == SocketEventsEnum.AUDIO_INPUT ||
-        d.type == SocketEventsEnum.VIDEO_INPUT
+        d.type == SocketEventsEnum.MEDIA_INPUT
       ) {
         console.log(d);
         const { content, user_id, user_name, item_id, type } = d;

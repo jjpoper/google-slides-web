@@ -5,8 +5,7 @@
     <choice v-else-if="type === 'choice'" v-bind="$attrs" />
     <website v-else-if="type === 'website'" v-bind="$attrs" />
     <draw v-else-if="type === 'draw'" v-bind="$attrs" />
-    <studentAudioItem v-else-if="type=='audio'" v-bind="$attrs" />
-    <studentVideoItem v-else-if="type=='video'" v-bind="$attrs" />
+    <studentAudioItem v-else-if="type=='media'" v-bind="$attrs" />
     <studentRemark v-else-if="type=='comment'" v-bind="$attrs" />
   </div>
 </template>

@@ -76,10 +76,14 @@
             preload="none"
           />
           <div
-            class="remark-text"
+            class="remark-file"
             v-else-if="item.content.mediaType === 'file'"
           >
-            <a :href="item.content.link" download>{{item.content.link}}</a>
+            <div :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
+            <div>
+              <p>{{item.content.fileName}}</p>
+              <a :href="item.content.link" download class="download-text">Download</a>
+            </div>
           </div>
         </div>
       </li>
@@ -151,13 +155,14 @@ export default {
     },
     onUpload(response, file, fileList) {
       console.log(response.data, file.name, fileList);
-      this.sendCommentCb(response.data, 'file')
+      this.sendCommentCb(response.data, 'file', file.name)
     },
-    sendCommentCb(link, mediaType = "") {
+    sendCommentCb(link, mediaType = "", fileName) {
       this.cancelRecord()
       sendAudioOrVideoAnswer({
         link,
         mediaType,
+        fileName,
         page_id: this.currentPageId
       })
       // 已答
@@ -168,17 +173,25 @@ export default {
         data: JSON.stringify({
           content: {
             link,
-            mediaType
+            mediaType,
+            fileName
           },
         }),
         id: Math.random(),
         item_id: null,
         page_id: this.currentPageId,
         student_user_id: this.userInfo.uid,
-        type: "audio",
+        type: "media",
         updated_at: Date.now() / 1000
       })
     },
+    getIconClass(name) {
+      if(!name) return 'file'
+      name = name.toLocaleLowerCase()
+      if(name.indexOf('.pdf') > -1) return 'pdf'
+      if(name.indexOf('.doc') > -1) return 'word'
+      return 'file'
+    }
   }
 }
 </script>
@@ -319,14 +332,44 @@ export default {
   flex: 1;
   word-break: break-all;
 }
-.remark-text{
-  font-size: 10px;
-  font-family: Inter-Bold;
-  line-height: 24px;
-  color: #000000;
-  text-align: justify;
+.remark-file{
+  height: 60px;
+  display: flex;
+  align-items: center;
 }
 video{
   width: 100%; height: 100%; object-fit: cover
+}
+.file-icon{
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.file-icon.pdf{
+  background-image: url(../../assets/picture/pdf.png);
+}
+.file-icon.word{
+  background-image: url(../../assets/picture/word.png);
+}
+.file-icon.file{
+  background-image: url(../../assets/picture/file.png);
+}
+.download-text{
+  text-decoration: none;
+  text-align: left;
+  float: left;
+  padding-right: 20px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: right;
+  background-image: url(../../assets/picture/download.png);
+  background-size: 12px 11px;
+  cursor: pointer;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #15C39A;
 }
 </style>
