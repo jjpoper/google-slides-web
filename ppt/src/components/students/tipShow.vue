@@ -42,9 +42,6 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  components: {
-    tipShow
-  },
   data() {
     return {
       tipText: null,

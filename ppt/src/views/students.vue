@@ -21,7 +21,7 @@
         :url="currentItemData && currentItemData.thumbnail_url"
         :pageId="slides[currentIndex].page_id"
         :delQuestion="delQuestion"
-      /> -->
+      />-->
 
       <div class="student-main" v-show="!questionModalVisiable">
         <div
@@ -166,6 +166,36 @@
         fill="#1296db"
       />
     </svg>
+    <el-popover
+      placement="bottom"
+      trigger="manual"
+      :content="tipText"
+      v-model="showTip"
+      width="200"
+    >
+      <div class="tip_area_popover">{{tipText}}</div>
+      <img
+        src="../assets/icon/tip_close.png"
+        width="30"
+        height="30"
+        slot="reference"
+        class="tip_area"
+        v-if="currentItemData&&(!currentItemData.items||currentItemData.items.length==0|| currentItemData.items[0].type=='draw'||
+    currentItemData.items[0].type=='website')&&tipText.length>0&&!showTip"
+        @click="changeTipShow()"
+      />
+      <img
+        src="../assets/icon/tip_open.png"
+        width="30"
+        height="30"
+        slot="reference"
+        class="tip_area"
+        v-if="currentItemData&&(!currentItemData.items||currentItemData.items.length==0|| currentItemData.items[0].type=='draw'||
+    currentItemData.items[0].type=='website')&&tipText.length>0&&showTip"
+        @click="changeTipShow()"
+      />
+    </el-popover>
+
     <div id="diycolor_comment"></div>
   </div>
 </template>
@@ -210,6 +240,7 @@ import colorSelector from "@/utils/color";
 import TipsList from "@/components/common/tipsList.vue";
 
 import { mapActions } from "vuex";
+import tipShow from "@/components/students/tipShow.vue";
 
 export default {
   data() {
@@ -254,7 +285,9 @@ export default {
       meterialVisiable: false,
       overviewModalVisiable: false,
       studentCommentLoaded: false,
-      firstJoined: true
+      firstJoined: true,
+      showTip: false,
+      tipText: ""
     };
   },
   computed: {
@@ -314,7 +347,8 @@ export default {
     studentControlPanel,
     pageLockedNote,
     StudentQuestions,
-    TipsList
+    TipsList,
+    tipShow
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -335,14 +369,40 @@ export default {
   watch: {
     currentIndex() {
       console.log("set elements");
-      if(this.slides && this.slides[this.currentIndex]) {
+      if (this.slides && this.slides[this.currentIndex]) {
         this.setElements(this.slides[this.currentIndex].elements);
       }
-      this.setStudentPageIndex(this.currentIndex)
+      this.setStudentPageIndex(this.currentIndex);
+      if (this.slides[this.currentIndex].elements) {
+        for (
+          let i = 0;
+          i < this.slides[this.currentIndex].elements.length;
+          i++
+        ) {
+          console.log(this.slides[this.currentIndex].elements[i]);
+          if (this.slides[this.currentIndex].elements[i].type == "tip") {
+            this.tipText =
+              "tip: " + this.slides[this.currentIndex].elements[i].url;
+          }
+        }
+      }
     },
     slides() {
       console.log("set elements");
       this.setElements(this.slides[this.currentIndex].elements);
+      if (this.slides[this.currentIndex].elements) {
+        for (
+          let i = 0;
+          i < this.slides[this.currentIndex].elements.length;
+          i++
+        ) {
+          console.log(this.slides[this.currentIndex].elements[i]);
+          if (this.slides[this.currentIndex].elements[i].type == "tip") {
+            this.tipText =
+              "tip: " + this.slides[this.currentIndex].elements[i].url;
+          }
+        }
+      }
     }
   },
   methods: {
@@ -361,6 +421,10 @@ export default {
       "setAllRemarkList",
       "updateLatestRemarkId"
     ]),
+    changeTipShow() {
+      this.showTip = !this.showTip;
+      console.log("change show !!" + this.showTip);
+    },
     loadDiyPainter() {
       this.$nextTick(() => {
         const selector = document.getElementById("diycolor_comment");
@@ -465,25 +529,24 @@ export default {
     },
     getCurrentPageAnswer() {
       const { page_id, items } = this.currentItemData;
-      const type = items[0].type
-      if(type !== 'comment') {
-        return getStudentCurrentPageAnswerList(
-            page_id,
-            type
-          )
+      const type = items[0].type;
+      if (type !== "comment") {
+        return getStudentCurrentPageAnswerList(page_id, type);
       } else {
         // comment remark 特殊，数据不在answer内
-        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+        return this.$store.state.remark.allRemarks.filter(
+          item => item.page_id === page_id
+        );
       }
     },
     checkCurrentAnswerd() {
       if (this.currentItemData) {
         const { items } = this.currentItemData;
         if (items[0]) {
-          this.answerList = this.getCurrentPageAnswer()
+          this.answerList = this.getCurrentPageAnswer();
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
-            this.updateAnswerdPage(this.currentIndex)
+            this.updateAnswerdPage(this.currentIndex);
             if (this.answerList[0].type == "media") {
               this.link = this.answerList[0].content;
             }
@@ -504,10 +567,10 @@ export default {
       ]).then(([allA, { pages: list }]) => {
         console.log(list, "========");
         // vuex缓存答案
-        this.setAllAnswerdList(allA)
+        this.setAllAnswerdList(allA);
         this.slides = list;
         // vuex 缓存全局slides
-        this.setStudentAllSlides(list)
+        this.setStudentAllSlides(list);
         this.getItemData();
         hideLoading();
         this.loadDiyPainter();
@@ -524,7 +587,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}"}`
       );
-      this.updateAnswerdPage(this.currentIndex)
+      this.updateAnswerdPage(this.currentIndex);
       this.currentAnswerd = true;
     },
     sendDrawText(textContent) {
@@ -534,7 +597,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw_text", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":${textContent}}`
       );
-      this.updateAnswerdPage(this.currentIndex)
+      this.updateAnswerdPage(this.currentIndex);
       this.currentAnswerd = true;
     },
     // 发送text
@@ -551,14 +614,14 @@ export default {
         key: index,
         content: msg
       });
-      this.updateAnswerdPage(this.currentIndex)
+      this.updateAnswerdPage(this.currentIndex);
       this.currentAnswerd = true;
     },
     getItemData() {
       this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
-        console.log(this.currentItemData)
+        console.log(this.currentItemData);
         this.checkCurrentAnswerd();
         this.isShowRightAnswer();
         if (
@@ -586,13 +649,13 @@ export default {
     pageChange(page) {
       console.log(page, "pageChange", this.currentIndex);
       const nextPage = page - 1;
-      if(this.currentIndex != nextPage) {
+      if (this.currentIndex != nextPage) {
         this.currentIndex = nextPage;
         this.getItemData();
         this.isShowRightAnswer();
         this.isShowQuestion = true;
       } else {
-        console.log('已是当前页码，不用切换', "pageChange");
+        console.log("已是当前页码，不用切换", "pageChange");
       }
     },
     afterLogin({ user_name, email }) {
@@ -601,7 +664,7 @@ export default {
       this.setStudentUserInfo({
         name: user_name,
         uid: email
-      })
+      });
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
     },
@@ -628,14 +691,14 @@ export default {
         .then(res => {
           console.log(res);
           if (res.code == "ok") {
-            let marks = []
+            let marks = [];
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].data.fromServie = true; //从服务器处获取
               res.data[i].data.id = res.data[i].id;
               marks.push(res.data[i].data);
             }
             // 初始化remark数据
-            this.setAllRemarkList(marks)
+            this.setAllRemarkList(marks);
           }
         })
         .catch(res => {
@@ -711,7 +774,7 @@ export default {
         uid: this.uid,
         token: this.token,
         uname: this.uname
-      })
+      });
     },
     msgListener(d) {
       console.log(d, d.mtype, "====收到消息命令");
@@ -754,7 +817,7 @@ export default {
         this.onGetTeacherComment(d);
       } else if (d.mtype === SocketEventsEnum.GET_COMMENT_ID) {
         // 获取发出的评论id，用于删除时候调用
-        this.updateLatestRemarkId(d.id)
+        this.updateLatestRemarkId(d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         const index = this.slides.findIndex(item => d.page_id === item.page_id);
         this.slides[index].elements.push({ id: d.id, ...d.data });
@@ -777,9 +840,9 @@ export default {
         const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
-        this.updateAllAnswerdList(d)
-      } else if(d.mtype === SocketEventsEnum.DELETE_QUESTION) {
-        this.deleteOnAnswerById(d.response_id)
+        this.updateAllAnswerdList(d);
+      } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
+        this.deleteOnAnswerById(d.response_id);
       }
     },
     // 收到评论
@@ -837,7 +900,7 @@ export default {
           key: "item_1",
           answer: v
         });
-        this.updateAnswerdPage(this.currentIndex)
+        this.updateAnswerdPage(this.currentIndex);
         this.currentAnswerd = true;
       } else if (typeParam && typeParam == "text") {
       }
@@ -945,7 +1008,7 @@ export default {
         key: 0,
         content: link
       });
-      this.updateAnswerdPage(this.currentIndex)
+      this.updateAnswerdPage(this.currentIndex);
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {
@@ -966,31 +1029,31 @@ export default {
   transition: opacity 150ms linear;
   z-index: 9999;
 }
-.student-main{
+.student-main {
   width: 100%;
   height: 100%;
   display: flex;
   padding-bottom: 5px;
   box-sizing: border-box;
 }
-.student-right{
+.student-right {
   height: 100%;
   position: relative;
   background-color: rgba(211, 220, 230, 1);
 }
-.student-left{
-  background-color: #F4F4F4;
+.student-left {
+  background-color: #f4f4f4;
   box-sizing: border-box;
   padding: 0;
-  flex: 1
+  flex: 1;
 }
-.st-ppt-outer{
+.st-ppt-outer {
   width: 100%;
   height: 100%;
   padding: 0 10px;
   box-sizing: border-box;
 }
-.ppt-out-line{
+.ppt-out-line {
   border: 1px solid #707070;
   box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
   box-sizing: border-box;
@@ -1001,6 +1064,27 @@ export default {
   position: fixed;
   top: 60px;
   right: 45%;
+}
+.tip_area {
+  cursor: pointer;
+  z-index: 999;
+  position: fixed;
+  top: 60px;
+  right: 20%;
+}
+.tip_area_popover {
+  cursor: pointer;
+  z-index: 999;
+  position: fixed;
+  top: 100px;
+  right: 10%;
+  background-color: white;
+  color: #313333;
+  width: 200px;
+  padding: 6px;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 .deadline_info {
   background-color: red;
