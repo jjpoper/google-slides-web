@@ -66,13 +66,9 @@
             height="150"
             preload="none"
           />
-          <audio
+          <audio-player
             v-else-if="item.content &&  item.content.mediaType === 'audio'"
-            controlslist="nodownload"
-            controls
-            :src="item.content.link"
-            style="width:100%;"
-            preload="none"
+            :url="item.content.link"
           />
           <div class="remark-file" v-else-if="item.content.mediaType === 'file'">
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
@@ -92,16 +88,14 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { deleteMedia, sendAudioOrVideoAnswer } from "@/socket/socket.student";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
-import RecordText from "../common/recordText.vue";
-import { showToast } from "@/utils/loading";
-import { getAnswerTimeStr } from "@/utils/help";
-import tipShow from "./tipShow";
+import RecordText from '../common/recordText.vue';
+import { showToast } from '@/utils/loading';
+import { getAnswerTimeStr } from '@/utils/help';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
-  components: {
-    RecordVideo,
-    RecordAudio,
-    RecordText,
-    tipShow
+  components:{
+    RecordVideo, RecordAudio, RecordText,
+    AudioPlayer
   },
   computed: {
     ...mapState({

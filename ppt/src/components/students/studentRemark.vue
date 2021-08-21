@@ -81,15 +81,10 @@
             height="150"
             preload="none"
           />
-          <audio
-            v-else-if="item.type === 'audio'"
-            controlslist="nodownload"
-            controls
-            :src="item.link"
-            style="width:100%;"
-            preload="none"
-          />
-          <p class="remark-text" v-else-if="item.type === 'text'">{{item.link}}</p>
+          <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
+          <p class="remark-text" v-else-if="item.type === 'text'">
+            {{item.link}}
+          </p>
         </div>
       </li>
     </ul>
@@ -104,9 +99,9 @@ import {
 } from "@/socket/socket.student";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
-import RecordText from "../common/recordText.vue";
-import { showToast } from "@/utils/loading";
-import tipShow from "./tipShow";
+import RecordText from '../common/recordText.vue';
+import { showToast } from '@/utils/loading';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   props: {
     disable: {
@@ -114,11 +109,9 @@ export default {
       default: false
     }
   },
-  components: {
-    RecordVideo,
-    RecordAudio,
-    RecordText,
-    tipShow
+  components:{
+    RecordVideo, RecordAudio, RecordText,
+    AudioPlayer
   },
   computed: {
     ...mapState({

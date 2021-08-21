@@ -17,13 +17,9 @@
               </div>
               <div class="right-answer" v-else-if="item.title.indexOf('.mp3') > -1">
                 <div class="pptimage">
-                  <audio
-                    preload="meta"
-                    controlslist="nodownload"
-                    controls
-                    :src="item.title"
-                    style="width:80%;"
-                  />
+                  <div style="width:80%;">
+                    <audio-player :url="item.title" />
+                  </div>
                 </div>
               </div>
               <div class="right-answer" v-else-if="item.title.indexOf('.webm') > -1">
@@ -71,16 +67,12 @@
                 :src="item.value"
                 style="width:80%;"
               />
-              <audio
-                v-else-if="item.commentType === 'audio'"
-                preload="meta"
-                controlslist="nodownload"
-                controls
-                :src="item.value"
-                style="width:80%;"
-              />
+              <div v-else-if="item.commentType === 'audio'" style="width:80%;">
+                <audio-player :url="item.title" />
+              </div>
             </div>
             <div class="rightcommenttextdetail" v-else>{{ item.value }}</div>
+            <!-- <div class="rightcommenttextdetail" >{{ item.value }}</div> -->
           </div>
         </div>
         <div
@@ -101,7 +93,7 @@ import {
 } from "@/model/store.student";
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
-import tipShow from "./tipShow";
+import AudioPlayer from "../common/audioPlayer.vue";
 export default {
   components: {
     tipShow
@@ -131,7 +123,7 @@ export default {
       unreadIdList: []
     };
   },
-  components: { base64image },
+  components: { base64image, AudioPlayer },
   mounted() {
     // this.showStudentModal()
     EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL, status => {

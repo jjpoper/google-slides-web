@@ -61,7 +61,7 @@
               <video preload="meta" controls="false" :src="item.title" style="width:100%;" />
             </div>
             <div class="feed-item feed-media feed-media-audio" v-else-if="item.commentType === 'audio'">
-              <audio preload="none" controls="false" :src="item.title" style="width:100%;" />
+              <audio-player :url="item.title"/>
             </div>
             <div v-else class="feed-item feed-text">
               {{ item.value }}
@@ -93,9 +93,10 @@ import base64image from "../base64image.vue";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import TeacherRes from './comment/TeacherRes.vue';
+import AudioPlayer from '../common/audioPlayer.vue';
 // import
 export default {
-  components: { base64image, RecordAudio, RecordVideo, TeacherRes },
+  components: { base64image, RecordAudio, RecordVideo, TeacherRes, AudioPlayer },
   data() {
     return {
       commentValue: "",

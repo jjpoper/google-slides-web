@@ -20,14 +20,7 @@
             style="width:100%;"
             preload="none"
           />
-          <audio
-            v-else-if="item.type === 'audio'"
-            controlslist="nodownload"
-            controls=""
-            :src="item.link"
-            style="width:100%;"
-            preload="none"
-          />
+          <audio-player :url="item.link" v-else-if="item.type === 'audio'"/>
           <p v-else-if="item.type === 'text'">{{item.link}}</p>
           <i v-if="isStudent && item.id" class="el-icon-delete del-comment" @click.stop="del(item.id)"></i>
         </div>
@@ -36,7 +29,9 @@
   </div>
 </template>
 <script>
+import audioPlayer from './audioPlayer.vue';
 export default {
+  components: { audioPlayer },
   props: {
     list: {
       type: Array

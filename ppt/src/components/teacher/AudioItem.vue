@@ -30,14 +30,7 @@
                     style="width: auto"
                     preload="none"
                   />
-                  <audio
-                    v-else-if="item.content.mediaType === 'audio'"
-                    controlslist="nodownload"
-                    controls=""
-                    :src="item.content.link"
-                    style="width:100%;"
-                    preload="none"
-                  />
+                  <audio-player v-else-if="item.content.mediaType === 'audio'" :url="item.content.link"/>
                   <div
                     class="remark-file"
                     v-else-if="item.content.mediaType === 'file'"
@@ -90,6 +83,7 @@ import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState, mapGetters } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   computed: {
     // 未答题学生
@@ -125,7 +119,7 @@ export default {
       return list;
     },
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer },
   props: {
     data: {
       type: Object,
