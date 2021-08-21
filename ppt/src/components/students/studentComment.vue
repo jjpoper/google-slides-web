@@ -4,6 +4,7 @@
       <p>Student Feedback</p>
       <i @click="hidecomment"></i>
     </div>
+    <tipShow />
     <div class="feeditem" v-for="(item, index) in commentList" :key="index.toString()">
       <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
       <div :class="`readed ${item.id && unreadIdList.indexOf(item.id) > -1 ? 'unreadborder' : ''}`">
@@ -94,6 +95,7 @@ import {
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
 import AudioPlayer from "../common/audioPlayer.vue";
+import tipShow from "./tipShow.vue";
 export default {
   components: {
     tipShow

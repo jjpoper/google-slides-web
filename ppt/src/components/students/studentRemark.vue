@@ -102,6 +102,7 @@ import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 import AudioPlayer from '../common/audioPlayer.vue';
+import tipShow from "./tipShow.vue";
 export default {
   props: {
     disable: {
@@ -111,7 +112,7 @@ export default {
   },
   components:{
     RecordVideo, RecordAudio, RecordText,
-    AudioPlayer
+    AudioPlayer,tipShow
   },
   computed: {
     ...mapState({
