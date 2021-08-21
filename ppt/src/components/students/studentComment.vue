@@ -19,16 +19,22 @@
                 <div class="pptimage">
                   <audio
                     preload="meta"
-                    controlslist="nodownload" controls=""
-                    :src="item.title" style="width:80%;"/>
+                    controlslist="nodownload"
+                    controls
+                    :src="item.title"
+                    style="width:80%;"
+                  />
                 </div>
               </div>
               <div class="right-answer" v-else-if="item.title.indexOf('.webm') > -1">
                 <div class="pptimage">
                   <video
-                    controlslist="nodownload" controls=""
+                    controlslist="nodownload"
+                    controls
                     preload="meta"
-                    :src="item.title" style="width:80%;"/>
+                    :src="item.title"
+                    style="width:80%;"
+                  />
                 </div>
               </div>
               <div class="right-answer" v-else-if="item.title.indexOf('[') > -1">
@@ -38,7 +44,7 @@
             </div>
             <template v-if="getUrl(item.pageId)">
               <div class="right-answer pptitemouter" v-show="slidesVisiable[index]">
-                <div class="pptitem" >
+                <div class="pptitem">
                   <div class="pptimage" :style="`background-image:url(${getUrl(item.pageId)})`"></div>
                 </div>
                 <div class="stpage">{{getIndex(item.pageId)}} / {{slides.length}}</div>
@@ -53,36 +59,53 @@
               <p class="utime">{{item.time}}</p>
               <i class="uicon">{{item.teacherName.split("")[0]}}</i>
             </div>
-            <div class="rightcommentmediadetail"
-              v-if="item.commentType === 'video' || item.commentType === 'audio'">
+            <div
+              class="rightcommentmediadetail"
+              v-if="item.commentType === 'video' || item.commentType === 'audio'"
+            >
               <video
                 v-if="item.commentType === 'video'"
                 preload="meta"
-                controlslist="nodownload" controls="" 
-                :src="item.value" style="width:80%;"/>
+                controlslist="nodownload"
+                controls
+                :src="item.value"
+                style="width:80%;"
+              />
               <audio
                 v-else-if="item.commentType === 'audio'"
                 preload="meta"
-                controlslist="nodownload" controls=""
-                :src="item.value" style="width:80%;"/>
+                controlslist="nodownload"
+                controls
+                :src="item.value"
+                style="width:80%;"
+              />
             </div>
-            <div class="rightcommenttextdetail"
-              v-else>
-              {{ item.value }}
-            </div>
+            <div class="rightcommenttextdetail" v-else>{{ item.value }}</div>
           </div>
         </div>
-        <div v-if="item.id && unreadIdList.indexOf(item.id) > -1" class="unread" @click="enterRead(item.id)"></div>
+        <div
+          v-if="item.id && unreadIdList.indexOf(item.id) > -1"
+          class="unread"
+          @click="enterRead(item.id)"
+        ></div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { ModalEventsNameEnum } from "@/socket/socketEvents";
-import { getStudentCommentList, getUnreadStudentCommentIds, removeUnreadStudentCommentId } from "@/model/store.student";
+import {
+  getStudentCommentList,
+  getUnreadStudentCommentIds,
+  removeUnreadStudentCommentId
+} from "@/model/store.student";
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
+import tipShow from "./tipShow";
 export default {
+  components: {
+    tipShow
+  },
   props: {
     currentIndex: {
       type: Number,
@@ -91,7 +114,7 @@ export default {
     slides: {
       type: Array,
       default: () => {
-        return []
+        return [];
       }
     },
     hidePropsStudentModal: {
@@ -103,10 +126,10 @@ export default {
     return {
       modalVisibale: false,
       commentList: [],
-      webHeight: window.winHeight  - 50,
+      webHeight: window.winHeight - 50,
       slidesVisiable: [],
       unreadIdList: []
-    }
+    };
   },
   components: { base64image },
   mounted() {
@@ -126,7 +149,7 @@ export default {
   },
   methods: {
     showStudentModal() {
-      this.refreshList()
+      this.refreshList();
       this.modalVisibale = true;
     },
     hideStudentModal() {
@@ -135,36 +158,36 @@ export default {
     },
     refreshList() {
       const list = getStudentCommentList();
-      this.unreadIdList = getUnreadStudentCommentIds()
+      this.unreadIdList = getUnreadStudentCommentIds();
       this.commentList = list;
       console.log(list, this.unreadIdList);
     },
     getIndex(page_id) {
-      const index = this.slides.findIndex(item => item.page_id === page_id)
-      return index + 1
+      const index = this.slides.findIndex(item => item.page_id === page_id);
+      return index + 1;
     },
     getUrl(page_id) {
-      const item = this.slides.filter(item => item.page_id === page_id)[0]
-      return item ? item.thumbnail_url : false
-      return "https://dev.api.newzealand.actself.me/20210801094156/SLIDES_API539350515_0.png"
+      const item = this.slides.filter(item => item.page_id === page_id)[0];
+      return item ? item.thumbnail_url : false;
+      return "https://dev.api.newzealand.actself.me/20210801094156/SLIDES_API539350515_0.png";
       // return item.thumbnail_url
     },
     getButtonVis(page_id) {
-      const index = this.slides.findIndex(item => item.page_id === page_id)
-      if(index == this.currentIndex) return false
-      return this.getUrl(page_id)
+      const index = this.slides.findIndex(item => item.page_id === page_id);
+      if (index == this.currentIndex) return false;
+      return this.getUrl(page_id);
     },
-    setVis(index){
-      this.slidesVisiable[index] = !this.slidesVisiable[index]
-      this.$forceUpdate()
+    setVis(index) {
+      this.slidesVisiable[index] = !this.slidesVisiable[index];
+      this.$forceUpdate();
     },
     hidecomment() {
-      this.hidePropsStudentModal()
+      this.hidePropsStudentModal();
     },
     enterRead(id) {
-      if(id) {
-        removeUnreadStudentCommentId(id)
-        this.unreadIdList = getUnreadStudentCommentIds()
+      if (id) {
+        removeUnreadStudentCommentId(id);
+        this.unreadIdList = getUnreadStudentCommentIds();
       }
     }
   }
@@ -180,8 +203,8 @@ export default {
   text-align: left;
   z-index: 9998;
   position: fixed;
-  top:0;
-  right:0;
+  top: 0;
+  right: 0;
   width: 550px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
 }
@@ -192,13 +215,13 @@ export default {
   justify-content: space-between;
   line-height: 30px;
 }
-.title p{
+.title p {
   font-size: 16px;
   font-family: Segoe UI;
   font-weight: bold;
-  color: #15C39A;
+  color: #15c39a;
 }
-.title i{
+.title i {
   width: 30px;
   height: 30px;
   border-radius: 15px;
@@ -210,39 +233,39 @@ export default {
 .section {
   margin-bottom: 10px;
 }
-.itemtile{
+.itemtile {
   margin: 20px 0;
   height: 19px;
   font-size: 14px;
   font-family: Inter-Bold;
   line-height: 24px;
-  color: #11142D;
+  color: #11142d;
   opacity: 1;
 }
-.feedinner{
+.feedinner {
   width: 489px;
-  background: #FFFFFF;
+  background: #ffffff;
   opacity: 1;
   position: relative;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 6px;
 }
-.readed{
-  border: 1px solid #DBDBDB;
+.readed {
+  border: 1px solid #dbdbdb;
   width: 489px;
-  background: #FFFFFF;
+  background: #ffffff;
   overflow: hidden;
   border-radius: 6px;
   box-sizing: border-box;
   position: relative;
 }
-.readed.unreadborder{
-  border-color: rgba(21,195,154, 0.2);
+.readed.unreadborder {
+  border-color: rgba(21, 195, 154, 0.2);
   /* border-width: 6px; */
 }
-.unread{
-  border-color: #15C39A;
+.unread {
+  border-color: #15c39a;
   background: transparent;
   padding: 5px;
   position: absolute;
@@ -250,41 +273,41 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  border: 6px solid rgba(21,195,154, 0.2);
+  border: 6px solid rgba(21, 195, 154, 0.2);
   cursor: pointer;
 }
-.border-line{
+.border-line {
   width: 489px;
   height: 1px;
-  background-color: #DBDBDB;
+  background-color: #dbdbdb;
 }
-.unreadborder .border-line{
+.unreadborder .border-line {
   width: 475px;
   margin-left: 6px;
 }
-.pptitemouter{
+.pptitemouter {
   width: 321px;
   overflow: hidden;
 }
 .right-answer {
   margin: 21px;
 }
-.rightbutton{
+.rightbutton {
   width: 50px;
   height: 50px;
   position: absolute;
-  top:21px;
+  top: 21px;
   right: 19px;
   background-image: url(../../assets/picture/exchange.png);
   background-repeat: no-repeat;
   background-size: 50px 50px;
   cursor: pointer;
 }
-.pptimage{
+.pptimage {
   width: 321px;
   height: 139px;
-  background: #FFFFFF;
-  border: 1px solid #DBDBDB;
+  background: #ffffff;
+  border: 1px solid #dbdbdb;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   opacity: 1;
   background-repeat: no-repeat;
@@ -296,10 +319,10 @@ export default {
   align-items: center;
   box-sizing: border-box;
 }
-.stpage{
+.stpage {
   min-width: 60px;
   height: 20px;
-  background: #E4E4E4;
+  background: #e4e4e4;
   opacity: 0.4;
   text-align: center;
   line-height: 20px;
@@ -318,28 +341,28 @@ export default {
   margin-top: 42px;
   padding: 0 21px 21px 21px;
 }
-.puserinfo{
+.puserinfo {
   width: 100%;
   height: 30px;
   padding-left: 40px;
   justify-content: space-around;
   position: relative;
 }
-.uname{
+.uname {
   font-size: 12px;
   font-family: Inter-Bold;
   color: #000000;
   opacity: 1;
   line-height: 16px;
 }
-.utime{
+.utime {
   font-size: 10px;
   font-family: Inter-Bold;
   color: #808191;
   opacity: 1;
   line-height: 14px;
 }
-.uicon{
+.uicon {
   width: 30px;
   height: 30px;
   text-align: center;
@@ -353,22 +376,22 @@ export default {
   color: #fff;
   border-radius: 15px;
 }
-.rightcommenttextdetail{
+.rightcommenttextdetail {
   width: 443px;
   min-height: 99px;
-  background: #F7F7F7;
-  border: 1px solid #DBDBDB;
+  background: #f7f7f7;
+  border: 1px solid #dbdbdb;
   opacity: 1;
   border-radius: 4px;
   margin-top: 15px;
   padding: 10px;
   box-sizing: border-box;
 }
-.rightcommentmediadetail{
+.rightcommentmediadetail {
   width: 443px;
   min-height: 99px;
-  background: #F7F7F7;
-  border: 1px solid #DBDBDB;
+  background: #f7f7f7;
+  border: 1px solid #dbdbdb;
   opacity: 1;
   border-radius: 4px;
   margin-top: 15px;
@@ -378,7 +401,9 @@ export default {
   padding: 10px;
   box-sizing: border-box;
 }
-video{
-  width: 100%; height: 100%; object-fit: cover
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
