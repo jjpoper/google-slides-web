@@ -352,7 +352,8 @@ export default {
       "setStudentAllSlides",
       "setStudentUserInfo",
       "updateAnswerdPage",
-      "setAllAnswerdList"
+      "setAllAnswerdList",
+      "updateAllAnswerdList"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -773,6 +774,8 @@ export default {
         const list = this.slides[this.currentIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+      } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
+        this.updateAllAnswerdList(d)
       }
     },
     // 收到评论

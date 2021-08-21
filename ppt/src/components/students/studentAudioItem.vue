@@ -81,7 +81,7 @@
           >
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
             <div>
-              <p>{{item.content.fileName}}</p>
+              <p class="file-name">{{item.content.fileName}}</p>
               <a :href="item.content.link" download class="download-text">Download</a>
             </div>
           </div>
@@ -93,7 +93,7 @@
 <script>
 import { ModalEventsTypeEnum } from '@/socket/socketEvents'
 import {mapActions, mapState, mapGetters} from 'vuex'
-import { sendAudioOrVideoAnswer } from '@/socket/socket.student'
+import { deleteMedia, sendAudioOrVideoAnswer } from '@/socket/socket.student'
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
@@ -115,9 +115,11 @@ export default {
     }),
     answerList() {
       return this.currentPageAnswerList.reverse().map(item => {
+        const content = item.content || JSON.parse(item.data).content
         return {
           ...item,
-          ...JSON.parse(item.data)
+          id: item.id || item.response_id,
+          content
         }
       })
     }
@@ -146,6 +148,7 @@ export default {
 
     },
     deleteItem(id) {
+      deleteMedia(id)
     },
     getTimeStr(time) {
       return getAnswerTimeStr(time * 1000)
@@ -169,21 +172,21 @@ export default {
       this.updateAnswerdPage(this.currentPageIndex)
       // 追加问答内容
       // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
-      this.updateAllAnswerdList({
-        data: JSON.stringify({
-          content: {
-            link,
-            mediaType,
-            fileName
-          },
-        }),
-        id: Math.random(),
-        item_id: null,
-        page_id: this.currentPageId,
-        student_user_id: this.userInfo.uid,
-        type: "media",
-        updated_at: Date.now() / 1000
-      })
+      // this.updateAllAnswerdList({
+      //   data: JSON.stringify({
+      //     content: {
+      //       link,
+      //       mediaType,
+      //       fileName
+      //     },
+      //   }),
+      //   id: Math.random(),
+      //   item_id: null,
+      //   page_id: this.currentPageId,
+      //   student_user_id: this.userInfo.uid,
+      //   type: "media",
+      //   updated_at: Date.now() / 1000
+      // })
     },
     getIconClass(name) {
       if(!name) return 'file'
@@ -371,5 +374,11 @@ video{
   font-family: Inter-Bold;
   line-height: 24px;
   color: #15C39A;
+}
+.file-name{
+  font-size: 10px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
 }
 </style>

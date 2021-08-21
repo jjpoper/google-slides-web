@@ -419,7 +419,9 @@ type: "slide"*/
     ]),
     ...mapActions("student", [
       "setStudentAllSlides",
-      "setStudentPageIndex"
+      "setStudentPageIndex",
+      "updateAllAnswerdList",
+      "setAllAnswerdList",
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -787,7 +789,7 @@ type: "slide"*/
     },
     msgListener(d) {
       console.log(d);
-      if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
+      if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         //  this.studentCounts = d.student_count;
         if (d.join_in) {
@@ -851,7 +853,7 @@ type: "slide"*/
             }
           }
         }
-      } else if (d.type === SocketEventsEnum.RENAME) {
+      } else if (d.mtype === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new, page_id } = d;
         for (let i = 0; i < this.studentList.length; i++) {
@@ -860,7 +862,7 @@ type: "slide"*/
             break;
           }
         }
-      } else if (d.type === SocketEventsEnum.GO_PAGE) {
+      } else if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.room == this.class_id) {
           if (d.params) {
             // this.pageChange(d.params.page);
@@ -868,22 +870,22 @@ type: "slide"*/
             this.pageChange(this.current_page, true);
           }
         }
-      } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
+      } else if (d.mtype == SocketEventsEnum.MODEL_CHANGE) {
         if (d.room == this.class_id) {
           this.page_model =
             d.params.mode == "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
         }
-      } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
+      } else if (d.mtype == SocketEventsEnum.SHOW_RESPONSE) {
         if (d.room == this.class_id) {
           this.showResponse = d.params.response;
         }
-      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
+      } else if (d.mtype == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
         this.classRoomInfo.status = d.params.status;
         this.$forceUpdate();
-      } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
+      } else if (d.mtype == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
         let locked = d.params.lock;
         let page = d.params.page;
@@ -897,7 +899,7 @@ type: "slide"*/
             item => item != page
           );
         }
-      } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
+      } else if (d.mtype == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
           const {
             pageId,
@@ -917,7 +919,7 @@ type: "slide"*/
             false
           );
         }
-      } else if (d.type == SocketEventsEnum.STUDETN_GO_PAGE) {
+      } else if (d.mtype == SocketEventsEnum.STUDETN_GO_PAGE) {
         const { room, user_id } = d;
         if (room != this.class_id) {
           return;
@@ -929,36 +931,36 @@ type: "slide"*/
             break;
           }
         }
-      } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
+      } else if (d.mtype == SocketEventsEnum.SET_DEADLINE_TIME) {
         console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
-      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
+      } else if (d.mtype == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
         this.firstCloseCopyLinkDialog = false;
         this.showCopyLinkDialog = false;
         this.stepTwoDialog = false;
-      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
+      } else if (d.mtype == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
         if (this.isDashboard) {
           this.stepTwoDialog = true;
         } else {
           this.showCopyLinkDialog = true;
         }
-      } else if (d.type === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
+      } else if (d.mtype === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
         // 评论ppt消息
         this.markupslist.push(d);
         return;
-      } else if (d.type === SocketEventsEnum.STUDENT_DELETE_PPT) {
+      } else if (d.mtype === SocketEventsEnum.STUDENT_DELETE_PPT) {
         // 删除评论ppt消息
         const index = this.markupslist.findIndex(item => item.id === d.id);
         console.log("删除", index);
         this.markupslist.splice(index, 1);
         this.$forceUpdate();
         return;
-      } else if (d.type === SocketEventsEnum.STUDENT_ADD_MEDIA) {
+      } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         // const index = this.slides.findIndex(item => d.page_id === item.page_id)
         // this.slides[index].elements.push(d.data)
         console.log("this.allAddedMediaList", "STUDENT_ADD_MEDIA");
         // const page_id = this.currentPageId
         this.slides[this.currentIndex].elements.push({ id: d.id, ...d.data });
-      } else if (d.type === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
+      } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d.data;
         const list = this.slides[this.currentIndex].elements;
@@ -986,7 +988,7 @@ type: "slide"*/
         // })
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
-      } else if (d.type === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
+      } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d;
         const list = this.slides[this.currentIndex].elements;
@@ -999,7 +1001,8 @@ type: "slide"*/
       // 过滤非当前页面数据 是否需要过滤当前页面？？ page_id !== this.currentPageId
       if (room != this.class_id) return;
       // 回答choice
-      if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
+      if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
+        this.updateAllAnswerdList(d)
         const { answer, user_id, type } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -1011,8 +1014,8 @@ type: "slide"*/
         const data = this.currentItemData;
         EventBus.$emit("choice", { data });
       } else if (
-        d.type == SocketEventsEnum.TEXT_INPUT ||
-        d.type === SocketEventsEnum.NUMBER_INPUT
+        d.mtype == SocketEventsEnum.TEXT_INPUT ||
+        d.mtype === SocketEventsEnum.NUMBER_INPUT
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
@@ -1025,8 +1028,8 @@ type: "slide"*/
           show: true,
           key: `${item_id}_${user_id}`
         });
-        EventBus.$emit(d.type, { user_id, page_id, item_id });
-      } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
+        EventBus.$emit(d.mtype, { user_id, page_id, item_id });
+      } else if (d.mtype === SocketEventsEnum.DRAW_CANVAS) {
         const { content, content1, type, user_id, user_name } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -1039,7 +1042,7 @@ type: "slide"*/
         });
         EventBus.$emit("draw", { user_id, content, content1, user_name });
       } else if (
-        d.type == SocketEventsEnum.MEDIA_INPUT
+        d.mtype == SocketEventsEnum.MEDIA_INPUT
       ) {
         console.log(d);
         const { content, user_id, user_name, item_id, type } = d;
@@ -1052,7 +1055,7 @@ type: "slide"*/
           show: true,
           key: `${item_id}_${user_id}`
         });
-        EventBus.$emit(d.type, { user_id, page_id, item_id });
+        EventBus.$emit(d.mtype, { user_id, page_id, item_id });
       }
 
       this.getResponeCount();
@@ -1105,8 +1108,10 @@ type: "slide"*/
       Promise.all([
         initTeacherData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([alldata, { pages: list, elements = [] }]) => {
+      ]).then(([allA, { pages: list, elements = [] }]) => {
         console.log(list);
+        // vuex缓存答案
+        this.setAllAnswerdList(allA)
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
@@ -1134,10 +1139,7 @@ type: "slide"*/
       const {type} = this.currentItemData.items[0]
       const {page_id} = this.currentItemData
       if(type !== 'comment') {
-        return getTeacherCurrentPageAnswerList(
-            page_id,
-            type
-          )
+        return this.$store.state.student.allAnswerList.filter(item => item.page_id === page_id)
       } else {
         // comment remark 特殊，数据不在answer内
         return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)

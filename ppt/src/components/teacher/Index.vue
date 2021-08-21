@@ -116,7 +116,6 @@ import textItem from "./textItem";
 import radioItem from "./radioItem";
 import choiceItem from "./choiceItem";
 import draw from "./draw";
-import VideoItem from "./VideoItem";
 import AudioItem from "./AudioItem";
 import RemarkItem from './remarkItem.vue';
 export default {
@@ -139,7 +138,6 @@ export default {
     radioItem,
     choiceItem,
     draw,
-    VideoItem,
     AudioItem,
     RemarkItem
   }

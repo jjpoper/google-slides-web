@@ -92,12 +92,16 @@ export const createSo = (room: string, token: string, classId: string, callback:
     console.log("update-element media", JSON.parse(data));
     callback({ mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
   });
+  socket.on('response', (data: any) => {
+    console.log("收到自己发来的答案：" + data);
+    callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
+  });
   windowStudentWs = socket
   return socket
 }
 
 const BaseWsRequest = (action: string, message: string) => {
-  if (windowStudentWs) {
+  if(windowStudentWs) {
     windowStudentWs.emit(action, message);
   }
 }
@@ -154,5 +158,16 @@ export const sendAudioOrVideoAnswer = ({
   const content = `{"link":"${link}","mediaType":"${mediaType}", "fileName": "${fileName}"}`
   BaseWsRequest(
     "response", `{"room": "${classId}","type":"media","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content": ${content}}`
+  );
+}
+
+// 删除media
+export const deleteMedia = (id: number) => {
+  const {
+    classId,
+    token
+  } = BaseStudentParams
+  BaseWsRequest(
+    "delete-response", `{"token": "${token}","class_id":"${classId}", "response_id": ${id}}`
   );
 }
