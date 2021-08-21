@@ -3,7 +3,7 @@
     <div class="text-answer-tab">
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <el-select v-model="sortValue" placeholder="请选择">
+      <el-select v-model="sortValue" placeholder="Sort">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -363,8 +363,7 @@ export default {
 .text_area {
   width: 100%;
   height: 59%;
-  background: #E4E4E4;
-  opacity: 0.3;
+  background: rgba(228,228,228,0.3);
   border-radius: 6px;
   font-size: 14px;
   font-family: Inter-Bold;

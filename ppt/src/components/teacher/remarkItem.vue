@@ -1,9 +1,10 @@
 <template>
-  <div class="text-answer-container" v-if="answerList && answerList.length > 0">
+  <div class="text-answer-container" v-if="marks && marks.length > 0">
     <div class="text-answer-tab">
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <el-select v-model="sortValue" placeholder="Sort">
+      <button :class="`button-static ${currentTab === 3 && 'active'}`" @click="changeTab(3)"></button>
+      <el-select v-model="sortValue" placeholder="Sort" v-show="currentTab !== 3">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -12,82 +13,89 @@
         </el-option>
       </el-select>
     </div>
-    <div class="text-scroll">
-      <div class="text-answer-list">
-        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
-          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
-            <div
-              v-if="shouldShow(item)"
-              :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
-            >
-              <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                <div :class="`remark-item-content ${item.type === 'text' && 'content-text-scroll'}`">
-                  <video
-                    v-if="item.content.mediaType === 'video'"
-                    controlslist="nodownload"
-                    controls=""
-                    :src="item.content.link"
-                    style="width: auto"
-                    preload="none"
-                  />
-                  <audio
-                    v-else-if="item.content.mediaType === 'audio'"
-                    controlslist="nodownload"
-                    controls=""
-                    :src="item.content.link"
-                    style="width:100%;"
-                    preload="none"
-                  />
-                  <div
-                    class="remark-file"
-                    v-else-if="item.content.mediaType === 'file'"
-                  >
-                    <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
-                    <div class="file-name">
-                      <p class="file-name">{{item.content.fileName}}</p>
-                      <a :href="item.content.link" download class="download-text">Download</a>
-                    </div>
+    <template v-if="currentTab !== 3">
+      <div class="text-scroll">
+        <div class="text-answer-list">
+          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in marks" :key="index">
+            <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
+              <div
+                v-if="shouldShow(item)"
+                :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
+              >
+                <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
+                  <div :class="`remark-item-content ${item.type === 'text' && 'content-text-scroll'}`">
+                    <video
+                      v-if="item.type === 'video'"
+                      controlslist="nodownload"
+                      controls=""
+                      :src="item.link"
+                      style="width: auto"
+                      preload="none"
+                    />
+                    <audio
+                      v-else-if="item.type === 'audio'"
+                      controlslist="nodownload"
+                      controls=""
+                      :src="item.link"
+                      style="width:100%;"
+                      preload="none"
+                    />
+                    <p class="remark-text" v-else-if="item.type === 'text'">
+                      {{item.link}}
+                    </p>
                   </div>
+                  <span class="text_static" v-if="flag_1 && marks.length > 1">
+                    {{ index + 1 + " of " + marks.length }}
+                  </span>
                 </div>
-                <span class="text_static" v-if="flag_1 && answerList.length > 1">
-                  {{ index + 1 + " of " + answerList.length }}
-                </span>
-              </div>
-              <div class="text-footer" v-if="flag_1">
-                <student-response-opt-bar
-                  :data="{
-                    pageId: data.page_id,
-                    itemId: item.item_id,
-                    studentId: item.user_id,
-                    title: item.content,
-                    isStar: item.star,
-                    isShowRes: item.show,
-                    name: item.user_name,
-                    answertime: item.updated_at
-                  }"
-                />
+                <div class="text-footer" v-if="flag_1">
+                  <student-response-opt-bar
+                    :data="{
+                      pageId: data.page_id,
+                      itemId: item.item_id,
+                      studentId: item.user_id,
+                      title: item.content,
+                      isStar: item.star,
+                      isShowRes: item.show,
+                      name: item.user_name,
+                      answertime: item.updated_at
+                    }"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
-        <div class="no-as-title">
-          <i></i> No Response
+        <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+          <div class="no-as-title">
+            <i></i> No Response
+          </div>
+          <div class="on-as-list">
+            <p class="on-as-list-item" v-for="item in noAnswerStudents" :key="item.user_id">
+              {{item.user_id}}
+            </p>
+          </div>
         </div>
-        <div class="on-as-list">
-          <p class="on-as-list-item" v-for="item in noAnswerStudents" :key="item.user_id">
-            {{item.user_id}}
-          </p>
+      </div>    
+    </template>
+    <template v-else-if="currentTab === 3">
+      <div class="teacherppt-outer" >
+        <div class="fullbgimg" :style="`position: relative;background-image:url(${currentPPTUrl})`">
+          <student-questions :disable="true"/>
+        </div>
+        <div class="teacherppt-remark">
+          <student-remark :disable="true"/>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
+import { getStundentUidAndName } from "@/model/store.teacher";
+import { getCurrentPageAnswerList } from "@/model/store.teacher";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 export default {
@@ -97,7 +105,7 @@ export default {
       let noList = []
       for(let i = 0; i < this.studentList.length; i++) {
         const currentUser = this.studentList[i]
-        const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
+        const index = this.marks.findIndex(item => item.user_id === currentUser.user_id)
         if(index === -1) {
           noList.push(currentUser)
         }
@@ -105,25 +113,27 @@ export default {
       return noList
     },
     ...mapState({
-      studentList: state => state.teacher.studentList
+      allRemarks: state => state.remark.allRemarks,
+      currentPageIndex: state => state.student.currentPageIndex,
+      studentAllSlides: state => state.student.studentAllSlides,
     }),
-    ...mapGetters({
-      currentPageAnswerList: 'student/currentPageAnswerList',
-      currentPageId: 'student/currentPageId',
-    }),
-    answerList() {
-      let list = this.currentPageAnswerList.map(item => {
-        const content = item.content || JSON.parse(item.data).content
-        return {
-          ...item,
-          id: item.id || item.response_id,
-          content
-        }
-      })
+    marks() {
+      let list = []
+      if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
+        list = this.allRemarks.filter(
+          item => item.page_id === this.currentPageId
+        );
+      }
       list = this.resortList(list)
       console.log(list)
       return list;
     },
+    currentPageId() {
+      return this.studentAllSlides[this.currentPageIndex].page_id
+    },
+    currentPPTUrl() {
+      return this.studentAllSlides[this.currentPageIndex].thumbnail_url
+    }
   },
   components: { StudentResponseOptBar, StudentQuestions, StudentRemark },
   props: {
@@ -140,6 +150,9 @@ export default {
   },
   data() {
     return {
+      isTextChanging: false,
+      changeUser: "", //当前是哪个item发生了变化
+      changeItemId: "", //当前是哪个item发生了变化
       currentTab: 1,
       options: [],
       sortValue: 1
@@ -179,6 +192,12 @@ export default {
   methods: {
     //返回当前这个item是否应该show出来
     shouldShow(item) {
+      // if (this.flag_1) return true; //如果是dashboard 模式，则一定show
+      // if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
+      // if (item.star) return true; //如果是星标答案，则需要显示
+      // for (let i = 0; i < this.marks.length; i++) {
+      //   if (this.marks[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      // }
       return true;
     },
     changeTab(i) {
@@ -216,8 +235,8 @@ export default {
         // 有答案 》 无答案
         if(this.sortValue === 3) {
           newList = newList.sort((prev, next)=>{
-            const precontent = prev.content.link
-            const nextcontent = next.content.link
+            const precontent = prev.link
+            const nextcontent = next.link
             if(precontent) {
                 return -1
             } else if(!precontent && nextcontent) {
@@ -232,13 +251,6 @@ export default {
         console.log(e)
         return []
       }
-    },
-    getIconClass(name) {
-      if(!name) return 'file'
-      name = name.toLocaleLowerCase()
-      if(name.indexOf('.pdf') > -1) return 'pdf'
-      if(name.indexOf('.doc') > -1) return 'word'
-      return 'file'
     }
   },
 };
@@ -468,52 +480,5 @@ video{
   position: absolute;
   right: 0;
   top: 0
-}
-.remark-file{
-  height: 60px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.file-icon{
-  width: 60px;
-  height: 60px;
-  margin-right: 10px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-}
-.file-icon.pdf{
-  background-image: url(../../assets/picture/pdf.png);
-}
-.file-icon.word{
-  background-image: url(../../assets/picture/word.png);
-}
-.file-icon.file{
-  background-image: url(../../assets/picture/file.png);
-}
-.download-text{
-  text-decoration: none;
-  text-align: left;
-  float: left;
-  padding-right: 20px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: right;
-  background-image: url(../../assets/picture/download.png);
-  background-size: 12px 11px;
-  cursor: pointer;
-  font-family: Inter-Bold;
-  line-height: 24px;
-  color: #15C39A;
-}
-.file-name{
-  font-size: 10px;
-  font-family: Inter-Bold;
-  line-height: 24px;
-  color: #000000;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
 }
 </style>

@@ -76,10 +76,14 @@
             preload="none"
           />
           <div
-            class="remark-text"
+            class="remark-file"
             v-else-if="item.content.mediaType === 'file'"
           >
-            <a :href="item.content.link" download>{{item.content.link}}</a>
+            <div :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
+            <div>
+              <p class="file-name">{{item.content.fileName}}</p>
+              <a :href="item.content.link" download class="download-text">Download</a>
+            </div>
           </div>
         </div>
       </li>
@@ -89,7 +93,7 @@
 <script>
 import { ModalEventsTypeEnum } from '@/socket/socketEvents'
 import {mapActions, mapState, mapGetters} from 'vuex'
-import { sendAudioOrVideoAnswer } from '@/socket/socket.student'
+import { deleteMedia, sendAudioOrVideoAnswer } from '@/socket/socket.student'
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
@@ -111,9 +115,11 @@ export default {
     }),
     answerList() {
       return this.currentPageAnswerList.reverse().map(item => {
+        const content = item.content || JSON.parse(item.data).content
         return {
           ...item,
-          ...JSON.parse(item.data)
+          id: item.id || item.response_id,
+          content
         }
       })
     }
@@ -142,6 +148,7 @@ export default {
 
     },
     deleteItem(id) {
+      deleteMedia(id)
     },
     getTimeStr(time) {
       return getAnswerTimeStr(time * 1000)
@@ -151,34 +158,43 @@ export default {
     },
     onUpload(response, file, fileList) {
       console.log(response.data, file.name, fileList);
-      this.sendCommentCb(response.data, 'file')
+      this.sendCommentCb(response.data, 'file', file.name)
     },
-    sendCommentCb(link, mediaType = "") {
+    sendCommentCb(link, mediaType = "", fileName) {
       this.cancelRecord()
       sendAudioOrVideoAnswer({
         link,
         mediaType,
+        fileName,
         page_id: this.currentPageId
       })
       // 已答
       this.updateAnswerdPage(this.currentPageIndex)
       // 追加问答内容
       // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
-      this.updateAllAnswerdList({
-        data: JSON.stringify({
-          content: {
-            link,
-            mediaType
-          },
-        }),
-        id: Math.random(),
-        item_id: null,
-        page_id: this.currentPageId,
-        student_user_id: this.userInfo.uid,
-        type: "audio",
-        updated_at: Date.now() / 1000
-      })
+      // this.updateAllAnswerdList({
+      //   data: JSON.stringify({
+      //     content: {
+      //       link,
+      //       mediaType,
+      //       fileName
+      //     },
+      //   }),
+      //   id: Math.random(),
+      //   item_id: null,
+      //   page_id: this.currentPageId,
+      //   student_user_id: this.userInfo.uid,
+      //   type: "media",
+      //   updated_at: Date.now() / 1000
+      // })
     },
+    getIconClass(name) {
+      if(!name) return 'file'
+      name = name.toLocaleLowerCase()
+      if(name.indexOf('.pdf') > -1) return 'pdf'
+      if(name.indexOf('.doc') > -1) return 'word'
+      return 'file'
+    }
   }
 }
 </script>
@@ -319,14 +335,50 @@ export default {
   flex: 1;
   word-break: break-all;
 }
-.remark-text{
+.remark-file{
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+video{
+  width: 100%; height: 100%; object-fit: cover
+}
+.file-icon{
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.file-icon.pdf{
+  background-image: url(../../assets/picture/pdf.png);
+}
+.file-icon.word{
+  background-image: url(../../assets/picture/word.png);
+}
+.file-icon.file{
+  background-image: url(../../assets/picture/file.png);
+}
+.download-text{
+  text-decoration: none;
+  text-align: left;
+  float: left;
+  padding-right: 20px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: right;
+  background-image: url(../../assets/picture/download.png);
+  background-size: 12px 11px;
+  cursor: pointer;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #15C39A;
+}
+.file-name{
   font-size: 10px;
   font-family: Inter-Bold;
   line-height: 24px;
   color: #000000;
-  text-align: justify;
-}
-video{
-  width: 100%; height: 100%; object-fit: cover
 }
 </style>

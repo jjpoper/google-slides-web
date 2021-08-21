@@ -58,6 +58,9 @@ const actions = {
     setAllAnswerdList({ commit }: any, list: any) {
         commit('setAllAnswerdList', JSON.parse(JSON.stringify(list)))
     },
+    deleteOnAnswerById({ commit }: any, id: any) {
+        commit('deleteOnAnswerById', id)
+    },
 }
 
 // mutations
@@ -84,6 +87,12 @@ const mutations = {
     },
     setAllAnswerdList(nextState: any, list: any) {
         nextState.allAnswerList = list
+    },
+    deleteOnAnswerById(nextState: any, id: any) {
+        const index = nextState.allAnswerList.findIndex((item: any) => item.id === id)
+        if(index > -1) {
+            nextState.allAnswerList.splice(index, 1)
+        }
     },
 }
 

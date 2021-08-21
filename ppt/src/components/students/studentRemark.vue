@@ -1,6 +1,6 @@
 <template>
-  <div class="remark-container">
-    <div class="remark-control">
+  <div :class="`remark-container ${disable && 't-pad'}`">
+    <div class="remark-control" v-if="!disable">
       <el-tooltip content="Audio Comment" placement="top">
         <div :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.AUDIO && 'active'}`">
           <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button"/>
@@ -19,7 +19,7 @@
     </div>
     <ul class="remark-list">
       <!--输入区域item-->
-      <li v-if="currentRemarkOptions" class="remark-list-item record-item active-item">
+      <li v-if="!disable && currentRemarkOptions" class="remark-list-item record-item active-item">
         <div class="item-header">
           <div class="user-info">
             <div class="user-icon">
@@ -44,7 +44,7 @@
         @click="changeRemarkIndex(index)">
         <div class="item-header">
           <div class="user-info">
-            <div class="user-icon">
+            <div class="user-icon" v-if="userInfo.name">
               {{userInfo.name ? userInfo.name.substr(0, 1) : ''}}
             </div>
             <div>
@@ -89,6 +89,12 @@ import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 export default {
+  props:{
+    disable: {
+      type: Boolean,
+      default: false
+    },
+  },
   components:{
     RecordVideo, RecordAudio, RecordText
   },
@@ -249,6 +255,10 @@ export default {
   height: 100%;
   padding-top: 100px;
   box-sizing: border-box;
+  background-color: rgba(211, 220, 230, 1);
+}
+.remark-container.t-pad{
+  padding-top: 5px;
 }
 .remark-control{
   width: 310px;

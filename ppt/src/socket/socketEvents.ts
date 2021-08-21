@@ -1,13 +1,13 @@
 export enum SocketEventsEnum {
   GO_PAGE = 'GO_PAGE', // 教师端发控制
-  ANSWER_QUESTION = 'choice', // 回答
+  ANSWER_QUESTION = 'response', // 回答
+  DELETE_QUESTION = 'DELETE_QUESTION', // 回答
   DRAW_CANVAS = 'draw', // 白板
   STUDENTS_COUNTS = 'STUDENTS_COUNTS', // 人数
   RENAME = 'RENAME', // 改名
   TEXT_INPUT = 'text', // 文本框输入
   NUMBER_INPUT = 'number', // 数字输入
-  AUDIO_INPUT = 'audio',
-  VIDEO_INPUT = 'video',
+  MEDIA_INPUT = 'media',
   TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
   CONTROL = "teacher_control", // 教师端发送控制命令
   MODEL_CHANGE = 'Mode_Change',

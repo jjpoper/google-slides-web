@@ -352,7 +352,9 @@ export default {
       "setStudentAllSlides",
       "setStudentUserInfo",
       "updateAnswerdPage",
-      "setAllAnswerdList"
+      "setAllAnswerdList",
+      "updateAllAnswerdList",
+      "deleteOnAnswerById"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -373,7 +375,7 @@ export default {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
-      if (type === "comment" || type === "audio") return "350px";
+      if (type === "comment" || type === "media") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
           return "0%";
@@ -461,7 +463,9 @@ export default {
         }
       });
     },
-    getCurrentPageAnswer(page_id, type) {
+    getCurrentPageAnswer() {
+      const { page_id, items } = this.currentItemData;
+      const type = items[0].type
       if(type !== 'comment') {
         return getStudentCurrentPageAnswerList(
             page_id,
@@ -474,14 +478,13 @@ export default {
     },
     checkCurrentAnswerd() {
       if (this.currentItemData) {
-        const { page_id, items } = this.currentItemData;
+        const { items } = this.currentItemData;
         if (items[0]) {
-          const type = items[0].type
-          this.answerList = this.getCurrentPageAnswer(page_id, type)
+          this.answerList = this.getCurrentPageAnswer()
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
             this.updateAnswerdPage(this.currentIndex)
-            if (this.answerList[0].type == "audio") {
+            if (this.answerList[0].type == "media") {
               this.link = this.answerList[0].content;
             }
           }
@@ -555,6 +558,7 @@ export default {
       this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
+        console.log(this.currentItemData)
         this.checkCurrentAnswerd();
         this.isShowRightAnswer();
         if (
@@ -772,6 +776,10 @@ export default {
         const list = this.slides[this.currentIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+      } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
+        this.updateAllAnswerdList(d)
+      } else if(d.mtype === SocketEventsEnum.DELETE_QUESTION) {
+        this.deleteOnAnswerById(d.response_id)
       }
     },
     // 收到评论
@@ -868,7 +876,6 @@ export default {
         this.showCorrect = false;
         return false;
       }
-      let pageId = data.page_id;
       if (!data || !data.items || !data.items[0]) {
         this.showCorrect = false;
         return false;
@@ -877,10 +884,7 @@ export default {
         this.showCorrect = false;
         return false;
       }
-      const result = getStudentCurrentPageAnswerList(
-        pageId,
-        data.items[0].type
-      );
+      const result = this.getCurrentPageAnswer();
       if (result && result.length > 0) {
         const { answer, locked } = result[0];
         let checkedValues = JSON.parse(answer);
@@ -934,7 +938,7 @@ export default {
       console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"audio", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+        `{"room": "${this.class_id}", "type":"media", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,

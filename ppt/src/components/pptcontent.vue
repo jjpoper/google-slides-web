@@ -1,6 +1,7 @@
 <template>
   <div v-if="url" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
+      
     </div>
     <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark"/>

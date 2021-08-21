@@ -30,12 +30,12 @@ export const createSo = (room: string, token: string, classId: string, callback:
   // 老师端接收到学生发来的答案
   socket.on('response', (data: any) => {
     console.log("收到学生发来的答案：" + data);
-    callback({ type: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
   });
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-    callback({ type: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data) })
   });
 
   socket.on('control', (data: any) => {
@@ -44,12 +44,12 @@ export const createSo = (room: string, token: string, classId: string, callback:
   });
 
   socket.on('rename', (data: any) => {
-    callback({ type: SocketEventsEnum.RENAME, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.RENAME, ...JSON.parse(data) })
   });
 
   socket.on('go-to-page', (data: any) => {
     console.log("收到系统信息：STUDETN_GO_PAGE" + data);
-    callback({ type: SocketEventsEnum.STUDETN_GO_PAGE, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.STUDETN_GO_PAGE, ...JSON.parse(data) })
   });
 
   // 0: "comment-ppt"
@@ -70,25 +70,29 @@ export const createSo = (room: string, token: string, classId: string, callback:
 
   socket.on('comment-ppt', (data: any) => {
     console.log("收到学生评论ppt信息", JSON.parse(data));
-    callback({ type: SocketEventsEnum.STUNDENT_COMMENT_PPT, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.STUNDENT_COMMENT_PPT, ...JSON.parse(data) })
   });
 
   socket.on('delete-ppt-comment', (data: any) => {
     console.log("收到学生删除ppt信息", JSON.parse(data));
-    callback({ type: SocketEventsEnum.STUDENT_DELETE_PPT, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.STUDENT_DELETE_PPT, ...JSON.parse(data) })
   });
 
   socket.on('add-element', (data: any) => {
     console.log("收到老师添加的 media", JSON.parse(data));
-    callback({ type: SocketEventsEnum.STUDENT_ADD_MEDIA, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.STUDENT_ADD_MEDIA, ...JSON.parse(data) })
   });
   socket.on('update-element', (data: any) => {
     console.log("update-element media", JSON.parse(data));
-    callback({ type: SocketEventsEnum.TEACHER_UPDATE_MEDIA, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.TEACHER_UPDATE_MEDIA, ...JSON.parse(data) })
   });
   socket.on('delete-element', (data: any) => {
     console.log("update-element media", JSON.parse(data));
-    callback({ type: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
+  });
+  socket.on('delete-response', (data: any) => {
+    console.log("删除答案" + data);
+    callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
   });
   return socket
 

@@ -70,41 +70,43 @@
       </div>
     </template>
 
-    <students-qs-modal
+    <!-- <students-qs-modal
       v-if="currentItemData && questionModalVisiable"
       :list="filterMarkupList"
       :url="currentItemData.thumbnail_url"
-    />
+    /> -->
 
     <comment-modal />
     <div class="top_btn">
       <div class="online_status">
         <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="share_room" @click="copyUrl()">Share Class</div>
-
-      <div
-        class="number_info"
-        @click="showStudents()"
-      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
-      <el-tooltip content="mark up and send comment" placement="top">
-        <div class="readchat comment" v-if="isDashboard">
-          <el-switch
-            style="display: block"
-            v-model="questionModalVisiable"
-            active-color="#13ce66"
-            inactive-color="#999"
-            active-text="comment"
-          ></el-switch>
-          <el-switch
-            style="display: block; margin-left: 10px"
-            v-model="overviewModalVisiable"
-            active-color="#13ce66"
-            inactive-color="#999"
-            active-text="overview slides"
-          ></el-switch>
-        </div>
-      </el-tooltip>
+      <div style="display: flex;">
+        <div class="share_room" @click="copyUrl()">Share Class</div>
+        <div
+          class="number_info"
+          @click="showStudents()"
+        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
+        <el-tooltip content="mark up and send comment" placement="top">
+          <div class="readchat comment" v-if="isDashboard">
+            <el-switch
+              style="display: block"
+              v-model="questionModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="comment"
+            ></el-switch>
+            <el-switch
+              style="display: block; margin-left: 10px"
+              v-model="overviewModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="overview slides"
+            ></el-switch>
+          </div>
+        </el-tooltip>
+      </div>
+      
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -353,16 +355,16 @@ type: "slide"*/
         return "p";
       }
     },
-    filterMarkupList() {
-      if (this.currentPageId) {
-        console.log(this.currentPageId);
-        const list = this.markupslist.filter(
-          item => item.data.page_id === this.currentPageId
-        );
-        return list;
-      }
-      return [];
-    },
+    // filterMarkupList() {
+    //   if (this.currentPageId) {
+    //     console.log(this.currentPageId);
+    //     const list = this.markupslist.filter(
+    //       item => item.data.page_id === this.currentPageId
+    //     );
+    //     return list;
+    //   }
+    //   return [];
+    // },
     // meterial 数据
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
@@ -386,6 +388,9 @@ type: "slide"*/
   watch: {
     studentList() {
       this.setStudentList(this.studentList)
+    },
+    currentIndex(){
+      this.setStudentPageIndex(this.currentIndex)
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -411,6 +416,18 @@ type: "slide"*/
   methods: {
     ...mapActions('teacher', [
       'setStudentList'
+    ]),
+    ...mapActions("student", [
+      "setStudentAllSlides",
+      "setStudentPageIndex",
+      "updateAllAnswerdList",
+      "setAllAnswerdList",
+      "deleteOnAnswerById"
+    ]),
+    ...mapActions("remark", [
+      "showRemarkModal",
+      "setAllRemarkList",
+      "updateLatestRemarkId"
     ]),
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
@@ -496,10 +513,7 @@ type: "slide"*/
       if (!itemData) {
         return;
       }
-      let responseList = getTeacherCurrentPageAnswerList(
-        pageId,
-        itemData[0].type
-      );
+      let responseList = this.getCurrentPageAnswer()
       for (; i < responseList.length; i++) {
         if (
           (responseList[i].item_id == itemId ||
@@ -543,8 +557,7 @@ type: "slide"*/
             } else if (
               itemData[0].type == "text" ||
               itemData[0].type == "number" ||
-              itemData[0].type == "audio" ||
-              itemData[0].type == "video"
+              itemData[0].type == "media"
             ) {
               const user_id = studentId;
               const content = responseList[i].content;
@@ -746,6 +759,15 @@ type: "slide"*/
           console.log(res);
           if (res.code == "ok") {
             this.markupslist = res.data;
+            let marks = []
+            for (let i = 0; i < res.data.length; i++) {
+              res.data[i].data.user_id = res.data[i].user_id;
+              res.data[i].data.user_name = res.data[i].user_name;
+              res.data[i].data.updated_at = res.data[i].data.time;
+              marks.push(res.data[i].data);
+            }
+            // 初始化remark数据
+            this.setAllRemarkList(marks)
           }
         })
         .catch(res => {
@@ -768,7 +790,7 @@ type: "slide"*/
     },
     msgListener(d) {
       console.log(d);
-      if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
+      if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         //  this.studentCounts = d.student_count;
         if (d.join_in) {
@@ -832,7 +854,7 @@ type: "slide"*/
             }
           }
         }
-      } else if (d.type === SocketEventsEnum.RENAME) {
+      } else if (d.mtype === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new, page_id } = d;
         for (let i = 0; i < this.studentList.length; i++) {
@@ -841,7 +863,7 @@ type: "slide"*/
             break;
           }
         }
-      } else if (d.type === SocketEventsEnum.GO_PAGE) {
+      } else if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.room == this.class_id) {
           if (d.params) {
             // this.pageChange(d.params.page);
@@ -849,22 +871,22 @@ type: "slide"*/
             this.pageChange(this.current_page, true);
           }
         }
-      } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
+      } else if (d.mtype == SocketEventsEnum.MODEL_CHANGE) {
         if (d.room == this.class_id) {
           this.page_model =
             d.params.mode == "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
         }
-      } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
+      } else if (d.mtype == SocketEventsEnum.SHOW_RESPONSE) {
         if (d.room == this.class_id) {
           this.showResponse = d.params.response;
         }
-      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
+      } else if (d.mtype == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
         this.classRoomInfo.status = d.params.status;
         this.$forceUpdate();
-      } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
+      } else if (d.mtype == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
         let locked = d.params.lock;
         let page = d.params.page;
@@ -878,7 +900,7 @@ type: "slide"*/
             item => item != page
           );
         }
-      } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
+      } else if (d.mtype == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
           const {
             pageId,
@@ -898,7 +920,7 @@ type: "slide"*/
             false
           );
         }
-      } else if (d.type == SocketEventsEnum.STUDETN_GO_PAGE) {
+      } else if (d.mtype == SocketEventsEnum.STUDETN_GO_PAGE) {
         const { room, user_id } = d;
         if (room != this.class_id) {
           return;
@@ -910,36 +932,36 @@ type: "slide"*/
             break;
           }
         }
-      } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
+      } else if (d.mtype == SocketEventsEnum.SET_DEADLINE_TIME) {
         console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
-      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
+      } else if (d.mtype == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
         this.firstCloseCopyLinkDialog = false;
         this.showCopyLinkDialog = false;
         this.stepTwoDialog = false;
-      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
+      } else if (d.mtype == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
         if (this.isDashboard) {
           this.stepTwoDialog = true;
         } else {
           this.showCopyLinkDialog = true;
         }
-      } else if (d.type === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
+      } else if (d.mtype === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
         // 评论ppt消息
         this.markupslist.push(d);
         return;
-      } else if (d.type === SocketEventsEnum.STUDENT_DELETE_PPT) {
+      } else if (d.mtype === SocketEventsEnum.STUDENT_DELETE_PPT) {
         // 删除评论ppt消息
         const index = this.markupslist.findIndex(item => item.id === d.id);
         console.log("删除", index);
         this.markupslist.splice(index, 1);
         this.$forceUpdate();
         return;
-      } else if (d.type === SocketEventsEnum.STUDENT_ADD_MEDIA) {
+      } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         // const index = this.slides.findIndex(item => d.page_id === item.page_id)
         // this.slides[index].elements.push(d.data)
         console.log("this.allAddedMediaList", "STUDENT_ADD_MEDIA");
         // const page_id = this.currentPageId
         this.slides[this.currentIndex].elements.push({ id: d.id, ...d.data });
-      } else if (d.type === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
+      } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d.data;
         const list = this.slides[this.currentIndex].elements;
@@ -967,12 +989,15 @@ type: "slide"*/
         // })
         // const page_id = this.currentPageId
         // this.slides[this.currentIndex].elements.push(d.data)
-      } else if (d.type === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
+      } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d;
         const list = this.slides[this.currentIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+      } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
+        this.deleteOnAnswerById(d.response_id)
+        this.getResponeCount()
       }
 
       // 回答问题
@@ -980,7 +1005,8 @@ type: "slide"*/
       // 过滤非当前页面数据 是否需要过滤当前页面？？ page_id !== this.currentPageId
       if (room != this.class_id) return;
       // 回答choice
-      if (d.type === SocketEventsEnum.ANSWER_QUESTION) {
+      if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
+        this.updateAllAnswerdList(d)
         const { answer, user_id, type } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -992,8 +1018,8 @@ type: "slide"*/
         const data = this.currentItemData;
         EventBus.$emit("choice", { data });
       } else if (
-        d.type == SocketEventsEnum.TEXT_INPUT ||
-        d.type === SocketEventsEnum.NUMBER_INPUT
+        d.mtype == SocketEventsEnum.TEXT_INPUT ||
+        d.mtype === SocketEventsEnum.NUMBER_INPUT
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
@@ -1006,8 +1032,8 @@ type: "slide"*/
           show: true,
           key: `${item_id}_${user_id}`
         });
-        EventBus.$emit(d.type, { user_id, page_id, item_id });
-      } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
+        EventBus.$emit(d.mtype, { user_id, page_id, item_id });
+      } else if (d.mtype === SocketEventsEnum.DRAW_CANVAS) {
         const { content, content1, type, user_id, user_name } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -1020,8 +1046,7 @@ type: "slide"*/
         });
         EventBus.$emit("draw", { user_id, content, content1, user_name });
       } else if (
-        d.type == SocketEventsEnum.AUDIO_INPUT ||
-        d.type == SocketEventsEnum.VIDEO_INPUT
+        d.mtype == SocketEventsEnum.MEDIA_INPUT
       ) {
         console.log(d);
         const { content, user_id, user_name, item_id, type } = d;
@@ -1034,10 +1059,10 @@ type: "slide"*/
           show: true,
           key: `${item_id}_${user_id}`
         });
-        EventBus.$emit(d.type, { user_id, page_id, item_id });
+        EventBus.$emit(d.mtype, { user_id, page_id, item_id });
       }
 
-      this.getResponeCount();
+      this.getResponeCount()
     },
 
     pageChange(value, notSend) {
@@ -1087,11 +1112,15 @@ type: "slide"*/
       Promise.all([
         initTeacherData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
-      ]).then(([alldata, { pages: list, elements = [] }]) => {
+      ]).then(([allA, { pages: list, elements = [] }]) => {
         console.log(list);
+        // vuex缓存答案
+        this.setAllAnswerdList(allA)
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
+        // vuex 缓存全局slides
+        this.setStudentAllSlides(list)
         this.allAddedMediaList = elements.filter(item => item.type !== "tip");
         // this.allTips = elements.filter(item => item.type === "tip");
         this.getItemData();
@@ -1110,6 +1139,18 @@ type: "slide"*/
         this.getResponeCount();
       });
     },
+    getCurrentPageAnswer() {
+      const {type} = this.currentItemData.items[0]
+      const {page_id} = this.currentItemData
+      if(type !== 'comment') {
+        let list = this.$store.state.student.allAnswerList.filter(item => item.page_id === page_id)
+        console.log(list, 'lentth')
+        return list
+      } else {
+        // comment remark 特殊，数据不在answer内
+        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+      }
+    },
     getResponeCount() {
       if (
         this.currentItemData &&
@@ -1120,10 +1161,7 @@ type: "slide"*/
         //   this.currentItemData.page_id,
         //   this.currentItemData.items[0].type
         // );
-        const list = getTeacherCurrentPageAnswerList(
-          this.currentItemData.page_id,
-          this.currentItemData.items[0].type
-        );
+        const list = this.getCurrentPageAnswer()
         this.currentAnswerCount = list.length;
         this.responseContentList = list;
         let count = 0;
@@ -1585,14 +1623,16 @@ type: "slide"*/
   z-index: 99999;
 }
 .top_btn {
-  width: auto;
   position: fixed;
-  left: 20px;
+  padding:0 20px;
   height: 50px;
   top: 0;
   align-items: center;
-  display: flex;
   z-index: 999;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
 }
 .share_room {
   width: 100px;

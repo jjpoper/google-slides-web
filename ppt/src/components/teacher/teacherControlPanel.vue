@@ -6,6 +6,9 @@
       <div class="control-bar__icon left" @click="lastPage()">
       </div>
     </button>
+    <div>
+    {{currentPage}}/{{totalPage}}
+    </div>
     <button class="control-bar__button">
       <div class="control-bar__icon right" @click="nextPage()">
       </div>
@@ -354,6 +357,7 @@ export default {
     nextPage() {
       if (this.currentPage < this.totalPage) {
         let page = this.currentPage + 1;
+        console.log(page)
         this.changePage(page);
       }
     },
@@ -421,7 +425,6 @@ strong {
 }
 .control-bar__icon.left{
   background-image: url(../../assets/picture/arrow-r.png);
-  margin-right: 20px;
 }
 .control-bar__icon.right{
   background-image: url(../../assets/picture/arrow-l.png);
