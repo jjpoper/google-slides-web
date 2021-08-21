@@ -7,6 +7,7 @@
       :flag_1="flag_1"
     />
     <draw v-else-if="type === 'draw'" v-bind="$attrs" :flag_1="flag_1" />
+    <remark-item v-else-if="type === 'comment'" v-bind="$attrs" :flag_1="flag_1" />
 
     <AudioItem v-else-if="type === 'audio'" v-bind="$attrs" :flag_1="flag_1" />
 
@@ -119,6 +120,7 @@ import choiceItem from "./choiceItem";
 import draw from "./draw";
 import VideoItem from "./VideoItem";
 import AudioItem from "./AudioItem";
+import RemarkItem from './remarkItem.vue';
 export default {
   props: {
     type: {
@@ -140,7 +142,8 @@ export default {
     choiceItem,
     draw,
     VideoItem,
-    AudioItem
+    AudioItem,
+    RemarkItem
   }
 };
 </script>

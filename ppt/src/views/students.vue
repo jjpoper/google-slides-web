@@ -461,7 +461,9 @@ export default {
         }
       });
     },
-    getCurrentPageAnswer(page_id, type) {
+    getCurrentPageAnswer() {
+      const { page_id, items } = this.currentItemData;
+      const type = items[0].type
       if(type !== 'comment') {
         return getStudentCurrentPageAnswerList(
             page_id,
@@ -474,10 +476,9 @@ export default {
     },
     checkCurrentAnswerd() {
       if (this.currentItemData) {
-        const { page_id, items } = this.currentItemData;
+        const { items } = this.currentItemData;
         if (items[0]) {
-          const type = items[0].type
-          this.answerList = this.getCurrentPageAnswer(page_id, type)
+          this.answerList = this.getCurrentPageAnswer()
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
             this.updateAnswerdPage(this.currentIndex)
@@ -868,7 +869,6 @@ export default {
         this.showCorrect = false;
         return false;
       }
-      let pageId = data.page_id;
       if (!data || !data.items || !data.items[0]) {
         this.showCorrect = false;
         return false;
@@ -877,10 +877,7 @@ export default {
         this.showCorrect = false;
         return false;
       }
-      const result = getStudentCurrentPageAnswerList(
-        pageId,
-        data.items[0].type
-      );
+      const result = this.getCurrentPageAnswer();
       if (result && result.length > 0) {
         const { answer, locked } = result[0];
         let checkedValues = JSON.parse(answer);
@@ -934,7 +931,7 @@ export default {
       console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"audio", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+        `{"room": "${this.class_id}", "type":"media", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,

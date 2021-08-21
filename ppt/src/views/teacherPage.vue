@@ -70,11 +70,11 @@
       </div>
     </template>
 
-    <students-qs-modal
+    <!-- <students-qs-modal
       v-if="currentItemData && questionModalVisiable"
       :list="filterMarkupList"
       :url="currentItemData.thumbnail_url"
-    />
+    /> -->
 
     <comment-modal />
     <div class="top_btn">
@@ -353,16 +353,16 @@ type: "slide"*/
         return "p";
       }
     },
-    filterMarkupList() {
-      if (this.currentPageId) {
-        console.log(this.currentPageId);
-        const list = this.markupslist.filter(
-          item => item.data.page_id === this.currentPageId
-        );
-        return list;
-      }
-      return [];
-    },
+    // filterMarkupList() {
+    //   if (this.currentPageId) {
+    //     console.log(this.currentPageId);
+    //     const list = this.markupslist.filter(
+    //       item => item.data.page_id === this.currentPageId
+    //     );
+    //     return list;
+    //   }
+    //   return [];
+    // },
     // meterial 数据
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
@@ -386,6 +386,9 @@ type: "slide"*/
   watch: {
     studentList() {
       this.setStudentList(this.studentList)
+    },
+    currentIndex(){
+      this.setStudentPageIndex(this.currentIndex)
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -411,6 +414,15 @@ type: "slide"*/
   methods: {
     ...mapActions('teacher', [
       'setStudentList'
+    ]),
+    ...mapActions("student", [
+      "setStudentAllSlides",
+      "setStudentPageIndex"
+    ]),
+    ...mapActions("remark", [
+      "showRemarkModal",
+      "setAllRemarkList",
+      "updateLatestRemarkId"
     ]),
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
@@ -496,10 +508,7 @@ type: "slide"*/
       if (!itemData) {
         return;
       }
-      let responseList = getTeacherCurrentPageAnswerList(
-        pageId,
-        itemData[0].type
-      );
+      let responseList = this.getCurrentPageAnswer()
       for (; i < responseList.length; i++) {
         if (
           (responseList[i].item_id == itemId ||
@@ -746,6 +755,15 @@ type: "slide"*/
           console.log(res);
           if (res.code == "ok") {
             this.markupslist = res.data;
+            let marks = []
+            for (let i = 0; i < res.data.length; i++) {
+              res.data[i].data.user_id = res.data[i].user_id;
+              res.data[i].data.user_name = res.data[i].user_name;
+              res.data[i].data.updated_at = res.data[i].data.time;
+              marks.push(res.data[i].data);
+            }
+            // 初始化remark数据
+            this.setAllRemarkList(marks)
           }
         })
         .catch(res => {
@@ -1092,6 +1110,8 @@ type: "slide"*/
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
+        // vuex 缓存全局slides
+        this.setStudentAllSlides(list)
         this.allAddedMediaList = elements.filter(item => item.type !== "tip");
         // this.allTips = elements.filter(item => item.type === "tip");
         this.getItemData();
@@ -1110,6 +1130,19 @@ type: "slide"*/
         this.getResponeCount();
       });
     },
+    getCurrentPageAnswer() {
+      const {type} = this.currentItemData.items[0]
+      const {page_id} = this.currentItemData
+      if(type !== 'comment') {
+        return getTeacherCurrentPageAnswerList(
+            page_id,
+            type
+          )
+      } else {
+        // comment remark 特殊，数据不在answer内
+        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+      }
+    },
     getResponeCount() {
       if (
         this.currentItemData &&
@@ -1120,10 +1153,7 @@ type: "slide"*/
         //   this.currentItemData.page_id,
         //   this.currentItemData.items[0].type
         // );
-        const list = getTeacherCurrentPageAnswerList(
-          this.currentItemData.page_id,
-          this.currentItemData.items[0].type
-        );
+        const list = this.getCurrentPageAnswer()
         this.currentAnswerCount = list.length;
         this.responseContentList = list;
         let count = 0;

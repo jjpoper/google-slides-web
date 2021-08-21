@@ -53,7 +53,7 @@
           <span v-for="item in colors" :key="item" @click="changeColor(item)" :style="`background-color: ${item}`" class="colors"></span>
         </div>
       </div>
-      <div class="canvasfooter">
+      <div class="canvasfooter" v-if="!disable">
         <el-tooltip content="change color" placement="top">
           <div :style="`background-color: ${color}`"  @click="showModal"></div>
         </el-tooltip>
@@ -90,6 +90,7 @@
         </el-tooltip>
       </div>
     </div>
+    <div v-if="disable" class="transformmask"></div>
   </div>
 </template>
 <script>
@@ -97,6 +98,12 @@ import { ModalEventsTypeEnum } from "@/socket/socketEvents";
 import colorSelector from '@/utils/color'
 import { mapState, mapActions } from 'vuex'
 export default {
+  props:{
+    disable: {
+      type: Boolean,
+      default: false
+    },
+  },
   data() {
     return {
       ModalEventsTypeEnum,
