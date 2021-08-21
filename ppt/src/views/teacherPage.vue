@@ -74,7 +74,7 @@
       v-if="currentItemData && questionModalVisiable"
       :list="filterMarkupList"
       :url="currentItemData.thumbnail_url"
-    /> -->
+    />-->
 
     <comment-modal />
     <div class="top_btn">
@@ -106,7 +106,6 @@
           </div>
         </el-tooltip>
       </div>
-      
     </div>
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -163,6 +162,7 @@
       :title="getStepTwoTitle()"
       :visible.sync="stepTwoDialog"
       @open="openCopyLinkDialog()"
+      custom-class="custom-dialog"
     >
       <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" />
     </el-dialog>
@@ -176,10 +176,11 @@
     </el-dialog>
 
     <!-- custom-class="custom-dialog" @open="openCopyLinkDialog()" -->
+    <!-- title="Share this link with your students" -->
 
     <el-dialog
-      title="Share this link with your students"
       :visible.sync="showCopyLinkDialog"
+      custom-class="custom-dialog"
       @close="closeCopyLinkDialog()"
     >
       <copyLinkDialog
@@ -192,6 +193,7 @@
         :setTimeDialogShow="setTimeDialogShow"
         :currentMode="page_model"
         :isDashboard="isDashboard"
+        :closeBtn="closeCopyDialog"
       />
     </el-dialog>
   </div>
@@ -243,7 +245,7 @@ import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 export default {
   components: {
     teacherControlPanel,
@@ -387,23 +389,23 @@ type: "slide"*/
   },
   watch: {
     studentList() {
-      this.setStudentList(this.studentList)
+      this.setStudentList(this.studentList);
     },
-    currentIndex(){
-      this.setStudentPageIndex(this.currentIndex)
+    currentIndex() {
+      this.setStudentPageIndex(this.currentIndex);
     }
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      const {id} = vm.$route.params
-      const {token, p} = to.query;
+      const { id } = vm.$route.params;
+      const { token, p } = to.query;
       // vm.slide_id = slide_id;
       vm.class_id = id;
       window.classId = id;
       vm.currentIndex = to.query.p ? to.query.p : 0;
       // vm.isDashboard = type == "dashboard";
       // vm.directFromPlugin = to.query.direct ? true : false;
-      initTeacherStoreSlideId(id)
+      initTeacherStoreSlideId(id);
       if (token) {
         vm.token = token;
         saveTeacherStoreToken(token);
@@ -414,9 +416,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions('teacher', [
-      'setStudentList'
-    ]),
+    ...mapActions("teacher", ["setStudentList"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -466,8 +466,8 @@ type: "slide"*/
     },
     onLineStatusChanged(status) {
       this.onLine = status;
-      if(status && this.firstJoined) {
-        this.firstJoined = false
+      if (status && this.firstJoined) {
+        this.firstJoined = false;
         // 上线后的操作
         this.classRoomInfo.showResponsePages = new Array();
         if (this.classRoomInfo.status == "live") {
@@ -513,7 +513,7 @@ type: "slide"*/
       if (!itemData) {
         return;
       }
-      let responseList = this.getCurrentPageAnswer()
+      let responseList = this.getCurrentPageAnswer();
       for (; i < responseList.length; i++) {
         if (
           (responseList[i].item_id == itemId ||
@@ -687,17 +687,17 @@ type: "slide"*/
       // type: "slide"
       this.slide_id = res.slide_id;
       // this.currentIndex = 0;
-      this.isDashboard = false
+      this.isDashboard = false;
       this.directFromPlugin = false;
     },
     startConnectRoom() {
       queryClassStatus(this.class_id, this.token)
         .then(res => {
-          this.initShortLinkConfig(res)
+          this.initShortLinkConfig(res);
           this.classRoomInfo = res;
           if (this.directFromPlugin) {
           }
-          this.afterConnectRoom()
+          this.afterConnectRoom();
         })
         .catch(res => {
           console.log(res);
@@ -759,7 +759,7 @@ type: "slide"*/
           console.log(res);
           if (res.code == "ok") {
             this.markupslist = res.data;
-            let marks = []
+            let marks = [];
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].data.user_id = res.data[i].user_id;
               res.data[i].data.user_name = res.data[i].user_name;
@@ -767,7 +767,7 @@ type: "slide"*/
               marks.push(res.data[i].data);
             }
             // 初始化remark数据
-            this.setAllRemarkList(marks)
+            this.setAllRemarkList(marks);
           }
         })
         .catch(res => {
@@ -996,8 +996,8 @@ type: "slide"*/
         const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
-        this.deleteOnAnswerById(d.response_id)
-        this.getResponeCount()
+        this.deleteOnAnswerById(d.response_id);
+        this.getResponeCount();
       }
 
       // 回答问题
@@ -1006,7 +1006,7 @@ type: "slide"*/
       if (room != this.class_id) return;
       // 回答choice
       if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
-        this.updateAllAnswerdList(d)
+        this.updateAllAnswerdList(d);
         const { answer, user_id, type } = d;
         addTeacherData(page_id, type, {
           user_id,
@@ -1045,9 +1045,7 @@ type: "slide"*/
           user_name
         });
         EventBus.$emit("draw", { user_id, content, content1, user_name });
-      } else if (
-        d.mtype == SocketEventsEnum.MEDIA_INPUT
-      ) {
+      } else if (d.mtype == SocketEventsEnum.MEDIA_INPUT) {
         console.log(d);
         const { content, user_id, user_name, item_id, type } = d;
         addTeacherData(page_id, type, {
@@ -1062,7 +1060,7 @@ type: "slide"*/
         EventBus.$emit(d.mtype, { user_id, page_id, item_id });
       }
 
-      this.getResponeCount()
+      this.getResponeCount();
     },
 
     pageChange(value, notSend) {
@@ -1115,12 +1113,12 @@ type: "slide"*/
       ]).then(([allA, { pages: list, elements = [] }]) => {
         console.log(list);
         // vuex缓存答案
-        this.setAllAnswerdList(allA)
+        this.setAllAnswerdList(allA);
         // this.contentUrl = d;
         // hideLoading()
         this.slides = list;
         // vuex 缓存全局slides
-        this.setStudentAllSlides(list)
+        this.setStudentAllSlides(list);
         this.allAddedMediaList = elements.filter(item => item.type !== "tip");
         // this.allTips = elements.filter(item => item.type === "tip");
         this.getItemData();
@@ -1140,15 +1138,19 @@ type: "slide"*/
       });
     },
     getCurrentPageAnswer() {
-      const {type} = this.currentItemData.items[0]
-      const {page_id} = this.currentItemData
-      if(type !== 'comment') {
-        let list = this.$store.state.student.allAnswerList.filter(item => item.page_id === page_id)
-        console.log(list, 'lentth')
-        return list
+      const { type } = this.currentItemData.items[0];
+      const { page_id } = this.currentItemData;
+      if (type !== "comment") {
+        let list = this.$store.state.student.allAnswerList.filter(
+          item => item.page_id === page_id
+        );
+        console.log(list, "lentth");
+        return list;
       } else {
         // comment remark 特殊，数据不在answer内
-        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+        return this.$store.state.remark.allRemarks.filter(
+          item => item.page_id === page_id
+        );
       }
     },
     getResponeCount() {
@@ -1161,7 +1163,7 @@ type: "slide"*/
         //   this.currentItemData.page_id,
         //   this.currentItemData.items[0].type
         // );
-        const list = this.getCurrentPageAnswer()
+        const list = this.getCurrentPageAnswer();
         this.currentAnswerCount = list.length;
         this.responseContentList = list;
         let count = 0;
@@ -1193,6 +1195,9 @@ type: "slide"*/
       } else {
         this.showCopyLinkDialog = true;
       }
+    },
+    closeCopyDialog() {
+      this.showCopyLinkDialog = false;
     },
 
     getBtnString() {
@@ -1583,11 +1588,17 @@ type: "slide"*/
 <style lang="scss">
 .custom-dialog.el-dialog {
   padding: 0;
+  width: 60%;
+  height: 60%;
+  background-color: #f00fff00;
+  border-radius: 8px;
   .el-dialog__header {
     display: none;
   }
   .el-dialog__body {
     padding: 0;
+    height: 100%;
+    width: 100%;
   }
 }
 </style>
@@ -1624,7 +1635,7 @@ type: "slide"*/
 }
 .top_btn {
   position: fixed;
-  padding:0 20px;
+  padding: 0 20px;
   height: 50px;
   top: 0;
   align-items: center;
@@ -1691,7 +1702,7 @@ type: "slide"*/
   height: 100%;
   width: 100%;
   background-color: #f4f4f4;
-  overflow: hidden
+  overflow: hidden;
 }
 .readchat {
   display: flex;
