@@ -3,13 +3,9 @@
     <recordAudio v-if="startRecord && type == 'audio'" :onSend="sendVideoOrAudio" />
 
     <recordVideo v-else-if="startRecord && type == 'video'" :onSend="sendVideoOrAudio" />
-    <audio
-      v-else-if="link && type == 'audio'"
-      controlslist="nodownload"
-      controls
-      :src="link"
-      style="width: 90%"
-    />
+    <div v-else-if="link && type == 'audio'" style="width: 90%">
+      <audio-player :url="link"/>
+    </div>
 
     <video
       v-else-if="link && type == 'video'"
@@ -54,10 +50,11 @@
 </style>
 
 <script>
+import AudioPlayer from '../common/audioPlayer.vue';
 import recordAudio from "../common/recordAudio";
 import recordVideo from "../common/recordVideo";
 export default {
-  components: { recordAudio, recordVideo },
+  components: { recordAudio, recordVideo, AudioPlayer },
   props: {
     sendAudioOrVideoAnswer: {
       type: Function

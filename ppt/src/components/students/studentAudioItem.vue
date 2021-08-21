@@ -67,13 +67,9 @@
             height="150"
             preload="none"
           />
-          <audio
+          <audio-player
             v-else-if="item.content &&  item.content.mediaType === 'audio'"
-            controlslist="nodownload"
-            controls=""
-            :src="item.content.link"
-            style="width:100%;"
-            preload="none"
+            :url="item.content.link"
           />
           <div
             class="remark-file"
@@ -99,9 +95,11 @@ import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 import { getAnswerTimeStr } from '@/utils/help';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   components:{
-    RecordVideo, RecordAudio, RecordText
+    RecordVideo, RecordAudio, RecordText,
+    AudioPlayer
   },
   computed: {
     ...mapState({

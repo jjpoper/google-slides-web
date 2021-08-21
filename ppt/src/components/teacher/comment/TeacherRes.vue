@@ -8,7 +8,7 @@
       </div>
       <div class="answer-media flex-center" v-else-if="item.title.indexOf('.mp3') > -1">
         <div class="inner-media" >
-          <audio preload="none" controls="false" :src="item.title" style="width:100%;" />
+          <audio-player :url="item.title"/>
         </div>
         <!-- <div class="transformmask"></div> -->
       </div>
@@ -38,6 +38,7 @@
 <script>
 import { getTimeValue } from '@/utils/help';
 import base64image from "../../base64image.vue";
+import AudioPlayer from '@/components/common/audioPlayer.vue';
 export default {
   props: {
     item: {
@@ -49,7 +50,7 @@ export default {
       default: () => {}
     }
   },
-  components: { base64image},
+  components: { base64image, AudioPlayer},
   methods: {
     getAnswer(answer) {
       console.log(JSON.parse(answer));

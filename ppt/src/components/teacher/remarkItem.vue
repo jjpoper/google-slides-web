@@ -32,14 +32,7 @@
                       style="width: auto"
                       preload="none"
                     />
-                    <audio
-                      v-else-if="item.type === 'audio'"
-                      controlslist="nodownload"
-                      controls=""
-                      :src="item.link"
-                      style="width:100%;"
-                      preload="none"
-                    />
+                    <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
                     <p class="remark-text" v-else-if="item.type === 'text'">
                       {{item.link}}
                     </p>
@@ -98,6 +91,7 @@ import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   computed: {
     // 未答题学生
@@ -135,7 +129,7 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].thumbnail_url
     }
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer},
   props: {
     data: {
       type: Object,

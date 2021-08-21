@@ -64,14 +64,7 @@
             height="150"
             preload="none"
           />
-          <audio
-            v-else-if="item.type === 'audio'"
-            controlslist="nodownload"
-            controls=""
-            :src="item.link"
-            style="width:100%;"
-            preload="none"
-          />
+          <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
           <p class="remark-text" v-else-if="item.type === 'text'">
             {{item.link}}
           </p>
@@ -88,6 +81,7 @@ import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   props:{
     disable: {
@@ -96,7 +90,8 @@ export default {
     },
   },
   components:{
-    RecordVideo, RecordAudio, RecordText
+    RecordVideo, RecordAudio, RecordText,
+    AudioPlayer
   },
   computed: {
     ...mapState({
