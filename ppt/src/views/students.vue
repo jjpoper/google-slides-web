@@ -557,6 +557,7 @@ export default {
       this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
+        console.log(this.currentItemData)
         this.checkCurrentAnswerd();
         this.isShowRightAnswer();
         if (

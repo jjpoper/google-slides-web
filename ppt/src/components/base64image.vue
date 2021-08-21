@@ -1,5 +1,7 @@
 <template>
-  <div class="base64img" :style="`background-image:url(${url})`"></div>
+  <div class="base64img" :style="`background-image:url(${url})`">
+    <slot />
+  </div>
 </template>
 <style scoped>
 .base64img{

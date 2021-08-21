@@ -12,88 +12,76 @@
         </el-option>
       </el-select>
     </div>
-    <template v-if="currentTab !== 3">
-      <div class="text-scroll">
-        <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
-            <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
-              <div
-                v-if="shouldShow(item)"
-                :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
-              >
-                <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                  <div :class="`remark-item-content ${item.type === 'text' && 'content-text-scroll'}`">
-                    <video
-                      v-if="item.content.mediaType === 'video'"
-                      controlslist="nodownload"
-                      controls=""
-                      :src="item.content.link"
-                      style="width: auto"
-                      preload="none"
-                    />
-                    <audio
-                      v-else-if="item.content.mediaType === 'audio'"
-                      controlslist="nodownload"
-                      controls=""
-                      :src="item.content.link"
-                      style="width:100%;"
-                      preload="none"
-                    />
-                    <div
-                      class="remark-file"
-                      v-else-if="item.content.mediaType === 'file'"
-                    >
-                      <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
-                      <div class="file-name">
-                        <p class="file-name">{{item.content.fileName}}</p>
-                        <a :href="item.content.link" download class="download-text">Download</a>
-                      </div>
+    <div class="text-scroll">
+      <div class="text-answer-list">
+        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
+          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
+            <div
+              v-if="shouldShow(item)"
+              :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
+            >
+              <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
+                <div :class="`remark-item-content ${item.type === 'text' && 'content-text-scroll'}`">
+                  <video
+                    v-if="item.content.mediaType === 'video'"
+                    controlslist="nodownload"
+                    controls=""
+                    :src="item.content.link"
+                    style="width: auto"
+                    preload="none"
+                  />
+                  <audio
+                    v-else-if="item.content.mediaType === 'audio'"
+                    controlslist="nodownload"
+                    controls=""
+                    :src="item.content.link"
+                    style="width:100%;"
+                    preload="none"
+                  />
+                  <div
+                    class="remark-file"
+                    v-else-if="item.content.mediaType === 'file'"
+                  >
+                    <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
+                    <div class="file-name">
+                      <p class="file-name">{{item.content.fileName}}</p>
+                      <a :href="item.content.link" download class="download-text">Download</a>
                     </div>
                   </div>
-                  <span class="text_static" v-if="flag_1 && answerList.length > 1">
-                    {{ index + 1 + " of " + answerList.length }}
-                  </span>
                 </div>
-                <div class="text-footer" v-if="flag_1">
-                  <student-response-opt-bar
-                    :data="{
-                      pageId: data.page_id,
-                      itemId: item.item_id,
-                      studentId: item.user_id,
-                      title: item.content,
-                      isStar: item.star,
-                      isShowRes: item.show,
-                      name: item.user_name,
-                      answertime: item.updated_at
-                    }"
-                  />
-                </div>
+                <span class="text_static" v-if="flag_1 && answerList.length > 1">
+                  {{ index + 1 + " of " + answerList.length }}
+                </span>
+              </div>
+              <div class="text-footer" v-if="flag_1">
+                <student-response-opt-bar
+                  :data="{
+                    pageId: data.page_id,
+                    itemId: item.item_id,
+                    studentId: item.user_id,
+                    title: item.content,
+                    isStar: item.star,
+                    isShowRes: item.show,
+                    name: item.user_name,
+                    answertime: item.updated_at
+                  }"
+                />
               </div>
             </div>
           </div>
         </div>
-        <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
-          <div class="no-as-title">
-            <i></i> No Response
-          </div>
-          <div class="on-as-list">
-            <p class="on-as-list-item" v-for="item in noAnswerStudents" :key="item.user_id">
-              {{item.user_id}}
-            </p>
-          </div>
+      </div>
+      <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+        <div class="no-as-title">
+          <i></i> No Response
         </div>
-      </div>    
-    </template>
-    <template v-else-if="currentTab === 3">
-      <div class="teacherppt-outer" >
-        <div class="fullbgimg" :style="`position: relative;background-image:url(${currentPPTUrl})`">
-          <student-questions :disable="true"/>
-        </div>
-        <div class="teacherppt-remark">
-          <student-remark :disable="true"/>
+        <div class="on-as-list">
+          <p class="on-as-list-item" v-for="item in noAnswerStudents" :key="item.user_id">
+            {{item.user_id}}
+          </p>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -152,9 +140,6 @@ export default {
   },
   data() {
     return {
-      isTextChanging: false,
-      changeUser: "", //当前是哪个item发生了变化
-      changeItemId: "", //当前是哪个item发生了变化
       currentTab: 1,
       options: [],
       sortValue: 1
