@@ -7,14 +7,14 @@
     <draw v-else-if="type === 'draw'" v-bind="$attrs" />
     <studentAudioItem v-else-if="type=='audio'" v-bind="$attrs" />
     <studentVideoItem v-else-if="type=='video'" v-bind="$attrs" />
+    <studentRemark v-else-if="type=='comment'" v-bind="$attrs" />
   </div>
 </template>
 
 <style scoped>
 .index_page {
-  /* width: 100%;
+  width: 100%;
   height: 100%;
-  padding-top: 80px; */
 }
 </style>
 
@@ -26,6 +26,7 @@ import website from "./website";
 import draw from "./draw";
 import studentAudioItem from "./studentAudioItem";
 import studentVideoItem from "./studentVideoItem";
+import studentRemark from "./studentRemark";
 export default {
   props: {
     type: {
@@ -40,7 +41,8 @@ export default {
     website,
     draw,
     studentAudioItem,
-    studentVideoItem
+    studentVideoItem,
+    studentRemark
   }
 };
 </script>

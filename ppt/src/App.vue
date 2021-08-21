@@ -12,6 +12,9 @@ html {
   height: 100%;
   overflow: auto;
 }
+ul,li{
+  list-style: none;
+}
 
 html, button, input, select, textarea {
     font-family: ProximaNovaSoft-Medium, sans-serif;
@@ -78,19 +81,19 @@ export default {
     window.winHeight = document.documentElement.clientHeight;
 
     window.onblur = function(e){
-      console.log("未激活状态！ window状态")
+      // console.log("未激活状态！ window状态")
       window.isWindowActive = false
     }
     window.onfocus = function(e){
-      console.log("激活状态！window状态")
+      // console.log("激活状态！window状态")
       window.isWindowActive = true
     }
     document.body.onmouseleave = function(e){
-      console.log("未激活状态！ window状态")
+      // console.log("未激活状态！ window状态")
       window.isWindowActive = false
     }
     document.body.onpointerenter = function(e){
-      console.log("激活状态！window状态")
+      // console.log("激活状态！window状态")
       window.isWindowActive = true
     }
   },

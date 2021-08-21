@@ -2,7 +2,9 @@
   <div v-if="url" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
-    <div v-else class="ppt teacherppt" :style="`height: ${height}px; background-image:url(${url})`"></div>
+    <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
+      <student-questions v-if="isRemark"/>
+    </div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
         <template v-if="leftSortList && leftSortList.length">
           <element-drag v-for="rect in leftSortList" :key="rect.id"
@@ -37,8 +39,9 @@
 
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
-import VueDragResize from 'vue-drag-resize';
+import { mapState } from 'vuex'
 import ElementDrag from './drag/elementDrag.vue';
+import StudentQuestions from './students/studentQuestions.vue';
 export default {
   props: {
     url: {
@@ -68,13 +71,19 @@ export default {
       default: 40,
     },
   },
+  computed: {
+    ...mapState({
+      isRemark: state => state.remark.isRemark,
+    }),
+  },
   watch: {
     filterAddedMediaList () {
      this.filterList()
     }
   },
   components: {
-    ElementDrag
+    ElementDrag,
+    StudentQuestions
   },
   data() {
     return {
@@ -200,7 +209,9 @@ export default {
 .teacherppt{
   background-repeat: no-repeat;
   background-size: contain;
-  background-position: center
+  background-position: center;
+  position: relative;
+  margin: 0 auto;
 }
 .ppt{
   width: 100%;

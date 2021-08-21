@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable prefer-template */
 import PPT from '../utils/pptConfig'
@@ -5,8 +6,42 @@ import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d: any) => void
 
-export const createSo = (room: string, token: string,classId:string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
+interface BaseParams {
+  classId: string
+  token: string
+  uid: string
+  uname: string
+}
+
+let BaseStudentParams: BaseParams = {
+  classId: '',
+  token: '',
+  uid: '',
+  uname: ''
+}
+
+export const setStudentWxBaseParams = ({
+  classId,
+  token,
+  uid,
+  uname,
+}: BaseParams) => {
+  BaseStudentParams = {
+    classId,
+    token,
+    uid,
+    uname,
+  }
+}
+
+let windowStudentWs: any = null
+
+export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
+
+  BaseStudentParams.classId = classId
+  BaseStudentParams.token = token
+
   socket.on('connect', () => {
     onLineStatusChanged(true)
     // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
@@ -57,5 +92,66 @@ export const createSo = (room: string, token: string,classId:string, callback: c
     console.log("update-element media", JSON.parse(data));
     callback({ mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
   });
+  windowStudentWs = socket
   return socket
+}
+
+const BaseWsRequest = (action: string, message: string) => {
+  if (windowStudentWs) {
+    windowStudentWs.emit(action, message);
+  }
+}
+
+// 新增 remark 反馈数据
+export const askToAddNewRemarkItem = (data: any) => {
+  const {
+    left,
+    top,
+    link,
+    content_width,
+    content_height,
+    type,
+    background,
+    page_id,
+    width = 0,
+    height = 0,
+    pointType
+  } = data;
+  BaseWsRequest(
+    "comment-ppt",
+    `{"token": "${BaseStudentParams.token}", "class_id": "${BaseStudentParams.classId}",
+    "data":
+      {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
+      "background": "${background}", "content_width": ${content_width},
+      "content_height": ${content_height},
+      "width": ${width},
+      "height": ${height},
+      "pointType": "${pointType}",
+      "page_id": "${page_id}"}}`
+    );
+}
+
+export const deleteOneRemark = (id: string) => {
+  BaseWsRequest(
+    "delete-ppt-comment",
+    `{"token":"${BaseStudentParams.token}","class_id":"${BaseStudentParams.classId}","id":${id}}`
+  );
+}
+
+// 发送 media 答案
+export const sendAudioOrVideoAnswer = ({
+  link,
+  mediaType = 'audio',
+  page_id,
+}: any) => {
+  const {
+    classId,
+    token,
+    uid,
+    uname
+  } = BaseStudentParams
+  const params = JSON.stringify({link, mediaType})
+  BaseWsRequest(
+    "response", `{"room": "${classId}","type":"audio","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content":{"link":"${link}","mediaType":"${mediaType}"}}`
+  );
 }

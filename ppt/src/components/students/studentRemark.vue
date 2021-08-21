@@ -2,30 +2,24 @@
   <div class="remark-container">
     <div class="remark-control">
       <el-tooltip content="Audio Comment" placement="top">
-        <div class="remark-button-outer">
+        <div :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.AUDIO && 'active'}`">
           <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button"/>
         </div>
       </el-tooltip>
        <el-tooltip content="Video Comment" placement="top">
-         <div class="remark-button-outer">
+         <div :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.VIDEO && 'active'}`">
           <img @click="video" src="../../assets/picture/video.png" class="remark-button"/>
          </div>
       </el-tooltip>
        <el-tooltip content="Text Comment" placement="top">
-         <el-upload
-          class="remark-button-outer"
-          action="https://dev.api.newzealand.actself.me/file/upload"
-          :on-success="onUpload"
-          :show-file-list="false"
-          accept=".doc,.docx,.pdf,application/pdf"
-          list-type="picture">
-            <img @click="upload" src="../../assets/picture/add.png" class="remark-button"/>
-        </el-upload>
+         <div :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.TEXT && 'active'}`">
+          <img @click="text" src="../../assets/picture/new-comment.png" class="remark-button"/>
+         </div>
       </el-tooltip>
     </div>
     <ul class="remark-list">
       <!--输入区域item-->
-      <li v-if="recordType" class="remark-list-item record-item active-item">
+      <li v-if="currentRemarkOptions" class="remark-list-item record-item active-item">
         <div class="item-header">
           <div class="user-info">
             <div class="user-icon">
@@ -38,13 +32,16 @@
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
-          <record-video v-if="recordType === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
-          <record-audio v-else-if="recordType === ModalEventsTypeEnum.AUDIO" :onSend="sendCommentCb" />
+          <record-video v-if="currentInputType === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
+          <record-audio v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO" :onSend="sendCommentCb" />
+          <record-text v-else-if="currentInputType === ModalEventsTypeEnum.TEXT" :onSend="sendCommentCb" />
         </div>
       </li>
       <li
-        class="remark-list-item"
-        v-for="item in answerList" :key="item.id">
+        :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'}`"
+        v-for="(item, index) in marks" :key="index"
+        :ref="currentRemarkIndex === index ? 'activeRef': ''"
+        @click="changeRemarkIndex(index)">
         <div class="item-header">
           <div class="user-info">
             <div class="user-icon">
@@ -52,35 +49,32 @@
             </div>
             <div>
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
-              <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+              <p class="user-name user-time">{{getTimeStr(item.time)}}</p>
             </div>
           </div>
           <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
-        <div class="remark-item-content" >
+        <div class="remark-item-content">
           <video
-            v-if="item.content && item.content.mediaType === 'video'"
+            v-if="item.type === 'video'"
             controlslist="nodownload"
             controls=""
-            :src="item.content.link"
+            :src="item.link"
             width="280"
             height="150"
             preload="none"
           />
           <audio
-            v-else-if="item.content &&  item.content.mediaType === 'audio'"
+            v-else-if="item.type === 'audio'"
             controlslist="nodownload"
             controls=""
-            :src="item.content.link"
+            :src="item.link"
             style="width:100%;"
             preload="none"
           />
-          <div
-            class="remark-text"
-            v-else-if="item.content.mediaType === 'file'"
-          >
-            <a :href="item.content.link" download>{{item.content.link}}</a>
-          </div>
+          <p class="remark-text" v-else-if="item.type === 'text'">
+            {{item.link}}
+          </p>
         </div>
       </li>
     </ul>
@@ -88,96 +82,161 @@
 </template>
 <script>
 import { ModalEventsTypeEnum } from '@/socket/socketEvents'
-import {mapActions, mapState, mapGetters} from 'vuex'
-import { sendAudioOrVideoAnswer } from '@/socket/socket.student'
+import {mapActions, mapState} from 'vuex'
+import { deleteOneRemark, askToAddNewRemarkItem } from '@/socket/socket.student'
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
-import { getAnswerTimeStr } from '@/utils/help';
 export default {
   components:{
     RecordVideo, RecordAudio, RecordText
   },
   computed: {
     ...mapState({
+      // currentReamrkList: state => state.remark.currentReamrkList,
+      allRemarks: state => state.remark.allRemarks,
+      currentRemarkIndex: state => state.remark.currentRemarkIndex,
+      currentInputType: state => state.remark.currentInputType,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
+      currentRemarkOptions: state => state.remark.currentRemarkOptions,
       userInfo: state => state.student.studentUserInfo,
     }),
-    ...mapGetters({
-      currentPageAnswerList: 'student/currentPageAnswerList',
-      currentPageId: 'student/currentPageId',
-    }),
-    answerList() {
-      return this.currentPageAnswerList.reverse().map(item => {
-        return {
-          ...item,
-          ...JSON.parse(item.data)
-        }
-      })
+    marks() {
+      let list = []
+      if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
+        list = this.allRemarks.filter(
+          item => item.page_id === this.currentPageId
+        );
+      }
+      return list;
+    },
+    currentPageId() {
+      return this.studentAllSlides[this.currentPageIndex].page_id
+    }
+  },
+  watch: {
+    currentRemarkIndex() {
+      if(this.currentRemarkIndex > -1) {
+        this.$nextTick(() => {
+          if(this.$refs.activeRef) {
+            setTimeout(() => {
+            console.log('===focus')
+              this.$refs.activeRef[0].focus();
+            }, 1000)
+          }
+        });
+      }
     }
   },
   created() {
-    console.log(this.currentPageAnswerList)
+    this.setIsRemark(true)
+    this.changeRemarkIndex(-1)
+    this.setIsInputing(false)
+    this.text()
+  },
+  destroyed() {
+    this.setIsRemark(false)
   },
   data() {
     return {
-      ModalEventsTypeEnum,
-      recordType: null
+      ModalEventsTypeEnum
     }
   },
   methods: {
+    ...mapActions('remark', [
+      'changeRemarkInputType',
+      'changeRemarkIndex',
+      'deleteOneRemarkItem',
+      'setIsRemark',
+      'setIsInputing',
+      'setCurrentRemarkOptions',
+      'addOneRemarkItem'
+    ]),
     ...mapActions('student', [
       'updateAnswerdPage',
-      'updateAllAnswerdList'
     ]),
     audio() {
-      this.recordType = ModalEventsTypeEnum.AUDIO
+      this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO)
     },
     video() {
-      this.recordType = ModalEventsTypeEnum.VIDEO
+      this.changeRemarkInputType(ModalEventsTypeEnum.VIDEO)
     },
-    upload() {
-
+    text() {
+      this.changeRemarkInputType(ModalEventsTypeEnum.TEXT)
     },
     deleteItem(id) {
+      deleteOneRemark(id)
+      const index = this.allRemarks.findIndex(item => item.id == id)
+      this.deleteOneRemarkItem(index)
+      if(index === this.currentRemarkIndex) {
+        this.changeRemarkIndex(-1)
+      }
     },
     getTimeStr(time) {
-      return getAnswerTimeStr(time * 1000)
+      var now = new Date();
+      now.setTime(time * 1000);
+      var year = now.getFullYear();
+      var month = now.getMonth() + 1;
+      var date = now.getDate();
+      var hour = now.getHours();
+      var minute = now.getMinutes();
+      var second = now.getSeconds();
+      if (month < 10) {
+        month = "0" + month;
+      }
+      if (date < 10) {
+        date = "0" + date;
+      }
+      if (hour < 10) {
+        hour = "0" + hour;
+      }
+      if (minute < 10) {
+        minute = "0" + minute;
+      }
+      if (second < 10) {
+        second = "0" + second;
+      }
+      return (
+        year +
+        "-" +
+        month +
+        "-" +
+        date +
+        " " +
+        hour +
+        ":" +
+        minute +
+        ":" +
+        second
+      );
     },
     cancelRecord() {
-      this.recordType = null
+      this.setCurrentRemarkOptions(null)
     },
-    onUpload(response, file, fileList) {
-      console.log(response.data, file.name, fileList);
-      this.sendCommentCb(response.data, 'file')
-    },
-    sendCommentCb(link, mediaType = "") {
-      this.cancelRecord()
-      sendAudioOrVideoAnswer({
-        link,
-        mediaType,
-        page_id: this.currentPageId
-      })
-      // 已答
-      this.updateAnswerdPage(this.currentPageIndex)
-      // 追加问答内容
-      // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
-      this.updateAllAnswerdList({
-        data: JSON.stringify({
-          content: {
-            link,
-            mediaType
-          },
-        }),
-        id: Math.random(),
-        item_id: null,
+    sendCommentCb(link, type = "") {
+      // this.sendComment(url, type)
+      const { left, top, content_width, content_height, background, width, height, pointType} = this.currentRemarkOptions;
+      const params = {
+        left,
+        top,
+        link, // 可能为链接或者文字
+        content_width,
+        content_height,
+        type,
+        background,
         page_id: this.currentPageId,
-        student_user_id: this.userInfo.uid,
-        type: "audio",
-        updated_at: Date.now() / 1000
-      })
+        time: Math.floor(Date.now() / 1000),
+        width, height, pointType
+      }
+      askToAddNewRemarkItem(params)
+      // TODO 增加页面展示
+      this.changeRemarkIndex(this.allRemarks.length)
+      this.addOneRemarkItem(params)
+      showToast("send success");
+      this.cancelRecord()
+      this.updateAnswerdPage(this.currentPageIndex)
     },
   }
 }

@@ -13,17 +13,17 @@
       :answerList="answerList"
     />
 
-    <div v-else>
-      <student-questions
+    <div style="width: 100%; height: 100%" v-else>
+      <!-- <student-questions
         v-if="questionModalVisiable"
         :sendQuestion="sendQuestion"
         :list="filterMarkupList"
         :url="currentItemData && currentItemData.thumbnail_url"
         :pageId="slides[currentIndex].page_id"
         :delQuestion="delQuestion"
-      />
+      /> -->
 
-      <el-container v-show="!questionModalVisiable">
+      <div class="student-main" v-show="!questionModalVisiable">
         <div
           v-if="
             fullScreen &&
@@ -41,7 +41,8 @@
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <el-main
+        <div
+          class="student-left"
           v-if="
             currentItemData &&
             currentItemData.thumbnail_url &&
@@ -49,17 +50,19 @@
               currentItemData.items[0].type !== 'draw')
           "
         >
-          <div class="block" v-if="currentItemData && currentItemData.thumbnail_url">
+          <div class="st-ppt-outer">
             <pptcontent
+              class="ppt-out-line"
+              v-if="currentItemData && currentItemData.thumbnail_url"
               :url="currentItemData.thumbnail_url"
               :filterAddedMediaList="filterAddedMediaList"
               :meterialVisiable="meterialVisiable"
             />
           </div>
-        </el-main>
-        <el-aside
-          :width="`${getWidthPercent(currentItemData.items[0].type)}`"
-          style="position: relative"
+        </div>
+        <div
+          class="student-right"
+          :style="`width: ${getWidthPercent(currentItemData.items[0].type)}`"
           v-if="currentItemData && currentItemData.items[0]"
         >
           <StudentsIndexItem
@@ -74,7 +77,7 @@
             :sendAudioOrVideoAnswer="sendAudioOrVideoAnswer"
             :link="link"
           />
-        </el-aside>
+        </div>
         <div class="right-fix-area">
           <tips-list v-if="overviewModalVisiable" :filterTips="filterTips" />
           <student-comment
@@ -88,10 +91,8 @@
           <student-control-panel
             :lastPage="lastPage"
             :nextPage="nextPage"
-            :currentPage="parseInt(currentIndex) + 1"
             :totalPage="slides.length"
             :currentModel="currentModel"
-            :currentAnswerd="currentAnswerd"
             :unread="unread"
             :showStudentModal="showStudentModal"
             :isShowQuestion="isShowQuestion"
@@ -102,7 +103,7 @@
             :changeShowMetrial="changeShowMetrial"
           />
         </div>
-      </el-container>
+      </div>
     </div>
 
     <div class="top_btn">
@@ -181,7 +182,7 @@ import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
-import { createSo } from "../socket/socket.student";
+import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -207,7 +208,6 @@ import pageLockedNote from "@/components/students/pageLockedNote.vue";
 import StudentQuestions from "@/components/students/studentQuestions.vue";
 import colorSelector from "@/utils/color";
 import TipsList from "@/components/common/tipsList.vue";
-// import {checkGoogleAuth, gotoGoogleAuth, initGoogleAuth, getGoogleUserInfo} from '@/utils/googleAuth'
 
 import { mapActions } from "vuex";
 
@@ -234,7 +234,6 @@ export default {
       uid: "", // uid
       class_id: "",
       classRoomInfo: null,
-      marks: [],
       answerList: [],
       onLine: false, // 在线状态
       deadLineTimer: null,
@@ -259,15 +258,6 @@ export default {
     };
   },
   computed: {
-    filterMarkupList() {
-      if (this.slides) {
-        const list = this.marks.filter(
-          item => item.page_id === this.slides[this.currentIndex].page_id
-        );
-        return list;
-      }
-      return [];
-    },
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
         return this.slides[this.currentIndex].elements.filter(
@@ -329,8 +319,9 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       const { id } = vm.$route.params;
-      const { token } = to.query;
+      const { token, p } = to.query;
       vm.class_id = id;
+      vm.currentIndex = to.query.p ? to.query.p : 0;
       initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
@@ -344,7 +335,10 @@ export default {
   watch: {
     currentIndex() {
       console.log("set elements");
-      this.setElements(this.slides[this.currentIndex].elements);
+      if(this.slides && this.slides[this.currentIndex]) {
+        this.setElements(this.slides[this.currentIndex].elements);
+      }
+      this.setStudentPageIndex(this.currentIndex)
     },
     slides() {
       console.log("set elements");
@@ -352,7 +346,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions("student", ["setElements"]),
+    ...mapActions("student", [
+      "setElements",
+      "setStudentPageIndex",
+      "setStudentAllSlides",
+      "setStudentUserInfo",
+      "updateAnswerdPage",
+      "setAllAnswerdList"
+    ]),
+    ...mapActions("remark", [
+      "showRemarkModal",
+      "setAllRemarkList",
+      "updateLatestRemarkId"
+    ]),
     loadDiyPainter() {
       this.$nextTick(() => {
         const selector = document.getElementById("diycolor_comment");
@@ -367,6 +373,7 @@ export default {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
       if (type === "website") return "70%";
+      if (type === "comment" || type === "audio") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
           return "0%";
@@ -454,16 +461,26 @@ export default {
         }
       });
     },
+    getCurrentPageAnswer(page_id, type) {
+      if(type !== 'comment') {
+        return getStudentCurrentPageAnswerList(
+            page_id,
+            type
+          )
+      } else {
+        // comment remark 特殊，数据不在answer内
+        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+      }
+    },
     checkCurrentAnswerd() {
       if (this.currentItemData) {
         const { page_id, items } = this.currentItemData;
         if (items[0]) {
-          this.answerList = getStudentCurrentPageAnswerList(
-            page_id,
-            items[0].type
-          );
+          const type = items[0].type
+          this.answerList = this.getCurrentPageAnswer(page_id, type)
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
+            this.updateAnswerdPage(this.currentIndex)
             if (this.answerList[0].type == "audio") {
               this.link = this.answerList[0].content;
             }
@@ -483,7 +500,11 @@ export default {
         getAllPPTS(this.slide_id)
       ]).then(([allA, { pages: list }]) => {
         console.log(list, "========");
+        // vuex缓存答案
+        this.setAllAnswerdList(allA)
         this.slides = list;
+        // vuex 缓存全局slides
+        this.setStudentAllSlides(list)
         this.getItemData();
         hideLoading();
         this.loadDiyPainter();
@@ -500,6 +521,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}"}`
       );
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     sendDrawText(textContent) {
@@ -509,6 +531,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw_text", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":${textContent}}`
       );
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     // 发送text
@@ -525,6 +548,7 @@ export default {
         key: index,
         content: msg
       });
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     getItemData() {
@@ -556,21 +580,30 @@ export default {
       });
     },
     pageChange(page) {
-      console.log(page, "pageChange");
-      this.currentIndex = page - 1;
-      this.getItemData();
-      this.isShowRightAnswer();
-      this.isShowQuestion = true;
+      console.log(page, "pageChange", this.currentIndex);
+      const nextPage = page - 1;
+      if(this.currentIndex != nextPage) {
+        this.currentIndex = nextPage;
+        this.getItemData();
+        this.isShowRightAnswer();
+        this.isShowQuestion = true;
+      } else {
+        console.log('已是当前页码，不用切换', "pageChange");
+      }
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;
       this.uid = email;
+      this.setStudentUserInfo({
+        name: user_name,
+        uid: email
+      })
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
     },
     initRoomConfig(res) {
       this.slide_id = res.slide_id;
-      this.currentIndex = 0;
+      // this.currentIndex = 0;
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
@@ -591,11 +624,14 @@ export default {
         .then(res => {
           console.log(res);
           if (res.code == "ok") {
+            let marks = []
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].data.fromServie = true; //从服务器处获取
               res.data[i].data.id = res.data[i].id;
-              this.marks.push(res.data[i].data);
+              marks.push(res.data[i].data);
             }
+            // 初始化remark数据
+            this.setAllRemarkList(marks)
           }
         })
         .catch(res => {
@@ -666,6 +702,12 @@ export default {
         },
         this.onLineStatusChanged
       );
+      setStudentWxBaseParams({
+        classId: this.class_id,
+        uid: this.uid,
+        token: this.token,
+        uname: this.uname
+      })
     },
     msgListener(d) {
       console.log(d, d.mtype, "====收到消息命令");
@@ -707,9 +749,8 @@ export default {
       } else if (d.mtype === SocketEventsEnum.TEACHER_COMMENT) {
         this.onGetTeacherComment(d);
       } else if (d.mtype === SocketEventsEnum.GET_COMMENT_ID) {
-        // 获取评论id，用于删除
-        this.marks[this.marks.length - 1].id = d.id;
-        EventBus.$emit(ModalEventsNameEnum.GET_COMMENT_ID, d.id);
+        // 获取发出的评论id，用于删除时候调用
+        this.updateLatestRemarkId(d.id)
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         const index = this.slides.findIndex(item => d.page_id === item.page_id);
         this.slides[index].elements.push({ id: d.id, ...d.data });
@@ -788,6 +829,7 @@ export default {
           key: "item_1",
           answer: v
         });
+        this.updateAnswerdPage(this.currentIndex)
         this.currentAnswerd = true;
       } else if (typeParam && typeParam == "text") {
       }
@@ -797,56 +839,6 @@ export default {
       // this.$set(this.allAnswers, pid, v);
       // // this.$forceUpdate()
       // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
-    },
-    // 发送ppt反馈
-    sendQuestion(data) {
-      // {
-      //   "token": "", // 学生登录凭证
-      //   "class_id": "", // 课堂标识
-      //   "data": {
-      //     "position_x": 123,
-      //     "postion_y": 123,
-      //     "link": "",
-      //     "type": "",
-      //     "content_width": 123,
-      //     "content_height": 123
-      //     }
-      // }
-      const {
-        left,
-        top,
-        link,
-        content_width,
-        content_height,
-        type,
-        background,
-        page_id,
-        width = 0,
-        height = 0,
-        pointType
-      } = data;
-      this.emitSo(
-        "comment-ppt",
-        `{"token": "${this.token}", "class_id": "${this.class_id}",
-        "data":
-        {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
-        "background": "${background}", "content_width": ${content_width},
-        "content_height": ${content_height},
-        "width": ${width},
-        "height": ${height},
-        "pointType": "${pointType}",
-        "page_id": "${page_id}"}}`
-      );
-      this.marks.push(data);
-    },
-    delQuestion(id) {
-      this.emitSo(
-        "delete-ppt-comment",
-        `{"token":"${this.token}","class_id":"${this.class_id}","id":${id}}`
-      );
-      const index = this.marks.findIndex(item => item.id == id);
-      console.log(index, "index");
-      this.marks.splice(index, 1);
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();
@@ -949,6 +941,7 @@ export default {
         key: 0,
         content: link
       });
+      this.updateAnswerdPage(this.currentIndex)
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {
@@ -968,6 +961,35 @@ export default {
   opacity: 0;
   transition: opacity 150ms linear;
   z-index: 9999;
+}
+.student-main{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+}
+.student-right{
+  height: 100%;
+  position: relative;
+  background-color: rgba(211, 220, 230, 1);
+}
+.student-left{
+  background-color: #F4F4F4;
+  box-sizing: border-box;
+  padding: 0;
+  flex: 1
+}
+.st-ppt-outer{
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+.ppt-out-line{
+  border: 1px solid #707070;
+  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
+  box-sizing: border-box;
 }
 .icon {
   cursor: pointer;
@@ -1013,8 +1035,9 @@ export default {
 .page {
   width: 100%;
   height: 100%;
-  min-width: 600px;
-  background-color: #e9eef3;
+  padding-top: 50px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
 }
 .block {
   width: 100%;
