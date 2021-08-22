@@ -54,8 +54,8 @@ export default class Draw {
     endY: 0
   }
 
-  private canvasWidth = document.documentElement.clientWidth - 40;
-  private canvasHeight = document.documentElement.clientHeight - 40;
+  private canvasWidth = 0;
+  private canvasHeight = 0;
   private isEarse = false // 橡皮擦
   private beginTime: any;
 
@@ -92,7 +92,9 @@ export default class Draw {
 
   private textItems = [];
 
-  constructor(el: string, elText: string) {
+  constructor(el: string, elText: string, canvasW: number, canvasH: number) {
+    this.canvasWidth = canvasW
+    this.canvasHeight = canvasH
     // // console.log(el)
     this.el = el;
     this.canvas = document.getElementById(this.el);
