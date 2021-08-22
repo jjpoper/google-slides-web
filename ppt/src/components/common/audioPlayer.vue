@@ -84,31 +84,17 @@
       }
     },
     methods: {
-      changeSpeed() {
-        let index = this.speeds.indexOf(this.audio.speed) + 1
-        this.audio.speed = this.speeds[index % this.speeds.length]
-        this.$refs.audio.playbackRate = this.audio.speed
-      },
-      startMutedOrNot() {
-        this.$refs.audio.muted = !this.$refs.audio.muted
-        this.audio.muted = this.$refs.audio.muted
-      },
-      // 音量条toolTip
-      formatVolumeToolTip(index) {
-        return '音量条: ' + index
+      checkRefsInstance() {
+        return this.$refs.audio
       },
       // 进度条toolTip
       formatProcessToolTip(index = 0) {
         index = parseInt(this.audio.maxTime / 100 * index)
         return 'time: ' + realFormatSecond(index)
       },
-      // 音量改变
-      changeVolume(index = 0) {
-        this.$refs.audio.volume = index / 100
-        this.volume = index
-      },
-      // 播放跳转
+      // seek
       changeCurrentTime(index) {
+        if(!this.checkRefsInstance()) return
         this.$refs.audio.currentTime = parseInt(index / 100 * this.audio.maxTime)
       },
       startPlayOrPause() {
@@ -116,10 +102,12 @@
       },
       // 开始播放
       startPlay() {
+        if(!this.checkRefsInstance()) return
         this.$refs.audio.play()
       },
       // 暂停
       pausePlay() {
+        if(!this.checkRefsInstance()) return
         this.$refs.audio.pause()
       },
       // 当音频暂停
@@ -167,7 +155,7 @@
       async audioCanplay(e) {
         if(this.audio.maxTime === 0) {
           const firsthandAudio = e.target;
-          while (firsthandAudio.duration === Infinity && this.audio.maxTime === 0) {
+          while (firsthandAudio.duration === Infinity && this.audio.maxTime === 0 && this.checkRefsInstance()) {
             await new Promise(r => setTimeout(r, 200));
             firsthandAudio.currentTime = 10000000 * Math.random();
           }

@@ -24,7 +24,6 @@ import choice from "./choice";
 import website from "./website";
 import draw from "./draw";
 import studentAudioItem from "./studentAudioItem";
-import studentVideoItem from "./studentVideoItem";
 import studentRemark from "./studentRemark";
 export default {
   props: {
@@ -40,7 +39,6 @@ export default {
     website,
     draw,
     studentAudioItem,
-    studentVideoItem,
     studentRemark
   }
 };

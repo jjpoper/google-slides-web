@@ -194,11 +194,12 @@ export default {
 <style scoped>
 .remark-container {
   position: relative;
-  /* overflow: hidden; */
+  overflow: hidden;
   width: 100%;
   height: 100%;
-  padding-top: 100px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 .remark-control {
   width: 310px;
@@ -212,9 +213,8 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 0 20px 0 29px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  margin-top: 20px;
+  margin-left: 20px;
 }
 .control-left {
   display: flex;
@@ -257,7 +257,7 @@ export default {
 .remark-list {
   padding: 20px;
   width: 350px;
-  height: 100%;
+  flex: 1;
   overflow: scroll;
   box-sizing: border-box;
 }
