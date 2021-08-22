@@ -24,6 +24,10 @@ export const initTeacherData = async (classId: string, token: string) => {
 
 // 老师端新增数据
 export const addTeacherData = (pageId: string, type: string, oldData: any) => {
+  if(type === 'media') {
+    teacherData.push(oldData)
+    return teacherData
+  }
   const data = {
     ...oldData,
     // @ts-ignore
@@ -36,7 +40,7 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
   const { item_id: itemId, student_user_id: sid } = data
   console.log(data, "addItem")
   let oldDataIndex = -1
-  if (type === 'choice' || type === 'number' || type === 'draw' || type == 'audio' || type == 'video') {
+  if (type === 'choice' || type === 'number' || type === 'draw') {
     // 一条答案数据，去重
     oldDataIndex = teacherData.findIndex(item => item.page_id === pageId && item.student_user_id === sid)
   } else {
@@ -47,6 +51,7 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
   } else {
     teacherData.push(data)
   }
+  return teacherData
 }
 
 // 获取老师端数据量
