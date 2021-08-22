@@ -14,26 +14,7 @@
       </div>
     </div>
 
-    <div v-if="tipText&&tipText.length>0" class="tipArea">
-      <img
-        v-if="!showTips"
-        src="../../assets/icon/tip_close.png"
-        width="30"
-        height="30"
-        style="cursor:pointer"
-        @click="showTip()"
-      />
-      <img
-        v-if="showTips"
-        src="../../assets/icon/tip_open.png"
-        width="30"
-        height="30"
-        style="cursor:pointer"
-        @click="showTip()"
-      />
-      <span v-if="showTips" class="textArea">{{tipText}}</span>
-    </div>
-
+    <tipShow />
     <div v-if="showCorrect" class="answer_text">{{data.items[0].data.answer}}</div>
     <el-switch
       v-if="hasAnswer()"
@@ -58,17 +39,6 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-}
-.textArea {
-  display: flex;
-  width: 100%;
-  justify-content: start;
-  margin-top: 10px;
-}
-.tipArea {
-  display: flex;
-  flex-direction: column;
-  line-height: 20px;
 }
 .el-input__icon {
   position: relative;
@@ -113,8 +83,11 @@ el-button {
 <script>
 import { SocketEventsEnum } from "../../socket/socketEvents";
 import { getCurrentPageStudentAnswerList } from "@/model/data.student";
-import { mapState } from "vuex";
+import tipShow from "./tipShow.vue";
 export default {
+  components: {
+    tipShow
+  },
   props: {
     method: { type: Function },
     data: {
@@ -138,15 +111,8 @@ export default {
         SocketEventsEnum.TEXT_INPUT
       ),
       sendDelay: null,
-      showCorrect: false,
-      tipText: null,
-      showTips: false
+      showCorrect: false
     };
-  },
-  computed: {
-    ...mapState({
-      elements: state => state.student.elements
-    })
   },
   created() {
     if (!this.arrList || this.arrList.length == 0) {
@@ -171,9 +137,6 @@ export default {
     this.clearDelay();
   },
   methods: {
-    showTip() {
-      this.showTips = !this.showTips;
-    },
     addInput: function() {
       this.inputCount++;
       var item = { content: "", id: this.inputCount, textSended: false };
