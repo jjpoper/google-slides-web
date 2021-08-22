@@ -427,7 +427,8 @@ type: "slide"*/
     ...mapActions("remark", [
       "showRemarkModal",
       "setAllRemarkList",
-      "updateLatestRemarkId"
+      "updateLatestRemarkId",
+      "addOneRemarkItem"
     ]),
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
@@ -947,6 +948,11 @@ type: "slide"*/
       } else if (d.mtype === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
         // 评论ppt消息
         this.markupslist.push(d);
+        this.addOneRemarkItem({
+          ...d,
+          ...d.data
+        })
+        this.getResponeCount()
         return;
       } else if (d.mtype === SocketEventsEnum.STUDENT_DELETE_PPT) {
         // 删除评论ppt消息
@@ -1004,11 +1010,19 @@ type: "slide"*/
       const { room, page_id } = d;
       // 过滤非当前页面数据 是否需要过滤当前页面？？ page_id !== this.currentPageId
       if (room != this.class_id) return;
+
+      let newList = []
+      if(d.type === 'media') {
+        // media数据是递增的
+        const { type } = d;
+        newList = addTeacherData(page_id, type, d);
+        // this.updateAllAnswerdList(d)
+        // return
+      }
       // 回答choice
-      if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
-        this.updateAllAnswerdList(d)
+      if(d.type === 'choice') {
         const { answer, user_id, type } = d;
-        addTeacherData(page_id, type, {
+        newList = addTeacherData(page_id, type, {
           user_id,
           answer,
           star: false,
@@ -1018,12 +1032,12 @@ type: "slide"*/
         const data = this.currentItemData;
         EventBus.$emit("choice", { data });
       } else if (
-        d.mtype == SocketEventsEnum.TEXT_INPUT ||
-        d.mtype === SocketEventsEnum.NUMBER_INPUT
+        d.type == SocketEventsEnum.TEXT_INPUT ||
+        d.type === SocketEventsEnum.NUMBER_INPUT
       ) {
         //接收到text input或者number input的值
         const { content, user_id, user_name, item_id, type } = d;
-        addTeacherData(page_id, type, {
+        newList = addTeacherData(page_id, type, {
           user_id,
           content,
           user_name,
@@ -1033,9 +1047,9 @@ type: "slide"*/
           key: `${item_id}_${user_id}`
         });
         EventBus.$emit(d.mtype, { user_id, page_id, item_id });
-      } else if (d.mtype === SocketEventsEnum.DRAW_CANVAS) {
+      } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         const { content, content1, type, user_id, user_name } = d;
-        addTeacherData(page_id, type, {
+        newList = addTeacherData(page_id, type, {
           user_id,
           content,
           content1,
@@ -1046,11 +1060,11 @@ type: "slide"*/
         });
         EventBus.$emit("draw", { user_id, content, content1, user_name });
       } else if (
-        d.mtype == SocketEventsEnum.MEDIA_INPUT
+        d.type == SocketEventsEnum.MEDIA_INPUT
       ) {
         console.log(d);
         const { content, user_id, user_name, item_id, type } = d;
-        addTeacherData(page_id, type, {
+        newList = addTeacherData(page_id, type, {
           user_id,
           content,
           user_name,
@@ -1061,7 +1075,9 @@ type: "slide"*/
         });
         EventBus.$emit(d.mtype, { user_id, page_id, item_id });
       }
-
+      if(newList && newList.length > 0) {
+        this.setAllAnswerdList(newList)
+      }
       this.getResponeCount()
     },
 
@@ -1148,7 +1164,8 @@ type: "slide"*/
         return list
       } else {
         // comment remark 特殊，数据不在answer内
-        return this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+        let list = this.$store.state.remark.allRemarks.filter(item => item.page_id === page_id)
+        return list
       }
     },
     getResponeCount() {

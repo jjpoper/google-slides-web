@@ -95,9 +95,16 @@ export default {
     }),
     answerList() {
       let list = this.currentPageAnswerList.map(item => {
+        let stringData = {}
+        try {
+          stringData = JSON.parse(item.data)
+        } catch(e) {
+          console.log(e)
+        }
+        console.log(stringData)
         return {
           ...item,
-          ...JSON.parse(item.data)
+          ...stringData
         }
       })
       list = this.resortList(list)

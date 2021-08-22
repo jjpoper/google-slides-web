@@ -82,8 +82,31 @@ const mutations = {
         answerdPage[pageIndex] = true
         nextState.answerdPage = JSON.parse(JSON.stringify(answerdPage))
     },
-    updateAllAnswerdList(nextState: any, item: any) {
-        nextState.allAnswerList.push(item)
+    updateAllAnswerdList(nextState: any, data: any) {
+        const {
+            allAnswerList,
+            studentAllSlides,
+            currentPageIndex,
+        } = nextState
+        if(data.type === 'media') {
+            nextState.allAnswerList.push(data)
+        } else {
+            // const { item_id: itemId, student_user_id: sid, type } = data
+            // const pageId = studentAllSlides[currentPageIndex].page_id
+            // console.log(itemId, sid, type, pageId, "addItem")
+            // let oldDataIndex = -1
+            // if(type === 'text') {
+            //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)
+            // } else {
+            //     // 一条答案数据，去重
+            //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.student_user_id === sid)
+            // }
+            // if(oldDataIndex > -1) {
+            //     allAnswerList.splice(oldDataIndex, 1, data)
+            // } else {
+            //     allAnswerList.push(data)
+            // }
+        }
     },
     setAllAnswerdList(nextState: any, list: any) {
         nextState.allAnswerList = list

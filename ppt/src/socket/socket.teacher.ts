@@ -29,7 +29,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
   });
   // 老师端接收到学生发来的答案
   socket.on('response', (data: any) => {
-    console.log("收到学生发来的答案：" + data);
+    // console.log("收到学生发来的答案：" + data);
     callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
   });
 
