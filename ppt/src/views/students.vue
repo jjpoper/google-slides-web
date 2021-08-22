@@ -373,13 +373,16 @@ export default {
         this.setElements(this.slides[this.currentIndex].elements);
       }
       this.setStudentPageIndex(this.currentIndex);
-      if (this.slides[this.currentIndex].elements) {
+      if (
+        this.slides &&
+        this.slides[this.currentIndex] &&
+        this.slides[this.currentIndex].elements
+      ) {
         for (
           let i = 0;
           i < this.slides[this.currentIndex].elements.length;
           i++
         ) {
-          console.log(this.slides[this.currentIndex].elements[i]);
           if (this.slides[this.currentIndex].elements[i].type == "tip") {
             this.tipText =
               "tip: " + this.slides[this.currentIndex].elements[i].url;
@@ -388,15 +391,17 @@ export default {
       }
     },
     slides() {
-      console.log("set elements");
       this.setElements(this.slides[this.currentIndex].elements);
-      if (this.slides[this.currentIndex].elements) {
+      if (
+        this.slides &&
+        this.slides[this.currentIndex] &&
+        this.slides[this.currentIndex].elements
+      ) {
         for (
           let i = 0;
           i < this.slides[this.currentIndex].elements.length;
           i++
         ) {
-          console.log(this.slides[this.currentIndex].elements[i]);
           if (this.slides[this.currentIndex].elements[i].type == "tip") {
             this.tipText =
               "tip: " + this.slides[this.currentIndex].elements[i].url;
