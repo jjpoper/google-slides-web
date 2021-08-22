@@ -713,9 +713,10 @@ export default {
   created() {},
   mounted() {
     let outer = document.getElementById("canvasouter");
-    outer.style.width = document.documentElement.clientWidth - 40 + "px";
-    outer.style.height = document.documentElement.clientHeight - 40 + "px";
-    this.draw = new Draw("canvas", "textCanvas");
+    console.log(outer.clientWidth, outer.clientHeight)
+    // outer.style.width = document.documentElement.clientWidth - 40 + "px";
+    // outer.style.height = document.documentElement.clientHeight - 40 + "px";
+    this.draw = new Draw("canvas", "textCanvas", outer.clientWidth, outer.clientHeight);
     const initData = getStudentCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type
@@ -906,7 +907,8 @@ export default {
   cursor: default;
   width: 100%;
   position: relative;
-  margin: 20px;
+  /* margin: 20px; */
+  height: 100%;
 }
 #canvas {
   background-repeat: no-repeat;
