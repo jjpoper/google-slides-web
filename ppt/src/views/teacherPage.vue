@@ -1046,7 +1046,7 @@ type: "slide"*/
           show: true,
           key: `${item_id}_${user_id}`
         });
-        EventBus.$emit(d.mtype, { user_id, page_id, item_id });
+        EventBus.$emit(d.type, { user_id, page_id, item_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
         const { content, content1, type, user_id, user_name } = d;
         newList = addTeacherData(page_id, type, {
@@ -1063,17 +1063,17 @@ type: "slide"*/
         d.type == SocketEventsEnum.MEDIA_INPUT
       ) {
         console.log(d);
-        const { content, user_id, user_name, item_id, type } = d;
-        newList = addTeacherData(page_id, type, {
-          user_id,
-          content,
-          user_name,
-          item_id,
-          star: false,
-          show: true,
-          key: `${item_id}_${user_id}`
-        });
-        EventBus.$emit(d.mtype, { user_id, page_id, item_id });
+        // const { content, user_id, user_name, item_id, type } = d;
+        // newList = addTeacherData(page_id, type, {
+        //   user_id,
+        //   content,
+        //   user_name,
+        //   item_id,
+        //   star: false,
+        //   show: true,
+        //   key: `${item_id}_${user_id}`
+        // });
+        // EventBus.$emit(d.mtype, { user_id, page_id, item_id });
       }
       if(newList && newList.length > 0) {
         this.setAllAnswerdList(newList)
