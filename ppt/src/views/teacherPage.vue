@@ -403,7 +403,8 @@ type: "slide"*/
       vm.class_id = id;
       window.classId = id;
       vm.currentIndex = to.query.p ? to.query.p : 0;
-      // vm.isDashboard = type == "dashboard";
+      vm.isDashboard = vm.$route.name === 'd';
+      console.log(vm.isDashboard)
       // vm.directFromPlugin = to.query.direct ? true : false;
       initTeacherStoreSlideId(id);
       if (token) {
@@ -688,7 +689,6 @@ type: "slide"*/
       // type: "slide"
       this.slide_id = res.slide_id;
       // this.currentIndex = 0;
-      this.isDashboard = false;
       this.directFromPlugin = false;
     },
     startConnectRoom() {
