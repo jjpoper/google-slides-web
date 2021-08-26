@@ -20,7 +20,7 @@
           accept=".doc, .docx, .pdf, application/pdf"
           list-type="picture"
         >
-          <img @click="upload" src="../../assets/picture/add.png" class="remark-button" />
+          <img src="../../assets/picture/add.png" class="remark-button" />
         </el-upload>
       </el-tooltip>
     </div>

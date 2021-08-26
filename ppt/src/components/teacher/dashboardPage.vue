@@ -203,7 +203,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: #F4F4F4;
+  background-color: red;
   flex-direction: column;
 }
 .dashboardpage {

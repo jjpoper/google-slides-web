@@ -77,7 +77,7 @@
     />-->
 
     <comment-modal />
-    <div class="top_btn">
+    <div class="top_btn" v-if="!isDashboard">
       <div class="online_status">
         <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
@@ -107,6 +107,9 @@
         </el-tooltip>
       </div>
     </div>
+
+    <!--dashboard header-->
+    <dashboard-header v-if="isDashboard" />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
@@ -245,6 +248,7 @@ import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
+import DashboardHeader from "@/components/teacher/DashboardHeader.vue";
 import { mapActions } from "vuex";
 export default {
   components: {
@@ -259,7 +263,8 @@ export default {
     feedbackTimePanel,
     copyLinkDialog,
     StudentPacedNote,
-    StudentsQsModal
+    StudentsQsModal,
+    DashboardHeader
   },
 
   /*author: "yujj085@gmail.com"

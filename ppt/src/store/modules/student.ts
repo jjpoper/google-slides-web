@@ -112,7 +112,7 @@ const mutations = {
         nextState.allAnswerList = list
     },
     deleteOnAnswerById(nextState: any, id: any) {
-        const index = nextState.allAnswerList.findIndex((item: any) => item.id === id)
+        const index = nextState.allAnswerList.findIndex((item: any) => (item.id === id || item.response_id === id))
         if(index > -1) {
             nextState.allAnswerList.splice(index, 1)
         }

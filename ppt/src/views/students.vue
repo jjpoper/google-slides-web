@@ -579,6 +579,7 @@ export default {
         this.getItemData();
         hideLoading();
         this.loadDiyPainter();
+        this.joinRoom();
       });
     },
     sendCanvas(base64Url, texturl) {
@@ -690,7 +691,6 @@ export default {
         });
     },
     afterConnectRoom() {
-      this.joinRoom();
       this.getAllSlides();
       getAVComment(this.class_id, this.token)
         .then(res => {
@@ -762,7 +762,7 @@ export default {
             "rename",
             `{"room": "${this.class_id}", "user_id": "${this.uid}", "token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${this.uname}"}`
           );
-
+          console.log(this.slides[this.currentIndex].page_id)
           this.emitSo(
             "go-to-page",
             `{"room": "${this.class_id}", "token": "${
