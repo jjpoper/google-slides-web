@@ -60,37 +60,42 @@
       </div>
 
       <div class="dash-second">
-        <div class="dash-second">
-          <template
-            :class="
-              showResponse &&
-              currentItemData &&
-              currentItemData.items &&
-              currentItemData.items[0] &&
-              currentItemData.items[0].type != 'website' &&
-              page_model != 'Student-Paced'
-                ? 'content_parent content_parent--border'
-                : 'content_parent'
-            "
-          >
-            <teacherIndexItem
-              v-if="currentItemData && currentItemData.items[0]"
-              :data="currentItemData"
-              :type="currentItemData.items[0].type"
-              :flag_1="true"
-              :currentAnswerCount="currentAnswerCount"
-              :textList="responseContentList"
+        <div class="dash-second dash-second-left">
+          <template v-if="showResponse">
+            <template
+              :class="
+                showResponse &&
+                currentItemData &&
+                currentItemData.items &&
+                currentItemData.items[0] &&
+                currentItemData.items[0].type != 'website' &&
+                page_model != 'Student-Paced'
+                  ? 'content_parent content_parent--border'
+                  : 'content_parent'
+              "
+            >
+              <teacherIndexItem
+                v-if="currentItemData && currentItemData.items[0]"
+                :data="currentItemData"
+                :type="currentItemData.items[0].type"
+                :flag_1="true"
+                :currentAnswerCount="currentAnswerCount"
+                :textList="responseContentList"
+                :pptUrl="currentItemData.thumbnail_url"
+              />
+            </template>
+            <dashboard-meterial
               :pptUrl="currentItemData.thumbnail_url"
+              :filterAddedMediaList="filterAddedMediaList"
+              :meterialVisiable="meterialVisiable"
             />
           </template>
-          <dashboard-meterial
-            :pptUrl="currentItemData.thumbnail_url"
-            :filterAddedMediaList="filterAddedMediaList"
-            :meterialVisiable="meterialVisiable"
-          />
+          <template v-else>
+            <pptcontent :url="slides[currentIndex].thumbnail_url"/>
+          </template>
         </div>
         <div class="dash-second-right">
-
+          <dash-res-and-students />
         </div>
         <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
@@ -106,9 +111,10 @@
 import TipsList from '../common/tipsList.vue';
 import pptcontent from "../pptcontent.vue";
 import DashboardMeterial from './dashboardMeterial.vue';
+import DashResAndStudents from './dashResAndStudents.vue';
 import teacherIndexItem from "./Index.vue";
 export default {
-  components: { pptcontent, teacherIndexItem, DashboardMeterial, TipsList },
+  components: { pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents },
   props: {
     currentItemData: {
       type: Object,
@@ -365,10 +371,14 @@ svg {
   overflow: hidden;
   display: flex;
 }
+.dash-second-left{
+  background-color: #fff;
+}
 .dash-second-right{
   width: 395px;
   height: 100%;
   background-color: #fff;
   margin-left: 10px;
+  box-sizing: border-box;
 }
 </style>
