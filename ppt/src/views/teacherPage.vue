@@ -109,7 +109,10 @@
     </div>
 
     <!--dashboard header-->
-    <dashboard-header v-if="isDashboard" />
+    <DashHeader
+      v-if="isDashboard"
+      :share="copyUrl"
+    />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
@@ -248,7 +251,7 @@ import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
-import DashboardHeader from "@/components/teacher/DashboardHeader.vue";
+import DashHeader from "@/components/teacher/dashHeader.vue";
 import { mapActions } from "vuex";
 export default {
   components: {
@@ -264,7 +267,7 @@ export default {
     copyLinkDialog,
     StudentPacedNote,
     StudentsQsModal,
-    DashboardHeader
+    DashHeader
   },
 
   /*author: "yujj085@gmail.com"

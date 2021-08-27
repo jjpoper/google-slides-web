@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
-      <div class="left" :style="`height:${height - 110}px`" v-if="slides">
+      <div class="left" v-if="slides">
         <div v-for="(item, index) in slides" :key="index" class="with-outer">
           <div v-bind:class="
               isFocus[index]
@@ -59,39 +59,44 @@
         </div>
       </div>
 
-      <div class="dash-right" :style="`height:${height - 110}px`">
-        <template
-          :class="
-            showResponse &&
-            currentItemData &&
-            currentItemData.items &&
-            currentItemData.items[0] &&
-            currentItemData.items[0].type != 'website' &&
-            page_model != 'Student-Paced'
-              ? 'content_parent content_parent--border'
-              : 'content_parent'
-          "
-        >
-          <teacherIndexItem
-            v-if="currentItemData && currentItemData.items[0]"
-            :data="currentItemData"
-            :type="currentItemData.items[0].type"
-            :flag_1="true"
-            :currentAnswerCount="currentAnswerCount"
-            :textList="responseContentList"
+      <div class="dash-second">
+        <div class="dash-second">
+          <template
+            :class="
+              showResponse &&
+              currentItemData &&
+              currentItemData.items &&
+              currentItemData.items[0] &&
+              currentItemData.items[0].type != 'website' &&
+              page_model != 'Student-Paced'
+                ? 'content_parent content_parent--border'
+                : 'content_parent'
+            "
+          >
+            <teacherIndexItem
+              v-if="currentItemData && currentItemData.items[0]"
+              :data="currentItemData"
+              :type="currentItemData.items[0].type"
+              :flag_1="true"
+              :currentAnswerCount="currentAnswerCount"
+              :textList="responseContentList"
+              :pptUrl="currentItemData.thumbnail_url"
+            />
+          </template>
+          <dashboard-meterial
             :pptUrl="currentItemData.thumbnail_url"
+            :filterAddedMediaList="filterAddedMediaList"
+            :meterialVisiable="meterialVisiable"
           />
-        </template>
-        <dashboard-meterial
-          :pptUrl="currentItemData.thumbnail_url"
-          :filterAddedMediaList="filterAddedMediaList"
-          :meterialVisiable="meterialVisiable"
-        />
+        </div>
+        <div class="dash-second-right">
+
+        </div>
         <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
-      <div class="left-footer">
+      <!-- <div class="left-footer">
         <div class="sort-footer">幻灯片:{{parseInt(currentIndex) + 1}}/{{slides.length}}</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -203,16 +208,18 @@ export default {
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: red;
+  background-color: rgba(247, 248, 255, 1);
   flex-direction: column;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 .dashboardpage {
-  width: 100%;
   display: flex;
   flex: 1;
   overflow: hidden;
-  background-color: #F4F4F4;
+  background-color: rgba(247, 248, 255, 1);
   position: relative;
+  flex-direction: column;
 }
 .student_flag {
   background-color: rgba(74, 172, 213, 0.9);
@@ -241,13 +248,14 @@ svg {
 }
 
 .left {
-  height: 100%;
-  width: 283px;
-  overflow: scroll;
-  padding: 30px 16.5px;
+  height: 180px;
+  width: 100%;
+  overflow-x: scroll;
+  /* padding: 30px 16.5px; */
   box-sizing: border-box;
-  padding-bottom: 10px;
   position: relative;
+  display: flex;
+  margin: 10px 0;
 }
 .left-footer{
   position: absolute;
@@ -352,8 +360,15 @@ svg {
 .control_panel {
   width: 100%;
 }
-.dash-right{
+.dash-second{
   flex: 1;
   overflow: hidden;
+  display: flex;
+}
+.dash-second-right{
+  width: 395px;
+  height: 100%;
+  background-color: #fff;
+  margin-left: 10px;
 }
 </style>

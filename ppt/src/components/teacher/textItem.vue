@@ -258,7 +258,7 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #F4F4F4;
+  background-color: #fff;
 }
 .text-answer-tab{
   width: 100%;
