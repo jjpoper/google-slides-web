@@ -10,7 +10,13 @@
         </div>
       </div>
     </div>
-    <ul class="res-list">
+    <ul class="res-list" v-if="tab === 1">
+      <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
+        <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
+        <div class="user-name">{{item.name}}</div>
+      </li>
+    </ul>
+    <ul class="res-list" v-if="tab === 2">
       <li class="res-list-item" v-for="item in answerList" :key="item.id">
         <div class="res-list-item-content">
           <div class="user-info">
@@ -148,6 +154,12 @@ export default {
     font-family: Inter-Bold;
     color: #fff;
   }
+  .student-icon{
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    line-height: 44px;
+  }
   .user-name {
     font-size: 16px;
     font-family: Inter-Bold;
@@ -164,5 +176,12 @@ export default {
     flex: 1;
     background-color: rgba(228, 228, 228, 1);
     border-radius: 6px;
+  }
+  .student-list-item{
+    width: 100%;
+    height: 77px;
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
   }
 </style>
