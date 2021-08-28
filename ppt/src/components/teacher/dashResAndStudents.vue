@@ -183,5 +183,6 @@ export default {
     display: flex;
     align-items: center;
     padding-left: 50px;
+    box-sizing: border-box;
   }
 </style>
