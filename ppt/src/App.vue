@@ -72,6 +72,9 @@ html, button, input, select, textarea {
   background-position: center;
   position: absolute;
 }
+::-webkit-scrollbar {
+    display: none;
+}
 </style>
 <script>
 import "./utils/pptConfig";

@@ -273,6 +273,7 @@ svg {
   height: 100%;
   display: flex;
   overflow-x: scroll;
+  overflow-y: hidden;
 }
 .dash-left{
   position: absolute;
@@ -367,7 +368,7 @@ svg {
   /* display: flex;
   flex-direction: column; */
   overflow: hidden;
-  width: 153px;
+  /* width: 153px; */
   height: 102px;
   background-repeat: no-repeat;
   background-size: contain;
