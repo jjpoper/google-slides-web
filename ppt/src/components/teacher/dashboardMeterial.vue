@@ -2,7 +2,6 @@
   <div class="meterial" v-if="meterialVisiable">
     <pptcontent
       :url="pptUrl"
-      :teacher="true"
       :filterAddedMediaList="filterAddedMediaList"
       :defaultShowMeterial="true"
     />

@@ -1157,8 +1157,10 @@ type: "slide"*/
     getItemData() {
       // this.options = [];
       this.currentItemData = null;
+      console.log('getItemData', 'null')
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex] || this.slides[0];
+        console.log('getItemData', this.currentItemData)
         this.currentItemData.flag = this.isDashboard;
         this.getResponeCount();
       });
@@ -1501,6 +1503,7 @@ type: "slide"*/
       this.stepTwoDialog = false;
     },
     giveFocus(index, notSend) {
+      console.log(index, notSend, 'giveFocus')
       this.currentIndex = index;
       this.currentItemData = this.slides[index];
       this.currentItemData.flag = this.isDashboard;

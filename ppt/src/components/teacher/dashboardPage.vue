@@ -88,15 +88,15 @@
                 :pptUrl="currentItemData.thumbnail_url"
               />
             </template>
-            <dashboard-meterial
-              :pptUrl="currentItemData.thumbnail_url"
-              :filterAddedMediaList="filterAddedMediaList"
-              :meterialVisiable="meterialVisiable"
-            />
           </template>
           <template v-else>
             <pptcontent :url="slides[currentIndex].thumbnail_url"/>
           </template>
+          <dashboard-meterial
+            :pptUrl="currentItemData.thumbnail_url"
+            :filterAddedMediaList="filterAddedMediaList"
+            :meterialVisiable="meterialVisiable"
+          />
         </div>
         <div class="dash-second-right">
           <dash-res-and-students />
@@ -400,6 +400,7 @@ svg {
 }
 .dash-second-left{
   background-color: #fff;
+  position: relative;
 }
 .dash-second-right{
   width: 395px;
