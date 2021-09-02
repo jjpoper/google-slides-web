@@ -34,6 +34,9 @@
   height: 100%;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .item {
   width: 90%;
@@ -51,7 +54,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #409eff;
+  background: rgba(21, 195, 154, 1);
   position: absolute;
   -webkit-animation: load 1.04s ease infinite;
 }

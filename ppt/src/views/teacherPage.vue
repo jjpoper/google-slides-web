@@ -25,7 +25,6 @@
           :responseContentList="responseContentList"
           :responsePercentage="responsePercentage"
           :slides="slides"
-          :giveFocus="giveFocus"
           :getPageStudent="getPageStudent"
           :getStudentName="getStudentName"
           :page_model="page_model"
@@ -39,7 +38,6 @@
         />
       </div>
 
-      <!-- :changePage="giveFocus" -->
       <div class="control">
         <teacher-control-panel
           v-if="classRoomInfo && currentItemData"

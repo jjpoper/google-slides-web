@@ -35,7 +35,7 @@
   </div>
 </template>
 <script>
-import { getAnswerTimeStr } from '@/utils/help'
+import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters } from 'vuex'
 import dashRightRemarkItem from './answer/dash-right-remark-item.vue'
 export default {
@@ -49,17 +49,24 @@ export default {
       currentPageId: 'student/currentPageId',
     }),
     answerList() {
-      let list = this.currentPageAnswerList.map(item => {
-        const data = item.content ? {} : JSON.parse(item.data)
+      let list = this.responseList.map(item => {
+        const data = item.content ? {} : getJSONValue(item.data)
         return {
           ...item,
           id: item.id || item.response_id,
           ...data
         }
       })
-      console.log(list)
+      console.log(list, 'righten')
       return list;
     },
+  },
+  props: {
+    // 暂时使用，带重构
+    responseList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return{

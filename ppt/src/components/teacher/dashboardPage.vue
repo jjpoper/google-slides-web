@@ -100,7 +100,7 @@
           />
         </div>
         <div class="dash-second-right">
-          <dash-res-and-students />
+          <dash-res-and-students :responseList="responseContentList"/>
         </div>
         <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
@@ -371,7 +371,9 @@ svg {
 
 .image_parent_focus {
   border: 1px solid #21A28B;
+  outline: none !important;
 }
+
 
 .divider {
   height: auto;

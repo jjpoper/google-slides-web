@@ -1,5 +1,5 @@
 <template>
-  <div class="page" v-bind="$attrs">
+  <div class="fullPage" v-bind="$attrs">
     <div
       id="integrationTest_lockScreenMessage"
       class="v2screen-lock__message"
@@ -33,7 +33,7 @@
 </template>
 
 <style  scoped>
-.page {
+.fullPage {
   display: flex;
   width: 100%;
   height: 100%;
@@ -41,6 +41,9 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 999999;
+  position: fixed;
+  top: 0;
 }
 .choiceAnswer {
   width: 300px;

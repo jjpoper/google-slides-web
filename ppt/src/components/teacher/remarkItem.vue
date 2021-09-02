@@ -59,7 +59,7 @@
             </div>
           </div>
         </div>
-        <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+        <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
           <div class="no-as-title">
             <i></i> No Response
           </div>
@@ -68,7 +68,7 @@
               {{item.user_id}}
             </p>
           </div>
-        </div>
+        </div> -->
       </div>    
     </template>
     <template v-else-if="currentTab === 3">
@@ -95,17 +95,17 @@ import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   computed: {
     // 未答题学生
-    noAnswerStudents() {
-      let noList = []
-      for(let i = 0; i < this.studentList.length; i++) {
-        const currentUser = this.studentList[i]
-        const index = this.marks.findIndex(item => item.user_id === currentUser.user_id)
-        if(index === -1) {
-          noList.push(currentUser)
-        }
-      }
-      return noList
-    },
+    // noAnswerStudents() {
+    //   let noList = []
+    //   for(let i = 0; i < this.studentList.length; i++) {
+    //     const currentUser = this.studentList[i]
+    //     const index = this.marks.findIndex(item => item.user_id === currentUser.user_id)
+    //     if(index === -1) {
+    //       noList.push(currentUser)
+    //     }
+    //   }
+    //   return noList
+    // },
     ...mapState({
       allRemarks: state => state.remark.allRemarks,
       currentPageIndex: state => state.student.currentPageIndex,
