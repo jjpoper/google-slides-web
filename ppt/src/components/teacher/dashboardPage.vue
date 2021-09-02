@@ -1,17 +1,19 @@
 <template>
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
-      <div class="left" v-if="slides">
-        <div class="dash-left"></div>
+      <div class="left" v-if="slides" v-show="showPPTList">
+        <div class="dash-left" @click="prev"></div>
         <div class="inner-swiper">
           <div v-for="(item, index) in slides" :key="index" class="with-outer">
             <div v-bind:class="
-                isFocus[index]
+                currentPageIndex == index
                   ? 'ppt_content image_parent_focus'
-                  : 'ppt_content '">
+                  : 'ppt_content '"
+                :ref="currentPageIndex === index ? 'activeRef': ''"
+                :tabindex="currentPageIndex === index ? '0' : ''">
               <div
                 class="image_parent"
-                @click="giveFocus(index)"
+                @click="changeToPage(index)"
                 :style="`background-image:url(${item.thumbnail_url})`"
               >
                 <!-- <img :src="item.thumbnail_url" /> -->
@@ -60,11 +62,10 @@
             <i class="index-tag">{{index+1}}/{{slides.length}}</i>
           </div>
         </div>
-        <div class="dash-left dash-right"></div>
+        <div class="dash-left dash-right" @click="next"></div>
       </div>
-
       <div class="dash-second">
-        <div class="dash-second dash-second-left">
+        <div class="dash-second-left">
           <template v-if="showResponse">
             <template
               :class="
@@ -90,7 +91,7 @@
             </template>
           </template>
           <template v-else>
-            <pptcontent :url="slides[currentIndex].thumbnail_url"/>
+            <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
           </template>
           <dashboard-meterial
             :pptUrl="currentItemData.thumbnail_url"
@@ -103,9 +104,8 @@
         </div>
         <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
-      <!-- <div class="left-footer">
-        <div class="sort-footer">幻灯片:{{parseInt(currentIndex) + 1}}/{{slides.length}}</div>
-      </div> -->
+
+      <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
     </div>
   </div>
 </template>
@@ -117,6 +117,7 @@ import pptcontent from "../pptcontent.vue";
 import DashboardMeterial from './dashboardMeterial.vue';
 import DashResAndStudents from './dashResAndStudents.vue';
 import teacherIndexItem from "./Index.vue";
+import {mapState} from 'vuex'
 export default {
   components: { pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents },
   props: {
@@ -126,9 +127,8 @@ export default {
         return {};
       },
     },
-    currentIndex: {
-      type: Number | String,
-      default: 0
+    changePage: {
+      type: Function
     },
     page_model: {
       type: String,
@@ -154,16 +154,7 @@ export default {
         return [];
       },
     },
-    giveFocus: {
-      type: Function,
-    },
     responsePercentage: {
-      type: Array,
-      function() {
-        return [];
-      },
-    },
-    isFocus: {
       type: Array,
       function() {
         return [];
@@ -198,8 +189,23 @@ export default {
   },
   data() {
     return {
-      height: window.winHeight
+      height: window.winHeight,
+      showPPTList: true
     };
+  },
+  computed: {
+    ...mapState({
+      currentPageIndex: state => state.student.currentPageIndex,
+    }),
+  },
+  watch: {
+    currentPageIndex() {
+      this.$nextTick(() => {
+        if(this.$refs.activeRef) {
+          this.$refs.activeRef[0].focus();
+        }
+      });
+    }
   },
   created() {},
   mounted() {
@@ -209,6 +215,18 @@ export default {
     showCurrentStudent() {
       console.log("studeng!!!");
     },
+    togglePPTList() {
+      this.showPPTList = !this.showPPTList
+    },
+    next() {
+      this.changePage(this.currentPageIndex + 2)
+    },
+    prev() {
+      this.changePage(this.currentPageIndex)
+    },
+    changeToPage(index) {
+      this.changePage(index + 1)
+    }
   },
 };
 </script>
@@ -230,6 +248,7 @@ export default {
   background-color: rgba(247, 248, 255, 1);
   position: relative;
   flex-direction: column;
+  padding-bottom: 5px;
 }
 .student_flag {
   background-color: rgba(74, 172, 213, 0.9);
@@ -264,7 +283,7 @@ svg {
   box-sizing: border-box;
   position: relative;
   display: flex;
-  margin: 10px 0;
+  margin-top: 10px;
   background-color: #fff;
   padding: 0 80px;
 }
@@ -397,10 +416,17 @@ svg {
   flex: 1;
   overflow: hidden;
   display: flex;
+  margin-top: 10px;
 }
 .dash-second-left{
   background-color: #fff;
   position: relative;
+  border: 1px solid #707070;
+  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
+  border-radius: 10px;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
 }
 .dash-second-right{
   width: 395px;
@@ -408,5 +434,22 @@ svg {
   background-color: #fff;
   margin-left: 10px;
   box-sizing: border-box;
+}
+.shouqi{
+  width: 100px;
+  height: 30px;
+  position: absolute;
+  top: 190px;
+  left: calc(50% - 212.5px);
+  transform: translateX(-50px);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url(../../assets/picture/shouqi.png);
+  cursor: pointer;
+}
+.shouqi.zhankai{
+  top: 0;
+  background-image: url(../../assets/picture/zhankai.png);
 }
 </style>

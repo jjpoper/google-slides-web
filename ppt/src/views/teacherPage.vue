@@ -24,7 +24,6 @@
           :currentAnswerCount="currentAnswerCount"
           :responseContentList="responseContentList"
           :responsePercentage="responsePercentage"
-          :isFocus="isFocus"
           :slides="slides"
           :giveFocus="giveFocus"
           :getPageStudent="getPageStudent"
@@ -35,6 +34,7 @@
           :filterTips="filterTips"
           :overviewModalVisiable="overviewModalVisiable"
           :currentIndex="currentIndex"
+          :changePage="pageChange"
           v-else-if="currentItemData && slides"
         />
       </div>

@@ -56,6 +56,7 @@
         v-for="(item, index) in marks"
         :key="index"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
+        :tabindex="currentRemarkIndex === index ? '0' : ''"
         @click="changeRemarkIndex(index)"
       >
         <div class="item-header">
@@ -143,10 +144,7 @@ export default {
       if (this.currentRemarkIndex > -1) {
         this.$nextTick(() => {
           if (this.$refs.activeRef) {
-            setTimeout(() => {
-              console.log("===focus");
-              this.$refs.activeRef[0].focus();
-            }, 1000);
+            this.$refs.activeRef[0].focus();
           }
         });
       }
