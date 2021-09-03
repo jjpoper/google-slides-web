@@ -3,7 +3,17 @@
     <div class="left-area">
       <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       <p>课程标题：{{className}}</p>
-      <div class="more-icon"><i></i><i></i><i></i></div>
+      <el-dropdown>
+        <div class="more-icon"><i></i><i></i><i></i></div>
+        <el-dropdown-menu slot="dropdown">
+          <div class="dash-drop">
+            <div class="title">Settings</div>
+            <div class="tab">打开Projec端</div>
+            <div class="tab">Ipad/手机端控制</div>
+            <div class="tab">结束课程</div>
+          </div>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
     <div class="invite-button" @click="share">
       <img src="../../assets/picture/invite.png" class="invite"/>
@@ -88,7 +98,7 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: 50px;
+  height: 10px;
   cursor: pointer;
 }
 .more-icon >i{
@@ -97,5 +107,35 @@ export default {
   width: 10px;
   height: 10px;
   border-radius: 5px;
+}
+.dash-drop{
+  width: 236px;
+  padding-bottom: 50px;
+}
+.title{
+  width: 100%;
+  height: 21px;
+  font-size: 16px;
+  font-family: Segoe UI;
+  font-weight: 400;
+  line-height: 21px;
+  color: #182552;
+  text-align: center;
+}
+.tab{
+  width: 236px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #11142D;
+}
+.tab:hover{
+  background-color: rgba(228, 228, 228, 1);
 }
 </style>
