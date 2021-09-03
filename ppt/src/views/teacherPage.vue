@@ -19,8 +19,10 @@
         />
 
         <DashboardPage
+          v-else-if="currentItemData && slides"
           :currentItemData="currentItemData"
           :showResponse="showResponse"
+          :showres="showres"
           :currentAnswerCount="currentAnswerCount"
           :responseContentList="responseContentList"
           :responsePercentage="responsePercentage"
@@ -34,7 +36,6 @@
           :overviewModalVisiable="overviewModalVisiable"
           :currentIndex="currentIndex"
           :changePage="pageChange"
-          v-else-if="currentItemData && slides"
         />
       </div>
 
@@ -110,6 +111,8 @@
     <DashHeader
       v-if="isDashboard"
       :share="copyUrl"
+      :onLine="onLine"
+      :className="classRoomInfo.class_name"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">

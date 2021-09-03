@@ -17,6 +17,7 @@
       </li>
     </ul>
     <ul class="res-list" v-if="tab === 2">
+      <div @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div>
       <li class="res-list-item" v-for="item in answerList" :key="item.id">
         <div class="res-list-item-content">
           <div class="user-info">
@@ -88,6 +89,15 @@ export default {
         this.changeTab(1)
       }
     }
+  },
+  props: {
+    showResponse: {
+      type: Boolean,
+      default: false,
+    },
+    showres: {
+      type: Function
+    },
   },
   data() {
     return{
@@ -212,5 +222,19 @@ export default {
     align-items: center;
     padding-left: 50px;
     box-sizing: border-box;
+  }
+  .showResButoon{
+    width: 120px;
+    height: 30px;
+    border-radius: 4px;
+    background-color: rgba(21, 195, 154, 1);
+    font-size: 14px;
+    font-family: Inter-Bold;
+    line-height: 30px;
+    color: #FFFFFF;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    margin: 0 auto 10px auto;
   }
 </style>

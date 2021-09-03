@@ -1,8 +1,8 @@
 <template>
   <div class="header">
     <div class="left-area">
-      <i class="online"></i>
-      <p>课程标题：中华上下五千年</p>
+      <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
+      <p>课程标题：{{className}}</p>
       <div class="more-icon"><i></i><i></i><i></i></div>
     </div>
     <div class="invite-button" @click="share">
@@ -17,7 +17,15 @@ export default {
     share: {
       type: Function,
       default: null
-    }
+    },
+    onLine: {
+      type: Boolean,
+      default: false,
+    },
+    className: {
+      type: String,
+      default: false,
+    },
   }
 }
 </script>
@@ -72,7 +80,6 @@ export default {
   width: 18px;
   height: 18px;
   border-radius: 9px;
-  background-color: rgba(255, 26, 14, 1);
   margin-right: 10px;
 }
 .more-icon{

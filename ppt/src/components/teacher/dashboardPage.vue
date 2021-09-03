@@ -100,7 +100,10 @@
           />
         </div>
         <div class="dash-second-right">
-          <dash-res-and-students :responseList="responseContentList"/>
+          <dash-res-and-students
+            :showres="showres"
+            :showResponse="showResponse"
+            :responseList="responseContentList"/>
         </div>
         <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
@@ -143,6 +146,9 @@ export default {
     showResponse: {
       type: Boolean,
       default: false,
+    },
+    showres: {
+      type: Function
     },
     currentAnswerCount: {
       type: Number,

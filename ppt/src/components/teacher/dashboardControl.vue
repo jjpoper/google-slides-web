@@ -1,43 +1,22 @@
 <!--用户底部的控制面板-->
 
 <template>
-  <div :class="`panel ${isDashboard ? 'dash-control' : ''}`">
-    <template v-if="!isDashboard">
-      <button class="control-bar__button">
-        <div class="control-bar__icon left" @click="lastPage()">
-        </div>
-      </button>
-      <div>
-      {{currentPage}}/{{totalPage}}
+  <div class="panel">
+    <button class="control-bar__button">
+      <div class="control-bar__icon left" @click="lastPage()">
       </div>
-      <button class="control-bar__button">
-        <div class="control-bar__icon right" @click="nextPage()">
-        </div>
-      </button>
-    </template>
-
-    <template v-if="isDashboard">
-      <div
-        :class="isResponseShow ? 'button_area back_red' : 'button_area'"
-        style="margin-right: 20px"
-      >
-        <div class="meterialimage">
-          <div class="fullbgimg dash-tip"></div>
-        </div>
+    </button>
+    <div>
+    {{currentPage}}/{{totalPage}}
+    </div>
+    <button class="control-bar__button">
+      <div class="control-bar__icon right" @click="nextPage()">
       </div>
-      <div
-        :class="isResponseShow ? 'button_area back_red' : 'button_area'"
-        style="margin-right: 20px"
-      >
-        <div class="meterialimage">
-          <div class="fullbgimg more-pop"></div>
-        </div>
-      </div>
-    </template>
+    </button>
     <UploadEnter v-if="meterialVisiable"/>
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
-      <div class="with-outer" v-if="!isDashboard" >
+      <div class="with-outer">
         <i :class="`icon-circle ${current_response === 0 && 'red-icon'}`"></i>
         <strong
         >{{ current_response == 0 ? "No" : current_response }} Response</strong>
@@ -48,6 +27,40 @@
         <strong>{{ isClosed ? "Closed" : current_model }}</strong>
       </div>
     </div>
+    <!-- <div
+      :class="isResponseShow ? 'button_area back_red' : 'button_area'"
+      @click="showRes()"
+      style="margin-right: 20px"
+      v-if="
+        currentItemData &&
+        currentItemData.items &&
+        currentItemData.items[0] &&
+        currentItemData.items[0].type != 'website' &&
+        !isClosed &&
+        (!isDashboard || current_model == 'Insturctor-Paced')
+      "
+    >
+      <svg
+        t="1620464720996"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="4688"
+        width="25"
+        height="25"
+      >
+        <path
+          d="M842.394595 799.733237 640.973076 799.733237 640.973076 914.825508l57.549005 0c15.903853 0 28.774503 12.869099 28.774503 28.773324 0 15.903202-12.870649 28.7723-28.774503 28.7723L353.22805 972.371132c-15.904877 0-28.774503-12.869099-28.774503-28.7723 0-15.904225 12.869626-28.773324 28.774503-28.773324l57.549005 0L410.777055 799.733237 180.581034 799.733237c-63.562199 0-115.098011-51.5337-115.098011-115.093295L65.483023 166.720116c0-63.559595 51.535812-115.093295 115.098011-115.093295l661.812537 0c63.561176 0 115.098011 51.5337 115.098011 115.093295l0 517.919826C957.491582 748.198513 905.95577 799.733237 842.394595 799.733237zM583.424071 914.825508 583.424071 799.733237 468.32606 799.733237 468.32606 914.825508 583.424071 914.825508zM899.942577 166.720116c0-31.779797-25.767906-57.546647-57.547982-57.546647L180.581034 109.173468c-31.781099 0-57.549005 25.76685-57.549005 57.546647l0 402.826532L899.942577 569.546647 899.942577 166.720116zM899.942577 627.093295 123.033052 627.093295l0 57.546647c0 31.779797 25.767906 57.545624 57.549005 57.545624l661.812537 0c31.781099 0 57.547982-25.76685 57.547982-57.545624L899.942577 627.093295z"
+          p-id="4689"
+          fill="#36425A"
+        />
+      </svg>
+      <img src="../../assets/picture/arrow-r.png"/>
+      <img src="../../assets/picture/arrow-r.png"/>
+
+      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
+    </div> -->
     <div
       :class="isResponseShow ? 'button_area back_red' : 'button_area'"
       style="margin-right: 20px"
@@ -58,7 +71,7 @@
         currentItemData.items[0] &&
         currentItemData.items[0].type != 'website' &&
         !isClosed &&
-        !isDashboard
+        (!isDashboard || current_model == 'Insturctor-Paced')
       "
     >
       <div class="meterialimage">
@@ -66,7 +79,16 @@
       </div>
       <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
     </div>
-    <!--material-->
+
+
+    <!-- <el-switch
+      style="display: block;"
+      class="metrial"
+      v-model="meterialSwitchVisiable"
+      active-color="#13ce66"
+      inactive-color="#999"
+      active-text="meterial on"
+    ></el-switch> -->
     <div
       :class="meterialSwitchVisiable ? 'button_area back_red' : 'button_area'"
       style="margin-right: 20px"
@@ -77,7 +99,6 @@
       </div>
       <strong class="button_text">{{meterialSwitchVisiable ? 'Material hiding' : 'Display material'}}</strong>
     </div>
-    <!--lock-->
     <div
       :class="isLoked() ? 'button_area back_red' : (isLokeEnable()?'button_area':'button_area button_grey')"
       v-if="!isClosed && current_model != 'Student-Paced'"
@@ -101,7 +122,6 @@
       </svg>
       <strong class="button_text">{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong>
     </div>
-    <!--student paced-->
     <div
       class="button_area"
       v-if="!isClosed && current_model === 'Student-Paced'"
@@ -127,8 +147,7 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    
-    <el-popover v-if="!isDashboard" placement="top" width="400" trigger="hover" class="dropdown-icon">
+    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
       <!-- :open="open"
         :openProject="openProject" 
       :reopenClass="reopenClass"-->
@@ -157,8 +176,8 @@
         <circle cx="10" cy="24" r="2" fill="#36425A" />
       </svg>
     </el-popover>
-    <!--end-->
-    <div class="end_button" @click="endLesson()" v-if="!isDashboard" >
+
+    <div class="end_button" @click="endLesson()">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
     </div>
   </div>
@@ -374,9 +393,6 @@ strong {
   box-sizing: border-box;
   padding-left: 21px;
 }
-.dash-control{
-  padding-right: 50px;
-}
 .svg_right {
   -webkit-transform: rotate(180deg);
   -moz-transform: rotate(180deg);
@@ -403,22 +419,15 @@ strong {
 .control-bar__icon {
   width: 13.34px;
   height: 24px;
-  background-size: contain;
+  background-size: 13.34px 24px;
   background-position: 0 0;
   background-repeat: no-repeat;
-  background-color: red;
 }
 .control-bar__icon.left{
   background-image: url(../../assets/picture/arrow-r.png);
 }
 .control-bar__icon.right{
   background-image: url(../../assets/picture/arrow-l.png);
-}
-.dash-tip{
-  background-image: url(../../assets/picture/dash-tip.png);
-}
-.more-pop{
-  background-image: url(../../assets/picture/more-pop.png);
 }
 
 .control-bar__icon:hover {
@@ -503,7 +512,7 @@ strong {
   color: #36425A;
   overflow: hidden;
   cursor: pointer;
-  padding: 3px 15px;
+  padding: 3px;
 }
 
 .button_grey {
