@@ -30,6 +30,8 @@
             <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
             <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
             <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
+            <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
+            <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
           </div>
         </div>
       </li>
@@ -41,9 +43,11 @@ import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters } from 'vuex'
 import dashRightRemarkItem from './dash-answer/dash-right-remark-item.vue'
 import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
-import DashRightChoiceItem from './answer/dash-right-choice-item.vue'
+import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
+import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
+import DashRightTextItem from './dash-answer/dash-right-text-item.vue'
 export default {
-  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem },
+  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem },
   computed: {
     ...mapState({
       studentList: state => state.teacher.studentList,
