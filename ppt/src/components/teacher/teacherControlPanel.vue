@@ -18,21 +18,21 @@
 
     <template v-if="isDashboard">
       <div
-        :class="isResponseShow ? 'button_area back_red' : 'button_area'"
+        :class="overviewModalVisiable ? 'button_area back_focus' : 'button_area'"
         style="margin-right: 20px"
       >
-        <div class="meterialimage">
+        <div class="meterialimage" @click="showTips">
           <div class="fullbgimg dash-tip"></div>
         </div>
       </div>
-      <div
-        :class="isResponseShow ? 'button_area back_red' : 'button_area'"
+      <!-- <div
+        :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
         style="margin-right: 20px"
       >
         <div class="meterialimage">
           <div class="fullbgimg more-pop"></div>
         </div>
-      </div>
+      </div> -->
     </template>
     <UploadEnter v-if="meterialVisiable"/>
 
@@ -49,7 +49,7 @@
       </div>
     </div>
     <div
-      :class="isResponseShow ? 'button_area back_red' : 'button_area'"
+      :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
       style="margin-right: 20px"
       @click="showRes()"
       v-if="
@@ -68,7 +68,7 @@
     </div>
     <!--material-->
     <div
-      :class="meterialSwitchVisiable ? 'button_area back_red' : 'button_area'"
+      :class="meterialSwitchVisiable ? 'button_area back_focus' : 'button_area'"
       style="margin-right: 20px"
       @click="changeMeterial"
     >
@@ -79,7 +79,7 @@
     </div>
     <!--lock-->
     <div
-      :class="isLoked() ? 'button_area back_red' : (isLokeEnable()?'button_area':'button_area button_grey')"
+      :class="isLoked() ? 'button_area back_focus' : (isLokeEnable()?'button_area':'button_area button_grey')"
       v-if="!isClosed && current_model != 'Student-Paced'"
       @click="dolockPage()"
     >
@@ -216,10 +216,16 @@ export default {
       type: Boolean,
       default: false
     },
+    overviewModalVisiable: {
+      type: Boolean,
+      default: false
+    },
     changePage: {
       type: Function
     },
-
+    showTips: {
+      type: Function
+    },
     turnOff: {
       type: Function
     },
@@ -406,7 +412,6 @@ strong {
   background-size: contain;
   background-position: 0 0;
   background-repeat: no-repeat;
-  background-color: red;
 }
 .control-bar__icon.left{
   background-image: url(../../assets/picture/arrow-r.png);
@@ -509,7 +514,7 @@ strong {
 .button_grey {
   background-color: #cfcfcf;
 }
-.back_red {
+.back_focus {
   background-color: #fff;
   border-radius: 8px;
 }

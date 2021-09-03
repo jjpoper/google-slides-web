@@ -105,9 +105,8 @@
             :showResponse="showResponse"
             :responseList="responseContentList"/>
         </div>
-        <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       </div>
-
+      <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
     </div>
   </div>
@@ -225,10 +224,10 @@ export default {
       this.showPPTList = !this.showPPTList
     },
     next() {
-      this.changePage(this.currentPageIndex + 2)
+      this.changePage(Math.min(this.currentPageIndex + 2, this.slides.length))
     },
     prev() {
-      this.changePage(this.currentPageIndex)
+      this.changePage(Math.max(this.currentPageIndex, 1))
     },
     changeToPage(index) {
       this.changePage(index + 1)

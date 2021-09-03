@@ -1,5 +1,5 @@
 <template>
-  <div class="studentComment" :style="`height: ${webHeight}px; width: 200px`">
+  <div class="studentComment">
     <div v-for="(item) in filterTips" :key="item.id">
       <div class="rightcomment">
         <div
@@ -21,21 +21,18 @@ export default {
       },
     },
   },
-  data() {
-    return {
-      webHeight: window.winHeight,
-    };
-  },
 }
 </script>
 <style scoped>
 .studentComment{
   overflow-y: scroll;
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   background-color: #fff;
   border: 1px solid #777;
+  width: 200px;
+  height: 100%;
 }
 .rightcomment {
   width: 100%;

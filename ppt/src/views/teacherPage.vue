@@ -65,6 +65,8 @@
           :setTimeDialogShow="setTimeDialogShow"
           :changeShowMetrial="changeShowMetrial"
           :meterialVisiable="meterialVisiable"
+          :showTips="showTips"
+          :overviewModalVisiable="overviewModalVisiable"
         />
       </div>
     </template>
@@ -109,7 +111,7 @@
 
     <!--dashboard header-->
     <DashHeader
-      v-if="isDashboard"
+      v-if="isDashboard && classRoomInfo"
       :share="copyUrl"
       :onLine="onLine"
       :className="classRoomInfo.class_name"
@@ -171,7 +173,19 @@
       @open="openCopyLinkDialog()"
       custom-class="custom-dialog"
     >
-      <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" />
+      <!-- <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" /> -->
+      <dash-copy-dialog
+        v-if="classRoomInfo"
+        :getStudentOnLineCount="getStudentOnLineCount"
+        :url="getStudentUrl()"
+        :copyLink="copyLink"
+        :getBtnString="getBtnString"
+        :enterClassroom="enterClassroom"
+        :setTimeDialogShow="setTimeDialogShow"
+        :currentMode="page_model"
+        :isDashboard="isDashboard"
+        :closeBtn="closeCopyDialog"
+      />
     </el-dialog>
 
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
@@ -250,6 +264,7 @@ import stepTwoView from "../components/teacher/openDashboardStepTwo";
 import studentList from "../components/teacher/studentList";
 import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
+import dashCopyDialog from "../components/teacher/dashCopyDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
 import DashHeader from "@/components/teacher/dashHeader.vue";
@@ -268,7 +283,8 @@ export default {
     copyLinkDialog,
     StudentPacedNote,
     StudentsQsModal,
-    DashHeader
+    DashHeader,
+    dashCopyDialog
   },
 
   /*author: "yujj085@gmail.com"
@@ -440,6 +456,9 @@ type: "slide"*/
       "updateLatestRemarkId",
       "addOneRemarkItem"
     ]),
+    showTips() {
+      this.overviewModalVisiable = !this.overviewModalVisiable
+    },
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
       // this.slides[this.currentIndex].elements.push({
