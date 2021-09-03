@@ -5,7 +5,7 @@
         <div :class="`switch-button ${tab === 1 && 'active'}`" @click="changeTab(1)">
           Student
         </div>
-        <div :class="`switch-button ${tab === 2 && 'active'}`" @click="changeTab(2)">
+        <div v-show="currentPageAnswerType !== 'none'" :class="`switch-button ${tab === 2 && 'active'}`" @click="changeTab(2)">
           Response
         </div>
       </div>
@@ -76,6 +76,13 @@ export default {
       })
       // console.log(list, 'righten',res, this.currentPageAnswerType)
       return list;
+    }
+  },
+  watch: {
+    currentPageAnswerType() {
+      if(this.currentPageAnswerType === 'none') {
+        this.changeTab(1)
+      }
     }
   },
   data() {

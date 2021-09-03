@@ -45,7 +45,8 @@ const getters = {
             studentAllSlides,
             currentPageIndex,
         } = currentState
-        return studentAllSlides[currentPageIndex].items[0].type
+        const itemData = studentAllSlides[currentPageIndex]
+        return itemData.items[0] ? itemData.items[0].type : 'none'
     },
 }
 
