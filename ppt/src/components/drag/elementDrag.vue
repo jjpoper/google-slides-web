@@ -112,10 +112,10 @@ export default {
       }
     },
     positiveChange(name) {
-      // console.log('notUpdate ==== changePosition positive change', name)
+      // // console.log('notUpdate ==== changePosition positive change', name)
     },
     deactivated(name) {
-      // console.log('notUpdate ==== changePosition deactivated change', name)
+      // // console.log('notUpdate ==== changePosition deactivated change', name)
     }
   }
 }

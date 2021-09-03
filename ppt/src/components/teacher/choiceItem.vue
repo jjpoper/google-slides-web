@@ -306,7 +306,7 @@ export default {
       this.title = title;
       this.options = options;
       this.isMulti = isMulti;
-      console.log(this.data, data, "EventBus on");
+      // console.log(this.data, data, "EventBus on");
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
         this.data.page_id,

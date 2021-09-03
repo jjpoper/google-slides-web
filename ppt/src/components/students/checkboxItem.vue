@@ -145,7 +145,7 @@ export default {
   },
   methods: {
     handleCheckedValueChange(value) {
-      console.log(JSON.stringify(value), this.showCorrect);
+      // console.log(JSON.stringify(value), this.showCorrect);
       this.answer(JSON.stringify(value), this.showCorrect);
     },
     showTip() {
@@ -167,7 +167,7 @@ export default {
       return false;
     },
     getAnswerText(item) {
-      console.log(item);
+      // console.log(item);
       let AA = ["A", "B", "C", "D", "E", "F", "G"];
       return AA[item.id] + ": " + item.text;
     }

@@ -9,7 +9,7 @@ export const generateUuid = (prefix: string, length?: number) => {
     return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16) // eslint-disable-line no-bitwise
   })
   const id = `${!prefix ? '' : prefix}${uuid.slice(0, len)}`
-  // console.log(id)
+  // // console.log(id)
   return id
 }
 

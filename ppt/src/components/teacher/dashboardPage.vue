@@ -209,11 +209,11 @@ export default {
   },
   created() {},
   mounted() {
-    console.log(this.currentItemData);
+    // console.log(this.currentItemData);
   },
   methods: {
     showCurrentStudent() {
-      console.log("studeng!!!");
+      // console.log("studeng!!!");
     },
     togglePPTList() {
       this.showPPTList = !this.showPPTList

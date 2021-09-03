@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-// console */
 /* eslint-disable no-undef */
 import { getTeacherClientStoreToken, saveTeacherClientStoreToken } from "@/model/store.teacher"
 import { showLoading } from "./loading"
@@ -45,7 +45,7 @@ class LoadPicker {
   }
 
   private loadPicker() {
-    console.log('=====')
+    // console.log('=====')
     this.checkLogin()
     .then(() => {
       window.gapi.load('picker', {'callback': this.onPickerApiLoad});
@@ -100,7 +100,7 @@ class LoadPicker {
   }
 
   private pickerCallback = (data: any) => {
-    console.log(data)
+    // console.log(data)
     if(data.action === google.picker.Action.PICKED) {
       const {id} = data.docs[0];
       showLoading()
@@ -127,7 +127,7 @@ class LoadPicker {
     const imageType = xhr.getResponseHeader("Content-Type");
     const blob = new Blob([xhr.response], { type: imageType });
     const imageUrl = (window.URL || window.webkitURL).createObjectURL(blob);
-    console.log(imageUrl)
+    // console.log(imageUrl)
     return blob
   }
 
@@ -147,7 +147,7 @@ class LoadPicker {
       };
       xhr.send();
     } else {
-      console.log(null);
+      // console.log(null);
     }
   }
 
@@ -193,12 +193,12 @@ class LoadPicker {
 
     request.upload.onerror = (error) => {
       callback('onerror');
-      // console.error('XMLHttpRequest failed', error);
+      // // console.error('XMLHttpRequest failed', error);
     };
 
     request.upload.onabort = (error) => {
       callback('Upload aborted.');
-      // console.error('XMLHttpRequest aborted', error);
+      // // console.error('XMLHttpRequest aborted', error);
     };
 
     request.open('POST', url);

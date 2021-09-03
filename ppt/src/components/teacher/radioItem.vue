@@ -121,7 +121,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.data);
+    // console.log(this.data);
     const { title, options } = this.data.items[0].data;
     this.title = title;
     this.options = options;
@@ -129,7 +129,7 @@ export default {
       this.data.page_id,
       this.data.items[0].type
     );
-    console.log(this.answerList);
+    // console.log(this.answerList);
   },
   methods: {
     counts(id) {
@@ -142,7 +142,7 @@ export default {
     },
     getAnswer(answer) {
       const data = this.options.filter((item) => item.id == answer)[0];
-      console.log(data);
+      // console.log(data);
       return data;
     },
     pageChange(value) {
@@ -153,7 +153,7 @@ export default {
       }
     },
     getUname(id) {
-      console.log(getStundentUidAndName(id));
+      // console.log(getStundentUidAndName(id));
       const name = getStundentUidAndName(id);
       return name ? name : id;
     },

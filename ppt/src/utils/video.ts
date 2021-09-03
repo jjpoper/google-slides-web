@@ -3,7 +3,7 @@ import RecordRTC from 'recordrtc'
 import { hideLoading, showLoading, showToast } from './loading';
 
 function onMediaError() {
-  // console.error('media error', e);
+  // // console.error('media error', e);
 }
 const mediaConstraints = {
   audio: true,
@@ -58,7 +58,7 @@ export const saveRecordVideo = async (): Promise<any> => {
       domVideoElement.src = domVideoElement.srcObject = null;
       const blobData = mediaRecorder.getBlob()
       domVideoElement.src = URL.createObjectURL(blobData);
-      // console.log(URL.createObjectURL(blobData))
+      // // console.log(URL.createObjectURL(blobData))
       let files = new window.File([blobData], 'webm')
 
       showLoading('uploading')

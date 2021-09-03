@@ -75,7 +75,7 @@ export default {
           noList.push(currentUser)
         }
       }
-      console.log(noList)
+      // console.log(noList)
       return noList
     },
     ...mapState({
@@ -145,7 +145,7 @@ export default {
     this.textList = list
     EventBus.$on(this.data.items[0].type, (data) => {
       // 通知展示当前pageid，当前itemid的评论框
-      console.log(data);
+      // console.log(data);
       this.textList = getCurrentPageAnswerList(
         this.data.page_id,
         this.data.items[0].type
@@ -160,11 +160,11 @@ export default {
         _this.isTextChanging = false;
       }, 3000);
     });
-    console.log(this.studentList, this.textList, '===studentList')
+    // console.log(this.studentList, this.textList, '===studentList')
   },
   methods: {
     getUname(id) {
-      console.log(getStundentUidAndName(id));
+      // console.log(getStundentUidAndName(id));
       const name = getStundentUidAndName(id);
       return name ? name : id;
     },
@@ -238,10 +238,10 @@ export default {
             }
           })
         }
-        console.log(this.textList)
+        // console.log(this.textList)
         this.$forceUpdate()
       } catch(e) {
-        console.log(e)
+        // console.log(e)
       }
     }
   },

@@ -297,7 +297,7 @@ export default {
     leavePage() {
       if (this.isDashboard) {
         let url = "https://docs.google.com/presentation/d/" + this.slide_id;
-        console.log(this.slide_id);
+        // console.log(this.slide_id);
         if (this.slide_id) {
           window.location = url;
         }
@@ -308,7 +308,7 @@ export default {
     },
 
     reStartClassRoom() {
-      console.log("reopen class!!");
+      // console.log("reopen class!!");
       this.reopenClass();
     },
   },

@@ -303,7 +303,7 @@ export default {
       this.meterialSwitchVisiable = !this.meterialSwitchVisiable
     },
     lastPage() {
-      console.log(this.currentPage);
+      // console.log(this.currentPage);
       if (this.currentPage > 1) {
         let page = this.currentPage - 1;
         this.changePage(page);
@@ -357,12 +357,12 @@ export default {
     nextPage() {
       if (this.currentPage < this.totalPage) {
         let page = this.currentPage + 1;
-        console.log(page)
+        // console.log(page)
         this.changePage(page);
       }
     },
     closeStudentPaced() {
-      console.log("colse student");
+      // console.log("colse student");
       // this.current_model = ClassRoomModelEnum.TEACHER_MODEL;
       this.turnOff();
     },

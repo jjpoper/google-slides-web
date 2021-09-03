@@ -95,7 +95,7 @@ export default class Draw {
   constructor(el: string, elText: string, canvasW: number, canvasH: number) {
     this.canvasWidth = canvasW
     this.canvasHeight = canvasH
-    // // console.log(el)
+    // // // console.log(el)
     this.el = el;
     this.canvas = document.getElementById(this.el);
     this.cxt = this.canvas.getContext("2d");
@@ -104,7 +104,7 @@ export default class Draw {
     this.cxtText = this.canvasText.getContext("2d");
 
     this.canvasParant = this.canvas.parentNode
-    // // console.log(this.stage_info.left, this.stage_info.top)
+    // // // console.log(this.stage_info.left, this.stage_info.top)
   }
 
   // throttle(fn: any, wait: number) {
@@ -126,7 +126,7 @@ export default class Draw {
 
     this.canvasText.width = this.canvasWidth
     this.canvasText.height = this.canvasHeight
-    // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
+    // // // console.log(this.cxt.globalCompositeOperation, 'this.cxt.globalCompositeOperation')
     this.onDrawBack = onDrawBack;
     this.onDrawTextBack = onDrawTextBack;
     this.page_id = page_id;
@@ -179,7 +179,7 @@ export default class Draw {
       }
     }, true);
     document.onmouseup = () => {
-      // console.log('========= 2')
+      // // console.log('========= 2')
       // this.drawEnd()
       // ws.send('stop')
     };
@@ -203,7 +203,7 @@ export default class Draw {
   copyWindowTextPool() {
     var list = [];
     for (let i = 0; i < window.textPool.length; i++) {
-      console.log(window.textPool[i].innerText);
+      // console.log(window.textPool[i].innerText);
       var item = new DrawTextItem(window.textPool[i].page_id, window.textPool[i].self_id, window.textPool[i].left,
         window.textPool[i].top, window.textPool[i].fontSize, window.textPool[i].fontFamily, window.textPool[i].innerText, window.textPool[i].color);
       item.id = window.textPool[i].id;
@@ -213,7 +213,7 @@ export default class Draw {
   }
 
   onMouseDown() {
-    //  console.log(this.polygonStartPoint.beginX, 'onmousedown', this.drawType)
+    //  // console.log(this.polygonStartPoint.beginX, 'onmousedown', this.drawType)
     if (this.drawType != "text") {
       this.currentMouseOnEditableDeiv = false;
       if (this.currentSelectEditableDiv) {
@@ -246,7 +246,7 @@ export default class Draw {
   }
 
   onMouseUp() {
-    //   console.log('========= onmouseup')
+    //   // console.log('========= onmouseup')
     if (this.drawType != "polygon") {//多边形的结束判断方式和其他方式不一样。
       this.isDrawing = false
       this.drawEnd();
@@ -274,14 +274,14 @@ export default class Draw {
     this.isEarse = false
     this.drawType = drawType
     this.cxt.globalCompositeOperation = "source-over";
-    console.log(drawType)
+    // console.log(drawType)
     if (drawType != DrawTypeData.text) {
       if (this.currentSelectEditableDiv) {
         this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
         var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
         if (deleteImage) {
-          console.log('hide delete');
+          // console.log('hide delete');
           deleteImage.style.display = "none";
         }
 
@@ -478,18 +478,18 @@ export default class Draw {
       var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
 
       if (deleteImage) {
-        console.log("show delete Image")
+        // console.log("show delete Image")
         deleteImage.style.display = "block";
       }
 
 
 
       editableDiv.onmousemove = function (ev) {
-        // console.log('onmousemove', editableDiv.id);
+        // // console.log('onmousemove', editableDiv.id);
         if (_this.drawType != 'text' || !_this.isMouseDown || _this.currentSelectEditableDiv.id != editableDiv.id) {
           return;
         }
-        //   console.log('onmousemove', editableDiv.id);
+        //   // console.log('onmousemove', editableDiv.id);
         var e = ev || event;
         let left = parseInt(editableDiv.style.left) ? parseInt(editableDiv.style.left) : 0;
         let top = parseInt(editableDiv.style.top);
@@ -523,7 +523,7 @@ export default class Draw {
       if (_this.drawType != 'text') {
         return;
       }
-      console.log('onmouseleave', editableDiv.id);
+      // console.log('onmouseleave', editableDiv.id);
       editableDiv.style.cursor = 'default';
       _this.currentMouseOnEditableDeiv = false;
       //   editableDiv.setAttribute("contenteditable", "false");
@@ -535,7 +535,7 @@ export default class Draw {
       if (_this.drawType != 'text') {
         return;
       }
-      console.log('onmouseup', editableDiv.id);
+      // console.log('onmouseup', editableDiv.id);
       _this.isMouseDown = false;
       editableDiv.onmousemove = null;
       // _this.changeEditableDiv();
@@ -551,7 +551,7 @@ export default class Draw {
   }
 
   deleteEditableDiv(_id: any) {
-    console.log('delete', _id);
+    // console.log('delete', _id);
     var deleteImage = document.getElementById(_id + "_close_btn");
     if (deleteImage)
       deleteImage.style.display = "none";
@@ -577,9 +577,9 @@ export default class Draw {
       if (type == "text") {
         var text = JSON.parse(content);
         text.id = id + "";
-        console.log(text);
+        // console.log(text);
         var result = this.createEditableDiv(text);
-        console.log(result);
+        // console.log(result);
       }
 
     }
@@ -591,7 +591,7 @@ export default class Draw {
     if (this.currentSelectEditableDiv) {
       for (let i = 0; i < window.textPool.length; i++) {
         if (window.textPool[i].self_id == this.currentSelectEditableDiv.id) {
-          console.log("change text!!!!" + this.currentSelectEditableDiv.innerText);
+          // console.log("change text!!!!" + this.currentSelectEditableDiv.innerText);
           window.textPool[i].left = parseInt(this.currentSelectEditableDiv.style.left);
           window.textPool[i].top = parseInt(this.currentSelectEditableDiv.style.top);
           window.textPool[i].color = this.currentSelectEditableDiv.style.color;
@@ -606,7 +606,7 @@ export default class Draw {
   }
 
   getLineHeight() {
-    console.log(Math.max(18, this.lineWidth) + "px")
+    // console.log(Math.max(18, this.lineWidth) + "px")
     return Math.max(18, this.lineWidth) + "px";
   }
   drawBegin(e: any) {
@@ -614,7 +614,7 @@ export default class Draw {
     // eslint-disable-next-line no-unused-expressions
     window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty();
     this.cxt.strokeStyle = this.strokeColor;
-    // console.log(this.cxt.lineWidth)
+    // // console.log(this.cxt.lineWidth)
     this.pointer.beginX = e.clientX - this.stage_info.left
     this.pointer.beginY = e.clientY - this.stage_info.top
     if (this.drawType === 'draw' || this.drawType === 'marker') {
@@ -829,16 +829,16 @@ export default class Draw {
   }
 
   addHistory() {
-    // console.log('====== addHistory')
+    // // console.log('====== addHistory')
     const base64Url = this.canvas.toDataURL("image/png");
     window.canvasPool.push(base64Url);
     //保存当前text的
   }
 
   drawEnd() {
-    console.log('========= drawEnd', this.canTextarea);
+    // console.log('========= drawEnd', this.canTextarea);
     this.canvas.onmousemove = null;
-    // // console.log();
+    // // // console.log();
     if (this.currentSelectEditableDiv) {
       this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
     }
@@ -915,7 +915,7 @@ export default class Draw {
   //这样可以方便的进行撤销操作和撤销撤销的操作
   //
   undo() {
-    console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "---");
+    // console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "---");
     if (this.currentIndex <= 0) {
     } else {
       const current = window.drawPool[--this.currentIndex] || ''
@@ -933,7 +933,7 @@ export default class Draw {
     }
   }
   redo() {
-    console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "+++");
+    // console.log(window.textOptsPool, window.drawPool.length, this.currentIndex, "+++");
     if (this.currentIndex == window.drawPool.length - 1) {
     } else {
       const current = window.drawPool[++this.currentIndex] || ''
@@ -962,7 +962,7 @@ export default class Draw {
 
     //第二步，取出存储的text item
     var textContent = window.textOptsPool[this.currentIndex];
-    // console.log(textContent, "resetTextChildren")
+    // // console.log(textContent, "resetTextChildren")
     for (let i = 0; i < textContent.length; i++) {
       var copyItem = new DrawTextItem(textContent[i].page_id, textContent[i].self_id, textContent[i].left, textContent[i].top, textContent[i].fontSize, textContent[i].fontFamily,
         textContent[i].innerText, textContent[i].color);
@@ -986,7 +986,7 @@ export default class Draw {
         }
       }
     }
-    // console.log(window.textPool, "resetTextChildren")
+    // // console.log(window.textPool, "resetTextChildren")
 
   }
 
@@ -996,7 +996,7 @@ export default class Draw {
   }
   callBackDrawText(str: DrawTextItem) {
     this.onDrawTextBack(str);
-    console.log(str, 'send msg ======>>>');
+    // console.log(str, 'send msg ======>>>');
   }
 
 
@@ -1019,13 +1019,13 @@ export default class Draw {
 
   deleteElementTextItem(content: DrawTextItem) {
 
-    console.log(content, "deleteElementTextItem")
+    // console.log(content, "deleteElementTextItem")
     if (!content.id || content.id < 0) {
-      console.log('not commit');
+      // console.log('not commit');
       return;
     }
     deleteElementItem(content.id).then((res: string) => {
-      console.log(res);
+      // console.log(res);
     })
 
   }
@@ -1033,7 +1033,7 @@ export default class Draw {
   updateElementTextItem(content: DrawTextItem) {
 
 
-    console.log(content, "updateElementTextItem");
+    // console.log(content, "updateElementTextItem");
     if (!content.id || content.id < 0) {
       if (content.innerText && content.innerText.length > 0) {
         this.addElementTextItem(content);
@@ -1047,9 +1047,9 @@ export default class Draw {
     }
 
     updateElementItem(content.id, JSON.stringify(content), "text").then((res) => {
-      console.log(res);
+      // console.log(res);
     }).catch((res) => {
-      console.log("updata element error!" + res);
+      // console.log("updata element error!" + res);
       this.addElementTextItem(content);
     })
 
@@ -1060,7 +1060,7 @@ export default class Draw {
   //windwo.textPool中存储的是当前的元素，我们需要做一个对比，该更新的更新，该新添的新添，该删除的删除
 
   commitTextItem() {
-    console.log('do net work commit');
+    // console.log('do net work commit');
     var initialTexts = window.textOptsPool[0];//最开始从服务器上拉取下来的
     var currentTexts = window.textPool;//当前页面上有的
     //1 判断是否需要删除

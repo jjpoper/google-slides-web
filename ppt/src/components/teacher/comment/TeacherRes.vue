@@ -53,7 +53,7 @@ export default {
   components: { base64image, AudioPlayer},
   methods: {
     getAnswer(answer) {
-      console.log(JSON.parse(answer));
+      // console.log(JSON.parse(answer));
       return JSON.parse(answer);
     },
     getTimeText(time) {

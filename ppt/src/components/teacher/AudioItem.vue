@@ -116,7 +116,7 @@ export default {
         }
       })
       list = this.resortList(list)
-      console.log(list)
+      // console.log(list)
       return list;
     },
   },
@@ -164,7 +164,7 @@ export default {
           label: 'sort by response'
         },
       ]
-      console.log('init =====')
+      // console.log('init =====')
   },
   // watch: {
   //   sortValue() {
@@ -224,7 +224,7 @@ export default {
         }
         return newList
       } catch(e) {
-        console.log(e)
+        // console.log(e)
         return []
       }
     },

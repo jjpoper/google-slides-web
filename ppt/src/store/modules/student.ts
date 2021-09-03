@@ -33,6 +33,20 @@ const getters = {
         } = currentState
         return studentAllSlides[currentPageIndex].page_id
     },
+    currentPagePPTData: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        return studentAllSlides[currentPageIndex]
+    },
+    currentPageAnswerType: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        return studentAllSlides[currentPageIndex].items[0].type
+    },
 }
 
 // actions
@@ -93,7 +107,7 @@ const mutations = {
         } else {
             // const { item_id: itemId, student_user_id: sid, type } = data
             // const pageId = studentAllSlides[currentPageIndex].page_id
-            // console.log(itemId, sid, type, pageId, "addItem")
+            // // console.log(itemId, sid, type, pageId, "addItem")
             // let oldDataIndex = -1
             // if(type === 'text') {
             //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)

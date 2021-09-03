@@ -713,7 +713,7 @@ export default {
   created() {},
   mounted() {
     let outer = document.getElementById("canvasouter");
-    console.log(outer.clientWidth, outer.clientHeight)
+    // console.log(outer.clientWidth, outer.clientHeight)
     // outer.style.width = document.documentElement.clientWidth - 40 + "px";
     // outer.style.height = document.documentElement.clientHeight - 40 + "px";
     this.draw = new Draw("canvas", "textCanvas", outer.clientWidth, outer.clientHeight);
@@ -749,12 +749,12 @@ export default {
   beforeDestroy() {
     // colorSelector.destory();
     // document.getElementById("diycolor_comment").innerHTML = ''
-    console.log("beforeDestroy");
+    // console.log("beforeDestroy");
   },
   destroyed() {},
   methods: {
     doKeyDown(e) {
-      console.log(e);
+      // console.log(e);
     },
     changeColor(color) {
       this.color = color;
@@ -762,7 +762,7 @@ export default {
     },
     beforeunloadFn(e) {
       // ...
-      console.log("close page!!!");
+      // console.log("close page!!!");
       this.draw.commitTextItem();
     },
     changeWidth(w, tabIndex) {
@@ -843,9 +843,9 @@ export default {
     },
     showDiy() {
       colorSelector.show(this.color, (rgb) => {
-        // console.log(d)
+        // // console.log(d)
         const selectorColor = colorSelector.utils.rgb2txt(rgb);
-        console.log(selectorColor);
+        // console.log(selectorColor);
         this.changeColor(selectorColor);
       });
     },

@@ -107,7 +107,7 @@ export default {
     // if(!this.defaultShowMeterial) {
     //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
     //     this.meterialVisiable = status
-    //     console.log(status)
+    //     // console.log(status)
     //   })
     // }
   },
@@ -178,7 +178,7 @@ export default {
       if(this.rectingDelay) clearTimeout(this.rectingDelay)
       const data = this.filterAddedMediaList[index]
       this.rectingDelay = setTimeout(() => {
-        console.log(newRect, data)
+        // console.log(newRect, data)
         const {
           height: h,
           left: x,

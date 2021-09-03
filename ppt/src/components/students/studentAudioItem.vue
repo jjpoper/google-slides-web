@@ -123,7 +123,7 @@ export default {
     }
   },
   created() {
-    console.log(this.currentPageAnswerList);
+    // console.log(this.currentPageAnswerList);
   },
   data() {
     return {
@@ -150,7 +150,7 @@ export default {
       this.recordType = null;
     },
     onUpload(response, file, fileList) {
-      console.log(response.data, file.name, fileList);
+      // console.log(response.data, file.name, fileList);
       this.sendCommentCb(response.data, "file", file.name);
     },
     sendCommentCb(link, mediaType = "", fileName) {

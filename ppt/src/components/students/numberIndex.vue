@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     send: function() {
-      console.log("pageid==", this.data.page_id);
+      // console.log("pageid==", this.data.page_id);
       // saveStudentsDataList(
       //   this.data.page_id,
       //   this.arrList,

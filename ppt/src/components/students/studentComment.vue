@@ -154,7 +154,7 @@ export default {
       const list = getStudentCommentList();
       this.unreadIdList = getUnreadStudentCommentIds();
       this.commentList = list;
-      console.log(list, this.unreadIdList);
+      // console.log(list, this.unreadIdList);
     },
     getIndex(page_id) {
       const index = this.slides.findIndex(item => item.page_id === page_id);

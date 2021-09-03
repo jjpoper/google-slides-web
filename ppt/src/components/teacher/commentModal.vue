@@ -165,7 +165,7 @@ export default {
     },
     sendComment(value, commentType = "text") {
       const { year, hours, month, date, minutes } = getTimeValue(Date.now());
-      console.log(getTeacherUserName());
+      // console.log(getTeacherUserName());
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
         value,
@@ -185,7 +185,7 @@ export default {
         ...this.commentData,
         ...data,
       });
-      console.log(this.commentList)
+      // console.log(this.commentList)
       EventBus.$emit(ModalEventsNameEnum.TEACHER_SEND_COMMENT, {
         studentId,
         pageId,

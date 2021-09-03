@@ -39,7 +39,7 @@ const saveTeacherStore = (key: string, value: any) => {
 const getTeacherStore = (key: string): any => {
   const uniqueKey = `${slideId}_t_${teacherId}_${key}`
   const result = getStore(uniqueKey)
-  console.log(uniqueKey, result)
+  // console.log(uniqueKey, result)
   return result
 }
 

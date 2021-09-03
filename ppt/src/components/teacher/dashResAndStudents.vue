@@ -27,7 +27,9 @@
             </div>
           </div>
           <div class="ans-detail">
-            <dash-right-remark-item v-if="item.type === 'media'" :item="item"/>
+            <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
+            <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
+            <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
           </div>
         </div>
       </li>
@@ -37,19 +39,34 @@
 <script>
 import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters } from 'vuex'
-import dashRightRemarkItem from './answer/dash-right-remark-item.vue'
+import dashRightRemarkItem from './dash-answer/dash-right-remark-item.vue'
+import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
+import DashRightChoiceItem from './answer/dash-right-choice-item.vue'
 export default {
-  components: { dashRightRemarkItem },
+  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem },
   computed: {
     ...mapState({
-      studentList: state => state.teacher.studentList
+      studentList: state => state.teacher.studentList,
+      allRemarks: state => state.remark.allRemarks,
+      studentAllSlides: state => state.student.studentAllSlides,
     }),
     ...mapGetters({
       currentPageAnswerList: 'student/currentPageAnswerList',
       currentPageId: 'student/currentPageId',
+      currentPageAnswerType: 'student/currentPageAnswerType',
     }),
+    currentComments() {
+      let list = []
+      if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
+        list = this.allRemarks.filter(
+          item => item.page_id === this.currentPageId
+        );
+      }
+      return list;
+    },
     answerList() {
-      let list = this.responseList.map(item => {
+      const res = this.currentPageAnswerType === 'comment' ? this.currentComments : this.currentPageAnswerList
+      let list = res.map(item => {
         const data = item.content ? {} : getJSONValue(item.data)
         return {
           ...item,
@@ -57,15 +74,8 @@ export default {
           ...data
         }
       })
-      console.log(list, 'righten')
+      // console.log(list, 'righten',res, this.currentPageAnswerType)
       return list;
-    },
-  },
-  props: {
-    // 暂时使用，带重构
-    responseList: {
-      type: Array,
-      default: () => []
     }
   },
   data() {

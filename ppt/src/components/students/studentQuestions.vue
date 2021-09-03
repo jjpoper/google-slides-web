@@ -167,7 +167,7 @@ export default {
   mounted() {
     // const selector = document.getElementById('diycolor_comment');
     // colorSelector.init(selector);
-    console.log(this.currentReamrkList, 'currentReamrkList')
+    // console.log(this.currentReamrkList, 'currentReamrkList')
   },
   beforeDestroy() {
     // colorSelector.destory()
@@ -193,7 +193,7 @@ export default {
       this.nextPosition = {offsetX: 0, offsetY: 0}
     },
     markup(e) {
-      console.log('click')
+      // console.log('click')
       if(this.markType === 1) {
         // 正在进行 comment 记录，不允许打点
         if(this.recordVisiable) return false
@@ -214,7 +214,7 @@ export default {
       }
     },
     startMove(e){
-      console.log('mousedown')
+      // console.log('mousedown')
       if(this.recordVisiable) return false
       if(this.markType === 2) {
         this.isBoxing = true
@@ -240,7 +240,7 @@ export default {
     mouseMoving(e) {
       if(this.markType === 2 && this.isBoxing) {
         const { offsetX, offsetY, clientX, clientY } = e;
-        // console.log(offsetX, offsetY, clientX, clientY)
+        // // console.log(offsetX, offsetY, clientX, clientY)
         this.nextPosition = {
           offsetX: clientX,
           offsetY: clientY - 50
@@ -249,7 +249,7 @@ export default {
     },
     mouseEnd() {
       if(this.isBoxing) {
-        console.log('mouseEnd')
+        // console.log('mouseEnd')
         this.markBox()
         this.isBoxing = false
       }
@@ -268,7 +268,7 @@ export default {
       this.startInputComment()
     },
     pauseEvent(e){
-      console.log('pauseEvent')
+      // console.log('pauseEvent')
       if(e.stopPropagation) e.stopPropagation();
       if(e.preventDefault) e.preventDefault();
       e.cancelBubble=true;
@@ -301,7 +301,7 @@ export default {
       this.changeRemarkIndex(-1)
     },
     closeRecord() {
-      console.log("end record");
+      // console.log("end record");
       this.recordVisiable = false;
       if (this.sendBusyStatus) {
         // 没有发送要删除这次打点
@@ -317,9 +317,9 @@ export default {
     },
     showDiy() {
       colorSelector.show(this.color, (rgb) => {
-        // console.log(d)
+        // // console.log(d)
          const selectorColor = colorSelector.utils.rgb2txt(rgb);
-         console.log(selectorColor)
+         // console.log(selectorColor)
          this.changeColor(selectorColor)
       });
     },
