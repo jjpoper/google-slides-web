@@ -1,6 +1,6 @@
 <template>
-  <div class="page">
-    <div class="content">
+  <div class="fullPage">
+    <!-- <div class="content">
       <strong class="title_text">Your Students are in Student-Paced Mode</strong>
 
       <img src="../../assets/share_icon.png" height="200px" width="220px" />
@@ -25,104 +25,125 @@
           <strong>Undo</strong>
         </div>
       </div>
+    </div> -->
+    <div class="lock-modal">
+      <img
+        src="../../assets/icon/dash-close.png"
+        width="20"
+        height="20"
+        class="close-btn"
+        @click="cancelModeChange()"
+      />
+      <p class="info title">Your Students are in Student-Paced Mode</p>
+      <div class="detail">
+        <img src="../../assets/picture/student-paced.png" class="teacher-lock"/>
+        <p class="info">
+          Navigating through slides in Student-Paced Mode will ont 
+          affectthe Projector or Student displays.To bring everyone 
+          back together,turn off Student-Paced.
+           <br />
+           To assign this for homework,send your students to
+           <br />
+           <span class="link">https://dev.classcipe.com/</span>
+        </p>
+      </div>
+      <div class="bottom">
+        <div class="confirm_btn" @click="confirmModeChange()">
+          <strong>Okay,Got It!</strong>
+        </div>
+
+        <div class="confirm_btn cancel" @click="cancelModeChange()">
+          <strong>Undo</strong>
+      </div>
+      </div>
     </div>
   </div>
 </template>
 
-
-
 <style scoped>
-.page {
+.fullPage {
+  display: flex;
   width: 100%;
   height: 100%;
   background-color: #000000;
-  opacity: 0.99;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 999999;
+  position: fixed;
+  top: 0;
+}
+.lock-modal{
+  width: 90%;
+  height: 510px;
+  position: relative;
+  background-color: #fff;
+  border-radius: 10px; 
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 200px;
+  box-sizing: border-box;
+  padding-top: 20px;
 }
-.content {
-  width: 80%;
-  height: 90%;
-  background-color: #0f3538;
-  border-radius: 6px;
-  padding: 10px;
+.detail{
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  padding:0 20px;
 }
-.title_text {
-  width: 626px;
-  height: 40px;
-  font-size: 24px;
+.close-btn{
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  cursor: pointer;
+}
+.teacher-lock{
+  width: 30%;
+  /* height: 306px; */
+  margin-right: 20px;
+}
+.info{
+  font-size: 22px;
   font-family: FZCuYuan-M03S;
-  font-weight: 400;
-  line-height: 24px;
-  color: #ffffff;
+  font-weight: 700;
+  line-height: 43px;
+  color: #05272A;
+  text-align: left;
+}
+.title{
+  font-size: 34px;
+  text-align: center;
+}
+.link{
+  color: rgba(21, 195, 154, 1);
+}
+.bottom{
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(237, 240, 243, 1);
+}
+.confirm_btn{
+  padding: 0 30px;
+  height: 50px;
+  background: #15C39A;
   opacity: 1;
-  margin-top: 40px;
-}
-.image_cotent {
-  width: 150px;
-  height: 150px;
-  margin-top: 30px;
-}
-.content_text {
-  width: 614px;
-  height: 112px;
+  border-radius: 25px;
+  color: #fff;
   font-size: 18px;
   font-family: FZCuYuan-M03S;
-  font-weight: 400;
-  line-height: 30px;
-  color: #ffffff;
-  opacity: 1;
-}
-.opt_area {
-  width: auto;
-  display: flex;
-  margin-top: 10px;
-}
-.confirm_btn {
-  width: 120px;
-  height: 40px;
-  background: #15c39a;
-  opacity: 1;
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 700;
+  line-height: 50px;
+  text-align: center;
   cursor: pointer;
-  color: #fff;
-  font-size: 16px;
-  font-family: FZCuYuan-M03S;
-  font-weight: 400;
 }
-/* .confirm_btn:hover {
-  background: #1a8dbe;
-} */
-
-.cancel_btn {
-  width: 120px;
-  height: 40px;
-  background: #d7d9d9;
-  border: 1px solid #bcbcbc;
-  opacity: 1;
-  border-radius: 25px;
-  cursor: pointer;
-  margin-left: 10px;
-  color: #000;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: FZCuYuan-M03S;
-  font-weight: 400;
+.cancel{
+  background-color: rgba(188, 188, 188, 1);
+  color:rgba(17, 20, 45, 1);
+  margin-left: 40px;
 }
-/* .cancel_btn:hover {
-  background: #c0c0c0;
-  color: #29abe2;
-} */
 </style>
 
 <script>
