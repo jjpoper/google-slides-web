@@ -3,17 +3,15 @@
     <div class="left-area">
       <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       <p>课程标题：{{className}}</p>
-      <el-dropdown>
-        <div class="more-icon"><i></i><i></i><i></i></div>
-        <el-dropdown-menu slot="dropdown">
-          <div class="dash-drop">
-            <div class="title">Settings</div>
-            <div class="tab">打开Projec端</div>
-            <div class="tab">Ipad/手机端控制</div>
-            <div class="tab">结束课程</div>
-          </div>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
+         <div class="dash-drop">
+          <div class="title">Settings</div>
+          <div class="tab" @click="openProject">Open project in new window</div>
+          <div class="tab">Ipad/手机端控制</div>
+          <div class="tab" @click="endLesson">End This Session</div>
+        </div>
+        <div class="more-icon" slot="reference"><i></i><i></i><i></i></div>
+      </el-popover>
     </div>
     <div class="invite-button" @click="share">
       <img src="../../assets/picture/invite.png" class="invite"/>
@@ -28,6 +26,12 @@ export default {
       type: Function,
       default: null
     },
+    openProject: {
+      type: Function,
+    },
+    endLesson: {
+      type: Function,
+    },
     onLine: {
       type: Boolean,
       default: false,
@@ -36,6 +40,11 @@ export default {
       type: String,
       default: false,
     },
+  },
+  methods: {
+    // openProject() {
+    //   this
+    // }
   }
 }
 </script>
@@ -110,15 +119,15 @@ export default {
 }
 .dash-drop{
   width: 236px;
-  padding-bottom: 50px;
+  padding-bottom: 20px;
 }
 .title{
   width: 100%;
-  height: 21px;
+  height: 50px;
   font-size: 16px;
   font-family: Segoe UI;
   font-weight: 400;
-  line-height: 21px;
+  line-height: 50px;
   color: #182552;
   text-align: center;
 }

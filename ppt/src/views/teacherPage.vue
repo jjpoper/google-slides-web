@@ -115,6 +115,8 @@
       :share="copyUrl"
       :onLine="onLine"
       :className="classRoomInfo.class_name"
+      :openProject="openProject"
+      :endLesson="endLesson"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -1429,7 +1431,7 @@ type: "slide"*/
       this.showCopyLinkDialog = false;
     },
     openProject() {
-      const url = `${location.origin}${location.pathname}#/class?slide_id=${this.slide_id}&page=${this.currentIndex}&class_id=${this.class_id}&type=classroom`;
+      const url = `${location.origin}/t/${this.class_id}?p=${this.currentIndex}`;
       window.open(url);
     },
     open(model) {
@@ -1446,25 +1448,10 @@ type: "slide"*/
         if (!this.page_model) {
           this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
         }
-        windowObjectReference.location =
-          "/index.html#/class?slide_id=" +
-          this.slide_id +
-          "&page=" +
-          this.currentIndex +
-          "&class_id=" +
-          this.class_id +
-          "&type=dashboard";
+        windowObjectReference.location = `/d/${this.class_id}?p=${this.currentIndex}`
       } else if (model == 1) {
         // console.log(1);
-        window.open(
-          "/index.html#/class?slide_id=" +
-            this.slide_id +
-            "&page=" +
-            this.currentIndex +
-            "&class_id=" +
-            this.class_id +
-            "&type=dashboard"
-        );
+        window.open(`/d/${this.class_id}?p=${this.currentIndex}`);
       }
     },
 

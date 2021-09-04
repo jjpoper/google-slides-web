@@ -128,7 +128,7 @@
     </div>
 
     
-    <el-popover v-if="!isDashboard" placement="top" width="400" trigger="hover" class="dropdown-icon">
+    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
       <!-- :open="open"
         :openProject="openProject" 
       :reopenClass="reopenClass"-->

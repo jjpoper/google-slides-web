@@ -454,6 +454,7 @@ svg {
   background-position: center;
   background-image: url(../../assets/picture/shouqi.png);
   cursor: pointer;
+  z-index: 99;
 }
 .shouqi.zhankai{
   top: 0;

@@ -12,6 +12,8 @@
     </div>
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
+        <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
+        <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
         <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
         <div class="user-name">{{item.name}}</div>
       </li>
@@ -60,6 +62,19 @@ export default {
       currentPageId: 'student/currentPageId',
       currentPageAnswerType: 'student/currentPageAnswerType',
     }),
+    // 未答题学生
+    noAnswerStudents() {
+      let noList = []
+      for(let i = 0; i < this.studentList.length; i++) {
+        const currentUser = this.studentList[i]
+        const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
+        if(index === -1) {
+          noList.push(currentUser)
+        }
+      }
+      // console.log(noList)
+      return noList
+    },
     currentComments() {
       let list = []
       if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
@@ -222,6 +237,11 @@ export default {
     align-items: center;
     padding-left: 50px;
     box-sizing: border-box;
+  }
+  .ans-status{
+    width: 21px;
+    height: 21px;
+    margin-right: 14px;
   }
   .showResButoon{
     width: 120px;
