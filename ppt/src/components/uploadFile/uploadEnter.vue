@@ -14,7 +14,7 @@
             action="https://dev.api.newzealand.actself.me/file/upload"
             :on-success="onSuccess"
             :show-file-list="false"
-            accept="image/png, image/jpeg, image/webp, image/gif"
+            accept="image/png, image/jpeg, image/webp, image/gif, video/mp4,"
             list-type="picture">
               <el-dropdown-item icon="el-icon-folder-add"  style="font-size:30px;text-align: center; margin-bottom: 5px"/>
           </el-upload>
@@ -113,8 +113,13 @@ export default {
   methods: {
     onSuccess(response, file, fileList) {
       // console.log(response.data, file, fileList);
+      const name = file.name
+      let type = 'image'
+      if(name.indexOf('mp4') > -1) {
+        type = 'video'
+      }
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
-        type: 'image',
+        type,
         url: response.data
       });
     },
