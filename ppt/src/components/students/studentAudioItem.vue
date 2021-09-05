@@ -17,7 +17,7 @@
           action="https://dev.api.newzealand.actself.me/file/upload"
           :on-success="onUpload"
           :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf"
+          accept=".doc, .docx, .pdf, application/pdf,audio/mp3,video/mp4,"
           list-type="picture"
         >
           <img src="../../assets/picture/add.png" class="remark-button" />
@@ -151,7 +151,14 @@ export default {
     },
     onUpload(response, file, fileList) {
       // console.log(response.data, file.name, fileList);
-      this.sendCommentCb(response.data, "file", file.name);
+      const name = file.name
+      let type = 'file'
+      if(name.indexOf('mp4') > -1) {
+        type = 'video'
+      } else if(name.indexOf('mp3') > -1) {
+        type = 'audio'
+      }
+      this.sendCommentCb(response.data, type, file.name);
     },
     sendCommentCb(link, mediaType = "", fileName) {
       this.cancelRecord();
@@ -337,7 +344,7 @@ export default {
 }
 video {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   object-fit: cover;
 }
 .file-icon {
