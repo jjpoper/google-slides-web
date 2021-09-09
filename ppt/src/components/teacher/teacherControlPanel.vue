@@ -18,10 +18,10 @@
 
     <template v-if="isDashboard">
       <div
-        :class="overviewModalVisiable ? 'button_area back_focus' : 'button_area'"
+        :class="dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'"
         style="margin-right: 20px"
       >
-        <div class="meterialimage" @click="showTips">
+        <div class="meterialimage" @click="showDashTips">
           <div class="fullbgimg dash-tip"></div>
         </div>
       </div>
@@ -216,14 +216,14 @@ export default {
       type: Boolean,
       default: false
     },
-    overviewModalVisiable: {
+    dashTipsModalVisiable: {
       type: Boolean,
       default: false
     },
     changePage: {
       type: Function
     },
-    showTips: {
+    showDashTips: {
       type: Function
     },
     turnOff: {

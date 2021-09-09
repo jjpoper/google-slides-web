@@ -65,8 +65,8 @@
           :setTimeDialogShow="setTimeDialogShow"
           :changeShowMetrial="changeShowMetrial"
           :meterialVisiable="meterialVisiable"
-          :showTips="showTips"
-          :overviewModalVisiable="overviewModalVisiable"
+          :showDashTips="showDashTips"
+          :dashTipsModalVisiable="dashTipsModalVisiable"
         />
       </div>
     </template>
@@ -219,6 +219,13 @@
         :closeBtn="closeCopyDialog"
       />
     </el-dialog>
+    <el-dialog
+      :visible.sync="dashTipsModalVisiable"
+      custom-class="custom-dialog"
+      width="80%"
+    >
+      <dash-tips-modal :close="showDashTips"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -270,6 +277,7 @@ import dashCopyDialog from "../components/teacher/dashCopyDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
 import DashHeader from "@/components/teacher/dashHeader.vue";
+import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
 import { mapActions } from "vuex";
 export default {
   components: {
@@ -286,7 +294,8 @@ export default {
     StudentPacedNote,
     StudentsQsModal,
     DashHeader,
-    dashCopyDialog
+    dashCopyDialog,
+    dashTipsModal
   },
 
   /*author: "yujj085@gmail.com"
@@ -343,6 +352,7 @@ type: "slide"*/
       allAddedMediaList: [],
       meterialVisiable: false,
       overviewModalVisiable: false,
+      dashTipsModalVisiable: true,
       firstJoined: true
     };
   },
@@ -458,8 +468,8 @@ type: "slide"*/
       "updateLatestRemarkId",
       "addOneRemarkItem"
     ]),
-    showTips() {
-      this.overviewModalVisiable = !this.overviewModalVisiable
+    showDashTips() {
+      this.dashTipsModalVisiable = !this.dashTipsModalVisiable
     },
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
@@ -1669,7 +1679,7 @@ type: "slide"*/
   bottom: 0%;
   left: 0%;
   background-color: #000000af;
-  z-index: 99999;
+  z-index: 999;
 }
 .top_btn {
   position: fixed;
