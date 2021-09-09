@@ -75,7 +75,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.studentList);
+    // console.log(this.studentList);
   },
 
   methods: {
@@ -100,7 +100,7 @@ export default {
       return "Teacher" + "  " + onLine + "/" + total;
     },
     opt(index, data) {
-      console.log(data[index].name);
+      // console.log(data[index].name);
     },
   },
 };

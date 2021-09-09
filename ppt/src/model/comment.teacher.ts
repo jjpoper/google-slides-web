@@ -35,7 +35,7 @@ export const addTeacherCommentData = (oldData: any) => {
     data: JSON.stringify(oldData)
   }
   teacherAllCommentList.unshift(data)
-  // console.log(data, 'teacherAllCommentList')
+  // // console.log(data, 'teacherAllCommentList')
 }
 
 // 获取老师端评论数据
@@ -48,7 +48,7 @@ export const getTeacherCurrentItemCommentList = (pageId: string, itemId: string,
     return false
   })
   const mapData = filterData.map((item) => {
-    console.log(item, '=====')
+    // console.log(item, '=====')
     return {
       ...JSON.parse(item.data),
       // @ts-ignore

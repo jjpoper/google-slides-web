@@ -54,7 +54,7 @@ export default {
   },
   watch: {
     'selectedIndex'() {
-      console.log('1====')
+      // console.log('1====')
       if(this.selectedIndex > -1) {
         this.$nextTick(() => {
           if(this.$refs.activeRef) {

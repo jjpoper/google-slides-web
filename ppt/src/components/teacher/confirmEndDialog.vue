@@ -63,7 +63,7 @@ export default {
     if (this.class_name && this.class_name != "nunamed") {
       this.input_name = this.class_name;
     }
-    console.log(this.class_name);
+    // console.log(this.class_name);
   },
   methods: {
     closeClass() {

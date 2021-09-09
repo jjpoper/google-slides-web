@@ -15,7 +15,8 @@
     <div class="text-scroll">
       <div class="text-answer-list">
         <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
-          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
+          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${flag_1 ? 'dash-outer' : 'full-text-area'}`"
+            >
             <div
               v-if="shouldShow(item)"
               :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
@@ -115,7 +116,7 @@ export default {
         }
       })
       list = this.resortList(list)
-      console.log(list)
+      // console.log(list)
       return list;
     },
   },
@@ -163,7 +164,7 @@ export default {
           label: 'sort by response'
         },
       ]
-      console.log('init =====')
+      // console.log('init =====')
   },
   // watch: {
   //   sortValue() {
@@ -223,7 +224,7 @@ export default {
         }
         return newList
       } catch(e) {
-        console.log(e)
+        // console.log(e)
         return []
       }
     },
@@ -248,7 +249,7 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #F4F4F4;
+  background-color: #fff;
 }
 .text-answer-tab{
   width: 100%;
@@ -324,6 +325,10 @@ export default {
   height: 290px;
   width: 100%;
   position: relative;
+  margin: 0 auto;
+}
+.text-item-outer1.dash-outer{
+  width: 80%;
 }
 .text-item-outer5{
   width: 100%;

@@ -78,7 +78,7 @@ export default {
       currentPageIndex: state => state.student.currentPageIndex,
     }),
     currentAnswerd() {
-      console.log(this.answerdPage[this.currentPageIndex])
+      // console.log(this.answerdPage[this.currentPageIndex])
       return this.answerdPage[this.currentPageIndex]
     }
   },

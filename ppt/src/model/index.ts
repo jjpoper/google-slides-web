@@ -20,13 +20,13 @@ export const getAllPPTS = async (slideid: string) => {
     slide_id: slideid,
   })
   let { pages = [] } = data.data.data
-  // console.log(data.data.data)
+  // // console.log(data.data.data)
   try {
     // list = data.data.data.pages.filter((item: any) => {
     //   return item.items.type === 'choice'
     // })
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return {
     pages
@@ -47,7 +47,7 @@ export const requestRefreshPPT = async (slideid: string, _token: string) => {
 //查询当前课程状态
 
 export const queryClassStatus = async (classId: string, _token: string) => {
-  console.log(classId)
+  // console.log(classId)
   const data = await axios.post(`${PPT.requestUrl}slide/get_class`, {
     class_id: classId,
     token: _token,
@@ -134,11 +134,11 @@ export const getTeacherLoginUrl = async (): Promise<string> => {
   })
   let authUrl = ''
   // let list = data.data.data.pages
-  // // console.log(data.data.data)
+  // // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return authUrl
 }
@@ -164,11 +164,11 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
     logout: false
   }
   // let list = data.data.data.pages
-  // // console.log(data.data.data)
+  // // // console.log(data.data.data)
   try {
     result = data.data.data
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result
 }
@@ -180,11 +180,11 @@ export const getStudentLoginUrl = async (): Promise<string> => {
   })
   let authUrl = ''
   // let list = data.data.data.pages
-  // // console.log(data.data.data)
+  // // // console.log(data.data.data)
   try {
     authUrl = data.data.data.auth_url
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return authUrl
 }
@@ -198,11 +198,11 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
   })
   let result = []
   // // let list = data.data.data.pages
-  // // // console.log(data.data.data)
+  // // // // console.log(data.data.data)
   try {
     result = data.data.data
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result
 }
@@ -210,7 +210,7 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
 // 获取学生的答案
 export const getStudentClassAnswers = async (classId: string, token: string) => {
 
-  // console.log('=======', 'initStudentData')
+  // // console.log('=======', 'initStudentData')
   const data = await axios.post(`${PPT.requestUrl}slide/get_student_response`, {
     class_id: classId,
     role: "student",
@@ -218,11 +218,11 @@ export const getStudentClassAnswers = async (classId: string, token: string) => 
   })
   let result = []
   // // let list = data.data.data.pages
-  // // // console.log(data.data.data)
+  // // // // console.log(data.data.data)
   try {
     result = data.data.data
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result
 }
@@ -236,11 +236,11 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   })
   let result = []
   // // let list = data.data.data.pages
-  // // // console.log(data.data.data)
+  // // // // console.log(data.data.data)
   try {
     result = data.data.data.filter((item: any) => item.page_id)
   } catch(e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result.reverse()
 }
@@ -253,11 +253,11 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   })
   let result = []
   // // let list = data.data.data.pages
-  // // // console.log(data.data.data)
+  // // // // console.log(data.data.data)
   try {
     result = data.data.data.filter((item: any) => item.page_id)
   } catch(e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result.reverse()
 }
@@ -270,11 +270,11 @@ export const getAVComment = async (classId: string, token: string) => {
   })
   let result = []
   // // let list = data.data.data.pages
-  console.log(data.data)
+  // console.log(data.data)
   try {
     result = data.data
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
 
   return result;
@@ -310,12 +310,12 @@ const makeXMLHttpRequest = (url: string, data: any, callback: any) => {
 
   request.upload.onerror = (error) => {
     callback('onerror');
-    // console.error('XMLHttpRequest failed', error);
+    // // console.error('XMLHttpRequest failed', error);
   };
 
   request.upload.onabort = (error) => {
     callback('Upload aborted.');
-    // console.error('XMLHttpRequest aborted', error);
+    // // console.error('XMLHttpRequest aborted', error);
   };
 
   request.open('POST', url);
@@ -336,7 +336,7 @@ export const saveUserConfig = async (token: string, key: string, value: string) 
 
 // 上传文件
 export const upLoadFile = async (mp4: Blob) => {
-  // console.log(file)
+  // // console.log(file)
   // const data = await axios.post(`${PPT.requestUrl}upload`, {
   //   file
   // })
@@ -352,7 +352,7 @@ export const upLoadFile = async (mp4: Blob) => {
     // var upload_directory = upload_url;
 
     makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData, (progress: string, result: any) => {
-      console.log(progress, '===progress===')
+      // console.log(progress, '===progress===')
       if (progress === 'upload-ended') {
         res(JSON.parse(result))
       }
@@ -379,7 +379,7 @@ export const getOnlineImage = async (url: string) => {
   try {
     result = data.data.data
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result;
 }
@@ -401,7 +401,7 @@ export const addElementItem = async (slideId: string, pageId: string, type: stri
   try {
     result = data.data.data.id
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return parseInt(result);
 
@@ -416,7 +416,7 @@ export const deleteElementItem = async (id: number) => {
   try {
     result = data.data.code
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result;
 
@@ -436,7 +436,7 @@ export const updateElementItem = async (id: number, content: string, type: strin
   try {
     result = data.data.code
   } catch (e) {
-    // console.log(e)
+    // // console.log(e)
   }
   return result;
 

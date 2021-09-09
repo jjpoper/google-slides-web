@@ -17,10 +17,10 @@
           action="https://dev.api.newzealand.actself.me/file/upload"
           :on-success="onUpload"
           :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf"
+          accept=".doc, .docx, .pdf, application/pdf,audio/mp3,video/mp4,"
           list-type="picture"
         >
-          <img @click="upload" src="../../assets/picture/add.png" class="remark-button" />
+          <img src="../../assets/picture/add.png" class="remark-button" />
         </el-upload>
       </el-tooltip>
     </div>
@@ -45,7 +45,12 @@
           />
         </div>
       </li>
-      <li class="remark-list-item" v-for="item in answerList" :key="item.id">
+      <li
+        class="remark-list-item" 
+        v-for="(item, index) in answerList" :key="item.id"
+        :tabindex="index === 0 ? '0' : ''"
+        :ref="index === 0 ? 'activeRef': ''"
+      >
         <div class="item-header">
           <div class="user-info">
             <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
@@ -123,7 +128,7 @@ export default {
     }
   },
   created() {
-    console.log(this.currentPageAnswerList);
+    // console.log(this.currentPageAnswerList);
   },
   data() {
     return {
@@ -150,8 +155,15 @@ export default {
       this.recordType = null;
     },
     onUpload(response, file, fileList) {
-      console.log(response.data, file.name, fileList);
-      this.sendCommentCb(response.data, "file", file.name);
+      // console.log(response.data, file.name, fileList);
+      const name = file.name
+      let type = 'file'
+      if(name.indexOf('mp4') > -1) {
+        type = 'video'
+      } else if(name.indexOf('mp3') > -1) {
+        type = 'audio'
+      }
+      this.sendCommentCb(response.data, type, file.name);
     },
     sendCommentCb(link, mediaType = "", fileName) {
       this.cancelRecord();
@@ -163,6 +175,7 @@ export default {
       });
       // 已答
       this.updateAnswerdPage(this.currentPageIndex);
+      this.focusIndex()
       // 追加问答内容
       // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
       // this.updateAllAnswerdList({
@@ -187,6 +200,13 @@ export default {
       if (name.indexOf(".pdf") > -1) return "pdf";
       if (name.indexOf(".doc") > -1) return "word";
       return "file";
+    },
+    focusIndex() {
+      this.$nextTick(() => {
+        if(this.$refs.activeRef) {
+          this.$refs.activeRef[0].focus();
+        }
+      });
     }
   }
 };
@@ -337,7 +357,7 @@ export default {
 }
 video {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   object-fit: cover;
 }
 .file-icon {

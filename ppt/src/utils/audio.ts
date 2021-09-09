@@ -31,7 +31,7 @@ const captureMicrophone = async () => {
     microphone = mic
     res(true)
   }).catch((error) => {
-    showToast('Unable to capture your microphone. Please check console logs.');
+    showToast('Unable to capture your microphone. Please check // console logs.');
     rej()
   });
   })

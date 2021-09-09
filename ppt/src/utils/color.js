@@ -98,7 +98,7 @@ var cb;
 var renderID = -1;
 
 var init = function (dom) {
-  console.log(dom)
+  // console.log(dom)
 
   // 初始化检查
   if (!dom || mainDom)
@@ -310,7 +310,7 @@ var show = function (color, callback) {
     text = utils.rgb2txt(utils.txt2rgb(color));
   else
     text = utils.rgb2txt(color);
-  console.log(text)  
+  // console.log(text)  
   elements.previous.style.backgroundColor = text;
   elements.colorText.value = text;
   value = utils.rgb2hsv(utils.txt2rgb(text));

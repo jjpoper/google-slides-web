@@ -195,7 +195,7 @@ export default {
       const { pageId, itemId, studentId, title, isStar } = this.data;
       const nextStatus = !isStar;
       const type = "star";
-      console.log("星标", this.data);
+      // console.log("星标", this.data);
       EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
         pageId,
         itemId,
@@ -206,12 +206,12 @@ export default {
       });
     },
     comment() {
-      console.log("回复");
+      // console.log("回复");
       this.showComment(ModalEventsTypeEnum.TEXT)
     },
     showComment(type) {
       const { pageId, itemId, studentId, title, name, answertime } = this.data;
-      console.log(answertime)
+      // console.log(answertime)
       EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
         pageId,
         itemId,
@@ -223,7 +223,7 @@ export default {
       });
     },
     hideResponse() {
-      console.log("隐藏");
+      // console.log("隐藏");
       const { pageId, itemId, studentId, title, isShowRes } = this.data;
       const nextStatus = !isShowRes;
       const type = "show";

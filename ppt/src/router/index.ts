@@ -15,17 +15,15 @@ const routes: Array<RouteConfig> = [
     component: () => import('../views/students.vue'),
   },
   {
-    path: '/d',
+    path: '/d/:id',
     name: 'd',
     component: () => import('../views/teacherPage.vue'),
   },
-
   {
     path: '/c/:id',
     name: 'c',
     component: () => import('../views/teacherPage.vue'),
   },
-
   {
     path: '/test',
     name: 'test',

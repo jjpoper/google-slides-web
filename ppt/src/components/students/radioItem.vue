@@ -77,7 +77,7 @@ export default {
       this.pageId,
       this.data.items[0].type
     );
-    console.log(result, "result");
+    // console.log(result, "result");
     if (result && result.length > 0) {
       const { answer, locked } = result[0];
       this.radio = parseInt(answer);
@@ -85,7 +85,7 @@ export default {
       if (this.showCorrect) {
         this.showCorrect = this.hasAnswer();
       }
-      console.log(this.radio, "result");
+      // console.log(this.radio, "result");
     }
   },
   methods: {

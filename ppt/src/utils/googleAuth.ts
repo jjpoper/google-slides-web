@@ -38,7 +38,7 @@ export const getppts = async (pageObjectId: string, slideId: string) => {
   })
   return response.result.contentUrl
   // .then(function (response: any) {
-  //   // console.log(response.result.contentUrl);
+  //   // // console.log(response.result.contentUrl);
   //   // resPic(response.result.contentUrl);
   // }, function () { });
 }
@@ -48,7 +48,7 @@ function listSlides(res: any, slideId: string) {
     presentationId: slideId,
   }).then(function (response: any) {
     var presentation = response.result;
-    // console.log(presentation);
+    // // console.log(presentation);
     var slides = presentation.slides;
     res(slides)
     // getppts(slides[0].objectId, res);
@@ -56,7 +56,7 @@ function listSlides(res: any, slideId: string) {
     // for (let i = 0; i < slides; i++) {
     //   const item = slides[i];
     //   var fn = new Promise((resPic) => {
-    //     console.log(item.objectId);
+    //     // console.log(item.objectId);
     //     resPic(getppts(item.objectId));
     //   });
     //   pall.push(fn);
@@ -72,7 +72,7 @@ function listSlides(res: any, slideId: string) {
  *  appropriately. After a sign-in, the API is called.
  */
 function updateSigninStatus(isSignedIn: boolean, res: any, slideId: string) {
-  // console.log('3', isSignedIn)
+  // // console.log('3', isSignedIn)
   if (isSignedIn) {
     listSlides(res, slideId);
   }
@@ -83,7 +83,7 @@ function updateSigninStatus(isSignedIn: boolean, res: any, slideId: string) {
  *  listeners.
  */
 function initClient(res: any, rej: any) {
-  // console.log('===')
+  // // console.log('===')
   gapi.client.init({
     apiKey: API_KEY,
     clientId: CLIENT_ID,
@@ -92,11 +92,11 @@ function initClient(res: any, rej: any) {
   }).then(function(e: any) {
     // Listen for sign-in state changes.
     // gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-    console.log('2', e)
+    // console.log('2', e)
     // Handle the initial sign-in state.
     res(true)
   }, function(e: any) {
-    console.log('2', e)
+    // console.log('2', e)
     rej(false)
   });
 }

@@ -71,7 +71,7 @@ export const getStudentCurrentPageAnswerList = (pageId: string, type: string) =>
   // const list = getStudentStore(`c_p_a_${pageId}_${type}`)
   // @ts-ignore
   const newl = getCurrentPageStudentAnswerList(pageId, type)
-  // console.log(newl, '=========')
+  // // console.log(newl, '=========')
   return newl && newl.length > 0 ? newl : []
 }
 
@@ -87,7 +87,7 @@ export const saveStudentsCurrentPageAnswerList = (pageId: string, type: string, 
   // // 筛选已有答案
   // const filterData = storeList.filter((item: any) => item.key !== key);
   // filterData.push(data);
-  // console.log(filterData);
+  // // console.log(filterData);
   // saveStudentStore(`c_p_a_${pageId}_${type}`, filterData);
   addStudentData(pageId, type, {...data, user_id: studentId})
 }
@@ -120,7 +120,7 @@ export const addStudentComment = (data: StudentCommentItem) => {
   // // }
   // list.unshift(data)
   // saveStudentStore('commentList', list)
-  console.log(data)
+  // console.log(data)
   unreadList.push(data.id)
   addStudentCommentData(data)
 }

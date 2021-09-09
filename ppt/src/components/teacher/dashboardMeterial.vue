@@ -5,7 +5,6 @@
       :teacher="true"
       :filterAddedMediaList="filterAddedMediaList"
       :defaultShowMeterial="true"
-      :widthOffset="270"
     />
   </div>
 </template>

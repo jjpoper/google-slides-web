@@ -72,6 +72,9 @@ html, button, input, select, textarea {
   background-position: center;
   position: absolute;
 }
+::-webkit-scrollbar {
+    display: none;
+}
 </style>
 <script>
 import "./utils/pptConfig";
@@ -81,19 +84,19 @@ export default {
     window.winHeight = document.documentElement.clientHeight;
 
     window.onblur = function(e){
-      // console.log("未激活状态！ window状态")
+      // // console.log("未激活状态！ window状态")
       window.isWindowActive = false
     }
     window.onfocus = function(e){
-      // console.log("激活状态！window状态")
+      // // console.log("激活状态！window状态")
       window.isWindowActive = true
     }
     document.body.onmouseleave = function(e){
-      // console.log("未激活状态！ window状态")
+      // // console.log("未激活状态！ window状态")
       window.isWindowActive = false
     }
     document.body.onpointerenter = function(e){
-      // console.log("激活状态！window状态")
+      // // console.log("激活状态！window状态")
       window.isWindowActive = true
     }
   },

@@ -17,7 +17,7 @@ let teacherData: TeacherDataItem[] = []
 
 export const initTeacherData = async (classId: string, token: string) => {
   const list = await getTeacherClassAnswers(classId, token)
-  // console.log(list, 'listlistlist')
+  // // console.log(list, 'listlistlist')
   teacherData = list
   return list
 }
@@ -38,7 +38,7 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
     type
   }
   const { item_id: itemId, student_user_id: sid } = data
-  console.log(data, "addItem")
+  // console.log(data, "addItem")
   let oldDataIndex = -1
   if (type === 'choice' || type === 'number' || type === 'draw') {
     // 一条答案数据，去重
@@ -65,7 +65,7 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
       ...JSON.parse(item.data)
     }
   })
-  // console.log(mapData, teacherData)
+  // // console.log(mapData, teacherData)
   return mapData
 }
 

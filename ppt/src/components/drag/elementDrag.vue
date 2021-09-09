@@ -50,6 +50,11 @@
         <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
           <img :src="rect.url" class="full"/>
         </div>
+        <div v-if="rect.type === 'video'" class="meidaitem teacherppt full" >
+          <video :src="rect.url" class="full"
+            controlslist="nodownload"
+            controls/>
+        </div>
         <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
           <iframe
           class="full" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -112,10 +117,10 @@ export default {
       }
     },
     positiveChange(name) {
-      // console.log('notUpdate ==== changePosition positive change', name)
+      // // console.log('notUpdate ==== changePosition positive change', name)
     },
     deactivated(name) {
-      // console.log('notUpdate ==== changePosition deactivated change', name)
+      // // console.log('notUpdate ==== changePosition deactivated change', name)
     }
   }
 }

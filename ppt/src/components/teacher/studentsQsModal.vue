@@ -78,7 +78,7 @@ export default {
     }
   },
   created() {
-    console.log(this.list)
+    // console.log(this.list)
     this.marks = this.list.map((item) => {
       return {
         ...item,

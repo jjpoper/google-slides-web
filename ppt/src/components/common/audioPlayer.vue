@@ -120,11 +120,11 @@
       },
       // 当音频开始等待
       onWaiting (res) {
-        console.log(res)
+        // console.log(res)
       },
       // 当音频开始播放
       onPlay (res) {
-        console.log(res)
+        // console.log(res)
         this.audio.playing = true
         this.audio.loading = false
         if(!this.controlList.onlyOnePlaying){
@@ -140,15 +140,15 @@
       },
       // 当timeupdate事件大概每秒一次，用来更新音频流的当前播放时间
       onTimeupdate(res) {
-        // console.log('timeupdate')
-        // console.log(res.target.currentTime)
+        // // console.log('timeupdate')
+        // // console.log(res.target.currentTime)
         this.audio.currentTime = res.target.currentTime
         this.sliderTime = parseInt(this.audio.currentTime / this.audio.maxTime * 100)
       },
       // 当加载语音流元数据完成后，会触发该事件的回调函数
       // 语音元数据主要是语音的长度之类的数据
       loadedmetadata(res) {
-        // console.log('loadedmetadata', res.target.duration)
+        // // console.log('loadedmetadata', res.target.duration)
         // this.audio.waiting = false
         // this.audio.maxTime = parseInt(res.target.duration)
       },
@@ -160,9 +160,9 @@
             firsthandAudio.currentTime = 10000000 * Math.random();
           }
           this.audio.waiting = false
-          this.$refs.audio.currentTime = 0
+          if(this.$refs.audio) this.$refs.audio.currentTime = 0
           this.audio.maxTime  = firsthandAudio.duration;
-          console.log('done', this.audio.maxTime)
+          // console.log('done', this.audio.maxTime)
         }
       },
     },

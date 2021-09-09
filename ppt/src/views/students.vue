@@ -368,7 +368,7 @@ export default {
   },
   watch: {
     currentIndex() {
-      console.log("set elements");
+      // console.log("set elements");
       if (this.slides && this.slides[this.currentIndex]) {
         this.setElements(this.slides[this.currentIndex].elements);
       }
@@ -428,12 +428,12 @@ export default {
     ]),
     changeTipShow() {
       this.showTip = !this.showTip;
-      console.log("change show !!" + this.showTip);
+      // console.log("change show !!" + this.showTip);
     },
     loadDiyPainter() {
       this.$nextTick(() => {
         const selector = document.getElementById("diycolor_comment");
-        console.log(selector, "selector");
+        // console.log(selector, "selector");
         colorSelector.init(selector);
       });
     },
@@ -526,7 +526,7 @@ export default {
     },
     goToLogin() {
       getStudentLoginUrl().then(url => {
-        console.log(url);
+        // console.log(url);
         if (url) {
           location.href = url;
         }
@@ -562,7 +562,7 @@ export default {
       }
     },
     getAllSlides() {
-      console.log("list", "========");
+      // console.log("list", "========");
       initStudentCommentData(this.class_id, this.token).then(() => {
         this.studentCommentLoaded = true;
       });
@@ -570,7 +570,7 @@ export default {
         initStudentData(this.class_id, this.token),
         getAllPPTS(this.slide_id)
       ]).then(([allA, { pages: list }]) => {
-        console.log(list, "========");
+        // console.log(list, "========");
         // vuex缓存答案
         this.setAllAnswerdList(allA);
         this.slides = list;
@@ -579,6 +579,7 @@ export default {
         this.getItemData();
         hideLoading();
         this.loadDiyPainter();
+        this.joinRoom();
       });
     },
     sendCanvas(base64Url, texturl) {
@@ -607,7 +608,7 @@ export default {
     },
     // 发送text
     answerText(index, msg, show) {
-      console.log("index==" + index + "  msg==" + msg);
+      // console.log("index==" + index + "  msg==" + msg);
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       this.emitSo(
@@ -626,7 +627,7 @@ export default {
       this.currentItemData = null;
       this.$nextTick(() => {
         this.currentItemData = this.slides[this.currentIndex];
-        console.log(this.currentItemData);
+        // console.log(this.currentItemData);
         this.checkCurrentAnswerd();
         this.isShowRightAnswer();
         if (
@@ -639,7 +640,7 @@ export default {
           this.smallWindow = false;
         }
         if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
-          console.log("学生go-to-page");
+          // console.log("学生go-to-page");
           this.emitSo(
             "go-to-page",
             `{"room": "${this.class_id}", "token": "${
@@ -652,7 +653,7 @@ export default {
       });
     },
     pageChange(page) {
-      console.log(page, "pageChange", this.currentIndex);
+      // console.log(page, "pageChange", this.currentIndex);
       const nextPage = page - 1;
       if (this.currentIndex != nextPage) {
         this.currentIndex = nextPage;
@@ -660,7 +661,7 @@ export default {
         this.isShowRightAnswer();
         this.isShowQuestion = true;
       } else {
-        console.log("已是当前页码，不用切换", "pageChange");
+        // console.log("已是当前页码，不用切换", "pageChange");
       }
     },
     afterLogin({ user_name, email }) {
@@ -681,20 +682,19 @@ export default {
       queryClassStatus(this.class_id, this.token)
         .then(res => {
           this.classRoomInfo = res;
-          console.log(this.classRoomInfo);
+          // console.log(this.classRoomInfo);
           this.initRoomConfig(res);
           this.afterConnectRoom();
         })
         .catch(res => {
-          console.log(res);
+          // console.log(res);
         });
     },
     afterConnectRoom() {
-      this.joinRoom();
       this.getAllSlides();
       getAVComment(this.class_id, this.token)
         .then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == "ok") {
             let marks = [];
             for (let i = 0; i < res.data.length; i++) {
@@ -707,7 +707,7 @@ export default {
           }
         })
         .catch(res => {
-          console.log(res);
+          // console.log(res);
         });
     },
     //处理deadline事件
@@ -762,7 +762,7 @@ export default {
             "rename",
             `{"room": "${this.class_id}", "user_id": "${this.uid}", "token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${this.uname}"}`
           );
-
+          // console.log(this.slides[this.currentIndex].page_id)
           this.emitSo(
             "go-to-page",
             `{"room": "${this.class_id}", "token": "${
@@ -782,13 +782,13 @@ export default {
       });
     },
     msgListener(d) {
-      console.log(d, d.mtype, "====收到消息命令");
+      // console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
           this.pageChange(parseInt(d.params.page) + 1);
         } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
-          console.log(d.type, "===收到的消息类型", d.params.mode);
+          // console.log(d.type, "===收到的消息类型", d.params.mode);
           this.currentModel =
             d.params.mode === "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
@@ -826,10 +826,10 @@ export default {
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
         const index = this.slides.findIndex(item => d.page_id === item.page_id);
         this.slides[index].elements.push({ id: d.id, ...d.data });
-        console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
+        // console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        // console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
+        // // console.log('this.allAddedMediaList', 'UPDATE_MEDIA_ELEMENT', d)
         // const {id} = d.data
         // const index = this.slides.findIndex(item => d.page_id === item.page_id)
         // const list = this.slides[index].elements
@@ -839,7 +839,7 @@ export default {
         // this.slides[this.currentIndex].elements.push(d.data)
       } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
-        console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
+        // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
         const list = this.slides[this.currentIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
@@ -892,7 +892,7 @@ export default {
       // this.questionModalVisiable = !this.questionModalVisiable;
     },
     answerChoice(v, locked, typeParam) {
-      console.log("change answer==" + v, this.currentSo);
+      // console.log("change answer==" + v, this.currentSo);
       if (!typeParam || typeParam != "text") {
         const { page_id, items } = this.currentItemData;
         const { type } = items[0];
@@ -914,13 +914,13 @@ export default {
       // // this.allAnswers[pid] = v;
       // this.$set(this.allAnswers, pid, v);
       // // this.$forceUpdate()
-      // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
+      // // console.log(this.allAnswers, "====", this.allAnswers[this.currentPageId]);
     },
     emitSo(action, message) {
       this.checkCurrentAnswerd();
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        // console.log(action, message);
+        // // console.log(action, message);
         this.currentSo.emit(action, message);
       }
     },
@@ -1003,7 +1003,7 @@ export default {
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       this.link = link;
-      console.log("sendAudioOrVideoAnswer", page_id);
+      // console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
         `{"room": "${this.class_id}", "type":"media", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`

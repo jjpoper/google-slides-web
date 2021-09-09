@@ -1,9 +1,8 @@
 <template>
   <div v-if="url" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
-      
     </div>
-    <div v-else class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
+    <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark"/>
     </div>
     <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
@@ -108,7 +107,7 @@ export default {
     // if(!this.defaultShowMeterial) {
     //   EventBus.$on(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, (status) => {
     //     this.meterialVisiable = status
-    //     console.log(status)
+    //     // console.log(status)
     //   })
     // }
   },
@@ -179,7 +178,7 @@ export default {
       if(this.rectingDelay) clearTimeout(this.rectingDelay)
       const data = this.filterAddedMediaList[index]
       this.rectingDelay = setTimeout(() => {
-        console.log(newRect, data)
+        // console.log(newRect, data)
         const {
           height: h,
           left: x,
@@ -225,7 +224,7 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   height: 100%;
-  overflow-y: scroll;
+  overflow: hidden;
   position: absolute;
   top: 0;
 }

@@ -14,7 +14,7 @@
             action="https://dev.api.newzealand.actself.me/file/upload"
             :on-success="onSuccess"
             :show-file-list="false"
-            accept="image/png, image/jpeg, image/webp, image/gif"
+            accept="image/png, image/jpeg, image/webp, image/gif, video/mp4,"
             list-type="picture">
               <el-dropdown-item icon="el-icon-folder-add"  style="font-size:30px;text-align: center; margin-bottom: 5px"/>
           </el-upload>
@@ -112,9 +112,14 @@ export default {
   },
   methods: {
     onSuccess(response, file, fileList) {
-      console.log(response.data, file, fileList);
+      // console.log(response.data, file, fileList);
+      const name = file.name
+      let type = 'image'
+      if(name.indexOf('mp4') > -1) {
+        type = 'video'
+      }
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
-        type: 'image',
+        type,
         url: response.data
       });
     },
@@ -154,7 +159,7 @@ export default {
     addDrive() {
       GooglePicker.init((type, res) => {
         if(res) {
-          // console.log('===done', data, d)
+          // // console.log('===done', data, d)
           const {data} = JSON.parse(res)
           EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
             type: 'image',
@@ -177,12 +182,12 @@ export default {
         }
       })
       .then((response) => {
-        // console.log(d)
+        // // console.log(d)
         return response.json()
       })
       .then((d) => {
         hideLoading()
-        console.log(d.items)
+        // console.log(d.items)
         if(d.items.length > 0) {
           this.imagesList = d.items
         }
@@ -201,7 +206,7 @@ export default {
       .then((url) => {
         hideLoading()
         this.closeImageSearch()
-        console.log(url)
+        // console.log(url)
         EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
           type: 'image',
           url

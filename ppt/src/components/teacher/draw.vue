@@ -99,16 +99,16 @@ export default {
         try {
           stringData = JSON.parse(item.data)
         } catch(e) {
-          console.log(e)
+          // console.log(e)
         }
-        console.log(stringData)
+        // console.log(stringData)
         return {
           ...item,
           ...stringData
         }
       })
       list = this.resortList(list)
-      console.log(list)
+      // console.log(list)
       return list;
     },
     currentPPTUrl() {
@@ -159,7 +159,7 @@ export default {
           label: 'sort by response'
         },
       ]
-      console.log('init =====')
+      // console.log('init =====')
   },
   // watch: {
   //   sortValue() {
@@ -219,7 +219,7 @@ export default {
         }
         return newList
       } catch(e) {
-        console.log(e)
+        // console.log(e)
         return []
       }
     },
@@ -244,7 +244,7 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #F4F4F4;
+  background-color: #fff;
 }
 .text-answer-tab{
   width: 100%;

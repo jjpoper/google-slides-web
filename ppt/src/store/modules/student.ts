@@ -33,6 +33,21 @@ const getters = {
         } = currentState
         return studentAllSlides[currentPageIndex].page_id
     },
+    currentPagePPTData: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        return studentAllSlides[currentPageIndex]
+    },
+    currentPageAnswerType: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        const itemData = studentAllSlides[currentPageIndex]
+        return itemData.items[0] ? itemData.items[0].type : 'none'
+    },
 }
 
 // actions
@@ -93,7 +108,7 @@ const mutations = {
         } else {
             // const { item_id: itemId, student_user_id: sid, type } = data
             // const pageId = studentAllSlides[currentPageIndex].page_id
-            // console.log(itemId, sid, type, pageId, "addItem")
+            // // console.log(itemId, sid, type, pageId, "addItem")
             // let oldDataIndex = -1
             // if(type === 'text') {
             //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)
@@ -112,7 +127,7 @@ const mutations = {
         nextState.allAnswerList = list
     },
     deleteOnAnswerById(nextState: any, id: any) {
-        const index = nextState.allAnswerList.findIndex((item: any) => item.id === id)
+        const index = nextState.allAnswerList.findIndex((item: any) => (item.id === id || item.response_id === id))
         if(index > -1) {
             nextState.allAnswerList.splice(index, 1)
         }

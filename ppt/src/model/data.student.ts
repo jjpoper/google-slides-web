@@ -57,7 +57,7 @@ export const getCurrentPageStudentAnswerList = (pageId: string, type: ItemType) 
       show: true
     }
   })
-  // console.log(mapData, '=====')
+  // // console.log(mapData, '=====')
   return mapData || []
 }
 
