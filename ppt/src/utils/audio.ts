@@ -80,12 +80,12 @@ export const saveRecordAudio = async (): Promise<any> => {
       const files = new File([blobData], 'mp3', {
           type: 'audio/mp3',
       });
-      showLoading('uploading')
+      // showLoading('uploading')
       upLoadFile(files).then((data) => {
-        hideLoading()
+        // hideLoading()
         res(data)
       }).catch(() => {
-        hideLoading()
+        // hideLoading()
         showToast('upload failed, please try again', 'error')
       })
       microphone.stop();
