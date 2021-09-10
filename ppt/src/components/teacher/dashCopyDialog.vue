@@ -14,7 +14,7 @@
         <div class="copy-btn" @click="copyLink"></div>
       </div>
       <div class="title">{{ show_url }}</div>
-      <div class="btn_class" @click="enterClassroom()">
+      <div class="btn_class" @click="copyLink()">
         <img
           src="../../assets/picture/dash-lj.png"
           class="dash-share"
