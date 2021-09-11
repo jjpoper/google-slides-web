@@ -14,7 +14,17 @@
     />
 
     <div style="width: 100%; height: 100%" v-else>
+      <!-- <student-questions
+        v-if="questionModalVisiable"
+        :sendQuestion="sendQuestion"
+        :list="filterMarkupList"
+        :url="currentItemData && currentItemData.thumbnail_url"
+        :pageId="slides[currentPageIndex].page_id"
+        :delQuestion="delQuestion"
+      />-->
+
       <div class="student-main" v-show="!questionModalVisiable">
+        <students-ppt-list v-if="currentModel == 'Student-Paced'"/>
         <div
           v-if="
             fullScreen &&
@@ -72,7 +82,7 @@
         <div class="right-fix-area">
           <tips-list v-if="overviewModalVisiable" :filterTips="filterTips" />
           <student-comment
-            :currentIndex="parseInt(currentIndex)"
+            :currentIndex="parseInt(currentPageIndex)"
             :slides="slides"
             :hidePropsStudentModal="hideStudentModal"
           />
@@ -243,8 +253,9 @@ import StudentQuestions from "@/components/students/studentQuestions.vue";
 import colorSelector from "@/utils/color";
 import TipsList from "@/components/common/tipsList.vue";
 
-import { mapActions } from "vuex";
+import { mapActions,mapState } from "vuex";
 import tipShow from "@/components/students/tipShow.vue";
+import StudentsPptList from '@/components/students/studentsPptList.vue';
 
 export default {
   data() {
@@ -253,7 +264,6 @@ export default {
       title: "",
       options: [],
       slides: [],
-      currentIndex: 0,
       slide_id: 0,
       currentSo: null,
       allAnswers: {},
@@ -295,19 +305,22 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      currentPageIndex: state => state.student.currentPageIndex,
+    }),
     filterAddedMediaList() {
-      if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(
-          (item) => item.type !== "tip" && item.position
+      if (this.slides[this.currentPageIndex]) {
+        return this.slides[this.currentPageIndex].elements.filter(
+          item => item.type !== "tip" && item.position
         );
       } else {
         return [];
       }
     },
     filterTips() {
-      if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(
-          (item) => item.type === "tip"
+      if (this.slides[this.currentPageIndex]) {
+        return this.slides[this.currentPageIndex].elements.filter(
+          item => item.type === "tip"
         );
       } else {
         return [];
@@ -353,13 +366,15 @@ export default {
     StudentQuestions,
     TipsList,
     tipShow,
+    StudentsPptList,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       const { id } = vm.$route.params;
       const { token, p } = to.query;
       vm.class_id = id;
-      vm.currentIndex = to.query.p ? to.query.p : 0;
+      const index = to.query.p ? to.query.p : 0;
+      vm.setStudentPageIndex(index)
       initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
@@ -371,44 +386,44 @@ export default {
     });
   },
   watch: {
-    currentIndex() {
+    currentPageIndex() {
       // console.log("set elements");
-      if (this.slides && this.slides[this.currentIndex]) {
-        this.setElements(this.slides[this.currentIndex].elements);
+      this.doAfterPageChange()
+      if (this.slides && this.slides[this.currentPageIndex]) {
+        this.setElements(this.slides[this.currentPageIndex].elements);
       }
-      this.setStudentPageIndex(this.currentIndex);
       if (
         this.slides &&
-        this.slides[this.currentIndex] &&
-        this.slides[this.currentIndex].elements
+        this.slides[this.currentPageIndex] &&
+        this.slides[this.currentPageIndex].elements
       ) {
         for (
           let i = 0;
-          i < this.slides[this.currentIndex].elements.length;
+          i < this.slides[this.currentPageIndex].elements.length;
           i++
         ) {
-          if (this.slides[this.currentIndex].elements[i].type == "tip") {
+          if (this.slides[this.currentPageIndex].elements[i].type == "tip") {
             this.tipText =
-              "tip: " + this.slides[this.currentIndex].elements[i].url;
+              "tip: " + this.slides[this.currentPageIndex].elements[i].url;
           }
         }
       }
     },
     slides() {
-      this.setElements(this.slides[this.currentIndex].elements);
+      this.setElements(this.slides[this.currentPageIndex].elements);
       if (
         this.slides &&
-        this.slides[this.currentIndex] &&
-        this.slides[this.currentIndex].elements
+        this.slides[this.currentPageIndex] &&
+        this.slides[this.currentPageIndex].elements
       ) {
         for (
           let i = 0;
-          i < this.slides[this.currentIndex].elements.length;
+          i < this.slides[this.currentPageIndex].elements.length;
           i++
         ) {
-          if (this.slides[this.currentIndex].elements[i].type == "tip") {
+          if (this.slides[this.currentPageIndex].elements[i].type == "tip") {
             this.tipText =
-              "tip: " + this.slides[this.currentIndex].elements[i].url;
+              "tip: " + this.slides[this.currentPageIndex].elements[i].url;
           }
         }
       }
@@ -515,7 +530,7 @@ export default {
       if (this.currentModel == ClassRoomModelEnum.STUDENT_MODEL) {
         return false;
       }
-      if (!this.slides[this.currentIndex]) {
+      if (!this.slides[this.currentPageIndex]) {
         return false;
       }
       if (!this.classRoomInfo || !this.classRoomInfo.lock_page) {
@@ -524,7 +539,7 @@ export default {
         for (let i = 0; i < this.classRoomInfo.lock_page.length; i++) {
           if (
             this.classRoomInfo.lock_page[i] ==
-            this.slides[this.currentIndex].page_id
+            this.slides[this.currentPageIndex].page_id
           ) {
             return true;
           }
@@ -548,16 +563,19 @@ export default {
       });
     },
     getCurrentPageAnswer() {
-      const { page_id, items } = this.currentItemData;
-      const type = items[0].type;
-      if (type !== "comment") {
-        return getStudentCurrentPageAnswerList(page_id, type);
-      } else {
-        // comment remark 特殊，数据不在answer内
-        return this.$store.state.remark.allRemarks.filter(
-          (item) => item.page_id === page_id
-        );
+      if(this.currentItemData) {
+        const { page_id, items } = this.currentItemData;
+        const type = items[0].type;
+        if (type !== "comment") {
+          return getStudentCurrentPageAnswerList(page_id, type);
+        } else {
+          // comment remark 特殊，数据不在answer内
+          return this.$store.state.remark.allRemarks.filter(
+            item => item.page_id === page_id
+          );
+        }
       }
+      
     },
     checkCurrentAnswerd() {
       if (this.currentItemData) {
@@ -566,7 +584,7 @@ export default {
           this.answerList = this.getCurrentPageAnswer();
           this.currentAnswerd = this.answerList.length > 0;
           if (this.currentAnswerd) {
-            this.updateAnswerdPage(this.currentIndex);
+            this.updateAnswerdPage(this.currentPageIndex);
             if (this.answerList[0].type == "media") {
               this.link = this.answerList[0].content;
             }
@@ -608,7 +626,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}"}`
       );
-      this.updateAnswerdPage(this.currentIndex);
+      this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
     },
     sendDrawText(textContent) {
@@ -618,7 +636,7 @@ export default {
         "response",
         `{"room": "${this.class_id}", "type":"draw_text", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":${textContent}}`
       );
-      this.updateAnswerdPage(this.currentIndex);
+      this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
     },
     // 发送text
@@ -635,14 +653,14 @@ export default {
         key: index,
         content: msg,
       });
-      this.updateAnswerdPage(this.currentIndex);
+      this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
     },
     getItemData() {
       this.currentItemData = null;
       this.$nextTick(() => {
-        this.currentItemData = this.slides[this.currentIndex];
-        // console.log(this.currentItemData);
+        this.currentItemData = this.slides[this.currentPageIndex];
+        console.log(this.currentItemData);
         this.checkCurrentAnswerd();
         this.isShowRightAnswer();
         if (
@@ -661,23 +679,25 @@ export default {
             `{"room": "${this.class_id}", "token": "${
               this.token
             }","class_id":"${this.class_id}", "params": {"page":"${
-              this.slides[this.currentIndex].page_id
+              this.slides[this.currentPageIndex].page_id
             }"}}`
           );
         }
       });
     },
     pageChange(page) {
-      // console.log(page, "pageChange", this.currentIndex);
+      // console.log(page, "pageChange", this.currentPageIndex);
       const nextPage = page - 1;
-      if (this.currentIndex != nextPage) {
-        this.currentIndex = nextPage;
-        this.getItemData();
-        this.isShowRightAnswer();
-        this.isShowQuestion = true;
+      if (this.currentPageIndex != nextPage) {
+        this.setStudentPageIndex(nextPage)
       } else {
         // console.log("已是当前页码，不用切换", "pageChange");
       }
+    },
+    doAfterPageChange() {
+      this.getItemData();
+      this.isShowRightAnswer();
+      this.isShowQuestion = true;
     },
     afterLogin({ user_name, email }) {
       this.uname = user_name;
@@ -691,7 +711,6 @@ export default {
     },
     initRoomConfig(res) {
       this.slide_id = res.slide_id;
-      // this.currentIndex = 0;
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
@@ -777,13 +796,13 @@ export default {
             "rename",
             `{"room": "${this.class_id}", "user_id": "${this.uid}", "token": "${this.token}","class_id":"${this.class_id}", "user_name_new": "${this.uname}"}`
           );
-          // console.log(this.slides[this.currentIndex].page_id)
+          // console.log(this.slides[this.currentPageIndex].page_id)
           this.emitSo(
             "go-to-page",
             `{"room": "${this.class_id}", "token": "${
               this.token
             }","class_id":"${this.class_id}", "params": {"page":"${
-              this.slides[this.currentIndex].page_id
+              this.slides[this.currentPageIndex].page_id
             }"}}`
           );
         },
@@ -853,14 +872,14 @@ export default {
         // const itemIndex = list.findIndex(item => id === item.id)
         // this.slides[index].elements.splice(itemIndex, 1, d.data)
         // const page_id = this.currentPageId
-        // this.slides[this.currentIndex].elements.push(d.data)
+        // this.slides[this.currentPageIndex].elements.push(d.data)
       } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
-        const list = this.slides[this.currentIndex].elements;
-        const itemIndex = list.findIndex((item) => id === item.id);
-        this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+        const list = this.slides[this.currentPageIndex].elements;
+        const itemIndex = list.findIndex(item => id === item.id);
+        this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
@@ -922,7 +941,7 @@ export default {
           key: "item_1",
           answer: v,
         });
-        this.updateAnswerdPage(this.currentIndex);
+        this.updateAnswerdPage(this.currentPageIndex);
         this.currentAnswerd = true;
       } else if (typeParam && typeParam == "text") {
       }
@@ -942,21 +961,21 @@ export default {
       }
     },
     lastPage() {
-      if (this.currentIndex > 0) {
-        this.pageChange(this.currentIndex);
+      if (this.currentPageIndex > 0) {
+        this.pageChange(this.currentPageIndex);
       }
     },
     nextPage() {
-      if (this.currentIndex < this.slides.length - 1) {
-        this.pageChange(parseInt(this.currentIndex) + 2);
+      if (this.currentPageIndex < this.slides.length - 1) {
+        this.pageChange(parseInt(this.currentPageIndex) + 2);
       }
     },
     isShowRightAnswer() {
-      if (!this.slides || !this.slides[this.currentIndex]) {
+      if (!this.slides || !this.slides[this.currentPageIndex]) {
         this.showCorrect = false;
         return false;
       }
-      let data = this.slides[this.currentIndex];
+      let data = this.slides[this.currentPageIndex];
       if (!data) {
         this.showCorrect = false;
         return false;
@@ -1030,7 +1049,7 @@ export default {
         key: 0,
         content: link,
       });
-      this.updateAnswerdPage(this.currentIndex);
+      this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {

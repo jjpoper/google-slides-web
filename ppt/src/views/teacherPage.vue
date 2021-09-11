@@ -34,8 +34,6 @@
           :meterialVisiable="meterialVisiable"
           :filterTips="filterTips"
           :overviewModalVisiable="overviewModalVisiable"
-          :currentIndex="currentIndex"
-          :changePage="pageChange"
         />
       </div>
 
@@ -43,7 +41,7 @@
         <teacher-control-panel
           v-if="classRoomInfo && currentItemData"
           :current_model="page_model"
-          :currentPage="parseInt(currentIndex) + 1"
+          :currentPage="parseInt(currentPageIndex) + 1"
           :totalPage="slides.length"
           :isDashboard="isDashboard"
           :changePage="pageChange"
@@ -174,6 +172,7 @@
       :visible.sync="stepTwoDialog"
       @open="openCopyLinkDialog()"
       custom-class="custom-dialog"
+      width="80%"
     >
       <!-- <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" /> -->
       <dash-copy-dialog
@@ -278,7 +277,7 @@ import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
 import DashHeader from "@/components/teacher/dashHeader.vue";
 import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   components: {
     teacherControlPanel,
@@ -314,7 +313,6 @@ type: "slide"*/
       showResponse: false, // 默认不展示老师的回答
       studentCounts: 0,
       slides: [],
-      currentIndex: 0,
       slide_id: 0,
       currentSo: null,
       uid: "", // uid
@@ -387,9 +385,12 @@ type: "slide"*/
     });
   },
   computed: {
+    ...mapState({
+      currentPageIndex: state => state.student.currentPageIndex,
+    }),
     currentPageId() {
-      if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].page_id;
+      if (this.slides[this.currentPageIndex]) {
+        return this.slides[this.currentPageIndex].page_id;
       } else {
         return "p";
       }
@@ -406,8 +407,8 @@ type: "slide"*/
     // },
     // meterial 数据
     filterAddedMediaList() {
-      if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(
+      if (this.slides[this.currentPageIndex]) {
+        return this.slides[this.currentPageIndex].elements.filter(
           item => item.type !== "tip" && item.position
         );
       } else {
@@ -415,8 +416,8 @@ type: "slide"*/
       }
     },
     filterTips() {
-      if (this.slides[this.currentIndex]) {
-        return this.slides[this.currentIndex].elements.filter(
+      if (this.slides[this.currentPageIndex]) {
+        return this.slides[this.currentPageIndex].elements.filter(
           item => item.type === "tip"
         );
       } else {
@@ -428,8 +429,8 @@ type: "slide"*/
     studentList() {
       this.setStudentList(this.studentList);
     },
-    currentIndex() {
-      this.setStudentPageIndex(this.currentIndex);
+    currentPageIndex() {
+      this.sendPageChangeToStudents()
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -439,7 +440,8 @@ type: "slide"*/
       // vm.slide_id = slide_id;
       vm.class_id = id;
       window.classId = id;
-      vm.currentIndex = to.query.p ? to.query.p : 0;
+      const index = to.query.p ? to.query.p : 0;
+      vm.setStudentPageIndex(index)
       vm.isDashboard = vm.$route.name === 'd';
       // console.log(vm.isDashboard)
       // vm.directFromPlugin = to.query.direct ? true : false;
@@ -473,11 +475,6 @@ type: "slide"*/
     },
     addMediaList({ url, type }) {
       const page_id = this.currentPageId;
-      // this.slides[this.currentIndex].elements.push({
-      //   page_id,
-      //   url,
-      //   type
-      // })
       const itemData = JSON.stringify({
         page_id: page_id,
         url: url,
@@ -652,7 +649,7 @@ type: "slide"*/
         value,
         commentType,
         teacherName,
-        slideIndex: parseInt(this.currentIndex) + 1,
+        slideIndex: parseInt(this.currentPageIndex) + 1,
         room: this.slide_id,
         answertime
       });
@@ -728,7 +725,7 @@ type: "slide"*/
       // status: "live"
       // type: "slide"
       this.slide_id = res.slide_id;
-      // this.currentIndex = 0;
+      // this.currentPageIndex = 0;
       this.directFromPlugin = false;
     },
     startConnectRoom() {
@@ -858,7 +855,7 @@ type: "slide"*/
             //发送一个页面同步消息
             if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
               this.emitSo(
-                `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+                `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
               );
             }
           } else if (d.join_in.role == "teacher") {
@@ -1006,24 +1003,24 @@ type: "slide"*/
         // this.slides[index].elements.push(d.data)
         // console.log("this.allAddedMediaList", "STUDENT_ADD_MEDIA");
         // const page_id = this.currentPageId
-        this.slides[this.currentIndex].elements.push({ id: d.id, ...d.data });
+        this.slides[this.currentPageIndex].elements.push({ id: d.id, ...d.data });
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d.data;
-        const list = this.slides[this.currentIndex].elements;
+        const list = this.slides[this.currentPageIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
         const nextData = { id: d.id, ...d.data };
         if (!window.isWindowActive) {
-          this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+          this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
           this.$nextTick(() => {
-            this.slides[this.currentIndex].elements.splice(
+            this.slides[this.currentPageIndex].elements.splice(
               itemIndex,
               0,
               nextData
             );
           });
         } else {
-          this.slides[this.currentIndex].elements.splice(
+          this.slides[this.currentPageIndex].elements.splice(
             itemIndex,
             1,
             nextData
@@ -1034,13 +1031,13 @@ type: "slide"*/
         //   window.elementNotUpdate = false
         // })
         // const page_id = this.currentPageId
-        // this.slides[this.currentIndex].elements.push(d.data)
+        // this.slides[this.currentPageIndex].elements.push(d.data)
       } else if (d.mtype === SocketEventsEnum.TEACHER_DELETE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d;
-        const list = this.slides[this.currentIndex].elements;
+        const list = this.slides[this.currentPageIndex].elements;
         const itemIndex = list.findIndex(item => id === item.id);
-        this.slides[this.currentIndex].elements.splice(itemIndex, 1);
+        this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
         this.getResponeCount();
@@ -1130,12 +1127,16 @@ type: "slide"*/
         this.giveFocus(value - 1, notSend);
         return;
       }
-      this.currentIndex = value - 1;
+      this.setStudentPageIndex(value - 1)
+    },
+
+    sendPageChangeToStudents() {
       this.questionModalVisiable = false; //与控制面板中的comment显示与否的按钮保持同步
       this.getItemData();
+      const notSend = false
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
-          `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+          `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
         );
       }
     },
@@ -1186,7 +1187,7 @@ type: "slide"*/
         for (let i = 0; i < list.length; i++) {
           this.responsePercentage[i] = 0;
         }
-        this.isFocus[this.currentIndex] = true;
+        this.isFocus[this.currentPageIndex] = true;
       });
     },
     getItemData() {
@@ -1194,7 +1195,7 @@ type: "slide"*/
       this.currentItemData = null;
       // console.log('getItemData', 'null')
       this.$nextTick(() => {
-        this.currentItemData = this.slides[this.currentIndex] || this.slides[0];
+        this.currentItemData = this.slides[this.currentPageIndex] || this.slides[0];
         // console.log('getItemData', this.currentItemData)
         this.currentItemData.flag = this.isDashboard;
         this.getResponeCount();
@@ -1241,9 +1242,9 @@ type: "slide"*/
           this.studentCounts = count;
         }
         if (count == 0) {
-          this.responsePercentage[this.currentIndex] = 0;
+          this.responsePercentage[this.currentPageIndex] = 0;
         } else {
-          this.responsePercentage[this.currentIndex] =
+          this.responsePercentage[this.currentPageIndex] =
             (count * 100) / this.studentCounts;
         }
       } else {
@@ -1265,7 +1266,7 @@ type: "slide"*/
     getBtnString() {
       if (this.getStudentOnLineCount() == 0) {
         this.copyLinkBtnString = "Waiting for students..";
-      } else if (this.currentIndex == 0) {
+      } else if (this.currentPageIndex == 0) {
         this.copyLinkBtnString = "Start Class";
       } else {
         this.copyLinkBtnString = "Continue";
@@ -1332,7 +1333,7 @@ type: "slide"*/
         if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
           //如果从学生模式切换到老师模式，则通知学生进行页面切换操作
           this.emitSo(
-            `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentIndex}"}}`
+            `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
           );
         }
       }
@@ -1407,7 +1408,7 @@ type: "slide"*/
     },
     lockPage() {
       let islocked = true;
-      let page_id = this.slides[this.currentIndex].page_id;
+      let page_id = this.slides[this.currentPageIndex].page_id;
       if (!this.classRoomInfo.lock_page) {
         islocked = true;
         this.classRoomInfo.lock_page = new Array();
@@ -1432,7 +1433,7 @@ type: "slide"*/
           }", "token": "${this.token}","class_id":"${
             this.class_id
           }","params": {"lock": ${islocked},"page":"${
-            this.slides[this.currentIndex].page_id
+            this.slides[this.currentPageIndex].page_id
           }"}}`
         );
       }
@@ -1441,7 +1442,7 @@ type: "slide"*/
       this.showCopyLinkDialog = false;
     },
     openProject() {
-      const url = `${location.origin}/t/${this.class_id}?p=${this.currentIndex}`;
+      const url = `${location.origin}/t/${this.class_id}?p=${this.currentPageIndex}`;
       window.open(url);
     },
     open(model) {
@@ -1458,10 +1459,10 @@ type: "slide"*/
         if (!this.page_model) {
           this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
         }
-        windowObjectReference.location = `/d/${this.class_id}?p=${this.currentIndex}`
+        windowObjectReference.location = `/d/${this.class_id}?p=${this.currentPageIndex}`
       } else if (model == 1) {
         // console.log(1);
-        window.open(`/d/${this.class_id}?p=${this.currentIndex}`);
+        window.open(`/d/${this.class_id}?p=${this.currentPageIndex}`);
       }
     },
 
@@ -1524,13 +1525,13 @@ type: "slide"*/
     },
     giveFocus(index, notSend) {
       // console.log(index, notSend, 'giveFocus')
-      this.currentIndex = index;
+      this.setStudentPageIndex(index)
       this.currentItemData = this.slides[index];
       this.currentItemData.flag = this.isDashboard;
       this.getResponeCount();
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.emitSo(
-          `{"room":"${this.class_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentIndex}"}}`
+          `{"room":"${this.class_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentPageIndex}"}}`
         );
       }
       for (let i = 0; i < this.slides.length; i++) {
