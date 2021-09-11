@@ -76,10 +76,10 @@ export default {
   methods: {
     ...mapActions("student", ["setStudentPageIndex"]),
     next() {
-      this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length))
+      this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
     },
     prev() {
-      this.setStudentPageIndex(Math.max(this.currentPageIndex, 0))
+      this.setStudentPageIndex(Math.max(this.currentPageIndex - 1, 0))
     },
     changeToPage(index) {
       this.setStudentPageIndex(index)
