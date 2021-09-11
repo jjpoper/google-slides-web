@@ -84,6 +84,7 @@ export default {
   box-sizing: border-box;
   padding: 5px;
   position: relative;
+  margin-bottom: 5px;
 }
 .text-placeholder{
   position: absolute;

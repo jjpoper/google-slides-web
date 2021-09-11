@@ -352,7 +352,7 @@ type: "slide"*/
       allAddedMediaList: [],
       meterialVisiable: false,
       overviewModalVisiable: false,
-      dashTipsModalVisiable: true,
+      dashTipsModalVisiable: false,
       firstJoined: true
     };
   },

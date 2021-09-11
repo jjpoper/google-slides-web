@@ -61,12 +61,12 @@ export const saveRecordVideo = async (): Promise<any> => {
       // // console.log(URL.createObjectURL(blobData))
       let files = new window.File([blobData], 'webm')
 
-      showLoading('uploading')
+      // showLoading('uploading')
       upLoadFile(files).then((data) => {
-        hideLoading()
+        // hideLoading()
         res(data)
       }).catch(() => {
-        hideLoading()
+        // hideLoading()
         showToast('upload failed, please try again', 'error')
       })
 
