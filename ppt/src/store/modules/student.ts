@@ -84,6 +84,7 @@ const mutations = {
         nextState.elements = list
     },
     setIndex(nextState: any, index: number) {
+        console.log(index, '=====')
         nextState.currentPageIndex = index
     },
     setAllSlides(nextState: any, list: any) {
