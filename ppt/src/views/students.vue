@@ -14,15 +14,6 @@
     />
 
     <div style="width: 100%; height: 100%" v-else>
-      <!-- <student-questions
-        v-if="questionModalVisiable"
-        :sendQuestion="sendQuestion"
-        :list="filterMarkupList"
-        :url="currentItemData && currentItemData.thumbnail_url"
-        :pageId="slides[currentIndex].page_id"
-        :delQuestion="delQuestion"
-      />-->
-
       <div class="student-main" v-show="!questionModalVisiable">
         <div
           v-if="
@@ -108,80 +99,72 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        <i
+          class="el-icon-s-opportunity"
+          :style="`color: ${onLine ? 'green' : 'red'}`"
+        />
       </div>
-      <div
-        class="deadline_info"
-        v-if="showRemainTime()"
-      >Deadline time remain: {{ getDeadLineStr(countDownMin) }}</div>
+      <div class="deadline_info" v-if="showRemainTime()">
+        Deadline time remain: {{ getDeadLineStr(countDownMin) }}
+      </div>
       <el-tooltip content="mark up and send comment" placement="top">
-        <div class="readchat comment">
-          <!-- <el-switch
-            style="display: block"
-            v-model="questionModalVisiable"
-            active-color="#13ce66"
-            inactive-color="#999"
-            @change="showStudentQuestions"
-            active-text="comment"
-          ></el-switch>
-          <el-switch
-            style="display: block; margin-left: 10px"
-            v-model="overviewModalVisiable"
-            active-color="#13ce66"
-            inactive-color="#999"
-            active-text="overview slides"
-          ></el-switch>-->
-        </div>
+        <div class="readchat comment"></div>
       </el-tooltip>
-      <div
-        class="deadline_info"
-        v-if="showRemainTime()"
-      >Deadline time remain:{{ countDownMin }} mintues.</div>
+      <div class="deadline_info" v-if="showRemainTime()">
+        Deadline time remain:{{ countDownMin }} mintues.
+      </div>
 
-      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
+      <div class="deadline_info" v-if="showCorrect">
+        You are unable to change your answer
+      </div>
+
+      <div style="flex: 1"></div>
+
+      <svg
+        t="1623813115939"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="2481"
+        width="40"
+        height="40"
+        v-if="
+          !fullScreen &&
+          !smallWindow &&
+          !questionModalVisiable &&
+          currentItemData &&
+          currentItemData.thumbnail_url &&
+          currentItemData.items[0] &&
+          currentItemData.items[0].type !== 'draw'
+        "
+        @click="showFullScreen(true)"
+      >
+        <path
+          d="M629.557 391.972c17.329 17.32 47.028 17.32 66.815 0l168.302-165.814v133.637c0 19.806 14.85 34.647 34.637 34.647h24.743c19.806 0 34.657-12.372 34.657-29.692V119.733h-2.479l2.479-17.318c0-9.904-2.479-17.33-7.436-24.752-4.936-4.948-14.848-9.895-24.743-9.895h-17.327L664.211 65.29c-19.805 0-34.654 17.329-34.654 34.646v24.752c2.478 22.274 19.789 34.646 39.593 34.646h128.69L632.036 325.149c-22.283 17.319-22.283 47.026-2.478 66.823zM394.44 629.557c-17.31-17.327-47.009-17.327-66.815 0l-168.3 165.807V664.195c0-19.787-14.833-34.638-34.638-34.638h-24.76c-19.788 0-34.639 12.372-34.639 29.699v242.533h2.478l-2.478 17.327c0 9.894 2.478 17.31 7.416 24.744 4.956 4.956 14.868 9.894 24.761 9.894h17.328l244.993 2.478c19.823 0 34.655-17.328 34.655-34.638v-24.76c-2.478-22.266-19.788-34.638-39.593-34.638H226.16l168.283-165.824c17.327-17.327 17.327-47.027-0.001-66.815z m561.79 274.709v-242.55c0-19.787-17.329-29.68-34.639-29.68h-24.759c-19.788 0-34.639 17.31-34.639 34.638v131.168l-168.3-165.806c-17.309-17.329-47.01-17.329-66.816 0-17.326 17.31-17.326 47.009 0 66.814l168.284 165.806h-128.69c-19.787 0-37.116 12.388-39.594 34.654v24.745c0 19.805 17.33 34.654 34.64 34.654l240.071-2.478h17.329c9.893 0 17.31-2.478 24.743-9.894 4.955-4.956 7.415-14.85 7.415-24.744l4.955-17.327c-2.478 0 0 0 0 0zM228.636 159.335h128.69c19.806 0 37.116-12.373 39.593-34.646V99.936c0-19.797-17.309-34.646-34.654-34.646l-244.993 2.478H99.927c-9.876 0-17.31 2.478-24.743 9.895-4.939 4.956-7.416 14.849-7.416 24.752l2.477 17.318h-2.477v245.018c0 19.797 14.85 29.692 34.638 29.692h24.743c19.823 0 34.655-14.841 34.655-34.646v-133.64l168.283 165.815c17.345 17.32 47.045 17.32 66.832 0 17.33-17.327 17.33-47.026 0-66.823L228.636 159.335z m0 0"
+          p-id="2482"
+          fill="#1296db"
+        />
+      </svg>
     </div>
-    <svg
-      t="1623813115939"
-      class="icon"
-      viewBox="0 0 1024 1024"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      p-id="2481"
-      width="40"
-      height="40"
-      v-if="
-        !fullScreen &&
-        !smallWindow &&
-        !questionModalVisiable &&
-        currentItemData &&
-        currentItemData.thumbnail_url &&
-        currentItemData.items[0] &&
-        currentItemData.items[0].type !== 'draw'
-      "
-      @click="showFullScreen(true)"
-    >
-      <path
-        d="M629.557 391.972c17.329 17.32 47.028 17.32 66.815 0l168.302-165.814v133.637c0 19.806 14.85 34.647 34.637 34.647h24.743c19.806 0 34.657-12.372 34.657-29.692V119.733h-2.479l2.479-17.318c0-9.904-2.479-17.33-7.436-24.752-4.936-4.948-14.848-9.895-24.743-9.895h-17.327L664.211 65.29c-19.805 0-34.654 17.329-34.654 34.646v24.752c2.478 22.274 19.789 34.646 39.593 34.646h128.69L632.036 325.149c-22.283 17.319-22.283 47.026-2.478 66.823zM394.44 629.557c-17.31-17.327-47.009-17.327-66.815 0l-168.3 165.807V664.195c0-19.787-14.833-34.638-34.638-34.638h-24.76c-19.788 0-34.639 12.372-34.639 29.699v242.533h2.478l-2.478 17.327c0 9.894 2.478 17.31 7.416 24.744 4.956 4.956 14.868 9.894 24.761 9.894h17.328l244.993 2.478c19.823 0 34.655-17.328 34.655-34.638v-24.76c-2.478-22.266-19.788-34.638-39.593-34.638H226.16l168.283-165.824c17.327-17.327 17.327-47.027-0.001-66.815z m561.79 274.709v-242.55c0-19.787-17.329-29.68-34.639-29.68h-24.759c-19.788 0-34.639 17.31-34.639 34.638v131.168l-168.3-165.806c-17.309-17.329-47.01-17.329-66.816 0-17.326 17.31-17.326 47.009 0 66.814l168.284 165.806h-128.69c-19.787 0-37.116 12.388-39.594 34.654v24.745c0 19.805 17.33 34.654 34.64 34.654l240.071-2.478h17.329c9.893 0 17.31-2.478 24.743-9.894 4.955-4.956 7.415-14.85 7.415-24.744l4.955-17.327c-2.478 0 0 0 0 0zM228.636 159.335h128.69c19.806 0 37.116-12.373 39.593-34.646V99.936c0-19.797-17.309-34.646-34.654-34.646l-244.993 2.478H99.927c-9.876 0-17.31 2.478-24.743 9.895-4.939 4.956-7.416 14.849-7.416 24.752l2.477 17.318h-2.477v245.018c0 19.797 14.85 29.692 34.638 29.692h24.743c19.823 0 34.655-14.841 34.655-34.646v-133.64l168.283 165.815c17.345 17.32 47.045 17.32 66.832 0 17.33-17.327 17.33-47.026 0-66.823L228.636 159.335z m0 0"
-        p-id="2482"
-        fill="#1296db"
-      />
-    </svg>
-    <el-popover
-      placement="bottom"
-      trigger="manual"
-      :content="tipText"
-      v-model="showTip"
-      width="200"
-    >
-      <div class="tip_area_popover">{{tipText}}</div>
+
+    <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
+      <div class="tip_area_popover">{{ tipText }}</div>
       <img
         src="../assets/icon/tip_close.png"
         width="30"
         height="30"
         slot="reference"
         class="tip_area"
-        v-if="currentItemData&&(!currentItemData.items||currentItemData.items.length==0|| currentItemData.items[0].type=='draw'||
-    currentItemData.items[0].type=='website')&&tipText.length>0&&!showTip"
+        v-if="
+          currentItemData &&
+          (!currentItemData.items ||
+            currentItemData.items.length == 0 ||
+            currentItemData.items[0].type == 'draw' ||
+            currentItemData.items[0].type == 'website') &&
+          tipText.length > 0 &&
+          !showTip
+        "
         @click="changeTipShow()"
       />
       <img
@@ -190,11 +173,32 @@
         height="30"
         slot="reference"
         class="tip_area"
-        v-if="currentItemData&&(!currentItemData.items||currentItemData.items.length==0|| currentItemData.items[0].type=='draw'||
-    currentItemData.items[0].type=='website')&&tipText.length>0&&showTip"
+        v-if="
+          currentItemData &&
+          (!currentItemData.items ||
+            currentItemData.items.length == 0 ||
+            currentItemData.items[0].type == 'draw' ||
+            currentItemData.items[0].type == 'website') &&
+          tipText.length > 0 &&
+          showTip
+        "
         @click="changeTipShow()"
       />
     </el-popover>
+
+    <img
+      src="../assets/website_icon.png"
+      width="30"
+      height="30"
+      class="web_site_icon"
+      v-if="
+        currentItemData &&
+        (!currentItemData.items ||
+          currentItemData.items.length == 0 ||
+          currentItemData.items[0].type == 'website')
+      "
+      @click="openWebsitePage"
+    />
 
     <div id="diycolor_comment"></div>
   </div>
@@ -206,7 +210,7 @@ import {
   getStudentLoginUrl,
   getUserProfile,
   queryClassStatus,
-  getAVComment
+  getAVComment,
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -216,7 +220,7 @@ import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum
+  ClassRoomModelEnum,
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -228,7 +232,7 @@ import {
   readStudentComment,
   getStudentStoreToken,
   saveStudentStoreToken,
-  initStudentStoreSlideId
+  initStudentStoreSlideId,
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -287,14 +291,14 @@ export default {
       studentCommentLoaded: false,
       firstJoined: true,
       showTip: false,
-      tipText: ""
+      tipText: "",
     };
   },
   computed: {
     filterAddedMediaList() {
       if (this.slides[this.currentIndex]) {
         return this.slides[this.currentIndex].elements.filter(
-          item => item.type !== "tip" && item.position
+          (item) => item.type !== "tip" && item.position
         );
       } else {
         return [];
@@ -303,12 +307,12 @@ export default {
     filterTips() {
       if (this.slides[this.currentIndex]) {
         return this.slides[this.currentIndex].elements.filter(
-          item => item.type === "tip"
+          (item) => item.type === "tip"
         );
       } else {
         return [];
       }
-    }
+    },
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
@@ -348,10 +352,10 @@ export default {
     pageLockedNote,
     StudentQuestions,
     TipsList,
-    tipShow
+    tipShow,
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       const { id } = vm.$route.params;
       const { token, p } = to.query;
       vm.class_id = id;
@@ -408,7 +412,7 @@ export default {
           }
         }
       }
-    }
+    },
   },
   methods: {
     ...mapActions("student", [
@@ -419,16 +423,27 @@ export default {
       "updateAnswerdPage",
       "setAllAnswerdList",
       "updateAllAnswerdList",
-      "deleteOnAnswerById"
+      "deleteOnAnswerById",
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
       "setAllRemarkList",
-      "updateLatestRemarkId"
+      "updateLatestRemarkId",
     ]),
     changeTipShow() {
       this.showTip = !this.showTip;
       // console.log("change show !!" + this.showTip);
+    },
+
+    openWebsitePage() {
+      console.log(this.currentItemData.items[0].data.url);
+      var strWindowFeatures =
+        "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+      window.open(
+        this.currentItemData.items[0].data.url,
+        "_blank",
+        strWindowFeatures
+      );
     },
     loadDiyPainter() {
       this.$nextTick(() => {
@@ -443,7 +458,7 @@ export default {
     getWidthPercent(type) {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
-      if (type === "website") return "70%";
+      if (type === "website") return "0%";
       if (type === "comment" || type === "media") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
@@ -525,7 +540,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then(url => {
+      getStudentLoginUrl().then((url) => {
         // console.log(url);
         if (url) {
           location.href = url;
@@ -540,7 +555,7 @@ export default {
       } else {
         // comment remark 特殊，数据不在answer内
         return this.$store.state.remark.allRemarks.filter(
-          item => item.page_id === page_id
+          (item) => item.page_id === page_id
         );
       }
     },
@@ -568,7 +583,7 @@ export default {
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id)
+        getAllPPTS(this.slide_id),
       ]).then(([allA, { pages: list }]) => {
         // console.log(list, "========");
         // vuex缓存答案
@@ -587,7 +602,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url
+        content: base64Url,
       });
       this.emitSo(
         "response",
@@ -618,7 +633,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg
+        content: msg,
       });
       this.updateAnswerdPage(this.currentIndex);
       this.currentAnswerd = true;
@@ -669,7 +684,7 @@ export default {
       this.uid = email;
       this.setStudentUserInfo({
         name: user_name,
-        uid: email
+        uid: email,
       });
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
@@ -680,20 +695,20 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then(res => {
+        .then((res) => {
           this.classRoomInfo = res;
           // console.log(this.classRoomInfo);
           this.initRoomConfig(res);
           this.afterConnectRoom();
         })
-        .catch(res => {
+        .catch((res) => {
           // console.log(res);
         });
     },
     afterConnectRoom() {
       this.getAllSlides();
       getAVComment(this.class_id, this.token)
-        .then(res => {
+        .then((res) => {
           // console.log(res);
           if (res.code == "ok") {
             let marks = [];
@@ -706,7 +721,7 @@ export default {
             this.setAllRemarkList(marks);
           }
         })
-        .catch(res => {
+        .catch((res) => {
           // console.log(res);
         });
     },
@@ -778,7 +793,7 @@ export default {
         classId: this.class_id,
         uid: this.uid,
         token: this.token,
-        uname: this.uname
+        uname: this.uname,
       });
     },
     msgListener(d) {
@@ -811,7 +826,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              item => item != page
+              (item) => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -824,7 +839,9 @@ export default {
         // 获取发出的评论id，用于删除时候调用
         this.updateLatestRemarkId(d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        const index = this.slides.findIndex(item => d.page_id === item.page_id);
+        const index = this.slides.findIndex(
+          (item) => d.page_id === item.page_id
+        );
         this.slides[index].elements.push({ id: d.id, ...d.data });
         // console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
@@ -842,7 +859,7 @@ export default {
         // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
         const list = this.slides[this.currentIndex].elements;
-        const itemIndex = list.findIndex(item => id === item.id);
+        const itemIndex = list.findIndex((item) => id === item.id);
         this.slides[this.currentIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d);
@@ -854,13 +871,13 @@ export default {
     onGetTeacherComment(d) {
       const {
         item: { studentId },
-        comment_id
+        comment_id,
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
         addStudentComment({
           ...d.item,
-          id: comment_id
+          id: comment_id,
         });
         unreadStudentComment();
         this.unread = true;
@@ -903,7 +920,7 @@ export default {
         );
         saveStudentsCurrentPageAnswerList(page_id, type, {
           key: "item_1",
-          answer: v
+          answer: v,
         });
         this.updateAnswerdPage(this.currentIndex);
         this.currentAnswerd = true;
@@ -1011,15 +1028,15 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,
         key: 0,
-        content: link
+        content: link,
       });
       this.updateAnswerdPage(this.currentIndex);
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
@@ -1065,30 +1082,37 @@ export default {
 }
 .icon {
   cursor: pointer;
-  z-index: 999;
+  /* z-index: 999;
   position: fixed;
   top: 60px;
-  right: 45%;
+  right: 45%; */
 }
 .tip_area {
   cursor: pointer;
-  z-index: 999;
   position: fixed;
-  top: 60px;
-  right: 20%;
+  top: 10px;
+  right: 5%;
+}
+
+.web_site_icon {
+  cursor: pointer;
+  position: fixed;
+  top: 10px;
+  right: 10%;
 }
 .tip_area_popover {
   cursor: pointer;
   z-index: 999;
-  position: fixed;
-  top: 100px;
-  right: 10%;
-  background-color: white;
   color: #313333;
-  width: 200px;
-  padding: 6px;
   height: auto;
+  position: fixed;
+  top: 50px;
+  right: 1%;
   border-radius: 5px;
+  width: 200px;
+  background-color: #ffffff;
+  min-height: 50px;
+  padding: 10px;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 .deadline_info {
