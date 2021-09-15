@@ -22,16 +22,13 @@ export default {
 </script>
 <style scoped>
 .stundent-ppt-list{
-  position: fixed;
-  top: 0;
+  position: relative;
   width: 100%;
-  height: 180px;
-  z-index: 1000;
 }
 .shouqi{
   width: 100px;
   height: 30px;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50px);

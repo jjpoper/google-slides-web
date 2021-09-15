@@ -24,7 +24,7 @@
       </el-tooltip>
     </div>
     <tipShow style="margin: 20px" />
-    <ul class="remark-list">
+    <ul class="remark-list" ref="remarklist">
       <!--输入区域item-->
       <li v-if="!disable && currentRemarkOptions" class="remark-list-item record-item active-item">
         <div class="item-header">
@@ -133,7 +133,7 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
-      return list;
+      return list.reverse();
     },
     currentPageId() {
       return this.studentAllSlides[this.currentPageIndex].page_id;
@@ -141,13 +141,12 @@ export default {
   },
   watch: {
     currentRemarkIndex() {
-      if (this.currentRemarkIndex > -1) {
-        this.$nextTick(() => {
-          if (this.$refs.activeRef) {
-            this.$refs.activeRef[0].focus();
-          }
-        });
+      if(this.currentRemarkIndex > -1) {
+        this.focusIndex()
       }
+    },
+    currentRemarkOptions() {
+      this.$refs.remarklist.scrollTop = 0
     }
   },
   created() {
@@ -175,6 +174,13 @@ export default {
       "addOneRemarkItem"
     ]),
     ...mapActions("student", ["updateAnswerdPage"]),
+    focusIndex() {
+      this.$nextTick(() => {
+        if (this.$refs.activeRef) {
+          this.$refs.activeRef[0].focus();
+        }
+      });
+    },
     audio() {
       this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO);
     },
