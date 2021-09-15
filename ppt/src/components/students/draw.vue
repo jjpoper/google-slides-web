@@ -716,7 +716,12 @@ export default {
     // console.log(outer.clientWidth, outer.clientHeight)
     // outer.style.width = document.documentElement.clientWidth - 40 + "px";
     // outer.style.height = document.documentElement.clientHeight - 40 + "px";
-    this.draw = new Draw("canvas", "textCanvas", outer.clientWidth, outer.clientHeight);
+    this.draw = new Draw(
+      "canvas",
+      "textCanvas",
+      outer.clientWidth,
+      outer.clientHeight
+    );
     const initData = getStudentCurrentPageAnswerList(
       this.data.page_id,
       this.data.items[0].type

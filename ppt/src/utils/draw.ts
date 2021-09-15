@@ -34,11 +34,20 @@ export default class Draw {
   private cxt: any
   private sildeId = ""
 
+  private mouseDownPoint = {
+    x: 0,
+    y: 0
+  }
+  private mouseUpPoint = {
+    x: 0,
+    y: 0
+  }
+
   private canvasText: any
   private cxtText: any
   private stage_info = {
-    left: 20,
-    top: 20
+    left: 0,
+    top: 50
   }
   private fontFamily = "Microsoft YaHei"
   private textString = ""
@@ -65,6 +74,7 @@ export default class Draw {
   private currentSelectEditableLeft = 0;
   private currentSelectEditableTop = 0;
   private isMouseDown = false;
+  private isMouseMoved = false;
 
 
   private drawType: DrawType = 'draw'
@@ -107,19 +117,6 @@ export default class Draw {
     // // // console.log(this.stage_info.left, this.stage_info.top)
   }
 
-  // throttle(fn: any, wait: number) {
-  //   const pre = Date.now();
-  //   return function () {
-  //     var context = this;
-  //     var args = arguments;
-  //     var now = Date.now();
-  //     if (now - pre >= wait) {
-  //       fn.apply(context, args);
-  //       pre = Date.now();
-  //     }
-  //   };
-  // }
-
   init(onDrawBack: onDrawBack, onDrawTextBack: onDrawTextBack, initUrl: string, page_id: string, sildeId: string, textItems: any) {
     this.canvas.width = this.canvasWidth
     this.canvas.height = this.canvasHeight
@@ -139,7 +136,12 @@ export default class Draw {
     // this.cxt.shadowBlur = 10;
     this.canvas.onmousedown = () => {
 
+      console.log("canvas on mouse down", this.isMouseMoved)
+      this.isMouseMoved = false;
+
       this.event = event;
+      this.mouseDownPoint.x = this.event.clientX;
+      this.mouseDownPoint.y = this.event.clientY;
       clearTimeout(this.timerDown);
       //如果是绘制多边形，则需要判断是否是双击，所以需要执行延时操作。
       if (this.drawType == 'polygon') {
@@ -154,7 +156,12 @@ export default class Draw {
         this.onMouseDown();
       }
     };
+
     this.canvas.onmouseup = () => {
+      this.event = event;
+      this.mouseUpPoint.x = this.event.clientX;
+      this.mouseUpPoint.y = this.event.clientY;
+      console.log(this.mouseDownPoint, this.mouseUpPoint);
       clearTimeout(this.timerUp);
       if (this.drawType == 'polygon') {
         let _this = this;
@@ -203,17 +210,17 @@ export default class Draw {
   copyWindowTextPool() {
     var list = [];
     for (let i = 0; i < window.textPool.length; i++) {
-      // console.log(window.textPool[i].innerText);
-      var item = new DrawTextItem(window.textPool[i].page_id, window.textPool[i].self_id, window.textPool[i].left,
-        window.textPool[i].top, window.textPool[i].fontSize, window.textPool[i].fontFamily, window.textPool[i].innerText, window.textPool[i].color);
-      item.id = window.textPool[i].id;
-      list.push(item);
+      if (window.textPool[i].innerText && window.textPool[i].innerText.length > 0) {
+        var item = new DrawTextItem(window.textPool[i].page_id, window.textPool[i].self_id, window.textPool[i].left,
+          window.textPool[i].top, window.textPool[i].fontSize, window.textPool[i].fontFamily, window.textPool[i].innerText, window.textPool[i].color);
+        item.id = window.textPool[i].id;
+        list.push(item);
+      }
     }
     return list;
   }
 
   onMouseDown() {
-    //  // console.log(this.polygonStartPoint.beginX, 'onmousedown', this.drawType)
     if (this.drawType != "text") {
       this.currentMouseOnEditableDeiv = false;
       if (this.currentSelectEditableDiv) {
@@ -240,8 +247,6 @@ export default class Draw {
     } else {
       this.drawBegin(this.event);
     }
-
-
 
   }
 
@@ -313,38 +318,6 @@ export default class Draw {
     // this.cxt.globalCompositeOperation = "source-over";
   }
 
-  //可以使用两层 canvas
-  //上面一层当drawType是text时才显现，用来保存图片的
-  // createDom() {
-  //   let fontSize = Math.max(18, this.lineWidth) + "px";
-  //   const textarea = document.createElement('textarea');
-  //   textarea.id = 'textarea';
-  //   textarea.setAttribute("contenteditable", "true");
-  //   textarea.setAttribute("placeholder", "Please insert text");
-  //   textarea.setAttribute("rows", "3");
-  //   // textarea.autofocus = true;
-  //   //   textarea.placeholder = 'Please insert text';
-  //   textarea.style.position = 'absolute';
-  //   textarea.style.left = `${this.pointer.beginX}px`;
-  //   textarea.style.top = `${this.pointer.beginY}px`;
-  //   textarea.style.zIndex = '11';
-  //   textarea.style.fontSize = Math.max(18, this.lineWidth) + "px";
-  //   textarea.style.fontFamily = this.fontFamily;
-  //   textarea.style.background = "00000000";
-  //   textarea.style.color = this.strokeColor;
-  //   textarea.style.lineHeight = this.getLineHeight();
-  //   textarea.style.outline = "0";
-  //   textarea.style.minWidth = "20px";
-  //   textarea.style.minHeight = "auto";
-
-  //   //  textarea.style.border = "2px solid #c2d4fd";
-  //   textarea.style.textAlign = "left";
-  //   this.cxt.font = `${fontSize}px ${this.fontFamily}`;
-  //   this.canvasParant.appendChild(textarea);
-  //   this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
-  //   //   textarea.focus();
-  //   return textarea;
-  // }
 
 
   //可以使用两层 canvas
@@ -383,7 +356,7 @@ export default class Draw {
 
     if (!textItem) {
       var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
-      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX, this.pointer.beginY,
+      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX + this.stage_info.left - 15, this.pointer.beginY + this.stage_info.top - 15,
         this.lineWidth, this.fontFamily, editableDiv.innerText + " ", this.strokeColor);
 
       this.currentSelectEditableDiv = editableDiv;
@@ -669,6 +642,7 @@ export default class Draw {
     if (!this.isDrawing) {
       this.addHistory()
     }
+    this.isMouseMoved = true;
     this.isDrawing = true
     this.pointer.endX = e.clientX - this.stage_info.left
     this.pointer.endY = e.clientY - this.stage_info.top
@@ -838,22 +812,48 @@ export default class Draw {
   drawEnd() {
     // console.log('========= drawEnd', this.canTextarea);
     this.canvas.onmousemove = null;
-    // // // console.log();
     if (this.currentSelectEditableDiv) {
       this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
     }
+
+    //检查鼠标是否有移动，如果有移动说明绘制过了，则进行添加操作，否则不要添加
+    if (this.drawType != "polygon" && this.drawType != 'text') {
+      if (!this.isMouseMoved) {
+        return;
+      }
+    }
+
+    if (this.drawType == 'text') {
+      var list = this.copyWindowTextPool();
+      var tmp = window.textOptsPool[this.currentIndex];
+      console.log(list, tmp);
+      var diff = false;
+      if (list.length == tmp.length) {
+        for (let i = 0; i < list.length; i++) {
+          if (tmp[i].innerText != list[i].innerText) {
+            diff = true;
+          }
+        }
+      } else {
+        diff = true;
+      }
+      console.log(diff);
+      if (!diff) {
+        return;
+      }
+    }
+
+
 
     const base64Url = this.canvas.toDataURL("image/png");
     this.drawTextOnCanvas();
     const imageUrl = this.canvasText.toDataURL("image/png");
 
     this.callBackData(base64Url, imageUrl);
-    // this.lastImageData = base64Url;
-    // this.canvas.onmousemove = null
+
 
 
     window.drawPool.splice(++this.currentIndex, 0, base64Url);
-
     window.textOptsPool.splice(this.currentIndex, 0, this.copyWindowTextPool());
   }
 
