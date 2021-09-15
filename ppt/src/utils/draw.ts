@@ -369,7 +369,7 @@ export default class Draw {
 
     if (!textItem) {
       var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
-      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX + this.stage_info.left - 15, this.pointer.beginY + this.stage_info.top - 15,
+      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX + this.stage_info.left - 0, this.pointer.beginY + this.stage_info.top - 0,
         this.lineWidth, this.fontFamily, editableDiv.innerText + " ", this.strokeColor);
 
       this.currentSelectEditableDiv = editableDiv;
@@ -382,9 +382,10 @@ export default class Draw {
       this.cxt.font = `${fontSize}px ${this.fontFamily}`;
       editableDiv.style.border = "2px solid #c2d4fd";
       closeImg.style.display = 'block';
-      editableDiv.setAttribute("contenteditable", "true");
-      editableDiv.focus();
-      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+      setTimeout(() => {
+        editableDiv.focus();
+      }, 50)
+      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY}
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
       editableDiv.setAttribute("contenteditable", "false");
@@ -395,8 +396,8 @@ export default class Draw {
     closeImg.style.position = 'fixed';
     closeImg.style.cursor = "pointer";
     closeImg.setAttribute('src', "https://dev.api.newzealand.actself.me/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
-    closeImg.style.left = `${textItem.left - 10}px`;
-    closeImg.style.top = `${textItem.top - 10}px`;
+    closeImg.style.left = `${textItem.left - 20}px`;
+    closeImg.style.top = `${textItem.top + 10}px`;
     closeImg.width = 20;
     closeImg.height = 20;
 
@@ -412,8 +413,6 @@ export default class Draw {
     window.textPool.push(textItem);
     editableDiv.id = textItem.self_id;
     editableDiv.style.position = 'fixed';
-    editableDiv.style.left = `${textItem.left}px`;
-    editableDiv.style.top = `${textItem.top}px`;
     // editableDiv.style.zIndex = '' + window.textPool.length;
     editableDiv.style.fontFamily = textItem.fontFamily;
     editableDiv.style.background = "#00000000";
@@ -424,6 +423,9 @@ export default class Draw {
     editableDiv.style.fontSize = Math.max(18, textItem.fontSize) + "px";
     editableDiv.style.lineHeight = Math.max(18, textItem.fontSize) + "px";
     editableDiv.style.minHeight = Math.max(18, textItem.fontSize) + "px";
+    // console.warn('====', editableDiv.style.width, editableDiv.style.height)
+    editableDiv.style.left = `${textItem.left - 10}px`;
+    editableDiv.style.top = `${textItem.top + Math.max(18, textItem.fontSize)}px`;
     editableDiv.style.padding = '10px 5px 10px 5px'
     editableDiv.style.borderRadius = '2px';
     editableDiv.style.textAlign = "left";

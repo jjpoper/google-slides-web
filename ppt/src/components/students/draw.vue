@@ -783,7 +783,6 @@ export default {
       iframe.style.cssText = styleText;
       el.appendChild(iframe)
       iframe.contentWindow.addEventListener('resize', () => {
-        console.log('====')
         // this.initCanvasData()
         let outer = document.getElementById("canvasouter");
           // console.log(outer.clientWidth, outer.clientHeight)
