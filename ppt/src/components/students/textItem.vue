@@ -1,9 +1,9 @@
 <template>
   <div class="parent">
-    <div class="input_parent" v-for="(item,index) in arrList" :key="index">
+    <div class="input_parent" v-for="(item, index) in arrList" :key="index">
       <el-input
         type="textarea"
-        :autosize="{ minRows: 3}"
+        :autosize="{ minRows: 3 }"
         placeholder="Please input somthing"
         v-model="item.content"
         @input="onInputText(index)"
@@ -15,7 +15,9 @@
     </div>
 
     <tipShow />
-    <div v-if="showCorrect" class="answer_text">{{data.items[0].data.answer}}</div>
+    <div v-if="showCorrect" class="answer_text">
+      {{ data.items[0].data.answer }}
+    </div>
     <el-switch
       v-if="hasAnswer()"
       v-model="showCorrect"
@@ -28,9 +30,9 @@
     <el-button
       type="text"
       @click="addInput()"
-      v-if="data.items[0].data.isMulti"
-      :disabled="addDisable||showCorrect"
-    >+Add Other One</el-button>
+      :disabled="addDisable || showCorrect"
+      >+Add Other One</el-button
+    >
   </div>
 </template>
 
@@ -86,7 +88,7 @@ import { getCurrentPageStudentAnswerList } from "@/model/data.student";
 import tipShow from "./tipShow.vue";
 export default {
   components: {
-    tipShow
+    tipShow,
   },
   props: {
     method: { type: Function },
@@ -94,24 +96,24 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     answer: {
       type: Function,
-      default: () => {}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
       addDisable: false,
-      maxCount: 3,
+      maxCount: 5,
       inputCount: 1,
       arrList: getCurrentPageStudentAnswerList(
         this.data.page_id,
         SocketEventsEnum.TEXT_INPUT
       ),
       sendDelay: null,
-      showCorrect: false
+      showCorrect: false,
     };
   },
   created() {
@@ -137,13 +139,13 @@ export default {
     this.clearDelay();
   },
   methods: {
-    addInput: function() {
+    addInput() {
       this.inputCount++;
       var item = { content: "", id: this.inputCount, textSended: false };
       this.arrList.push(item);
       this.addDisable = this.inputCount >= this.maxCount;
     },
-    send: function(index) {
+    send: function (index) {
       this.arrList[index].textSended = true;
       var text = this.arrList[index].content;
       this.method(index, text, this.showCorrect);
@@ -191,7 +193,7 @@ export default {
         this.data.items[0].data.answer.length > 0 &&
         answered
       );
-    }
-  }
+    },
+  },
 };
 </script>
