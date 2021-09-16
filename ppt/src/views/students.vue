@@ -13,7 +13,7 @@
       :answerList="answerList"
     />
 
-    <div style="width: 100%; height: 100%" v-else>
+    <div class="student-page" v-else>
       <!-- <student-questions
         v-if="questionModalVisiable"
         :sendQuestion="sendQuestion"
@@ -23,8 +23,8 @@
         :delQuestion="delQuestion"
       />-->
 
+      <students-ppt-list v-if="currentModel == 'Student-Paced'" />
       <div class="student-main" v-show="!questionModalVisiable">
-        <students-ppt-list v-if="currentModel == 'Student-Paced'" />
         <div
           v-if="
             fullScreen &&
@@ -1064,11 +1064,11 @@ export default {
   z-index: 9999;
 }
 .student-main {
-  width: 100%;
-  height: 100%;
+  flex: 1;
   display: flex;
   padding-bottom: 5px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 .student-right {
   height: 100%;
@@ -1169,6 +1169,10 @@ export default {
   padding-top: 50px;
   padding-bottom: 60px;
   box-sizing: border-box;
+}
+.student-page{
+  width: 100%; height: 100%; display: flex;
+  flex-direction: column;
 }
 .block {
   width: 100%;

@@ -47,7 +47,7 @@ export default class Draw {
   private cxtText: any
   private stage_info = {
     left: 0,
-    top: 50
+    top: 0
   }
   private fontFamily = "Microsoft YaHei"
   private textString = ""
@@ -117,6 +117,18 @@ export default class Draw {
     // // // console.log(this.stage_info.left, this.stage_info.top)
   }
 
+  resetSize(canvasW: number, canvasH: number) {
+    this.canvasWidth = canvasW
+    this.canvasHeight = canvasH
+    this.canvas.width = this.canvasWidth
+    this.canvas.height = this.canvasHeight
+
+    this.canvasText.width = this.canvasWidth
+    this.canvasText.height = this.canvasHeight
+
+    this.restoreImageData(this.imageData);
+  }
+
   init(onDrawBack: onDrawBack, onDrawTextBack: onDrawTextBack, initUrl: string, page_id: string, sildeId: string, textItems: any) {
     this.canvas.width = this.canvasWidth
     this.canvas.height = this.canvasHeight
@@ -140,8 +152,9 @@ export default class Draw {
       this.isMouseMoved = false;
 
       this.event = event;
-      this.mouseDownPoint.x = this.event.clientX;
-      this.mouseDownPoint.y = this.event.clientY;
+      console.log(this.event.layerY)
+      this.mouseDownPoint.x = this.event.layerX;
+      this.mouseDownPoint.y = this.event.layerY;
       clearTimeout(this.timerDown);
       //如果是绘制多边形，则需要判断是否是双击，所以需要执行延时操作。
       if (this.drawType == 'polygon') {
@@ -159,8 +172,8 @@ export default class Draw {
 
     this.canvas.onmouseup = () => {
       this.event = event;
-      this.mouseUpPoint.x = this.event.clientX;
-      this.mouseUpPoint.y = this.event.clientY;
+      this.mouseUpPoint.x = this.event.layerX;
+      this.mouseUpPoint.y = this.event.layerY;
       console.log(this.mouseDownPoint, this.mouseUpPoint);
       clearTimeout(this.timerUp);
       if (this.drawType == 'polygon') {
@@ -356,7 +369,7 @@ export default class Draw {
 
     if (!textItem) {
       var divId = "editable_div_" + this.page_id + "_" + new Date().getTime();
-      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX + this.stage_info.left - 15, this.pointer.beginY + this.stage_info.top - 15,
+      textItem = new DrawTextItem(this.page_id, divId, this.pointer.beginX + this.stage_info.left - 0, this.pointer.beginY + this.stage_info.top - 0,
         this.lineWidth, this.fontFamily, editableDiv.innerText + " ", this.strokeColor);
 
       this.currentSelectEditableDiv = editableDiv;
@@ -369,9 +382,10 @@ export default class Draw {
       this.cxt.font = `${fontSize}px ${this.fontFamily}`;
       editableDiv.style.border = "2px solid #c2d4fd";
       closeImg.style.display = 'block';
-      editableDiv.setAttribute("contenteditable", "true");
-      editableDiv.focus();
-      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
+      setTimeout(() => {
+        editableDiv.focus();
+      }, 50)
+      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY}
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
       editableDiv.setAttribute("contenteditable", "false");
@@ -382,8 +396,8 @@ export default class Draw {
     closeImg.style.position = 'fixed';
     closeImg.style.cursor = "pointer";
     closeImg.setAttribute('src', "https://dev.api.newzealand.actself.me/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
-    closeImg.style.left = `${textItem.left - 10}px`;
-    closeImg.style.top = `${textItem.top - 10}px`;
+    closeImg.style.left = `${textItem.left - 20}px`;
+    closeImg.style.top = `${textItem.top + 10}px`;
     closeImg.width = 20;
     closeImg.height = 20;
 
@@ -399,8 +413,6 @@ export default class Draw {
     window.textPool.push(textItem);
     editableDiv.id = textItem.self_id;
     editableDiv.style.position = 'fixed';
-    editableDiv.style.left = `${textItem.left}px`;
-    editableDiv.style.top = `${textItem.top}px`;
     // editableDiv.style.zIndex = '' + window.textPool.length;
     editableDiv.style.fontFamily = textItem.fontFamily;
     editableDiv.style.background = "#00000000";
@@ -411,6 +423,9 @@ export default class Draw {
     editableDiv.style.fontSize = Math.max(18, textItem.fontSize) + "px";
     editableDiv.style.lineHeight = Math.max(18, textItem.fontSize) + "px";
     editableDiv.style.minHeight = Math.max(18, textItem.fontSize) + "px";
+    // console.warn('====', editableDiv.style.width, editableDiv.style.height)
+    editableDiv.style.left = `${textItem.left - 10}px`;
+    editableDiv.style.top = `${textItem.top + Math.max(18, textItem.fontSize)}px`;
     editableDiv.style.padding = '10px 5px 10px 5px'
     editableDiv.style.borderRadius = '2px';
     editableDiv.style.textAlign = "left";
@@ -443,8 +458,8 @@ export default class Draw {
       let e = ev || event;
       _this.currentSelectEditableDiv = editableDiv;
       editableDiv.style.border = "2px solid #c2d4fd";
-      _this.currentSelectEditableLeft = e.clientX;
-      _this.currentSelectEditableTop = e.clientY;
+      _this.currentSelectEditableLeft = e.layerX;
+      _this.currentSelectEditableTop = e.layerY;
       _this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
       _this.currentSelectEditableDiv.focus();
 
@@ -466,12 +481,12 @@ export default class Draw {
         var e = ev || event;
         let left = parseInt(editableDiv.style.left) ? parseInt(editableDiv.style.left) : 0;
         let top = parseInt(editableDiv.style.top);
-        left += (e.clientX - _this.currentSelectEditableLeft);
-        top += (e.clientY - _this.currentSelectEditableTop);
+        left += (e.layerX - _this.currentSelectEditableLeft);
+        top += (e.layerY - _this.currentSelectEditableTop);
         editableDiv.style.left = `${left}px`;
         editableDiv.style.top = `${top}px`;
-        _this.currentSelectEditableLeft = e.clientX;
-        _this.currentSelectEditableTop = e.clientY;
+        _this.currentSelectEditableLeft = e.layerX;
+        _this.currentSelectEditableTop = e.layerY;
 
         var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
 
@@ -588,8 +603,8 @@ export default class Draw {
     window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty();
     this.cxt.strokeStyle = this.strokeColor;
     // // console.log(this.cxt.lineWidth)
-    this.pointer.beginX = e.clientX - this.stage_info.left
-    this.pointer.beginY = e.clientY - this.stage_info.top
+    this.pointer.beginX = e.layerX - this.stage_info.left
+    this.pointer.beginY = e.layerY - this.stage_info.top
     if (this.drawType === 'draw' || this.drawType === 'marker') {
       this.cxt.beginPath();
       this.cxt.moveTo(
@@ -644,8 +659,8 @@ export default class Draw {
     }
     this.isMouseMoved = true;
     this.isDrawing = true
-    this.pointer.endX = e.clientX - this.stage_info.left
-    this.pointer.endY = e.clientY - this.stage_info.top
+    this.pointer.endX = e.layerX - this.stage_info.left
+    this.pointer.endY = e.layerY - this.stage_info.top
     if (this.drawType === 'draw') {
       this.drawPath()
     } else if (this.drawType === 'line') {

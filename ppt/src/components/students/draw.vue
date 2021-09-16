@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasouter">
+  <div id="canvasouter" >
     <div style="position: relative">
       <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
 
@@ -708,34 +708,16 @@ export default {
         "#FFFFFF",
       ],
       showColor: true,
+      observer: null,
+      recordOldValue: { // 记录下旧的宽高数据，避免重复触发回调函数
+        width: '0',
+        height: '0'
+      }
     };
   },
   created() {},
   mounted() {
-    let outer = document.getElementById("canvasouter");
-    // console.log(outer.clientWidth, outer.clientHeight)
-    // outer.style.width = document.documentElement.clientWidth - 40 + "px";
-    // outer.style.height = document.documentElement.clientHeight - 40 + "px";
-    this.draw = new Draw(
-      "canvas",
-      "textCanvas",
-      outer.clientWidth,
-      outer.clientHeight
-    );
-    const initData = getStudentCurrentPageAnswerList(
-      this.data.page_id,
-      this.data.items[0].type
-    );
-    this.$nextTick(() => {
-      this.draw.init(
-        this.onDrawBack,
-        this.onDrawTextBack,
-        initData && initData[0] ? initData[0].content : "",
-        this.data.page_id,
-        this.slide_id,
-        this.data.elements
-      );
-    });
+    this.initCanvasData()
     const _this = this;
     window.onbeforeunload = function (event) {
       event = event || window.event;
@@ -750,14 +732,68 @@ export default {
     //   let key = window.event.key;
     //   _this.draw.drawTextDirect(window.event);
     // };
+    this.resetSize()
   },
-  beforeDestroy() {
-    // colorSelector.destory();
-    // document.getElementById("diycolor_comment").innerHTML = ''
-    // console.log("beforeDestroy");
+  beforeDestroyed () {
   },
   destroyed() {},
   methods: {
+    initCanvasData() {
+      let outer = document.getElementById("canvasouter");
+      // console.log(outer.clientWidth, outer.clientHeight)
+      // outer.style.width = document.documentElement.clientWidth - 40 + "px";
+      // outer.style.height = document.documentElement.clientHeight - 40 + "px";
+      this.draw = new Draw(
+        "canvas",
+        "textCanvas",
+        outer.clientWidth,
+        outer.clientHeight
+      );
+      const initData = getStudentCurrentPageAnswerList(
+        this.data.page_id,
+        this.data.items[0].type
+      );
+      this.$nextTick(() => {
+        this.draw.init(
+          this.onDrawBack,
+          this.onDrawTextBack,
+          initData && initData[0] ? initData[0].content : "",
+          this.data.page_id,
+          this.slide_id,
+          this.data.elements
+        );
+      });
+    },
+    resetSize() {
+      let el = document.getElementById("canvasouter");
+      let iframe = document.createElement('iframe');
+      let styleJson = {
+          opacity: 0,
+          'z-index': '-1111',
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: '100%',
+          height: '100%',
+        };
+      let styleText = '';
+      for (let key in styleJson) {
+        styleText += (key + ':' + styleJson[key] + ';');
+      }
+      iframe.style.cssText = styleText;
+      el.appendChild(iframe)
+      iframe.contentWindow.addEventListener('resize', () => {
+        // this.initCanvasData()
+        let outer = document.getElementById("canvasouter");
+          // console.log(outer.clientWidth, outer.clientHeight)
+          // outer.style.width = document.documentElement.clientWidth - 40 + "px";
+          // outer.style.height = document.documentElement.clientHeight - 40 + "px";
+          this.draw.resetSize(
+            outer.clientWidth,
+            outer.clientHeight
+          );
+      }, false)
+    },
     doKeyDown(e) {
       // console.log(e);
     },
