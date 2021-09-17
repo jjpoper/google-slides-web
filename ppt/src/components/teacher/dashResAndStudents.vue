@@ -124,6 +124,7 @@ export default {
       this.tab = tab
     },
     getTimeStr(time) {
+      if(!time) return ''
       return getAnswerTimeStr(time * 1000);
     },
   }
