@@ -385,7 +385,7 @@ export default class Draw {
       setTimeout(() => {
         editableDiv.focus();
       }, 50)
-      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY}
+      this.textPostion = { x: this.pointer.beginX, y: this.pointer.beginY }
     } else {
       editableDiv.style.border = "2px solid #c2d4fd00";
       editableDiv.setAttribute("contenteditable", "false");
@@ -458,10 +458,10 @@ export default class Draw {
       let e = ev || event;
       _this.currentSelectEditableDiv = editableDiv;
       editableDiv.style.border = "2px solid #c2d4fd";
-      _this.currentSelectEditableLeft = e.layerX;
-      _this.currentSelectEditableTop = e.layerY;
-      _this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
-      _this.currentSelectEditableDiv.focus();
+      _this.currentSelectEditableLeft = e.clientX;
+      _this.currentSelectEditableTop = e.clientY;
+      //  _this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
+      //   _this.currentSelectEditableDiv.focus();
 
       var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
 
@@ -481,22 +481,33 @@ export default class Draw {
         var e = ev || event;
         let left = parseInt(editableDiv.style.left) ? parseInt(editableDiv.style.left) : 0;
         let top = parseInt(editableDiv.style.top);
-        left += (e.layerX - _this.currentSelectEditableLeft);
-        top += (e.layerY - _this.currentSelectEditableTop);
+
+        console.log(e.clientX, e.clientY);
+        left += (e.clientX - _this.currentSelectEditableLeft);
+        top += (e.clientY - _this.currentSelectEditableTop);
         editableDiv.style.left = `${left}px`;
         editableDiv.style.top = `${top}px`;
-        _this.currentSelectEditableLeft = e.layerX;
-        _this.currentSelectEditableTop = e.layerY;
+        _this.currentSelectEditableLeft = e.clientX;
+        _this.currentSelectEditableTop = e.clientY;
 
         var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
-
         if (deleteImage) {
           deleteImage.style.left = `${left - 10}px`;
           deleteImage.style.top = `${top - 10}px`;
         }
 
 
-      }
+      };
+      editableDiv.onmouseup = function (ev) {
+        if (_this.drawType != 'text') {
+          return;
+        }
+        // console.log('onmouseup', editableDiv.id);
+        _this.isMouseDown = false;
+        editableDiv.onmousemove = null;
+        editableDiv.onmouseup = null;
+        // _this.changeEditableDiv();
+      };
     }
 
     editableDiv.onmouseenter = function (ev) {
@@ -519,15 +530,7 @@ export default class Draw {
 
 
 
-    editableDiv.onmouseup = function (ev) {
-      if (_this.drawType != 'text') {
-        return;
-      }
-      // console.log('onmouseup', editableDiv.id);
-      _this.isMouseDown = false;
-      editableDiv.onmousemove = null;
-      // _this.changeEditableDiv();
-    }
+
     editableDiv.addEventListener('input', function () {
       //  _this.changeEditableDiv()
     })
