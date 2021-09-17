@@ -31,7 +31,6 @@ export default {
   methods: {
     getText(answerId) {
       const {options} = this.currentPagePPTData.items[0].data;
-      console.log(options, this.item.answer)
       return this.optFlags[answerId] + '：' + options.filter(i => i.id == answerId)[0].text
     }
   }

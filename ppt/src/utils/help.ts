@@ -41,6 +41,7 @@ export const getTimeValue = (value: number) => {
 }
 
 export const getAnswerTimeStr = (time: number) => {
+  if(!time) return ''
   const {
     year,
     month,
