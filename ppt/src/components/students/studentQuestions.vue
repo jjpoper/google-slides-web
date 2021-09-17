@@ -31,7 +31,7 @@
               <div
                 slot="reference"
                 v-if="item.pointType !== 'box'" 
-                :class="`markitem ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
+                :class="`markitemopacity markitem ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
                 :style="`top:${item.top}px;left:${item.left}px;`"
                 @mousedown.stop="selectMark(item, index)"
                 @mouseup.stop
@@ -43,7 +43,7 @@
               <div
                 slot="reference"
                 v-else-if="item.pointType === 'box'"
-                :class="`markitembox ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
+                :class="`markitemopacity markitembox ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
                 :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
                 @mousedown.stop="selectMark(item, index)"
                 @click.stop
@@ -284,9 +284,13 @@ export default {
       // if(!this.recordVisiable && this.markType !== 2) {
       //   this.changeMarkType(2)
       // }
-      this.isBoxing = true
+
+      const { offsetX, offsetY, clientX, clientY } = e;
+      if(offsetX - this.nextPosition.offsetX > 20 ||
+      offsetY - this.nextPosition.offsetY > 20) {
+        this.isBoxing = true
+      }
       if(this.markType === 2 && this.isBoxing) {
-        const { offsetX, offsetY, clientX, clientY } = e;
         // // console.log(offsetX, offsetY, clientX, clientY)
         this.nextPosition = {
           offsetX: clientX,
@@ -371,6 +375,8 @@ export default {
         this.currentMark = [];
       }
       this.sendBusyStatus = false
+      this.startMoveEnable = false
+      this.resetPosition()
     },
     showModal() {
       this.modalVisable = true
@@ -612,5 +618,8 @@ export default {
   border: 2px solid transparent;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);;
+}
+.markitemopacity{
+  opacity: 0.8;
 }
 </style>
