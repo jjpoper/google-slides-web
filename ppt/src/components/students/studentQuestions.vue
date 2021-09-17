@@ -2,39 +2,61 @@
   <div class="remark-modal">
     <div class="remark-mask-inner">
       <div class="pointer-area"
-        @click="markup($event)"
         @mousedown="startMove($event)"
         @mousemove="mouseMoving($event)"
         @mouseup="mouseEnd($event)"
-        @mouseleave="mouseEnd($event)"
+        @mouseleave="mouseLeave($event)"
         onselectstart="return false"
         @drag="pauseEvent($event)"
         >
         <template v-for="(item, index) in marks.concat(currentMark)">
-          <div
+          <el-popover
             :key="item.id"
-            v-if="item.pointType !== 'box'" 
-            :class="`markitem ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
-            :style="`top:${item.top}px;left:${item.left}px;`"
-            @mousedown.stop="selectMark(item, index)"
-            @click.stop
-          >
-            <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
-          </div>
-          <div
-            :key="item.id"
-            v-else-if="item.pointType === 'box'"
-            :class="`markitembox ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
-            :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
-            @mousedown.stop="selectMark(item, index)"
-            @click.stop
-          >
-            <div
-              :style="`width:${item.width}px;
-              height:${item.height}px;
-              border: 2px solid ${item.background}`"
-            />
-          </div>
+            placement="top"
+            trigger="hover"
+            :append-to-body="true"
+            :visible-arrow="false"
+            popper-class="transparent-content"
+            :popper-options="{
+              boundariesElement: 'body',
+              gpuAcceleration: true,
+              positionFixed: true,
+              preventOverflow: true
+            }">
+              <ul class="pop-color-list">
+                <li class="pop-color-item" v-for="item in hoverColors" :key="item">
+                  <div class="pop-color-item-box" :style="`background-color:${item}`"></div>
+                </li>
+              </ul>
+              <div
+                slot="reference"
+                v-if="item.pointType !== 'box'" 
+                :class="`markitem ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
+                :style="`top:${item.top}px;left:${item.left}px;`"
+                @mousedown.stop="selectMark(item, index)"
+                @mouseup.stop
+                @mouseleave.stop
+                @click.stop
+              >
+                <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
+              </div>
+              <div
+                slot="reference"
+                v-else-if="item.pointType === 'box'"
+                :class="`markitembox ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
+                :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
+                @mousedown.stop="selectMark(item, index)"
+                @click.stop
+                @mouseup.stop
+                @mouseleave.stop
+              >
+                <div
+                  :style="`width:${item.width}px;
+                  height:${item.height}px;
+                  border: 2px solid ${item.background}`"
+                />
+              </div>
+          </el-popover>
         </template>  
         <div v-if="markType === 2 && isBoxing" class="dragbg" @click.stop/>
         <div
@@ -47,12 +69,12 @@
           border: 2px solid ${this.color}`">
         </div>
       </div>
-      <div class="canvasmodal" @mouseleave="leaveModal" v-show="modalVisable">
+      <!-- <div class="canvasmodal" @mouseleave="leaveModal" v-show="modalVisable">
         <i class="el-icon-circle-close closemodal" style="font-size: 30px" @click="hideModal"></i>
         <div class="colorList">
           <span v-for="item in colors" :key="item" @click="changeColor(item)" :style="`background-color: ${item}`" class="colors"></span>
         </div>
-      </div>
+      </div> -->
       <!-- <div class="canvasfooter" v-if="!disable">
         <el-tooltip content="change color" placement="top">
           <div :style="`background-color: ${color}`"  @click="showModal"></div>
@@ -131,6 +153,18 @@ export default {
       markType: 1, // 1 == point  2 = box
       isBoxing: false,
       buttonPosition: {left: 0, top: 0},
+      startMoveEnable: false,
+      hoverColors: [
+        'rgb(241, 255, 0)',
+        'rgb(0, 255, 54)',
+        'rgb(255, 0, 156)',
+        'rgb(255, 0, 0)',
+        'rgb(0, 240, 255)',
+        'rgb(216, 0, 255)',
+        'rgb(255, 200, 0)',
+        'rgb(255, 255, 255)',
+        'rgb(0, 0, 0)',
+      ]
     };
   },
   computed: {
@@ -214,30 +248,43 @@ export default {
       }
     },
     startMove(e){
-      // console.log('mousedown')
+      // if(!this.recordVisiable && this.markType !== 1) {
+      //   this.changeMarkType(1)
+      // }
+      this.startMoveEnable = true
       if(this.recordVisiable) return false
-      if(this.markType === 2) {
-        this.isBoxing = true
-        const { offsetX, offsetY } = e;
-        const left = offsetX - 15;
-        const top = offsetY - 15;
-        const { offsetHeight, offsetWidth } = e.target;
-        this.currentPosition = {
-          left,
-          top,
-          content_width: offsetWidth - 15,
-          content_height: offsetHeight - 15,
-          offsetX,
-          offsetY,
-          background: this.color,
-        };
-        this.nextPosition = {
-          offsetX,
-          offsetY
-        }
+      // if(this.markType === 2) {
+        
+      // }
+
+      console.log('startMove')
+      this.changeMarkType(2)
+      const { offsetX, offsetY } = e;
+      const left = offsetX - 15;
+      const top = offsetY - 15;
+      const { offsetHeight, offsetWidth } = e.target;
+      this.currentPosition = {
+        left,
+        top,
+        content_width: offsetWidth - 15,
+        content_height: offsetHeight - 15,
+        offsetX,
+        offsetY,
+        background: this.color,
+      };
+      this.nextPosition = {
+        offsetX,
+        offsetY
       }
     },
     mouseMoving(e) {
+      if(!this.startMoveEnable) return false
+      if(this.recordVisiable) return false
+      console.log('mouseMoving', this.recordVisiable , this.markType, this.isBoxing)
+      // if(!this.recordVisiable && this.markType !== 2) {
+      //   this.changeMarkType(2)
+      // }
+      this.isBoxing = true
       if(this.markType === 2 && this.isBoxing) {
         const { offsetX, offsetY, clientX, clientY } = e;
         // // console.log(offsetX, offsetY, clientX, clientY)
@@ -247,11 +294,27 @@ export default {
         }
       }
     },
-    mouseEnd() {
+    mouseLeave() {
+      if(this.recordVisiable) return false
+      this.startMoveEnable = false
+      console.log('mouseEnd', this.recordVisiable)
       if(this.isBoxing) {
         // console.log('mouseEnd')
         this.markBox()
         this.isBoxing = false
+      }
+    },
+    mouseEnd(e) {
+      if(this.recordVisiable) return false
+      this.startMoveEnable = false
+      console.log('mouseEnd', this.recordVisiable)
+      if(this.isBoxing) {
+        // console.log('mouseEnd')
+        this.markBox()
+        this.isBoxing = false
+      } else {
+        this.changeMarkType(1)
+        this.markup(e)
       }
     },
     // 增加box标记
@@ -268,7 +331,7 @@ export default {
       this.startInputComment()
     },
     pauseEvent(e){
-      // console.log('pauseEvent')
+      console.log('pauseEvent')
       if(e.stopPropagation) e.stopPropagation();
       if(e.preventDefault) e.preventDefault();
       e.cancelBubble=true;
@@ -301,7 +364,7 @@ export default {
       this.changeRemarkIndex(-1)
     },
     closeRecord() {
-      // console.log("end record");
+      console.log("end record");
       this.recordVisiable = false;
       if (this.sendBusyStatus) {
         // 没有发送要删除这次打点
@@ -331,9 +394,10 @@ export default {
       this.resetPosition()
     },
     selectMark(item, index) {
-      this.changeRemarkIndex(index)
-      if(this.recordVisiable) {
-        this.closeRecord();
+      if(!this.recordVisiable) {
+        // this.closeRecord();
+
+        this.changeRemarkIndex(index)
       }
     },
     leaveModal() {
@@ -525,5 +589,28 @@ export default {
   bottom: 0;
   background-color: transparent;
   z-index: 9999;
+}
+.pop-color-list{
+  background-color: transparent;
+  width: 108px;
+  height: 108px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  position: relative;
+}
+.pop-color-item{
+  width: 36px;
+  height: 36px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+.pop-color-item-box{
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);;
 }
 </style>
