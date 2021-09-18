@@ -2,6 +2,8 @@ export enum SocketEventsEnum {
   GO_PAGE = 'GO_PAGE', // 教师端发控制
   ANSWER_QUESTION = 'response', // 回答
   DELETE_QUESTION = 'DELETE_QUESTION', // 回答
+  UPDATE_TIP = 'UPDATE_TIP', // 回答
+  UPDATE_RIGHT_ANSWERS = 'UPDATE_RIGHT_ANSWERS', // 回答
   DRAW_CANVAS = 'draw', // 白板
   STUDENTS_COUNTS = 'STUDENTS_COUNTS', // 人数
   RENAME = 'RENAME', // 改名

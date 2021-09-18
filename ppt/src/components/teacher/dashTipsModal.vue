@@ -57,10 +57,13 @@
               />
             </div>
             <div class="ppt-tips-item-checklist">
-              <div class="checktext checkitem"
-                v-for="(item, index) in tipsItemList[currentIndex].items[0].data.options"
-                :key="index">
-                <input type="checkbox" :checked="item.isAnswer" class="tipscheck"/>
+              <!-- <el-checkbox-group v-model="rightAnswers" @change="handleCheckedChange">
+                <el-checkbox  >
+                  
+                </el-checkbox>
+              </el-checkbox-group> -->
+              <div v-for="(item, index) in tipsItemList[currentIndex].items[0].data.options" :key="index" class="checktext checkitem">
+                <input type="checkbox" v-model="rightAnswers" @change="handleCheckedChange" :value="item.id" class="tipscheck"/>
                 <p class="checktextbox">
                   {{item.text}}
                 </p>
@@ -73,8 +76,8 @@
   </div>
 </template>
 <script>
-import { changeTips } from '@/socket/socket.teacher';
-import {mapState} from 'vuex'
+import { changeAnswer, changeTips } from '@/socket/socket.teacher';
+import {mapState, mapActions} from 'vuex'
 import pptcontent from '../pptcontent.vue';
 export default {
   components: { pptcontent },
@@ -97,7 +100,6 @@ export default {
           const tipItemIndex = elements.findIndex(ele => ele.type === 'tip')
           return tipItemIndex > -1
         })
-        console.log(list[0].items[0])
         return list
       }
       return []
@@ -108,7 +110,7 @@ export default {
     currentTips() {
       const {elements} = this.tipsItemList[this.currentIndex]
       const tipItemIndex = elements.findIndex(ele => ele.type === 'tip')
-      return elements[tipItemIndex].tip
+      return elements[tipItemIndex]
     },
     ...mapState({
       studentAllSlides: state => state.student.studentAllSlides
@@ -116,21 +118,36 @@ export default {
   },
   watch: {
     currentTips() {
-      this.tipsValue = this.currentTips
-      console.log(this.tipsValue)
+      this.tipsValue = this.currentTips.tip
+    },
+    currentIndex() {
+      this.setRightAnswers()
     }
   },
   data() {
     return {
       currentIndex: 0,
       contenteditable: false,
-      tipsValue: ''
+      tipsValue: '',
+      rightAnswers: []
     }
   },
   mounted() {
-    this.tipsValue = this.currentTips
+    this.tipsValue = this.currentTips.tip
+    this.setRightAnswers()
   },
   methods: {
+    ...mapActions("student", [
+      "updateSlideItemTip",
+      "updateSlideCorrectAnswer"
+    ]),
+    setRightAnswers() {
+      const {type, data: {options}} = this.tipsItemList[this.currentIndex].items[0]
+      if(type === 'choice') {
+        this.rightAnswers = options.filter(item => item.isAnswer).map(item => item.id)
+        console.log(this.rightAnswers)
+      }
+    },
     changeIndex(index) {
       this.currentIndex = index
     },
@@ -145,13 +162,19 @@ export default {
         event.cancelBubble = true;
         event.preventDefault();
         event.stopPropagation();
-        changeTips(this.currentItemData.page_id, this.tipsValue)
+        changeTips(this.currentItemData.page_id, this.tipsValue, this.currentTips.id)
+        this.updateSlideItemTip({"page_id": this.currentItemData.page_id, "tip": this.tipsValue})
       }
       // this.clearDelay();
       // this.sendDelay = setTimeout(() => {
       //   this.send(index);
       // }, 200);
     },
+    handleCheckedChange() {
+      console.log(this.rightAnswers)
+      changeAnswer(this.currentItemData.page_id, this.rightAnswers)
+      this.updateSlideCorrectAnswer({"page_id": this.currentItemData.page_id, "correct_answer": this.rightAnswers})
+    }
   }
 };
 </script>

@@ -406,6 +406,8 @@ export default {
       "setAllAnswerdList",
       "updateAllAnswerdList",
       "deleteOnAnswerById",
+      "updateSlideItemTip",
+      "updateSlideCorrectAnswer"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -432,7 +434,7 @@ export default {
         ) {
           if (this.studentAllSlides[this.currentPageIndex].elements[i].type == "tip") {
             this.tipText =
-              "tip: " + this.studentAllSlides[this.currentPageIndex].elements[i].url;
+              "tip: " + this.studentAllSlides[this.currentPageIndex].elements[i].tip;
           }
         }
       }
@@ -870,6 +872,11 @@ export default {
         this.updateAllAnswerdList(d);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
+      } else if (d.mtype === SocketEventsEnum.UPDATE_TIP) {
+        console.log(d)
+        this.updateSlideItemTip(d);
+      } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
+        this.updateSlideCorrectAnswer(d);
       }
     },
     // 收到评论

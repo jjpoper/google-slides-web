@@ -141,9 +141,16 @@ const BaseWsRequest = (action: string, message: string) => {
   }
 }
 
-export const changeTips = (pageId: string, tip: string) => {
+export const changeTips = (pageId: string, tip: string, id: number) => {
   BaseWsRequest(
     "update-tip",
-    `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "tip": "${tip}"}`
+    `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "id": ${id}, "tip": "${tip}"}`
+    );
+}
+
+export const changeAnswer = (pageId: string, correctanswer: number[]) => {
+  BaseWsRequest(
+    "update-correct-answer",
+    `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "correct_answer": ${JSON.stringify(correctanswer)}}`
     );
 }

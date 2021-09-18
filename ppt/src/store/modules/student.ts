@@ -142,13 +142,13 @@ const mutations = {
     },
     updateSlideItemTip(nextState: any, data: any) {
         // {"page_id":"abc", "tip": "new tip"}
-        const {studentAllSlides} = nextState
+        const studentAllSlides = JSON.parse(JSON.stringify(nextState.studentAllSlides))
         const {page_id, tip} = data
         // const index = allAnswerList.find
         for(let i = 0; i < studentAllSlides.length; i++) {
             if(studentAllSlides[i].page_id === page_id) {
                 const index = studentAllSlides[i].elements.findIndex((item: any) => item.type === 'tip')
-                studentAllSlides[i].elements[index].url = tip
+                studentAllSlides[i].elements[index].tip = tip
                 break
             }
         }
@@ -156,7 +156,7 @@ const mutations = {
     },
     updateSlideCorrectAnswer(nextState: any, data: any) {
         // {"page_id": "abc", "correct_answer": [0, 2]}
-        const {studentAllSlides} = nextState
+        const studentAllSlides = JSON.parse(JSON.stringify(nextState.studentAllSlides))
         const {page_id, correct_answer} = data
         // const index = allAnswerList.find
         for(let i = 0; i < studentAllSlides.length; i++) {

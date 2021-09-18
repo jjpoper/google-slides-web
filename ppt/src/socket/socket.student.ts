@@ -100,6 +100,12 @@ export const createSo = (room: string, token: string, classId: string, callback:
     // console.log("删除答案" + data);
     callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
   });
+  socket.on('update-tip', (data: any) => {
+    callback({ mtype: SocketEventsEnum.UPDATE_TIP, ...JSON.parse(data) })
+  });
+  socket.on('update-correct-answer', (data: any) => {
+    callback({ mtype: SocketEventsEnum.UPDATE_RIGHT_ANSWERS, ...JSON.parse(data) })
+  });
   windowStudentWs = socket
   return socket
 }
