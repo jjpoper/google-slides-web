@@ -2,6 +2,7 @@ import Vue from 'vue';
 import {
     Main, Aside, Container, Form, FormItem, Progress, Pagination, Radio, Button, Checkbox, Input,
     Row, Col, MessageBox, Alert, Tooltip, Dialog, Tabs, TabPane, Table, TableColumn, Popover, Slider, Select, Option, DatePicker,
+    Image,
     CheckboxGroup,
     Switch,
     Drawer,
@@ -13,6 +14,7 @@ import {
     ButtonGroup
 } from 'element-ui';
 
+Vue.use(Image)
 Vue.use(Main)
 Vue.use(Aside)
 Vue.use(Container)
