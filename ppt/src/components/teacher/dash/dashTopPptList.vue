@@ -1,7 +1,7 @@
 <template>
   <div class="left" v-if="studentAllSlides" >
     <div class="dash-left" @click="prev"></div>
-    <div class="inner-swiper">
+    <div class="inner-swiper" ref="innerSwiper">
       <div v-for="(item, index) in studentAllSlides" :key="index" class="with-outer">
         <div v-bind:class="
             currentPageIndex == index
@@ -76,10 +76,13 @@ export default {
   methods: {
     ...mapActions("student", ["setStudentPageIndex"]),
     next() {
-      this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
+      // this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
+      console.log(this.$refs.innerSwiper.scrollLeft)
+      this.$refs.innerSwiper.scrollLeft = this.$refs.innerSwiper.scrollLeft + 400
     },
     prev() {
-      this.setStudentPageIndex(Math.max(this.currentPageIndex - 1, 0))
+      // this.setStudentPageIndex(Math.max(this.currentPageIndex - 1, 0))
+      this.$refs.innerSwiper.scrollLeft = this.$refs.innerSwiper.scrollLeft - 400
     },
     changeToPage(index) {
       this.setStudentPageIndex(index)
