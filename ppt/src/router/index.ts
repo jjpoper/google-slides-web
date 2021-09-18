@@ -29,11 +29,11 @@ const routes: Array<RouteConfig> = [
     name: 'test',
     component: () => import('../components/teacher/studentResponseOptBar.vue'),
   },
-  // {
-  //   path: '/dashboard',
-  //   name: 'dashboard',
-  //   component: () => import('../views/teacherDashboardTest.vue'),
-  // },
+  {
+    path: '/drive',
+    name: 'drive',
+    component: () => import('../components/uploadFile/googleDriveSearch.vue'),
+  },
 ];
 
 const router = new VueRouter({
