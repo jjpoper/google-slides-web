@@ -17,4 +17,5 @@ export const RemarkActionTypes = {
   SET_IS_REMARK: 'setIsRemark',
   SET_IS_INPUTING: 'setIsInputing',
   SET_CURRENT_REMARK_OPTIONS: 'setCurrentRemarkOptions',
+  UPDATE_ONE_REMARK_ITEM: 'updateONERemarkItem'
 }

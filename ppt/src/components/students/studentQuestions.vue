@@ -9,7 +9,7 @@
         onselectstart="return false"
         @drag="pauseEvent($event)"
         >
-        <template v-for="(item, index) in marks.concat(currentMark)">
+        <template v-for="(item, index) in currentPageMarks">
           <el-popover
             :key="item.id"
             placement="top"
@@ -24,8 +24,8 @@
               preventOverflow: true
             }">
               <ul class="pop-color-list">
-                <li class="pop-color-item" v-for="item in hoverColors" :key="item">
-                  <div class="pop-color-item-box" :style="`background-color:${item}`"></div>
+                <li class="pop-color-item" v-for="color in hoverColors" :key="color" @click="pickColor(item, index, color)">
+                  <div class="pop-color-item-box" :style="`background-color:${color}`"></div>
                 </li>
               </ul>
               <div
@@ -147,7 +147,7 @@ export default {
       recordVisiable: false,
       sendBusyStatus: false,
       modalVisable: false,
-      color: '#caf982',
+      color: 'rgb(241, 255, 0)',
       colors: ['#caf982', 'red', '#ec808d', '#facd91', '#ffff80', '#80ffff', '#81d3f8', '#8080ff', '#c280ff'],
       widthValue: 3,
       markType: 1, // 1 == point  2 = box
@@ -162,7 +162,7 @@ export default {
         'rgb(0, 240, 255)',
         'rgb(216, 0, 255)',
         'rgb(255, 200, 0)',
-        'rgb(255, 255, 255)',
+        '#15c39a',
         'rgb(0, 0, 0)',
       ]
     };
@@ -188,6 +188,9 @@ export default {
     },
     currentPageId() {
       return this.studentAllSlides[this.currentPageIndex].page_id
+    },
+    currentPageMarks() {
+      return this.marks.concat(this.currentMark)
     }
   },
   watch: {
@@ -211,8 +214,8 @@ export default {
     ...mapActions("remark", [
       "addOneRemarkItem",
       "changeRemarkIndex",
-      "deleteOneRemarkItem",
-      "setCurrentRemarkOptions"
+      "updateOneRemarkItem",
+      "setCurrentRemarkOptions",
     ]),
     resetPosition() {
       this.currentPosition = {
@@ -225,6 +228,26 @@ export default {
         background: '#caf982'
       },
       this.nextPosition = {offsetX: 0, offsetY: 0}
+    },
+    pickColor(item, index, background){
+      console.log(item.id, background)
+      if(item.id) {
+        // update
+        const data = {
+          ...item,
+          background
+        }
+        // this.updateCurrentOptions(index, data)
+        this.updateOneRemarkItem(data)
+      } else {
+        this.currentPosition = {
+          ...this.currentPosition,
+          background
+        }
+        this.currentMark = [this.currentPosition]
+        // this.updateCurrentOptions(index, this.currentPosition)
+        this.setCurrentRemarkOptions(this.currentPosition)
+      }
     },
     markup(e) {
       // console.log('click')
@@ -348,6 +371,7 @@ export default {
         ...this.currentPosition,
         pointType: 'point'
       }
+      console.log(this.currentMark)
       this.currentMark.push(this.currentPosition);
       // this.buttonPosition = {
       //   top: this.currentPosition.top,
@@ -621,5 +645,6 @@ export default {
 }
 .markitemopacity{
   opacity: 0.8;
+  /* box-shadow:0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24); */
 }
 </style>
