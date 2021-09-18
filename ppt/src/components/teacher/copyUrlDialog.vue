@@ -143,7 +143,7 @@
 }
 
 .title {
-  width: 60%;
+  width: 80%;
   height: 40px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid #245558;

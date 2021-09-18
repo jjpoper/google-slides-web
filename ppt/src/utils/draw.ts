@@ -436,7 +436,7 @@ export default class Draw {
 
 
 
-    editableDiv.onmousedown = function (ev) {
+    editableDiv.onmousedown = function (ev: any) {
       if (_this.drawType != 'text') {
         return;
       }
@@ -472,7 +472,7 @@ export default class Draw {
 
 
 
-      editableDiv.onmousemove = function (ev) {
+      editableDiv.onmousemove = function (ev: any) {
         // // console.log('onmousemove', editableDiv.id);
         if (_this.drawType != 'text' || !_this.isMouseDown || _this.currentSelectEditableDiv.id != editableDiv.id) {
           return;

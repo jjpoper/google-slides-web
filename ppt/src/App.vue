@@ -75,6 +75,11 @@ html, button, input, select, textarea {
 ::-webkit-scrollbar {
     display: none;
 }
+.transparent-content{
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
 </style>
 <script>
 import "./utils/pptConfig";

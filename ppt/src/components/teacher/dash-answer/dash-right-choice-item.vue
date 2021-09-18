@@ -1,7 +1,7 @@
 <template>
-  <div class="remark-item-content">
-    <div class="remark-file">
-      <p class="file-name">{{getText()}}</p>
+  <div class="remark-item-content" >
+    <div class="remark-file" style="flex-direction: column">
+      <p class="file-name"  v-for="item in answerList" :key="item">{{getText(item)}}</p>
     </div>
   </div>
 </template>
@@ -16,8 +16,12 @@ export default {
   },
   data() {
     return {
+      answerList: [],
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"]
     }
+  },
+  created() {
+    this.answerList = JSON.parse(this.item.answer)
   },
   computed: {
     ...mapGetters({
@@ -25,9 +29,9 @@ export default {
     }),
   },
   methods: {
-    getText() {
+    getText(answerId) {
       const {options} = this.currentPagePPTData.items[0].data;
-      return this.optFlags[this.item.answer] + '：' + options.filter(i => i.id == this.item.answer)[0].text
+      return this.optFlags[answerId] + '：' + options.filter(i => i.id == answerId)[0].text
     }
   }
 }

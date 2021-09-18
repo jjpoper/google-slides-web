@@ -140,7 +140,7 @@
   font-weight: 400;
   color: #15C39A;
   margin-top: 30px;
-  width: 600px;
+  width: 80%;
   text-align: left;
 }
 
