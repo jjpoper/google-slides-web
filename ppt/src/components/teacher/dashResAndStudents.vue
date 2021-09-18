@@ -82,6 +82,7 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
+      list.reverse()
       return list;
     },
     answerList() {

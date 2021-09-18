@@ -146,6 +146,19 @@ export const deleteOneRemark = (id: string) => {
   );
 }
 
+export const updateRemarkItemData = (data: any) => {
+  const {
+    id
+  } = data;
+  BaseWsRequest(
+    "update-ppt-comment",
+    `{"token": "${BaseStudentParams.token}", "class_id": "${BaseStudentParams.classId}",
+    "ppt_comment_id":${id},
+    "ppt_comment":
+      ${JSON.stringify(data)}}`
+    );
+}
+
 // 发送 media 答案
 export const sendAudioOrVideoAnswer = ({
   link,

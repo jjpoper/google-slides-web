@@ -119,6 +119,7 @@
 import { ModalEventsTypeEnum } from "@/socket/socketEvents";
 import colorSelector from '@/utils/color'
 import { mapState, mapActions } from 'vuex'
+import { updateRemarkItemData } from '@/socket/socket.student';
 export default {
   props:{
     disable: {
@@ -239,6 +240,7 @@ export default {
         }
         // this.updateCurrentOptions(index, data)
         this.updateOneRemarkItem(data)
+        updateRemarkItemData(data)
       } else {
         this.currentPosition = {
           ...this.currentPosition,

@@ -468,7 +468,9 @@ type: "slide"*/
       "showRemarkModal",
       "setAllRemarkList",
       "updateLatestRemarkId",
-      "addOneRemarkItem"
+      "addOneRemarkItem",
+      "updateOneRemarkItem",
+      "deleteOneRemarkItem"
     ]),
     showDashTips() {
       this.dashTipsModalVisiable = !this.dashTipsModalVisiable
@@ -996,6 +998,16 @@ type: "slide"*/
         const index = this.markupslist.findIndex(item => item.id === d.id);
         // console.log("删除", index);
         this.markupslist.splice(index, 1);
+        this.deleteOneRemarkItem(index)
+        this.$forceUpdate();
+        return;
+      } else if (d.mtype === SocketEventsEnum.STUDENT_UPDATE_COMMENT) {
+        // 更新
+        this.updateOneRemarkItem({
+          ...d,
+          ...d.ppt_comment,
+          id: d.ppt_comment_id,
+        });
         this.$forceUpdate();
         return;
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
