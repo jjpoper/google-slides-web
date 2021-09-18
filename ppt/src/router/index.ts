@@ -34,6 +34,11 @@ const routes: Array<RouteConfig> = [
     name: 'drive',
     component: () => import('../components/uploadFile/googleDriveSearch.vue'),
   },
+  {
+    path: '/image',
+    name: 'image',
+    component: () => import('../components/uploadFile/imageResource.vue'),
+  },
 ];
 
 const router = new VueRouter({
