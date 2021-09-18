@@ -5,6 +5,36 @@ import { SocketEventsEnum } from "./socketEvents";
 
 type callback = (d: any) => void
 
+interface BaseParams {
+  classId: string
+  token: string
+  uid: string
+  uname: string
+}
+
+let BaseTeacherParams: BaseParams = {
+  classId: '',
+  token: '',
+  uid: '',
+  uname: ''
+}
+
+export const setTeacherWxBaseParams = ({
+  classId,
+  token,
+  uid,
+  uname,
+}: BaseParams) => {
+  BaseTeacherParams = {
+    classId,
+    token,
+    uid,
+    uname,
+  }
+}
+
+let windowStudentWs: any = null
+
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
   // console.log(classId, "create ws socket")
   const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
@@ -99,6 +129,21 @@ export const createSo = (room: string, token: string, classId: string, callback:
     // console.log("删除答案" + data);
     callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
   });
+
+  windowStudentWs = socket
   return socket
 
+}
+
+const BaseWsRequest = (action: string, message: string) => {
+  if(windowStudentWs) {
+    windowStudentWs.emit(action, message);
+  }
+}
+
+export const changeTips = (pageId: string, tip: string) => {
+  BaseWsRequest(
+    "update-tip",
+    `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "tip": "${tip}"}`
+    );
 }

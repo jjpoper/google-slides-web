@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const state = () => ({
     elements: [],
     currentPageIndex: 0,
@@ -76,6 +78,12 @@ const actions = {
     deleteOnAnswerById({ commit }: any, id: any) {
         commit('deleteOnAnswerById', id)
     },
+    updateSlideItemTip({ commit }: any, data: any) {
+        commit('updateSlideItemTip', JSON.parse(JSON.stringify(data)))
+    },
+    updateSlideCorrectAnswer({ commit }: any, data: any) {
+        commit('updateSlideCorrectAnswer', JSON.parse(JSON.stringify(data)))
+    },
 }
 
 // mutations
@@ -131,6 +139,40 @@ const mutations = {
         if(index > -1) {
             nextState.allAnswerList.splice(index, 1)
         }
+    },
+    updateSlideItemTip(nextState: any, data: any) {
+        // {"page_id":"abc", "tip": "new tip"}
+        const {studentAllSlides} = nextState
+        const {page_id, tip} = data
+        // const index = allAnswerList.find
+        for(let i = 0; i < studentAllSlides.length; i++) {
+            if(studentAllSlides[i].page_id === page_id) {
+                const index = studentAllSlides[i].elements.findIndex((item: any) => item.type === 'tip')
+                studentAllSlides[i].elements[index].url = tip
+                break
+            }
+        }
+        nextState.studentAllSlides = studentAllSlides
+    },
+    updateSlideCorrectAnswer(nextState: any, data: any) {
+        // {"page_id": "abc", "correct_answer": [0, 2]}
+        const {studentAllSlides} = nextState
+        const {page_id, correct_answer} = data
+        // const index = allAnswerList.find
+        for(let i = 0; i < studentAllSlides.length; i++) {
+            if(studentAllSlides[i].page_id === page_id) {
+                const item = studentAllSlides[i].items[0]
+                for(let j = 0; j < item.data.options.length; j++) {
+                    if(correct_answer.indexOf(item.data.options[j].id) > -1) {
+                        item.data.options[j].isAnswer = true
+                    } else {
+                        item.data.options[j].isAnswer = false
+                    }
+                }
+                break
+            }
+        }
+        nextState.studentAllSlides = studentAllSlides
     },
 }
 

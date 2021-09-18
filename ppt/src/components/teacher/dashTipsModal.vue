@@ -73,6 +73,7 @@
   </div>
 </template>
 <script>
+import { changeTips } from '@/socket/socket.teacher';
 import {mapState} from 'vuex'
 import pptcontent from '../pptcontent.vue';
 export default {
@@ -100,6 +101,9 @@ export default {
         return list
       }
       return []
+    },
+    currentItemData() {
+      return this.tipsItemList[this.currentIndex]
     },
     currentTips() {
       const {elements} = this.tipsItemList[this.currentIndex]
@@ -136,8 +140,13 @@ export default {
         this.$refs.pptTipstext.focus()
       })
     },
-    enter(key) {
-      console.log(key)
+    enter(event) {
+      if(event.keyCode === 13) {
+        event.cancelBubble = true;
+        event.preventDefault();
+        event.stopPropagation();
+        changeTips(this.currentItemData.page_id, this.tipsValue)
+      }
       // this.clearDelay();
       // this.sendDelay = setTimeout(() => {
       //   this.send(index);

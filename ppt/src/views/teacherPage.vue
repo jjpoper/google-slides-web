@@ -250,7 +250,7 @@ import {
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
-import { createSo } from "../socket/socket.teacher";
+import { createSo, setTeacherWxBaseParams } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -827,6 +827,13 @@ type: "slide"*/
       teacher.state = "online";
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
+
+      setTeacherWxBaseParams({
+        classId: this.class_id,
+        token: this.token,
+        uid: this.uid,
+        uname: teacher.name,
+      })
     },
     msgListener(d) {
       // console.log(d);

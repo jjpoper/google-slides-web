@@ -306,7 +306,8 @@ export default {
   },
   computed: {
     ...mapState({
-      currentPageIndex: (state) => state.student.currentPageIndex,
+      currentPageIndex: state => state.student.currentPageIndex,
+      studentAllSlides: state => state.student.studentAllSlides,
     }),
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
@@ -389,45 +390,11 @@ export default {
     currentPageIndex() {
       // console.log("set elements");
       this.doAfterPageChange();
-      if (this.slides && this.slides[this.currentPageIndex]) {
-        this.setElements(this.slides[this.currentPageIndex].elements);
-      }
-      if (
-        this.slides &&
-        this.slides[this.currentPageIndex] &&
-        this.slides[this.currentPageIndex].elements
-      ) {
-        for (
-          let i = 0;
-          i < this.slides[this.currentPageIndex].elements.length;
-          i++
-        ) {
-          if (this.slides[this.currentPageIndex].elements[i].type == "tip") {
-            this.tipText =
-              "tip: " + this.slides[this.currentPageIndex].elements[i].url;
-          }
-        }
-      }
+      this.changeTipByWatchSlides()
     },
-    slides() {
-      this.setElements(this.slides[this.currentPageIndex].elements);
-      if (
-        this.slides &&
-        this.slides[this.currentPageIndex] &&
-        this.slides[this.currentPageIndex].elements
-      ) {
-        for (
-          let i = 0;
-          i < this.slides[this.currentPageIndex].elements.length;
-          i++
-        ) {
-          if (this.slides[this.currentPageIndex].elements[i].type == "tip") {
-            this.tipText =
-              "tip: " + this.slides[this.currentPageIndex].elements[i].url;
-          }
-        }
-      }
-    },
+    studentAllSlides() {
+      this.changeTipByWatchSlides()
+    }
   },
   methods: {
     ...mapActions("student", [
@@ -449,7 +416,27 @@ export default {
       this.showTip = !this.showTip;
       // console.log("change show !!" + this.showTip);
     },
-
+    changeTipByWatchSlides() {
+      if (this.studentAllSlides && this.studentAllSlides[this.currentPageIndex]) {
+        this.setElements(this.studentAllSlides[this.currentPageIndex].elements);
+      }
+      if (
+        this.studentAllSlides &&
+        this.studentAllSlides[this.currentPageIndex] &&
+        this.studentAllSlides[this.currentPageIndex].elements
+      ) {
+        for (
+          let i = 0;
+          i < this.studentAllSlides[this.currentPageIndex].elements.length;
+          i++
+        ) {
+          if (this.studentAllSlides[this.currentPageIndex].elements[i].type == "tip") {
+            this.tipText =
+              "tip: " + this.studentAllSlides[this.currentPageIndex].elements[i].url;
+          }
+        }
+      }
+    },
     openWebsitePage() {
       console.log(this.currentItemData.items);
       var strWindowFeatures =
