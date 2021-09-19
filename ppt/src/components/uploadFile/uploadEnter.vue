@@ -93,7 +93,7 @@
       title="youtube"
       :visible.sync="showYoutube"
       @close="closeYoutubeDialog"
-      append-to-body="true"
+      :append-to-body="true"
       :destroy-on-close="distroyOnClose"
     >
       <google-youtube-vedio
@@ -152,7 +152,7 @@
       :visible.sync="showImageSearch"
       @close="closeImageSearch"
       width="70%"
-      append-to-body="true"
+      :append-to-body="true"
       :destroy-on-close="distroyOnClose"
     >
       <google-image-search

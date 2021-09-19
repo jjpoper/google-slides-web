@@ -2,16 +2,17 @@
   <div class="left" v-if="studentAllSlides" >
     <div class="dash-left" @click="prev"></div>
     <div class="inner-swiper" ref="innerSwiper">
-      <div v-for="(item, index) in studentAllSlides" :key="index" class="with-outer">
+      <div v-for="(item, index) in studentAllSlides" :key="index"
+            :ref="currentPageIndex === index ? 'activeRef': ''"
+            :tabindex="currentPageIndex === index ? '0' : ''"
+            @click="changeToPage(index)"
+            class="with-outer">
         <div v-bind:class="
             currentPageIndex == index
               ? 'ppt_content image_parent_focus'
-              : 'ppt_content '"
-            :ref="currentPageIndex === index ? 'activeRef': ''"
-            :tabindex="currentPageIndex === index ? '0' : ''">
+              : 'ppt_content '">
           <div
             class="image_parent"
-            @click="changeToPage(index)"
             :style="`background-image:url(${item.thumbnail_url})`"
           >
             <!-- <el-popover
@@ -90,7 +91,8 @@ export default {
     focus() {
       this.$nextTick(() => {
         if(this.$refs.activeRef) {
-          this.$refs.activeRef[0].focus();
+          // this.$refs.activeRef[0].focus();
+          this.moveSlow(0, this.$refs.activeRef[0].offsetLeft - this.$refs.innerSwiper.offsetWidth / 2)
         }
       });
     },
@@ -187,6 +189,7 @@ export default {
   box-sizing: border-box;
   margin-right: 15px;
   padding-top: 20px;
+  outline: none !important;
 }
 .ppt_content {
   display: flex;
