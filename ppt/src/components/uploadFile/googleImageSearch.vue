@@ -11,7 +11,7 @@
     ></div>
 
     <div class="image_opt_area">
-      <span style="margin-right: 10px"> Image type</span>
+      <span style="margin-right: 10px">Image type</span>
       <el-select
         v-model="image_type_value"
         placeholder="Image type"
@@ -23,8 +23,7 @@
           :key="item.value"
           :label="item.label"
           :value="item.value"
-        >
-        </el-option>
+        ></el-option>
       </el-select>
     </div>
     <div class="image_opt_area" style="margin-top: 10px">
@@ -76,7 +75,7 @@
     <!--  class="gcse-searchresults" data-defaultToImageSearch="true" data-image_filter="0" data-gname="storesearch" data-image_dominantcolor="" :data-image_type="image_type_value" data-disableWebSearch="true" -->
 
     <!-- <div id="image_result">
-        </div> -->
+    </div>-->
   </div>
 </template>
 
@@ -131,8 +130,8 @@ export default {
   props: {
     doneSelect: {
       type: Function,
-      default: () => null,
-    },
+      default: () => null
+    }
   },
   data() {
     return {
@@ -141,28 +140,28 @@ export default {
       imageTypes: [
         {
           value: "clipart",
-          label: "Clip art",
+          label: "Clip art"
         },
         {
           value: "face",
-          label: "Faces of people",
+          label: "Faces of people"
         },
         {
           value: "lineart",
-          label: "Line drawings",
+          label: "Line drawings"
         },
         {
           value: "stock",
-          label: "Stock photos",
+          label: "Stock photos"
         },
         {
           value: "photo",
-          label: "Photographs",
+          label: "Photographs"
         },
         {
           value: "animated",
-          label: "Animated GIFs",
-        },
+          label: "Animated GIFs"
+        }
       ],
       colors: [
         "#FF8D87",
@@ -175,7 +174,7 @@ export default {
         "#1AE4A8",
         "#00A4FC",
         "#010001",
-        "#FFFFFF",
+        "#FFFFFF"
       ],
       colorStr: [
         "pink",
@@ -188,11 +187,11 @@ export default {
         "teal",
         "blue",
         "black",
-        "white",
+        "white"
       ],
       currentColor: "#00FFFFFF",
       currentColorIndex: -1,
-      select_clearable: true,
+      select_clearable: true
     };
   },
   created() {
@@ -203,13 +202,14 @@ export default {
   },
   methods: {
     //显示提示
-    slideAlert: function (msg, _type) {
+    slideAlert: function(msg, _type) {
       this.$message({
         message: msg,
-        type: _type,
+        type: _type
       });
     },
     imageTypeChange() {
+      console.log(this.image_type_value);
       this.loadGooleScript();
     },
     changeColor(index) {
@@ -248,7 +248,7 @@ export default {
           }
         };
         const renderedCallback = (name, q, promos, results) => {
-          const removeEventListeners = (element) => {
+          const removeEventListeners = element => {
             const clone = element.cloneNode(true);
             element.parentNode.replaceChild(clone, element);
             return clone;
@@ -262,7 +262,7 @@ export default {
           }
         };
 
-        const myInitCallback = function () {
+        const myInitCallback = function() {
           if (document.readyState == "complete") {
             // Document is ready when Search Element is initialized.
             // Render an element with both search box and search results in div with id 'test'.
@@ -276,23 +276,26 @@ export default {
                 image_dominantcolor:
                   _this.currentColorIndex == -1
                     ? ""
-                    : _this.colorStr[_this.currentColorIndex],
+                    : _this.colorStr[_this.currentColorIndex]
               },
-              tag: "search",
+              tag: "search"
             });
-
             // google.search.cse.element.render({
-            //     div: "image_result",
-            //     attributes: {
-            //         disableWebSearch: true,
-            //         image_type: _this.image_type_value,
-            //     },
-            //     tag: 'searchresults'
+            //   div: "image_result",
+            //   attributes: {
+            //     disableWebSearch: true,
+            //     image_type: _this.image_type_value,
+            //     image_dominantcolor:
+            //       _this.currentColorIndex == -1
+            //         ? ""
+            //         : _this.colorStr[_this.currentColorIndex]
+            //   },
+            //   tag: "search"
             // });
-            console.log("init call back 1");
+            console.log("init call back 1", _this.image_type_value);
           } else {
             // Document is not ready yet, when Search Element is initialized.
-            google.setOnLoadCallback(function () {
+            google.setOnLoadCallback(function() {
               // Render an element with both search box and search results in div with id 'test'.
               var divE = document.getElementById("test");
               divE.innerHTML = "";
@@ -304,9 +307,9 @@ export default {
                   image_dominantcolor:
                     _this.currentColorIndex == -1
                       ? ""
-                      : _this.colorStr[_this.currentColorIndex],
+                      : _this.colorStr[_this.currentColorIndex]
                 },
-                tag: "search",
+                tag: "search"
               });
 
               // google.search.cse.element.render({
@@ -318,19 +321,19 @@ export default {
               //     tag: 'searchresults'
               // });
             }, true);
-            console.log("init call back 2");
+            console.log("init call back 2", _this.image_type_value);
           }
         };
         return {
           readyCallback,
           renderedCallback,
-          myInitCallback,
+          myInitCallback
         };
       };
       const {
         readyCallback: imageResultsReadyCallback,
         renderedCallback: imageResultsRenderedCallback,
-        myInitCallback: myInitializationCallback,
+        myInitCallback: myInitializationCallback
       } = makeTwoPartCallback();
       window.__gcse ||
         (window.__gcse = {
@@ -339,9 +342,9 @@ export default {
           searchCallbacks: {
             image: {
               ready: imageResultsReadyCallback,
-              rendered: imageResultsRenderedCallback,
-            },
-          },
+              rendered: imageResultsRenderedCallback
+            }
+          }
         });
     },
 
@@ -349,10 +352,10 @@ export default {
       var gcse = document.createElement("script");
       gcse.type = "text/javascript";
       gcse.async = true;
-      gcse.src = "https://www.google.com/cse/cse.js?cx=6710cde26bb61c787";
+      gcse.src = "https://www.google.com/cse/cse.js?cx=d29cfc91a5299e6d9";
       var s = document.getElementsByTagName("script")[0];
       s.parentNode.insertBefore(gcse, s);
-    },
-  },
+    }
+  }
 };
 </script>
