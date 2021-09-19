@@ -63,26 +63,26 @@ export default {
   },
   mounted() {
     this.focus()
+    console.log('=====')
   },
   watch: {
     currentPageIndex() {
-      this.$nextTick(() => {
-        if(this.$refs.activeRef) {
-          this.$refs.activeRef[0].focus();
-        }
-      });
+      // this.$nextTick(() => {
+      //   if(this.$refs.activeRef) {
+      //     this.$refs.activeRef[0].focus();
+      //   }
+      // });
     }
   },
   methods: {
     ...mapActions("student", ["setStudentPageIndex"]),
     next() {
       // this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
-      console.log(this.$refs.innerSwiper.scrollLeft)
-      this.$refs.innerSwiper.scrollLeft = this.$refs.innerSwiper.scrollLeft + 400
+      this.moveSlow(this.$refs.innerSwiper.scrollLeft, this.$refs.innerSwiper.offsetWidth)
     },
     prev() {
       // this.setStudentPageIndex(Math.max(this.currentPageIndex - 1, 0))
-      this.$refs.innerSwiper.scrollLeft = this.$refs.innerSwiper.scrollLeft - 400
+      this.moveSlow(this.$refs.innerSwiper.scrollLeft, -this.$refs.innerSwiper.offsetWidth)
     },
     changeToPage(index) {
       this.setStudentPageIndex(index)
@@ -93,6 +93,33 @@ export default {
           this.$refs.activeRef[0].focus();
         }
       });
+    },
+    moveSlow(distance, total) {
+      this.$refs.innerSwiper.scrollLeft = distance + total
+      return
+      // 正向滚动 和 反向滚动
+      if (this.lastItemIndex < this.itemIndex) {
+        // 每隔1毫秒移动一小段距离，直到移动至目标至为止，反之亦然
+        if (distance < total) {
+          distance += step
+          this.$refs.idSwiperImg.scrollLeft = distance
+          setTimeout(() => {
+            this.moveSlow(distance, total, step)
+          }, 1)
+        } else {
+          this.$refs.idSwiperImg.scrollLeft = total
+        }
+      } else if (this.lastItemIndex > this.itemIndex) {
+        if (distance > total) {
+          distance -= step
+          this.$refs.idSwiperImg.scrollLeft = distance
+          setTimeout(() => {
+            this.moveSlow(distance, total, step)
+          }, 1)
+        } else {
+          this.$refs.idSwiperImg.scrollLeft = total
+        }
+      }
     }
   },
 }
@@ -173,6 +200,7 @@ export default {
   background-color: rgba(255, 255, 255, 1);
   border: 1px solid rgba(188, 188, 188, 1);
   position: relative;
+  cursor: pointer;
 }
 .index-tag{
   height: 20px;

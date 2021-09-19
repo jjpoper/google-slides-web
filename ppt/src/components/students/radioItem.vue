@@ -26,6 +26,10 @@
         @change="changeLocked"
         active-text="show answer"
       />
+      <div class="refresh-line" v-show="showRefreshAnswer">
+        <span>正确答案有更新！</span>
+        <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
+      </div>
     </template>
   </div>
 </template>
@@ -45,10 +49,17 @@
 .tag {
   color: red;
 }
+.refresh-line{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 </style>
 
 <script>
 import { getStudentCurrentPageAnswerList } from "@/model/store.student";
+import {mapGetters} from 'vuex'
 export default {
   props: {
     data: {
@@ -67,11 +78,17 @@ export default {
       optionData: {},
       pageId: "",
       radio: -1,
-      showCorrect: false
+      showCorrect: false,
+      showRefreshAnswer: false
     };
   },
+  mounted() {
+    EventBus.$on('refresh-new-answer', () => {
+      this.showRefreshAnswer = true
+    })
+  },
   created() {
-    this.optionData = this.data.items[0].data;
+    this.optionData = JSON.parse(JSON.stringify(this.data.items[0].data))
     this.pageId = this.data.page_id;
     const result = getStudentCurrentPageAnswerList(
       this.pageId,
@@ -81,14 +98,26 @@ export default {
     if (result && result.length > 0) {
       const { answer, locked } = result[0];
       this.radio = parseInt(answer);
-      this.showCorrect = locked === "true" ? true : false;
+      this.showCorrect = (locked && locked !== "false") ? true : false;
       if (this.showCorrect) {
         this.showCorrect = this.hasAnswer();
       }
       // console.log(this.radio, "result");
     }
   },
+  computed: {
+    ...mapGetters({
+      currentPagePPTData: 'student/currentPagePPTData',
+    }),
+  },
   methods: {
+    refreshData() {
+      this.optionData = JSON.parse(JSON.stringify(this.currentPagePPTData.items[0].data))
+    },
+    refreshNewAnswer() {
+      this.showRefreshAnswer = false
+      this.refreshData()
+    },
     changAnswer(value) {
       this.answer(value, this.showCorrect);
     },

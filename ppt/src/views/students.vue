@@ -556,6 +556,7 @@ export default {
         const { page_id, items } = this.currentItemData;
         const type = items[0].type;
         if (type !== "comment") {
+          console.log(getStudentCurrentPageAnswerList(page_id, type))
           return getStudentCurrentPageAnswerList(page_id, type);
         } else {
           // comment remark 特殊，数据不在answer内
@@ -876,6 +877,11 @@ export default {
         console.log(d)
         this.updateSlideItemTip(d);
       } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
+        console.log(d)
+        if(d.page_id === this.currentItemData.page_id) {
+          // 修改当前页答案
+          EventBus.$emit('refresh-new-answer')
+        }
         this.updateSlideCorrectAnswer(d);
       }
     },
@@ -933,6 +939,7 @@ export default {
         saveStudentsCurrentPageAnswerList(page_id, type, {
           key: "item_1",
           answer: v,
+          locked
         });
         this.updateAnswerdPage(this.currentPageIndex);
         this.currentAnswerd = true;
@@ -985,7 +992,7 @@ export default {
       if (result && result.length > 0) {
         const { answer, locked } = result[0];
         let checkedValues = JSON.parse(answer);
-        this.showCorrect = locked === "true" ? true : false;
+        this.showCorrect = (locked && locked !== "false") ? true : false;
         if (this.showCorrect) {
           this.showCorrect = this.hasAnswer(data.items[0].data.options);
         }
