@@ -306,7 +306,8 @@ export default {
   },
   computed: {
     ...mapState({
-      currentPageIndex: (state) => state.student.currentPageIndex,
+      currentPageIndex: state => state.student.currentPageIndex,
+      studentAllSlides: state => state.student.studentAllSlides,
     }),
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
@@ -389,45 +390,11 @@ export default {
     currentPageIndex() {
       // console.log("set elements");
       this.doAfterPageChange();
-      if (this.slides && this.slides[this.currentPageIndex]) {
-        this.setElements(this.slides[this.currentPageIndex].elements);
-      }
-      if (
-        this.slides &&
-        this.slides[this.currentPageIndex] &&
-        this.slides[this.currentPageIndex].elements
-      ) {
-        for (
-          let i = 0;
-          i < this.slides[this.currentPageIndex].elements.length;
-          i++
-        ) {
-          if (this.slides[this.currentPageIndex].elements[i].type == "tip") {
-            this.tipText =
-              "tip: " + this.slides[this.currentPageIndex].elements[i].url;
-          }
-        }
-      }
+      this.changeTipByWatchSlides()
     },
-    slides() {
-      this.setElements(this.slides[this.currentPageIndex].elements);
-      if (
-        this.slides &&
-        this.slides[this.currentPageIndex] &&
-        this.slides[this.currentPageIndex].elements
-      ) {
-        for (
-          let i = 0;
-          i < this.slides[this.currentPageIndex].elements.length;
-          i++
-        ) {
-          if (this.slides[this.currentPageIndex].elements[i].type == "tip") {
-            this.tipText =
-              "tip: " + this.slides[this.currentPageIndex].elements[i].url;
-          }
-        }
-      }
-    },
+    studentAllSlides() {
+      this.changeTipByWatchSlides()
+    }
   },
   methods: {
     ...mapActions("student", [
@@ -439,6 +406,8 @@ export default {
       "setAllAnswerdList",
       "updateAllAnswerdList",
       "deleteOnAnswerById",
+      "updateSlideItemTip",
+      "updateSlideCorrectAnswer"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -449,7 +418,27 @@ export default {
       this.showTip = !this.showTip;
       // console.log("change show !!" + this.showTip);
     },
-
+    changeTipByWatchSlides() {
+      if (this.studentAllSlides && this.studentAllSlides[this.currentPageIndex]) {
+        this.setElements(this.studentAllSlides[this.currentPageIndex].elements);
+      }
+      if (
+        this.studentAllSlides &&
+        this.studentAllSlides[this.currentPageIndex] &&
+        this.studentAllSlides[this.currentPageIndex].elements
+      ) {
+        for (
+          let i = 0;
+          i < this.studentAllSlides[this.currentPageIndex].elements.length;
+          i++
+        ) {
+          if (this.studentAllSlides[this.currentPageIndex].elements[i].type == "tip") {
+            this.tipText =
+              "tip: " + this.studentAllSlides[this.currentPageIndex].elements[i].tip;
+          }
+        }
+      }
+    },
     openWebsitePage() {
       console.log(this.currentItemData.items);
       var strWindowFeatures =
@@ -567,6 +556,7 @@ export default {
         const { page_id, items } = this.currentItemData;
         const type = items[0].type;
         if (type !== "comment") {
+          console.log(getStudentCurrentPageAnswerList(page_id, type))
           return getStudentCurrentPageAnswerList(page_id, type);
         } else {
           // comment remark 特殊，数据不在answer内
@@ -883,6 +873,16 @@ export default {
         this.updateAllAnswerdList(d);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
+      } else if (d.mtype === SocketEventsEnum.UPDATE_TIP) {
+        console.log(d)
+        this.updateSlideItemTip(d);
+      } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
+        console.log(d)
+        if(d.page_id === this.currentItemData.page_id) {
+          // 修改当前页答案
+          EventBus.$emit('refresh-new-answer')
+        }
+        this.updateSlideCorrectAnswer(d);
       }
     },
     // 收到评论
@@ -939,6 +939,7 @@ export default {
         saveStudentsCurrentPageAnswerList(page_id, type, {
           key: "item_1",
           answer: v,
+          locked
         });
         this.updateAnswerdPage(this.currentPageIndex);
         this.currentAnswerd = true;
@@ -991,7 +992,7 @@ export default {
       if (result && result.length > 0) {
         const { answer, locked } = result[0];
         let checkedValues = JSON.parse(answer);
-        this.showCorrect = locked === "true" ? true : false;
+        this.showCorrect = (locked && locked !== "false") ? true : false;
         if (this.showCorrect) {
           this.showCorrect = this.hasAnswer(data.items[0].data.options);
         }

@@ -181,7 +181,6 @@ export default {
   margin-top: 90px;
   cursor: pointer;
   fill: white;
-  /* margin-top:-50px; */
 }
 svg {
   opacity: 0.35;
@@ -209,17 +208,6 @@ svg {
   top: 0px;
   left: 250px;
 }
-/* image {
-  width: 228px;
-  height: 130px;
-  display: block;
-} */
-/* .response_flag {
-  width: 230px;
-  height: 6px;
-  background-color: white;
-  border: 1px solid #909090;
-} */
 .top {
   background-color: #67c23a;
   height: 6px;

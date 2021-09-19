@@ -48,6 +48,10 @@
         @change="changeLocked"
         active-text="show answers"
       />
+      <div class="refresh-line" v-show="showRefreshAnswer">
+        <span>正确答案有更新！</span>
+        <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
+      </div>
     </template>
   </div>
 </template>
@@ -83,11 +87,17 @@
 .tag {
   color: red;
 }
+.refresh-line{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 </style>
 
 <script>
 import { getStudentCurrentPageAnswerList } from "@/model/store.student";
-import { mapState } from "vuex";
+import { mapState, mapGetters} from "vuex";
 export default {
   props: {
     data: {
@@ -112,11 +122,17 @@ export default {
       checkedValues: [],
       showCorrect: false,
       tipText: null,
-      showTips: false
+      showTips: false,
+      showRefreshAnswer: false
     };
   },
+  mounted() {
+    EventBus.$on('refresh-new-answer', () => {
+      this.showRefreshAnswer = true
+    })
+  },
   created() {
-    this.optionData = this.data.items[0].data;
+    this.optionData = JSON.parse(JSON.stringify(this.data.items[0].data))
     this.pageId = this.data.page_id;
     const result = getStudentCurrentPageAnswerList(
       this.pageId,
@@ -125,10 +141,11 @@ export default {
     if (result && result.length > 0) {
       const { answer, locked } = result[0];
       this.checkedValues = JSON.parse(answer);
-      this.showCorrect = locked === "true" ? true : false;
+      this.showCorrect = (locked && locked !== "false") ? true : false;
       if (this.showCorrect) {
         this.showCorrect = this.hasAnswer();
       }
+      console.log(this.showCorrect, result, locked, this.hasAnswer())
     }
     if (this.elements) {
       for (let i = 0; i < this.elements.length; i++) {
@@ -140,10 +157,20 @@ export default {
   },
   computed: {
     ...mapState({
-      elements: state => state.student.elements
-    })
+      elements: state => state.student.elements,
+    }),
+    ...mapGetters({
+      currentPagePPTData: 'student/currentPagePPTData',
+    }),
   },
   methods: {
+    refreshData() {
+      this.optionData = JSON.parse(JSON.stringify(this.currentPagePPTData.items[0].data))
+    },
+    refreshNewAnswer() {
+      this.showRefreshAnswer = false
+      this.refreshData()
+    },
     handleCheckedValueChange(value) {
       // console.log(JSON.stringify(value), this.showCorrect);
       this.answer(JSON.stringify(value), this.showCorrect);

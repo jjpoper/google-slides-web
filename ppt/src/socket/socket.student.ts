@@ -100,6 +100,12 @@ export const createSo = (room: string, token: string, classId: string, callback:
     // console.log("删除答案" + data);
     callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
   });
+  socket.on('update-tip', (data: any) => {
+    callback({ mtype: SocketEventsEnum.UPDATE_TIP, ...JSON.parse(data) })
+  });
+  socket.on('update-correct-answer', (data: any) => {
+    callback({ mtype: SocketEventsEnum.UPDATE_RIGHT_ANSWERS, ...JSON.parse(data) })
+  });
   windowStudentWs = socket
   return socket
 }
@@ -144,6 +150,19 @@ export const deleteOneRemark = (id: string) => {
     "delete-ppt-comment",
     `{"token":"${BaseStudentParams.token}","class_id":"${BaseStudentParams.classId}","id":${id}}`
   );
+}
+
+export const updateRemarkItemData = (data: any) => {
+  const {
+    id
+  } = data;
+  BaseWsRequest(
+    "update-ppt-comment",
+    `{"token": "${BaseStudentParams.token}", "class_id": "${BaseStudentParams.classId}",
+    "ppt_comment_id":${id},
+    "ppt_comment":
+      ${JSON.stringify(data)}}`
+    );
 }
 
 // 发送 media 答案

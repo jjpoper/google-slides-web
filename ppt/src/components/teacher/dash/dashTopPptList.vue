@@ -1,17 +1,18 @@
 <template>
   <div class="left" v-if="studentAllSlides" >
     <div class="dash-left" @click="prev"></div>
-    <div class="inner-swiper">
-      <div v-for="(item, index) in studentAllSlides" :key="index" class="with-outer">
+    <div class="inner-swiper" ref="innerSwiper">
+      <div v-for="(item, index) in studentAllSlides" :key="index"
+            :ref="currentPageIndex === index ? 'activeRef': ''"
+            :tabindex="currentPageIndex === index ? '0' : ''"
+            @click="changeToPage(index)"
+            class="with-outer">
         <div v-bind:class="
             currentPageIndex == index
               ? 'ppt_content image_parent_focus'
-              : 'ppt_content '"
-            :ref="currentPageIndex === index ? 'activeRef': ''"
-            :tabindex="currentPageIndex === index ? '0' : ''">
+              : 'ppt_content '">
           <div
             class="image_parent"
-            @click="changeToPage(index)"
             :style="`background-image:url(${item.thumbnail_url})`"
           >
             <!-- <el-popover
@@ -63,23 +64,26 @@ export default {
   },
   mounted() {
     this.focus()
+    console.log('=====')
   },
   watch: {
     currentPageIndex() {
-      this.$nextTick(() => {
-        if(this.$refs.activeRef) {
-          this.$refs.activeRef[0].focus();
-        }
-      });
+      // this.$nextTick(() => {
+      //   if(this.$refs.activeRef) {
+      //     this.$refs.activeRef[0].focus();
+      //   }
+      // });
     }
   },
   methods: {
     ...mapActions("student", ["setStudentPageIndex"]),
     next() {
-      this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
+      // this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
+      this.moveSlow(this.$refs.innerSwiper.scrollLeft, this.$refs.innerSwiper.offsetWidth)
     },
     prev() {
-      this.setStudentPageIndex(Math.max(this.currentPageIndex - 1, 0))
+      // this.setStudentPageIndex(Math.max(this.currentPageIndex - 1, 0))
+      this.moveSlow(this.$refs.innerSwiper.scrollLeft, -this.$refs.innerSwiper.offsetWidth)
     },
     changeToPage(index) {
       this.setStudentPageIndex(index)
@@ -87,9 +91,37 @@ export default {
     focus() {
       this.$nextTick(() => {
         if(this.$refs.activeRef) {
-          this.$refs.activeRef[0].focus();
+          // this.$refs.activeRef[0].focus();
+          this.moveSlow(0, this.$refs.activeRef[0].offsetLeft - this.$refs.innerSwiper.offsetWidth / 2)
         }
       });
+    },
+    moveSlow(distance, total) {
+      this.$refs.innerSwiper.scrollLeft = distance + total
+      return
+      // 正向滚动 和 反向滚动
+      if (this.lastItemIndex < this.itemIndex) {
+        // 每隔1毫秒移动一小段距离，直到移动至目标至为止，反之亦然
+        if (distance < total) {
+          distance += step
+          this.$refs.idSwiperImg.scrollLeft = distance
+          setTimeout(() => {
+            this.moveSlow(distance, total, step)
+          }, 1)
+        } else {
+          this.$refs.idSwiperImg.scrollLeft = total
+        }
+      } else if (this.lastItemIndex > this.itemIndex) {
+        if (distance > total) {
+          distance -= step
+          this.$refs.idSwiperImg.scrollLeft = distance
+          setTimeout(() => {
+            this.moveSlow(distance, total, step)
+          }, 1)
+        } else {
+          this.$refs.idSwiperImg.scrollLeft = total
+        }
+      }
     }
   },
 }
@@ -157,6 +189,7 @@ export default {
   box-sizing: border-box;
   margin-right: 15px;
   padding-top: 20px;
+  outline: none !important;
 }
 .ppt_content {
   display: flex;
@@ -170,6 +203,7 @@ export default {
   background-color: rgba(255, 255, 255, 1);
   border: 1px solid rgba(188, 188, 188, 1);
   position: relative;
+  cursor: pointer;
 }
 .index-tag{
   height: 20px;

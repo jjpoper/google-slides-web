@@ -176,7 +176,7 @@ export default {
     ...mapActions("student", ["updateAnswerdPage"]),
     focusIndex() {
       this.$nextTick(() => {
-        if (this.$refs.activeRef) {
+        if (this.$refs.activeRef[0]) {
           this.$refs.activeRef[0].focus();
         }
       });

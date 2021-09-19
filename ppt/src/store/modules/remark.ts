@@ -40,6 +40,9 @@ const actions = {
   deleteOneRemarkItem({commit}: any, index: number) {
     commit(RemarkActionTypes.DELETE_ONE_REMARK_ITEM, index)
   },
+  updateOneRemarkItem({commit}: any, listItem: any) {
+    commit(RemarkActionTypes.UPDATE_ONE_REMARK_ITEM, JSON.parse(JSON.stringify(listItem)))
+  },
   enablePointer({commit}: any, enable: boolean) {
     commit(RemarkActionTypes.ENABLE_POINTER, enable)
   },
@@ -91,6 +94,14 @@ const mutations = {
   },
   [RemarkActionTypes.DELETE_ONE_REMARK_ITEM](nextState: any, index: number) {
     nextState.allRemarks.splice(index, 1)
+  },
+  [RemarkActionTypes.UPDATE_ONE_REMARK_ITEM](nextState: any, listItem: any) {
+    const index = nextState.allRemarks.findIndex((item: any) => item.id === listItem.id)
+    const currentData = nextState.allRemarks[index]
+    nextState.allRemarks.splice(index, 1, {
+      ...currentData,
+      ...listItem
+    })
   },
 }
 

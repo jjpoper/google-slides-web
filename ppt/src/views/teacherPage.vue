@@ -250,7 +250,7 @@ import {
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
-import { createSo } from "../socket/socket.teacher";
+import { createSo, setTeacherWxBaseParams } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -468,7 +468,9 @@ type: "slide"*/
       "showRemarkModal",
       "setAllRemarkList",
       "updateLatestRemarkId",
-      "addOneRemarkItem"
+      "addOneRemarkItem",
+      "updateOneRemarkItem",
+      "deleteOneRemarkItem"
     ]),
     showDashTips() {
       this.dashTipsModalVisiable = !this.dashTipsModalVisiable
@@ -825,6 +827,13 @@ type: "slide"*/
       teacher.state = "online";
       teacher.user_id = this.uid;
       this.teacherList.push(teacher);
+
+      setTeacherWxBaseParams({
+        classId: this.class_id,
+        token: this.token,
+        uid: this.uid,
+        uname: teacher.name,
+      })
     },
     msgListener(d) {
       // console.log(d);
@@ -996,6 +1005,16 @@ type: "slide"*/
         const index = this.markupslist.findIndex(item => item.id === d.id);
         // console.log("删除", index);
         this.markupslist.splice(index, 1);
+        this.deleteOneRemarkItem(index)
+        this.$forceUpdate();
+        return;
+      } else if (d.mtype === SocketEventsEnum.STUDENT_UPDATE_COMMENT) {
+        // 更新
+        this.updateOneRemarkItem({
+          ...d,
+          ...d.ppt_comment,
+          id: d.ppt_comment_id,
+        });
         this.$forceUpdate();
         return;
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {

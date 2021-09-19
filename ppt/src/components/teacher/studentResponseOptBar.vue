@@ -111,7 +111,6 @@
   visibility: hidden;
 }
 
-/* flex-start | flex-end | center | space-between |  */
 .opt_area {
   display: flex;
   height: 100%;
@@ -148,11 +147,9 @@
 }
 .answer-footer-button.message{
   background-image: url(../../assets/picture/message-selected.png);
-  /* margin-right: 8px; */
 }
 .answer-footer-button.unmessage{
   background-image: url(../../assets/picture/message.png);
-  /* margin-right: 8px; */
 }
 .answer-footer-button.pop{
   background-image: url(../../assets/picture/pop-icon.png);
