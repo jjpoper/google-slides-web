@@ -209,6 +209,7 @@ export default {
       });
     },
     imageTypeChange() {
+      console.log(this.image_type_value);
       this.loadGooleScript();
     },
     changeColor(index) {
@@ -351,7 +352,7 @@ export default {
       var gcse = document.createElement("script");
       gcse.type = "text/javascript";
       gcse.async = true;
-      gcse.src = "https://www.google.com/cse/cse.js?cx=d2e86bcc064621cbc";
+      gcse.src = "https://www.google.com/cse/cse.js?cx=d29cfc91a5299e6d9";
       var s = document.getElementsByTagName("script")[0];
       s.parentNode.insertBefore(gcse, s);
     }
