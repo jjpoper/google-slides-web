@@ -12,7 +12,7 @@
             action="https://dev.api.newzealand.actself.me/file/upload"
             :on-success="onSuccess"
             :show-file-list="false"
-            accept="image/png, image/jpeg, image/webp, image/gif, video/mp4,"
+            accept="image/*,video/*,audio/*"
             list-type="picture"
           >
             <el-dropdown-item
@@ -209,6 +209,7 @@ import { hideLoading, showLoading, showToast } from "@/utils/loading";
 import { getOnlineImage } from "@/model";
 import googleImageSearch from "./googleImageSearch.vue";
 import GoogleYoutubeVedio from "./googleYoutubeVedio.vue";
+import {videoTypes, audioTypes} from '@/utils/constants'
 export default {
   components: {
     googleImageSearch,
@@ -233,11 +234,14 @@ export default {
   mounted() {},
   methods: {
     onSuccess(response, file, fileList) {
-      // console.log(response.data, file, fileList);
-      const name = file.name;
+      console.log(file.name);
+      const fileNameList = file.name.split(".")
+      const name = fileNameList[fileNameList.length - 1];
       let type = "image";
-      if (name.indexOf("mp4") > -1) {
+      if (videoTypes.indexOf(name) > -1) {
         type = "video";
+      } else if(audioTypes.indexOf(name) > -1) {
+        type = 'audio'
       }
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
         type,

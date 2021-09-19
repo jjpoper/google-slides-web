@@ -55,6 +55,9 @@
             controlslist="nodownload"
             controls/>
         </div>
+        <div v-if="rect.type === 'audio'" class="meidaitem teacherppt full" >
+          <audio-player :url="rect.url" class="full"/>
+        </div>
         <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
           <iframe
           class="full" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -67,6 +70,7 @@
 <script>
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
 import VueDragResize from 'vue-drag-resize';
+import AudioPlayer from '../common/audioPlayer.vue';
 export default {
   props: {
     rect: {
@@ -101,7 +105,8 @@ export default {
     }
   },
   components: {
-    VueDragResize
+    VueDragResize,
+    AudioPlayer
   },
   methods: {
     getIframe(url){

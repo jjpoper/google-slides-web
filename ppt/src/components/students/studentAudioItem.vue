@@ -17,7 +17,7 @@
           action="https://dev.api.newzealand.actself.me/file/upload"
           :on-success="onUpload"
           :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf,audio/mp3,video/mp4,"
+          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*"
           list-type="picture"
         >
           <img src="../../assets/picture/add.png" class="remark-button" />
@@ -98,6 +98,7 @@ import { showToast } from "@/utils/loading";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
 import tipShow from "./tipShow.vue";
+import {videoTypes, audioTypes} from '@/utils/constants'
 export default {
   components: {
     RecordVideo,
@@ -159,11 +160,12 @@ export default {
     onUpload(response, file, fileList) {
       this.focusIndex()
       // console.log(response.data, file.name, fileList);
-      const name = file.name
+      const fileNameList = file.name.split(".")
+      const name = fileNameList[fileNameList.length - 1];
       let type = 'file'
-      if(name.indexOf('mp4') > -1) {
-        type = 'video'
-      } else if(name.indexOf('mp3') > -1) {
+      if (videoTypes.indexOf(name) > -1) {
+        type = "video";
+      } else if(audioTypes.indexOf(name) > -1) {
         type = 'audio'
       }
       this.sendCommentCb(response.data, type, file.name);
