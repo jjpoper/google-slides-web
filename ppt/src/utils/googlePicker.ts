@@ -7,13 +7,16 @@ import { showLoading } from "./loading"
 class LoadPicker {
   private clientId = '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com' // dev
   // private clientId = '909953111628-pi3hq11ioecpr49ordr9am0c7va533dj.apps.googleusercontent.com' // test
-  private appId = '909953111628'
+  // private clientId = '337694010706-actv4k6bli7c4iknu6ak50gkqhk318ti.apps.googleusercontent.com' // prod
+  // private appId = '909953111628'
+  private appId = '337694010706'
   private scope = [
     'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/drive.file'
   ]
 
-  private developerKey = 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
+  private developerKey = 'AIzaSyAiNrG4HKyIhApkQQDE_uGs-0w-xTHRCTU'
+  // private developerKey = 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI' // prod
   private oauthToken = ''
   private pickerApiLoaded = false
   private classCallback: any = null
