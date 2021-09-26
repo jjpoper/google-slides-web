@@ -14,6 +14,11 @@ const mediaConstraints = {
 let mediaRecorder: any = null
 let domVideoElement: any = null
 
+const closePictureInPicture = () => {
+  const dom: any = document
+  dom.exitPictureInPicture()
+}
+
 export const startRecordVideo = (domVideo: any) => {
   domVideoElement = domVideo
   domVideoElement.muted = true
@@ -58,7 +63,7 @@ export const endRecord = () => {
     mediaRecorder.destroy();
     mediaRecorder = null;
     try {
-      document.exitPictureInPicture();
+      closePictureInPicture()
     } catch(e){}
   });
 }
@@ -86,7 +91,7 @@ export const saveRecordVideo = async (): Promise<any> => {
       mediaRecorder.destroy();
       mediaRecorder = null;
       try {
-        document.exitPictureInPicture()
+        closePictureInPicture()
       } catch(e){}
     });
   })
