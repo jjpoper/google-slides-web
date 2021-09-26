@@ -1,13 +1,15 @@
 <template>
-  <div>
-    <video id="record-video" width="280" height="150"/>
-    <!-- <div style="width: 280px; height: 150px"></div> -->
-    <div class="record-footer">
-      <el-tooltip content="start" placement="top" v-if="endRecording">
-        <el-button type="primary" class="record-button" icon="el-icon-video-play" @click="startRecord" circle></el-button>
-      </el-tooltip>
-      <el-button v-if="!endRecording" class="record-button" type="primary" @click="doneRecord">DONE</el-button>
-      <p class="record-time">{{getTime(timeValue)}} / 02:00</p>
+  <div class="record-area">
+    <div class="fixed-area">
+      <video id="record-video" width="280" height="150" ref="videoRef"/>
+      <!-- <div style="width: 280px; height: 150px"></div> -->
+      <div class="record-footer">
+        <el-tooltip content="start" placement="top" v-if="endRecording">
+          <el-button type="primary" class="record-button" icon="el-icon-video-play" @click="startRecord" circle></el-button>
+        </el-tooltip>
+        <el-button v-if="!endRecording" class="record-button" type="primary" @click="doneRecord">DONE</el-button>
+        <p class="record-time">{{getTime(timeValue)}} / 02:00</p>
+      </div>
     </div>
   </div> 
 </template>
@@ -91,6 +93,20 @@ export default {
 }
 </script>
 <style scoped>
+.record-area{
+  height: 60px;
+  width: 100%;
+  position: relative;
+}
+.fixed-area{
+  height: 206px;
+  width: 280px;
+  position: fixed;
+  top: 5px ;
+  right: 35px;
+  background-color: #fff;
+  z-index: 10000;
+}
 .record-time{
   font-size: 10px;
   color: #fff;

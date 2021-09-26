@@ -14,17 +14,22 @@
     </el-row>
   </div> -->
   <div class="record-area">
-    <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
-    <div class="audio-line animation-line">
-      <div class="audio-play"></div>
-      <div class="audio-play"></div>
-      <div class="audio-play"></div>
-      <div class="audio-play"></div>
-      <div class="audio-play"></div>
+    <div>
+
     </div>
-    <div class="record-footer">
-      <i class="done" @click="done"></i>
-      <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
+    <div class="fixed-area">
+      <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
+      <div class="audio-line animation-line">
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+      </div>
+      <div class="record-footer">
+        <i class="done" @click="done"></i>
+        <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
+      </div>
     </div>
   </div>
 </template>
@@ -109,6 +114,13 @@ export default {
   height: 60px;
   width: 100%;
   position: relative;
+}
+.fixed-area{
+  height: 60px;
+  width: 280px;
+  position: fixed;
+  top: 5px ;
+  right: 35px
 }
 .audio-line{
   background-color: #9fd6ba;
