@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+/* eslint-disable no-empty */
 import { upLoadFile } from '@/model';
 import RecordRTC from 'recordrtc'
 import { hideLoading, showLoading, showToast } from './loading';
@@ -16,6 +18,13 @@ export const startRecordVideo = (domVideo: any) => {
   domVideoElement = domVideo
   domVideoElement.muted = true
   domVideoElement.volume = 0
+  const requestPicture = () => {
+    try {
+      domVideo.requestPictureInPicture();
+    } catch(e) {}
+    domVideoElement.removeEventListener('loadeddata', requestPicture)
+  }
+  domVideoElement.addEventListener('loadeddata', requestPicture)
   // domVideoElement.width = 202
   navigator.mediaDevices.getUserMedia(mediaConstraints).then((camera) => {
     domVideoElement.srcObject = camera;
@@ -48,6 +57,9 @@ export const endRecord = () => {
     mediaRecorder.camera.stop();
     mediaRecorder.destroy();
     mediaRecorder = null;
+    try {
+      document.exitPictureInPicture();
+    } catch(e){}
   });
 }
 
@@ -73,6 +85,9 @@ export const saveRecordVideo = async (): Promise<any> => {
       mediaRecorder.camera.stop();
       mediaRecorder.destroy();
       mediaRecorder = null;
+      try {
+        document.exitPictureInPicture()
+      } catch(e){}
     });
   })
 }
