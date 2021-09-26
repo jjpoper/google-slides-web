@@ -1,7 +1,9 @@
 <template>
-  <div class="stundent-ppt-list">
-    <dash-top-ppt-list v-show="showPPTList"/>
-    <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
+  <div >
+    <div class="stundent-ppt-list" @mouseleave="hideList" v-show="showPPTList">
+      <dash-top-ppt-list />
+    </div>
+    <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @mouseenter="showList"></div>
   </div>
 </template>
 <script>
@@ -10,20 +12,27 @@ export default {
   components: { dashTopPptList },
   data() {
     return {
-      showPPTList: true
+      showPPTList: false
     }
   },
   methods: {
-    togglePPTList() {
-      this.showPPTList = !this.showPPTList
+    showList() {
+      this.showPPTList = true
     },
+    hideList() {
+       this.showPPTList = false
+    }
   }
 }
 </script>
 <style scoped>
 .stundent-ppt-list{
-  position: relative;
+  position: fixed;
   width: 100%;
+  z-index: 10000;
+  top: 0;
+  background-color: red;
+  height: 180px;
 }
 .shouqi{
   width: 100px;
