@@ -14,7 +14,7 @@
       <el-tooltip content="Text Comment" placement="top">
         <el-upload
           class="remark-button-outer"
-          action="https://api.app.classcipe.com/file/upload"
+          action="https://dev.api.newzealand.actself.me/file/upload"
           :on-success="onUpload"
           :show-file-list="false"
           accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*"
@@ -181,7 +181,7 @@ export default {
       // 已答
       this.updateAnswerdPage(this.currentPageIndex);
       // 追加问答内容
-      // data: "{\"type\": \"audio\", \"content\": \"https://api.app.classcipe.com/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
+      // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
       // this.updateAllAnswerdList({
       //   data: JSON.stringify({
       //     content: {
