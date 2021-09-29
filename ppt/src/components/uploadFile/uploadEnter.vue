@@ -9,7 +9,7 @@
         <el-tooltip content="my computer" placement="right">
           <el-upload
             class="upload-demo"
-            action="https://api.app.classcipe.com/file/upload"
+            action="https://dev.api.newzealand.actself.me/file/upload"
             :on-success="onSuccess"
             :show-file-list="false"
             accept="image/*,video/*,audio/*"
