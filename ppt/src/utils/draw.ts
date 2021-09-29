@@ -395,7 +395,7 @@ export default class Draw {
     closeImg.id = textItem.self_id + "_close_btn";
     closeImg.style.position = 'fixed';
     closeImg.style.cursor = "pointer";
-    closeImg.setAttribute('src', "https://dev.api.newzealand.actself.me/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
+    closeImg.setAttribute('src', "https://api.app.classcipe.com/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
     closeImg.style.left = `${textItem.left - 20}px`;
     closeImg.style.top = `${textItem.top + 10}px`;
     closeImg.width = 20;

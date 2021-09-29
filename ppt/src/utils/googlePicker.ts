@@ -162,7 +162,7 @@ class LoadPicker {
 
     // var upload_directory = upload_url;
 
-    this.makeXMLHttpRequest(`https://dev.api.newzealand.actself.me/file/upload`, formData);
+    this.makeXMLHttpRequest(`https://api.app.classcipe.com/file/upload`, formData);
   }
 
   // 创建http请求
