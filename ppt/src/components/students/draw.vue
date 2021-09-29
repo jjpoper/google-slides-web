@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasouter" >
+  <div id="canvasouter">
     <div style="position: relative">
       <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
 
@@ -7,7 +7,6 @@
     </div>
 
     <!-- 颜色，多边形图形，直线，画笔，荧光笔，text box, 橡皮，朝左undo朝右恢复（参考classdojo), 清除键。 -->
-    <!-- <colorPanel style="width:100%;height:50px"></colorPanel> -->
 
     <div class="footer--contenter">
       <div class="canvasfooter">
@@ -608,7 +607,6 @@
                   d="M101.74,26.251a6.312,6.312,0,0,1-2.965-7.38,5.277,5.277,0,0,1,4.127-3.78,12.979,12.979,0,0,1,2.965-.35c.35,0,.466.059.466.466v3.9c.291-.059.35-.231.466-.35,2.209-2.206,4.362-4.359,6.511-6.567.116-.116.406-.291.116-.581-2.325-2.325-4.708-4.652-7.092-7.036V7.593c0,.466-.059.64-.64.64a14.523,14.523,0,0,0-5.408,1.106,8.093,8.093,0,0,0-5.058,7.617A9.293,9.293,0,0,0,101.1,26.2c.059,0,.116.059.231.059.294.113.409.172.409,0Zm0,0"
                   transform="translate(-91.55 -2.568)"
                 />
-                <!-- <rect id="矩形_172" data-name="矩形 172" class="cls-2" width="26" height="26" /> -->
               </svg>
             </div>
           </el-tooltip>
@@ -709,15 +707,16 @@ export default {
       ],
       showColor: true,
       observer: null,
-      recordOldValue: { // 记录下旧的宽高数据，避免重复触发回调函数
-        width: '0',
-        height: '0'
-      }
+      recordOldValue: {
+        // 记录下旧的宽高数据，避免重复触发回调函数
+        width: "0",
+        height: "0",
+      },
     };
   },
   created() {},
   mounted() {
-    this.initCanvasData()
+    this.initCanvasData();
     const _this = this;
     window.onbeforeunload = function (event) {
       event = event || window.event;
@@ -732,10 +731,9 @@ export default {
     //   let key = window.event.key;
     //   _this.draw.drawTextDirect(window.event);
     // };
-    this.resetSize()
+    this.resetSize();
   },
-  beforeDestroyed () {
-  },
+  beforeDestroyed() {},
   destroyed() {},
   methods: {
     initCanvasData() {
@@ -766,33 +764,34 @@ export default {
     },
     resetSize() {
       let el = document.getElementById("canvasouter");
-      let iframe = document.createElement('iframe');
+      //  let iframe = document.createElement("iframe");
       let styleJson = {
-          opacity: 0,
-          'z-index': '-1111',
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: '100%',
-        };
-      let styleText = '';
+        opacity: 0,
+        "z-index": "-1111",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+      };
+      let styleText = "";
       for (let key in styleJson) {
-        styleText += (key + ':' + styleJson[key] + ';');
+        styleText += key + ":" + styleJson[key] + ";";
       }
-      iframe.style.cssText = styleText;
-      el.appendChild(iframe)
-      iframe.contentWindow.addEventListener('resize', () => {
-        // this.initCanvasData()
-        let outer = document.getElementById("canvasouter");
-          // console.log(outer.clientWidth, outer.clientHeight)
-          // outer.style.width = document.documentElement.clientWidth - 40 + "px";
-          // outer.style.height = document.documentElement.clientHeight - 40 + "px";
-          this.draw.resetSize(
-            outer.clientWidth,
-            outer.clientHeight
-          );
-      }, false)
+      //    iframe.style.cssText = styleText;
+      //   el.appendChild(iframe);
+      // iframe.contentWindow.addEventListener(
+      //   "resize",
+      //   () => {
+      //     // this.initCanvasData()
+      //     let outer = document.getElementById("canvasouter");
+      //     // console.log(outer.clientWidth, outer.clientHeight)
+      //     // outer.style.width = document.documentElement.clientWidth - 40 + "px";
+      //     // outer.style.height = document.documentElement.clientHeight - 40 + "px";
+      //     this.draw.resetSize(outer.clientWidth, outer.clientHeight);
+      //   },
+      //   false
+      // );
     },
     doKeyDown(e) {
       // console.log(e);
@@ -959,7 +958,6 @@ export default {
   left: 0;
   top: 0;
 }
-
 .color_flag {
   fill: rgb(171, 178, 218);
 }
@@ -1002,9 +1000,11 @@ export default {
 .footer--contenter {
   width: 80%;
   height: 100px;
-  position: fixed;
-  bottom: 50px;
+  /* margin-top: 95%; */
+  z-index: 999;
   left: 10%;
+  bottom: 50px;
+  position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: center;
