@@ -130,15 +130,12 @@
 
       <div style="flex: 1"></div>
 
-      <svg
-        t="1623813115939"
+      <img
+        src="../assets/icon/screen_all.png"
+        width="50"
+        height="50"
         class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="2481"
-        width="40"
-        height="40"
+        @click="showFullScreen(true)"
         v-if="
           !fullScreen &&
           !smallWindow &&
@@ -148,14 +145,7 @@
           currentItemData.items[0] &&
           currentItemData.items[0].type !== 'draw'
         "
-        @click="showFullScreen(true)"
-      >
-        <path
-          d="M629.557 391.972c17.329 17.32 47.028 17.32 66.815 0l168.302-165.814v133.637c0 19.806 14.85 34.647 34.637 34.647h24.743c19.806 0 34.657-12.372 34.657-29.692V119.733h-2.479l2.479-17.318c0-9.904-2.479-17.33-7.436-24.752-4.936-4.948-14.848-9.895-24.743-9.895h-17.327L664.211 65.29c-19.805 0-34.654 17.329-34.654 34.646v24.752c2.478 22.274 19.789 34.646 39.593 34.646h128.69L632.036 325.149c-22.283 17.319-22.283 47.026-2.478 66.823zM394.44 629.557c-17.31-17.327-47.009-17.327-66.815 0l-168.3 165.807V664.195c0-19.787-14.833-34.638-34.638-34.638h-24.76c-19.788 0-34.639 12.372-34.639 29.699v242.533h2.478l-2.478 17.327c0 9.894 2.478 17.31 7.416 24.744 4.956 4.956 14.868 9.894 24.761 9.894h17.328l244.993 2.478c19.823 0 34.655-17.328 34.655-34.638v-24.76c-2.478-22.266-19.788-34.638-39.593-34.638H226.16l168.283-165.824c17.327-17.327 17.327-47.027-0.001-66.815z m561.79 274.709v-242.55c0-19.787-17.329-29.68-34.639-29.68h-24.759c-19.788 0-34.639 17.31-34.639 34.638v131.168l-168.3-165.806c-17.309-17.329-47.01-17.329-66.816 0-17.326 17.31-17.326 47.009 0 66.814l168.284 165.806h-128.69c-19.787 0-37.116 12.388-39.594 34.654v24.745c0 19.805 17.33 34.654 34.64 34.654l240.071-2.478h17.329c9.893 0 17.31-2.478 24.743-9.894 4.955-4.956 7.415-14.85 7.415-24.744l4.955-17.327c-2.478 0 0 0 0 0zM228.636 159.335h128.69c19.806 0 37.116-12.373 39.593-34.646V99.936c0-19.797-17.309-34.646-34.654-34.646l-244.993 2.478H99.927c-9.876 0-17.31 2.478-24.743 9.895-4.939 4.956-7.416 14.849-7.416 24.752l2.477 17.318h-2.477v245.018c0 19.797 14.85 29.692 34.638 29.692h24.743c19.823 0 34.655-14.841 34.655-34.646v-133.64l168.283 165.815c17.345 17.32 47.045 17.32 66.832 0 17.33-17.327 17.33-47.026 0-66.823L228.636 159.335z m0 0"
-          p-id="2482"
-          fill="#1296db"
-        />
-      </svg>
+      />
     </div>
 
     <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
@@ -306,8 +296,8 @@ export default {
   },
   computed: {
     ...mapState({
-      currentPageIndex: state => state.student.currentPageIndex,
-      studentAllSlides: state => state.student.studentAllSlides,
+      currentPageIndex: (state) => state.student.currentPageIndex,
+      studentAllSlides: (state) => state.student.studentAllSlides,
     }),
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
@@ -390,11 +380,11 @@ export default {
     currentPageIndex() {
       // console.log("set elements");
       this.doAfterPageChange();
-      this.changeTipByWatchSlides()
+      this.changeTipByWatchSlides();
     },
     studentAllSlides() {
-      this.changeTipByWatchSlides()
-    }
+      this.changeTipByWatchSlides();
+    },
   },
   methods: {
     ...mapActions("student", [
@@ -407,7 +397,7 @@ export default {
       "updateAllAnswerdList",
       "deleteOnAnswerById",
       "updateSlideItemTip",
-      "updateSlideCorrectAnswer"
+      "updateSlideCorrectAnswer",
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -419,7 +409,10 @@ export default {
       // console.log("change show !!" + this.showTip);
     },
     changeTipByWatchSlides() {
-      if (this.studentAllSlides && this.studentAllSlides[this.currentPageIndex]) {
+      if (
+        this.studentAllSlides &&
+        this.studentAllSlides[this.currentPageIndex]
+      ) {
         this.setElements(this.studentAllSlides[this.currentPageIndex].elements);
       }
       if (
@@ -432,9 +425,13 @@ export default {
           i < this.studentAllSlides[this.currentPageIndex].elements.length;
           i++
         ) {
-          if (this.studentAllSlides[this.currentPageIndex].elements[i].type == "tip") {
+          if (
+            this.studentAllSlides[this.currentPageIndex].elements[i].type ==
+            "tip"
+          ) {
             this.tipText =
-              "tip: " + this.studentAllSlides[this.currentPageIndex].elements[i].tip;
+              "tip: " +
+              this.studentAllSlides[this.currentPageIndex].elements[i].tip;
           }
         }
       }
@@ -556,7 +553,7 @@ export default {
         const { page_id, items } = this.currentItemData;
         const type = items[0].type;
         if (type !== "comment") {
-          console.log(getStudentCurrentPageAnswerList(page_id, type))
+          console.log(getStudentCurrentPageAnswerList(page_id, type));
           return getStudentCurrentPageAnswerList(page_id, type);
         } else {
           // comment remark 特殊，数据不在answer内
@@ -874,13 +871,13 @@ export default {
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
       } else if (d.mtype === SocketEventsEnum.UPDATE_TIP) {
-        console.log(d)
+        console.log(d);
         this.updateSlideItemTip(d);
       } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
-        console.log(d)
-        if(d.page_id === this.currentItemData.page_id) {
+        console.log(d);
+        if (d.page_id === this.currentItemData.page_id) {
           // 修改当前页答案
-          EventBus.$emit('refresh-new-answer')
+          EventBus.$emit("refresh-new-answer");
         }
         this.updateSlideCorrectAnswer(d);
       }
@@ -939,7 +936,7 @@ export default {
         saveStudentsCurrentPageAnswerList(page_id, type, {
           key: "item_1",
           answer: v,
-          locked
+          locked,
         });
         this.updateAnswerdPage(this.currentPageIndex);
         this.currentAnswerd = true;
@@ -992,7 +989,7 @@ export default {
       if (result && result.length > 0) {
         const { answer, locked } = result[0];
         let checkedValues = JSON.parse(answer);
-        this.showCorrect = (locked && locked !== "false") ? true : false;
+        this.showCorrect = locked && locked !== "false" ? true : false;
         if (this.showCorrect) {
           this.showCorrect = this.hasAnswer(data.items[0].data.options);
         }
