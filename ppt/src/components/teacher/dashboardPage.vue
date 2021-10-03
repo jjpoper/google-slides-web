@@ -240,12 +240,11 @@ svg {
   box-sizing: border-box;
 }
 .shouqi{
-  width: 100px;
-  height: 30px;
+  width: 30px;
+  height: 10px;
   position: absolute;
-  top: 190px;
-  left: calc(50% - 212.5px);
-  transform: translateX(-50px);
+  top: 105px;
+  left: calc(50% - 5px);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
