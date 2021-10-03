@@ -4,7 +4,8 @@
       <dash-top-ppt-list v-show="showPPTList"/>
       <div class="dash-second">
         <div class="dash-second-left">
-          <template v-if="showResponse">
+          <template v-if="showFullAnswer">
+            <dash-switch-header :showres="showres" :showResponse="showResponse"/>
             <template
               :class="
                 showResponse &&
@@ -37,9 +38,8 @@
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <div class="dash-second-right">
+        <div class="dash-second-right" v-if="!showFullAnswer">
           <dash-res-and-students
-            :showres="showres"
             :showResponse="showResponse"
             :responseList="responseContentList"/>
         </div>
@@ -58,9 +58,10 @@ import DashboardMeterial from './dashboardMeterial.vue';
 import DashResAndStudents from './dashResAndStudents.vue';
 import teacherIndexItem from "./Index.vue";
 import dashTopPptList from "./dash/dashTopPptList.vue";
+import DashSwitchHeader from './dash/dashSwitchHeader.vue'
 import {mapState} from 'vuex'
 export default {
-  components: { pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents, dashTopPptList},
+  components: { DashSwitchHeader, pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents, dashTopPptList},
   props: {
     currentItemData: {
       type: Object,
@@ -131,12 +132,13 @@ export default {
   data() {
     return {
       height: window.winHeight,
-      showPPTList: true
+      showPPTList: true,
     };
   },
   computed: {
     ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
+      showFullAnswer: state => state.teacher.showDashFullResponse,
     }),
   },
   created() {},
@@ -230,7 +232,7 @@ svg {
   border-radius: 10px;
   flex: 1;
   overflow: hidden;
-  display: flex;
+  /* display: flex; */
 }
 .dash-second-right{
   width: 395px;

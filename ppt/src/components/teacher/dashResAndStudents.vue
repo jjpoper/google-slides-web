@@ -1,15 +1,6 @@
 <template>
   <div class="res-and-student">
-    <div class="switch-header">
-      <div class="switch-content">
-        <div :class="`switch-button ${tab === 1 && 'active'}`" @click="changeTab(1)">
-          Student
-        </div>
-        <div v-show="currentPageAnswerType !== 'none'" :class="`switch-button ${tab === 2 && 'active'}`" @click="changeTab(2)">
-          Response
-        </div>
-      </div>
-    </div>
+    <dash-switch-header />
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
         <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
@@ -19,7 +10,7 @@
       </li>
     </ul>
     <ul class="res-list" v-if="tab === 2">
-      <div @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div>
+      <!-- <div  class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div> -->
       <li class="res-list-item" v-for="item in answerList" :key="item.id">
         <div class="res-list-item-content">
           <div class="user-info">
@@ -49,8 +40,9 @@ import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
 import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
 import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
 import DashRightTextItem from './dash-answer/dash-right-text-item.vue'
+import DashSwitchHeader from './dash/dashSwitchHeader.vue'
 export default {
-  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem },
+  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem, DashSwitchHeader },
   computed: {
     ...mapState({
       studentList: state => state.teacher.studentList,
@@ -116,8 +108,8 @@ export default {
     },
   },
   data() {
-    return{
-      tab: 1
+    return {
+      tab: 2
     }
   },
   methods: {
@@ -137,37 +129,7 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-  .switch-header{
-    width: 100%;
-    margin: 20px 0;
-    padding: 0 57px;
-    height: 50px;
-    box-sizing: border-box;
-  }
-  .switch-content{
-    width: 100%;
-    height: 50px;
-    border-radius: 30px;
-    background-color: rgba(247, 248, 255, 1);
-    display: flex;
-    justify-items: center;
-    align-items: center;
-    font-size: 18px;
-    font-family: Inter-Bold;
-    line-height: 24px;
-    color: #11142D;
-  }
-  .switch-button{
-    flex: 1;
-    text-align: center;
-    line-height: 50px;
-    cursor: pointer;
-  }
-  .switch-button.active{
-    background-color: rgba(21, 195, 154, 1);
-    border-radius: 30px;
-    color: #fff;
+    position: relative;
   }
   .res-list{
     flex: 1;

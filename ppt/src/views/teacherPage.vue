@@ -840,7 +840,7 @@ type: "slide"*/
     },
     msgListener(d) {
       // console.log(d);
-      if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
+      if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         //  this.studentCounts = d.student_count;
         if (d.join_in) {
@@ -904,7 +904,7 @@ type: "slide"*/
             }
           }
         }
-      } else if (d.mtype === SocketEventsEnum.RENAME) {
+      } else if (d.type === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new, page_id } = d;
         for (let i = 0; i < this.studentList.length; i++) {
@@ -913,7 +913,7 @@ type: "slide"*/
             break;
           }
         }
-      } else if (d.mtype === SocketEventsEnum.GO_PAGE) {
+      } else if (d.type === SocketEventsEnum.GO_PAGE) {
         if (d.room == this.class_id) {
           if (d.params) {
             // this.pageChange(d.params.page);
@@ -921,22 +921,22 @@ type: "slide"*/
             this.pageChange(this.current_page, true);
           }
         }
-      } else if (d.mtype == SocketEventsEnum.MODEL_CHANGE) {
+      } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
         if (d.room == this.class_id) {
           this.page_model =
             d.params.mode == "student-paced"
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
         }
-      } else if (d.mtype == SocketEventsEnum.SHOW_RESPONSE) {
+      } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
         if (d.room == this.class_id) {
           this.showResponse = d.params.response;
         }
-      } else if (d.mtype == SocketEventsEnum.CHANGE_SESSION_STATUS) {
+      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
         this.classRoomInfo.status = d.params.status;
         this.$forceUpdate();
-      } else if (d.mtype == SocketEventsEnum.LOCK_PAGE) {
+      } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
         let locked = d.params.lock;
         let page = d.params.page;
@@ -950,7 +950,7 @@ type: "slide"*/
             (item) => item != page
           );
         }
-      } else if (d.mtype == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
+      } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
           const { pageId, itemId, title, studentId, nextStatus, type } =
             d.params;
@@ -964,7 +964,7 @@ type: "slide"*/
             false
           );
         }
-      } else if (d.mtype == SocketEventsEnum.STUDETN_GO_PAGE) {
+      } else if (d.type == SocketEventsEnum.STUDETN_GO_PAGE) {
         const { room, user_id } = d;
         if (room != this.class_id) {
           return;
@@ -976,13 +976,13 @@ type: "slide"*/
             break;
           }
         }
-      } else if (d.mtype == SocketEventsEnum.SET_DEADLINE_TIME) {
+      } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
         // console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
-      } else if (d.mtype == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
+      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
         this.firstCloseCopyLinkDialog = false;
         this.showCopyLinkDialog = false;
         this.stepTwoDialog = false;
-      } else if (d.mtype == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
+      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
         if (this.isDashboard) {
           this.stepTwoDialog = true;
         } else {
