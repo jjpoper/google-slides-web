@@ -46,8 +46,8 @@
               </div>
             </el-popover> -->
           </div>
+          <i class="index-tag">{{index+1}}/{{studentAllSlides.length}}</i>
         </div>
-        <i class="index-tag">{{index+1}}/{{studentAllSlides.length}}</i>
       </div>
     </div>
     <div class="dash-left dash-right" @click="next"></div>
@@ -128,15 +128,15 @@ export default {
 </script>
 <style scoped>
 .left {
-  height: 180px;
+  height: 100px;
   width: 100%;
   /* padding: 30px 16.5px; */
   box-sizing: border-box;
   position: relative;
   display: flex;
-  margin-top: 10px;
+  margin-top: 5px;
   background-color: #fff;
-  padding: 0 80px;
+  padding: 0 50px;
 }
 .inner-swiper{
   width: 100%;
@@ -147,18 +147,18 @@ export default {
 }
 .dash-left{
   position: absolute;
-  left: 30px;
+  left: 10px;
   width: 30px;
   height: 30px;
   background-image: url(../../../assets/picture/dash-left.png);
   background-repeat: no-repeat;
   background-size: 30px 30px;
   cursor: pointer;
-  top: 75px;
+  top: 35px;
 }
 .dash-left.dash-right{
   background-image: url(../../../assets/picture/dash-right.png);
-  right: 30px;
+  right: 10px;
   left: auto;
 }
 .left-footer{
@@ -183,22 +183,22 @@ export default {
   display: none;
 }
 .with-outer{
-  width: 250px;
-  height: 180px;
+  width: 100px;
+  height: 70px;
   position: relative;
   box-sizing: border-box;
   margin-right: 15px;
-  padding-top: 20px;
+  padding-top: 15px;
   outline: none !important;
 }
 .ppt_content {
   display: flex;
   flex-direction: column;
-  width: 160px;
-  height: 120px;
-  padding: 15px;
+  width: 100px;
+  height: 67px;
+  padding: 10px;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 3px;
   box-sizing: border-box;
   background-color: rgba(255, 255, 255, 1);
   border: 1px solid rgba(188, 188, 188, 1);
@@ -206,16 +206,16 @@ export default {
   cursor: pointer;
 }
 .index-tag{
-  height: 20px;
+  height: 15px;
   background: rgba(228, 228, 228, 1);
   border-radius: 8px;
   position: absolute;
-  bottom: 14px;
-  right: 0;
-  font-size: 14px;
+  bottom: 4px;
+  right: 4px;
+  font-size: 12px;
   font-family: Segoe UI;
   font-weight: 400;
-  line-height: 20px;
+  line-height: 15px;
   color: #FFFFFF;
   text-align: center;
   font-style: normal;
