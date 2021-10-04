@@ -158,7 +158,7 @@ export default {
       this.recordType = null;
     },
     onUpload(response, file, fileList) {
-      this.focusIndex()
+      
       // console.log(response.data, file.name, fileList);
       const fileNameList = file.name.split(".")
       const name = fileNameList[fileNameList.length - 1];
@@ -180,6 +180,7 @@ export default {
       });
       // 已答
       this.updateAnswerdPage(this.currentPageIndex);
+      this.focusIndex()
       // 追加问答内容
       // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
       // this.updateAllAnswerdList({
