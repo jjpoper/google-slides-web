@@ -17,14 +17,14 @@
           action="https://dev.api.newzealand.actself.me/file/upload"
           :on-success="onUpload"
           :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*"
+          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*"
           list-type="picture"
         >
           <img src="../../assets/picture/add.png" class="remark-button" />
         </el-upload>
       </el-tooltip>
     </div>
-    <tipShow style="margin:20px" />
+    <tipShow />
     <ul class="remark-list">
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">
@@ -79,8 +79,11 @@
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
             <div>
               <p class="file-name">{{item.content.fileName}}</p>
-              <a :href="item.content.link" download class="download-text">Download</a>
+              <a :href="item.content.link" target="blank" download class="download-text">Download</a>
             </div>
+          </div>
+          <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
+            <base64image :url="item.content.link" />
           </div>
         </div>
       </li>
@@ -98,14 +101,16 @@ import { showToast } from "@/utils/loading";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
 import tipShow from "./tipShow.vue";
-import {videoTypes, audioTypes} from '@/utils/constants'
+import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
+import base64image from '../base64image.vue';
 export default {
   components: {
     RecordVideo,
     RecordAudio,
     RecordText,
     AudioPlayer,
-    tipShow
+    tipShow,
+    base64image
   },
   computed: {
     ...mapState({
@@ -159,14 +164,21 @@ export default {
     },
     onUpload(response, file, fileList) {
       
-      // console.log(response.data, file.name, fileList);
+      // console.log(file.name);
       const fileNameList = file.name.split(".")
-      const name = fileNameList[fileNameList.length - 1];
-      let type = 'file'
+      let name = fileNameList[fileNameList.length - 1];
+      if (!name) {
+        showToast('upload error')
+        return false
+      }
+      name = name.toLocaleLowerCase();
+      let type = 'image'
       if (videoTypes.indexOf(name) > -1) {
         type = "video";
       } else if(audioTypes.indexOf(name) > -1) {
         type = 'audio'
+      } else if(fileTypes.indexOf(name) > -1) {
+        type = 'file'
       }
       this.sendCommentCb(response.data, type, file.name);
     },
@@ -309,7 +321,7 @@ export default {
 }
 .item-header {
   width: 310px;
-  height: 60px;
+  height: 40px;
   background: #15c39a;
   opacity: 1;
   border-radius: 6px 6px 0px 0px;

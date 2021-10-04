@@ -23,7 +23,7 @@
         </div>
       </el-tooltip>
     </div>
-    <tipShow style="margin: 20px" />
+    <tipShow />
     <ul class="remark-list" ref="remarklist">
       <!--输入区域item-->
       <li v-if="!disable && currentRemarkOptions" class="remark-list-item record-item active-item">
