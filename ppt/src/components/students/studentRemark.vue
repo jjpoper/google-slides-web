@@ -44,6 +44,7 @@
           <record-audio
             v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
           <record-text
             v-else-if="currentInputType === ModalEventsTypeEnum.TEXT"
@@ -52,9 +53,9 @@
         </div>
       </li>
       <li
-        :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'}`"
         v-for="(item, index) in marks"
-        :key="index"
+        :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'}`"
+        :key="item.id"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
         :tabindex="currentRemarkIndex === index ? '0' : ''"
         @click="changeRemarkIndex(index)"
@@ -133,6 +134,7 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
+      console.log('currentRemarkIndex', list)
       return list.reverse();
     },
     currentPageId() {
@@ -141,9 +143,11 @@ export default {
   },
   watch: {
     currentRemarkIndex() {
+      console.log('currentRemarkIndex', this.currentRemarkIndex)
       if(this.currentRemarkIndex > -1) {
         this.focusIndex()
       }
+      this.$forceUpdate()
     },
     currentRemarkOptions() {
       this.$refs.remarklist.scrollTop = 0
@@ -176,7 +180,7 @@ export default {
     ...mapActions("student", ["updateAnswerdPage"]),
     focusIndex() {
       this.$nextTick(() => {
-        if (this.$refs.activeRef[0]) {
+        if (this.$refs.activeRef && this.$refs.activeRef[0]) {
           this.$refs.activeRef[0].focus();
         }
       });
@@ -263,16 +267,17 @@ export default {
         time: Math.floor(Date.now() / 1000),
         width,
         height,
-        pointType
+        pointType,
+        id: -1
       };
       askToAddNewRemarkItem(params);
       // TODO 增加页面展示
-      this.changeRemarkIndex(this.allRemarks.length);
+      this.changeRemarkIndex(0);
       this.addOneRemarkItem(params);
       showToast("send success");
       this.cancelRecord();
       this.updateAnswerdPage(this.currentPageIndex);
-    }
+    },
   }
 };
 </script>

@@ -42,6 +42,7 @@
           <record-audio
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
         </div>
       </li>
@@ -96,7 +97,6 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { deleteMedia, sendAudioOrVideoAnswer } from "@/socket/socket.student";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
-import RecordText from "../common/recordText.vue";
 import { showToast } from "@/utils/loading";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
@@ -107,7 +107,6 @@ export default {
   components: {
     RecordVideo,
     RecordAudio,
-    RecordText,
     AudioPlayer,
     tipShow,
     base64image
