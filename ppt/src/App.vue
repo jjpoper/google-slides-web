@@ -80,6 +80,9 @@ html, button, input, select, textarea {
   box-shadow: none !important;
   border: none !important;
 }
+.no-border{
+  border: 1px solid rgba(236, 236, 236, 1);
+}
 </style>
 <script>
 import "./utils/pptConfig";

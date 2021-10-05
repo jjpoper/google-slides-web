@@ -7,7 +7,9 @@
         placeholder="Please input somthing"
         v-model="item.content"
         @input="onInputText(index)"
+        @focus="onFocusIndex(index)"
         :disabled="showCorrect"
+        :class="`${focusIndex !== index ? 'textblur' : ''}`"
       ></el-input>
       <div class="el-input__icon" v-if="item.textSended">
         <i class="el-icon-edit-outline"></i>
@@ -25,9 +27,15 @@
       @change="changeLocked('text')"
       active-text="show answer"
     />
-    <el-button type="text" @click="addInput()" :disabled="addDisable || showCorrect">+Add Other One</el-button>
+    <el-button type="text" @click="addInput()" :disabled="addDisable || showCorrect">+Add Another One</el-button>
   </div>
 </template>
+<style>
+
+.textblur textarea{
+  background: rgba(153,153,153, 0.3) !important;
+}
+</style>
 
 <style scoped>
 .parent {
@@ -106,7 +114,8 @@ export default {
         SocketEventsEnum.TEXT_INPUT
       ),
       sendDelay: null,
-      showCorrect: false
+      showCorrect: false,
+      focusIndex: -1
     };
   },
   created() {
@@ -132,11 +141,15 @@ export default {
     this.clearDelay();
   },
   methods: {
+    onFocusIndex(index) {
+      this.focusIndex = index
+    },
     addInput() {
       this.inputCount++;
       var item = { content: "", id: this.inputCount, textSended: false };
       this.arrList.push(item);
       this.addDisable = this.inputCount >= this.maxCount;
+      this.onFocusIndex(this.inputCount - 1)
     },
     send: function(index) {
       this.arrList[index].textSended = true;
