@@ -17,14 +17,14 @@
           action="https://dev.api.newzealand.actself.me/file/upload"
           :on-success="onUpload"
           :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*"
+          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*"
           list-type="picture"
         >
           <img src="../../assets/picture/add.png" class="remark-button" />
         </el-upload>
       </el-tooltip>
     </div>
-    <tipShow style="margin:20px" />
+    <tipShow />
     <ul class="remark-list">
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">
@@ -42,6 +42,7 @@
           <record-audio
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
         </div>
       </li>
@@ -79,8 +80,11 @@
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
             <div>
               <p class="file-name">{{item.content.fileName}}</p>
-              <a :href="item.content.link" download class="download-text">Download</a>
+              <a :href="item.content.link" target="blank" download class="download-text">Download</a>
             </div>
+          </div>
+          <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
+            <base64image :url="item.content.link" />
           </div>
         </div>
       </li>
@@ -93,19 +97,19 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { deleteMedia, sendAudioOrVideoAnswer } from "@/socket/socket.student";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
-import RecordText from "../common/recordText.vue";
 import { showToast } from "@/utils/loading";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
 import tipShow from "./tipShow.vue";
-import {videoTypes, audioTypes} from '@/utils/constants'
+import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
+import base64image from '../base64image.vue';
 export default {
   components: {
     RecordVideo,
     RecordAudio,
-    RecordText,
     AudioPlayer,
-    tipShow
+    tipShow,
+    base64image
   },
   computed: {
     ...mapState({
@@ -158,15 +162,22 @@ export default {
       this.recordType = null;
     },
     onUpload(response, file, fileList) {
-      this.focusIndex()
-      // console.log(response.data, file.name, fileList);
+      
+      // console.log(file.name);
       const fileNameList = file.name.split(".")
-      const name = fileNameList[fileNameList.length - 1];
-      let type = 'file'
+      let name = fileNameList[fileNameList.length - 1];
+      if (!name) {
+        showToast('upload error')
+        return false
+      }
+      name = name.toLocaleLowerCase();
+      let type = 'image'
       if (videoTypes.indexOf(name) > -1) {
         type = "video";
       } else if(audioTypes.indexOf(name) > -1) {
         type = 'audio'
+      } else if(fileTypes.indexOf(name) > -1) {
+        type = 'file'
       }
       this.sendCommentCb(response.data, type, file.name);
     },
@@ -180,6 +191,7 @@ export default {
       });
       // 已答
       this.updateAnswerdPage(this.currentPageIndex);
+      this.focusIndex()
       // 追加问答内容
       // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
       // this.updateAllAnswerdList({
@@ -308,7 +320,7 @@ export default {
 }
 .item-header {
   width: 310px;
-  height: 60px;
+  height: 40px;
   background: #15c39a;
   opacity: 1;
   border-radius: 6px 6px 0px 0px;

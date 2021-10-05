@@ -1,14 +1,5 @@
 <template>
-<!-- <div>
-  <textarea
-    class="textarea"
-    v-model="commentValue"
-    placeholder="Leave a message for this comment..."
-  ></textarea>
-  
-  <el-button type="primary" style="width: 100%" @click="sendMessage">send</el-button>
-</div> -->
-<div class="edit-area shadow">
+<div class="edit-area">
   <div class="textarea-box">
     <textarea
       class="textarea"
@@ -39,7 +30,8 @@ export default {
   },
   data() {
     return {
-      commentValue: ''
+      commentValue: '',
+      sendDelay: null,
     }
   },
   methods: {
@@ -49,7 +41,19 @@ export default {
         return;
       }
       this.onSend(this.commentValue, 'text')
-    }
+    },
+    clearDelay() {
+      if (this.sendDelay) {
+        clearTimeout(this.sendDelay);
+        this.sendDelay = null;
+      }
+    },
+    onInputText() {
+      this.clearDelay();
+      this.sendDelay = setTimeout(() => {
+        this.sendMessage();
+      }, 200);
+    },
   }
 }
 </script>
@@ -60,18 +64,18 @@ export default {
 }
 .textarea-box{
   width: 100%;
-  height: 120px;
+  height: 50px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid #D8D8D8;
   opacity: 1;
   position: relative;
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .textarea {
   background-color: transparent;
   width: 100%;
-  height: 120px;
+  height: 50px;
   padding: 5px;
   border: none;
   box-sizing: border-box;
@@ -79,7 +83,6 @@ export default {
   resize: none
 }
 .edit-area{
-  height: 220px;
   width: 100%;
   box-sizing: border-box;
   padding: 5px;
@@ -111,28 +114,25 @@ export default {
   justify-content: center;
 }
 .send-button{
-  width: 160px;
-  height: 40px;
-  border-radius: 20px;
+  width: 80px;
+  height: 30px;
+  border-radius: 25px;
   box-sizing: border-box;
-  background-color: #F6F7F7;
-  border: 1px solid #E5E5E5;
-  line-height: 40px;
-  font-size: 14px;
+  background-color: rgba(208, 210, 223, 1);
+  line-height: 30px;
+  font-size: 12px;
   font-family: Inter-Bold;
-  color: #000000;
-  background-image: url(../../assets/picture/send-disable.png);
-  background-size: 22px 18.33px;
-  background-position: bottom 9px right 37px;
+  font-weight: bolder;
+  color: rgba(255, 255, 255, 1);
+  background-image: url(../../assets/picture/new-send.png);
+  background-size: 14px 14px;
+  background-position: bottom 8px right 16px;
   background-repeat: no-repeat;
   cursor: pointer;
+  text-align: left;
+  padding-left: 15px;
 }
 .send-button.active{
-  background: #15C39A;
-  color: #FFFFFF;
-  background-image: url(../../assets/picture/send.png);
-  background-size: 22px 18.33px;
-  background-position: bottom 9px right 20px;
-  background-repeat: no-repeat;
+  background-color: #15C39A;
 }
 </style>

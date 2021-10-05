@@ -39,8 +39,11 @@
                     <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
                     <div class="file-name">
                       <p class="file-name">{{item.content.fileName}}</p>
-                      <a :href="item.content.link" download class="download-text">Download</a>
+                      <a :href="item.content.link" target="blank" download class="download-text">Download</a>
                     </div>
+                  </div>
+                  <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
+                    <Base64image :url="item.content.link" />
                   </div>
                 </div>
                 <span class="text_static" v-if="flag_1 && answerList.length > 1">
@@ -85,6 +88,7 @@ import { mapState, mapGetters } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
+import Base64image from '../base64image.vue';
 export default {
   computed: {
     // 未答题学生
@@ -120,7 +124,7 @@ export default {
       return list;
     },
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image },
   props: {
     data: {
       type: Object,
