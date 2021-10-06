@@ -809,7 +809,10 @@ export default {
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
-          this.pageChange(parseInt(d.params.page) + 1);
+          const nextPageIndex = parseInt(d.params.page) + 1
+          if(this.currentPageIndex != nextPageIndex) {
+            this.pageChange(nextPageIndex);
+          }
         } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
           // console.log(d.type, "===收到的消息类型", d.params.mode);
           this.currentModel =

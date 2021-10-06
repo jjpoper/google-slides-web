@@ -43,6 +43,7 @@
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
+            :onRecordDone="focusIndex"
           />
         </div>
       </li>

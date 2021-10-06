@@ -31,7 +31,7 @@
               <div
                 slot="reference"
                 v-if="item.pointType !== 'box'" 
-                :class="`markitemopacity markitem ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
+                :class="`markitemopacity markitem ${(currentRemarkIndex === index || !item.id) ? 'markitemhover' : ''}`"
                 :style="`top:${item.top}px;left:${item.left}px;`"
                 @mousedown.stop="selectMark(item, index)"
                 @mouseup.stop
@@ -43,7 +43,7 @@
               <div
                 slot="reference"
                 v-else-if="item.pointType === 'box'"
-                :class="`markitemopacity markitembox ${currentRemarkIndex === index ? 'markitemhover' : ''}`"
+                :class="`markitemopacity markitembox ${(currentRemarkIndex === index || !item.id) ? 'markitemhover' : ''}`"
                 :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
                 @mousedown.stop="selectMark(item, index)"
                 @click.stop

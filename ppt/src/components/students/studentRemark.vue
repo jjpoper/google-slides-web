@@ -45,6 +45,7 @@
             v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
+            :onRecordDone="onRecordDone"
           />
           <record-text
             v-else-if="currentInputType === ModalEventsTypeEnum.TEXT"
@@ -185,6 +186,9 @@ export default {
         }
       });
     },
+    onRecordDone() {
+      this.$refs.remarklist.scrollTop = 0
+    },
     audio() {
       this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO);
     },
@@ -241,6 +245,7 @@ export default {
       );
     },
     cancelRecord() {
+      this.changeRemarkIndex(-1);
       this.setCurrentRemarkOptions(null);
     },
     sendCommentCb(link, type = "") {
@@ -272,7 +277,7 @@ export default {
       };
       askToAddNewRemarkItem(params);
       // TODO 增加页面展示
-      this.changeRemarkIndex(0);
+      
       this.addOneRemarkItem(params);
       showToast("send success");
       this.cancelRecord();

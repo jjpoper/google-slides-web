@@ -43,6 +43,10 @@ export default {
       type: Function,
       default: () => null
     },
+    onRecordDone: {
+      type: Function,
+      default: () => null
+    },
   },
   data() {
     return {
@@ -92,6 +96,7 @@ export default {
     },
     done() {
       if(!this.endRecording) {
+        this.onRecordDone()
         this.endRecording = true
         saveRecordAudio().then((d) => {
           if(d.data) {
