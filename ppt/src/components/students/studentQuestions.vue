@@ -16,6 +16,7 @@
             trigger="hover"
             :append-to-body="true"
             :visible-arrow="false"
+            :disabled="isMovingPos"
             popper-class="transparent-content"
             :popper-options="{
               boundariesElement: 'body',
@@ -67,6 +68,9 @@
           left: ${Math.min(currentPosition.offsetX, nextPosition.offsetX)}px;
           top: ${Math.min(currentPosition.offsetY, nextPosition.offsetY)}px;
           border: 2px solid ${this.color}`">
+        </div>
+        <div v-show="isMovingPos" class="pointer-area" style="zIndex: 1000">
+
         </div>
       </div>
       <!-- <div class="canvasmodal" @mouseleave="leaveModal" v-show="modalVisable">
@@ -165,7 +169,10 @@ export default {
         'rgb(255, 200, 0)',
         '#15c39a',
         'rgb(0, 0, 0)',
-      ]
+      ],
+      isMovingPos: false,
+      moveItem: {},
+      movingPos: {},
     };
   },
   computed: {
@@ -185,7 +192,7 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
-      return list;
+      return list.reverse();
     },
     currentPageId() {
       return this.studentAllSlides[this.currentPageIndex].page_id
@@ -218,6 +225,9 @@ export default {
       "updateOneRemarkItem",
       "setCurrentRemarkOptions",
     ]),
+    drag(e) {
+      console.log(e, 'drag')
+    },
     resetPosition() {
       this.currentPosition = {
         left: 0,
@@ -251,6 +261,47 @@ export default {
         this.setCurrentRemarkOptions(this.currentPosition)
       }
     },
+    changePos() {
+      // if(this.movingPos.left < 10 || this.movingPos.top < 10 ) return false
+      const item = this.moveItem
+      const {
+        left,
+        top
+      } = this.movingPos
+      let newPos = {}
+      if(item.pointType !== 'box') {
+        newPos = {
+          left: left - 15,
+          top: top - 15
+        }
+      } else {
+        newPos = {
+          left: left - item.width / 2 + 6,
+          top: top - item.height / 2 + 6
+        }
+      }
+      if(item.id) {
+        // update
+        this.moveItem = {
+          ...item,
+          ...newPos
+        }
+        this.updateOneRemarkItem(this.moveItem)
+      } else {
+        this.currentPosition = {
+          ...this.currentPosition,
+          ...newPos
+        }
+        this.currentMark = [this.currentPosition]
+        this.setCurrentRemarkOptions(this.currentPosition)
+      }
+    },
+    updateItemData() {
+      if(this.moveItem.id) {
+        updateRemarkItemData(this.moveItem)
+      }
+      this.isMovingPos = false
+    },
     markup(e) {
       // console.log('click')
       if(this.markType === 1) {
@@ -273,9 +324,13 @@ export default {
       }
     },
     startMove(e){
+      console.log('index======startMove', e)
       // if(!this.recordVisiable && this.markType !== 1) {
       //   this.changeMarkType(1)
       // }
+      if(this.isMovingPos) {
+        return false
+      }
       this.startMoveEnable = true
       if(this.recordVisiable) return false
       // if(this.markType === 2) {
@@ -303,6 +358,18 @@ export default {
       }
     },
     mouseMoving(e) {
+      if(this.isMovingPos) {
+        const { offsetX, offsetY } = e;
+        const left = offsetX - 15;
+        const top = offsetY - 15;
+        this.movingPos = {
+          left,
+          top,
+        };
+        this.changePos()
+        return false
+      }
+      // console.log('====', e)
       if(!this.startMoveEnable) return false
       if(this.recordVisiable) return false
       console.log('mouseMoving', this.recordVisiable , this.markType, this.isBoxing)
@@ -324,6 +391,11 @@ export default {
       }
     },
     mouseLeave() {
+      if(this.isMovingPos) {
+        this.isMovingPos = false
+        this.updateItemData()
+        return false
+      }
       if(this.recordVisiable) return false
       this.startMoveEnable = false
       console.log('mouseEnd', this.recordVisiable)
@@ -334,6 +406,11 @@ export default {
       }
     },
     mouseEnd(e) {
+      if(this.isMovingPos) {
+        this.isMovingPos = false
+        this.updateItemData()
+        return false
+      }
       if(this.recordVisiable) return false
       this.startMoveEnable = false
       console.log('mouseEnd', this.recordVisiable)
@@ -426,6 +503,9 @@ export default {
       this.resetPosition()
     },
     selectMark(item, index) {
+      console.log('index======', item)
+      this.isMovingPos = true
+      this.moveItem = item
       if(!this.recordVisiable) {
         // this.closeRecord();
 
