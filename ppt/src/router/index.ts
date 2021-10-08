@@ -39,6 +39,12 @@ const routes: Array<RouteConfig> = [
     name: 'image',
     component: () => import('../components/uploadFile/imageResource.vue'),
   },
+
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../components/teacher/AnonymousLogin.vue'),
+  },
 ];
 
 const router = new VueRouter({
