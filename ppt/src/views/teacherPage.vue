@@ -155,8 +155,8 @@
       />
     </el-dialog>
 
-    <el-dialog title="Classroom Roster" :visible.sync="dialogTableVisible">
-      <studentList :teacherList="teacherList" :studentList="studentList" />
+    <el-dialog width="70%"  :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
+      <studentList :classRoomInfo="classRoomInfo" :teacherList="teacherList" :studentList="studentList" />
     </el-dialog>
 
     <el-dialog

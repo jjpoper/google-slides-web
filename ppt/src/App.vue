@@ -83,6 +83,12 @@ html, button, input, select, textarea {
 .no-border{
   border: 1px solid rgba(236, 236, 236, 1);
 }
+.no-padding >.el-dialog__header{
+  display: none !important;
+}
+.no-padding >.el-dialog__body{
+  padding: 0 !important;
+}
 </style>
 <script>
 import "./utils/pptConfig";
