@@ -15,19 +15,52 @@
             <div class="tr tname">{{tab === 0 ? 'Group' : ''}}</div>
             <div class="tr tname"></div>
           </div>
-          <div v-for="(item, index) in currentList" :key="index" :class="`th ${index % 2 !== 0 && 'gray'}`">
-            <div class="tr tname">{{item.name}}</div>
-            <div class="tr tname">{{tab === 0 ? item.state : item.user_id}}</div>
-            <div class="tr tname">{{tab === 0 ? item.user_id : ''}}</div>
-            <div class="tr tname">{{tab === 0 ? 'Group' : ''}}</div>
-            <div class="tr tname"></div>
+          <div class="scroll-content">
+            <div v-for="(item, index) in currentList" :key="index" :class="`th ${index % 2 !== 0 && 'gray'}`">
+              <div class="tr tname">{{item.name}}</div>
+              <div class="tr tname">{{tab === 0 ? item.state : item.user_id}}</div>
+              <div class="tr tname">{{tab === 0 ? item.user_id : ''}}</div>
+              <div class="tr tname">{{tab === 0 ? 'Group' : ''}}</div>
+              <div class="tr tname"></div>
+            </div>
           </div>
         </div>
-        <div v-if="tab === 0" class="setting">设置分组</div>
+        <div v-if="tab === 0" class="setting" @click="toggleTable(false)">设置分组</div>
       </div>
     </div>
     <div v-if="!showTable">
-
+      <div class="fzTitle">
+        <div class="fzTitleInner">
+          <img src="../../assets/picture/fanhui.png" class="titleIcon" @click="toggleTable(true)"/>
+          <img src="../../assets/picture/closecom.png" class="titleIcon" @click="closeStudents"/>
+        </div>
+      </div>
+      <div class="content" style="align-items: flex-start">
+        <div class="title">Create group</div>
+        <div class="fzTitleInner groupType">
+          <div class="groupRadio groupTextInfo">
+            <i class="groupRadioicon selected"></i>
+            自定义
+          </div>
+          <div class="groupTextInfo">
+            Class 6({{studentList.length}})     |   0 group
+          </div>
+        </div>
+        <div class="addGroup" >
+          <img src="../../assets/picture/add.png" class="titleIcon" style="margin-right: 13px"/>
+          Add group
+        </div>
+        <div class="scroll-content">
+          <div class="groupSection">
+            <div class="groupName">Group1（0）</div>
+            <div class="groupSelect">
+              <span>-- Add students  --</span>
+              <img src="../../assets/picture/arrow-down.png" style="width: 12px; height: 7px"/>
+            </div>
+            <div class="groupSelectBox"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +78,9 @@ export default {
     },
     classRoomInfo: {
       type: Object
+    },
+    closeStudents: {
+      type: Function
     }
   },
   data() {
@@ -52,7 +88,8 @@ export default {
       activeTab: "first",
       currentList: [],
       tab: 0,
-      showTable: true
+      showTable: true,
+      groupList: []
     };
   },
   created() {
@@ -89,6 +126,9 @@ export default {
         this.tab = nextTab
         this.currentList = [this.studentList, this.teacherList][nextTab]
       }
+    },
+    toggleTable(status) {
+      this.showTable = status
     }
   },
 };
@@ -126,7 +166,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding: 20px 0
+  padding: 20px 0;
+}
+.scroll-content{
+  max-height: 350px;
+  overflow-y: scroll;
+  width: 100%;
 }
 .table{
   width: 100%;
@@ -176,5 +221,116 @@ export default {
   cursor: pointer;
   border-radius: 30px;
   text-align: center;
+}
+.fzTitle{
+  width: 100%;
+  height: 60px;
+  background-color: rgba(246, 247, 249, 1);
+}
+.fzTitleInner{
+  width: 93%;
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  align-items: center;
+  position: relative;
+  margin: 0 auto;
+}
+.titleIcon{
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.groupType{
+  width: 100%;
+  height: 22px;
+}
+.groupRadio{
+  padding-left: 32px;
+  height: 22px;
+  position: relative;
+}
+.groupRadioicon{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 22px;
+  width: 22px;
+  border-radius: 22px;
+  border: 1px solid rgba(215, 215, 215, 1);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.groupRadioicon.selected{
+  border-color: rgba(21, 195, 154, 1);
+}
+.groupRadioicon.selected::before{
+  content: ' ';
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  background-color: rgba(21, 195, 154, 1);
+  border-radius: 12px;
+  top: 4px;
+  left: 4px;
+}
+.groupTextInfo{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #11142D;
+}
+.addGroup{
+  cursor: pointer;
+  display: flex;
+  height: 50px;
+  align-items: center;
+  padding-left: 20px;
+  margin: 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: rgba(228, 228, 228, 0.2);
+}
+.groupSection{
+  width: 100%;
+  margin-bottom: 20px;
+  min-height: 114px;
+  background-color: rgba(228, 228, 228, 0.2);
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 0 26px 15px 14px;
+}
+.groupName{
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  font-size: 14px;
+  font-weight: bolder;
+  color: #323232;
+  text-align: left;
+}
+.groupSelect{
+  height: 40px;
+  background: #FFFFFF;
+  border: 1px solid #15C39A;
+  opacity: 1;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 17px;
+  align-items: center;
+  font-size: 12px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  cursor: pointer;
+}
+.groupSelectBox{
+  background-color: #fff;
+  border: 1px solid #DCDCDC;
+  border-radius: 2px;
+  min-height: 100px;
 }
 </style>

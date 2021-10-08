@@ -155,8 +155,8 @@
       />
     </el-dialog>
 
-    <el-dialog width="70%"  :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
-      <studentList :classRoomInfo="classRoomInfo" :teacherList="teacherList" :studentList="studentList" />
+    <el-dialog width="70%" :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
+      <studentList :closeStudents="closeStudents" :classRoomInfo="classRoomInfo" :teacherList="teacherList" :studentList="studentList" />
     </el-dialog>
 
     <el-dialog
@@ -1505,6 +1505,10 @@ type: "slide"*/
     //显示当前的学生
     showStudents() {
       this.dialogTableVisible = true;
+    },
+
+    closeStudents() {
+      this.dialogTableVisible = false;
     },
 
     //重新开启课堂
