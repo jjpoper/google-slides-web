@@ -200,14 +200,7 @@
     </el-dialog>
 
     <!-- custom-class="custom-dialog" @open="openCopyLinkDialog()" -->
-    <!-- title="Share this link with your students" -->
-
-    <el-dialog
-      :visible.sync="showCopyLinkDialog"
-      custom-class="custom-dialog"
-      @close="closeCopyLinkDialog()"
-    >
-      <copyLinkDialog
+    <!-- title="Share this link with your students"       <copyLinkDialog
         v-if="classRoomInfo"
         :getStudentOnLineCount="getStudentOnLineCount"
         :url="getStudentUrl()"
@@ -218,7 +211,20 @@
         :currentMode="page_model"
         :isDashboard="isDashboard"
         :closeBtn="closeCopyDialog"
-      />
+      /> -->
+
+    <el-dialog
+      :visible.sync="showCopyLinkDialog"
+      custom-class="custom-dialog"
+      @close="closeCopyLinkDialog()"
+    >
+      <AnonymousLogin
+        v-if="classRoomInfo"
+        :url="getStudentUrl()"
+        :copyLink="copyLink"
+        :enterClassroom="enterClassroom"
+        :closeBtn="closeCopyDialog"
+      /> 
     </el-dialog>
     <el-dialog
       :visible.sync="dashTipsModalVisiable"
@@ -274,6 +280,7 @@ import stepTwoView from "../components/teacher/openDashboardStepTwo";
 import studentList from "../components/teacher/studentList";
 import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
+import AnonymousLogin from "../components/teacher/AnonymousLogin.vue";
 import dashCopyDialog from "../components/teacher/dashCopyDialog";
 import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
@@ -292,6 +299,7 @@ export default {
     studentList,
     feedbackTimePanel,
     copyLinkDialog,
+    AnonymousLogin,
     StudentPacedNote,
     StudentsQsModal,
     DashHeader,
@@ -1294,16 +1302,19 @@ type: "slide"*/
       return this.copyLinkBtnString;
     },
 
-    getStudentUrl() {
+    getStudentUrl(anonymous) {
+      if (!anonymous) {
+        anonymous = false;
+      }
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      const url = `${location.origin}/s/${this.class_id}`;
+      const url = `${location.origin}/s/${this.class_id}?anonymouse=${anonymous}`;
       return url;
     },
 
-    copyLink() {
-      copy(this.getStudentUrl());
+    copyLink(anonymous) {
+      copy(this.getStudentUrl(anonymous));
       if (this.copyLinkStr && this.copyLinkStr.length > 0) {
       } else {
         showToast("copy link success");
@@ -1662,8 +1673,8 @@ type: "slide"*/
 <style lang="scss">
 .custom-dialog.el-dialog {
   padding: 0;
-  width: 60%;
-  height: 60%;
+  width: 937px;
+  height: 770px;
   background-color: #f00fff00;
   border-radius: 8px;
   .el-dialog__header {
