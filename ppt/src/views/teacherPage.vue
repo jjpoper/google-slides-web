@@ -1678,7 +1678,7 @@ type: "slide"*/
 .custom-dialog.el-dialog {
   padding: 0;
   width: 937px;
-  height: 770px;
+  height: 650px;
   background-color: #f00fff00;
   border-radius: 8px;
   .el-dialog__header {

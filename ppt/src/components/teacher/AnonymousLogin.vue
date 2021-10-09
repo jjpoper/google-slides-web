@@ -18,7 +18,7 @@
       <span class="title_2">Join at join.classcipe.com</span>
       <div class="class_number">{{ getPass }}</div>
 
-      <div class="opt--item" style="margin-top: 30px">
+      <div class="opt--item" style="margin-top: 20px">
         <span class="opt--text">Option</span>
         <div class="opt--value"></div>
       </div>
@@ -47,18 +47,10 @@
             "
             @click="anonymousBtnClicked"
           >
-            <div
-              class="white--flag"
-              style="margin-left: 3px"
-              v-if="!canAnonymous"
-            ></div>
+            <div class="white--flag" style="margin-left: 3px" v-if="!canAnonymous"></div>
             <div style="flex: 1"></div>
 
-            <div
-              class="white--flag"
-              style="margin-right: 3px"
-              v-if="canAnonymous"
-            ></div>
+            <div class="white--flag" style="margin-right: 3px" v-if="canAnonymous"></div>
           </div>
         </div>
       </div>
@@ -73,10 +65,7 @@
           "
           @click="copyLink(canAnonymous)"
         >
-          <img
-            src="../../assets/picture/link_icon.png"
-            style="width: 40px; height: 40px"
-          />
+          <img src="../../assets/picture/link_icon.png" style="width: 40px; height: 40px" />
           <div class="link--text">copy link</div>
         </div>
       </div>
@@ -117,7 +106,6 @@
   cursor: pointer;
 }
 .anonymous {
-  width: 131px;
   font-size: 16px;
   font-family: Inter-Bold;
   line-height: 24px;
@@ -128,6 +116,7 @@
   display: flex;
   align-items: center;
   height: 50px;
+  margin-top: 10px;
 }
 .opt--value {
   height: 40px;
@@ -148,7 +137,7 @@
 }
 .page {
   width: 937px;
-  height: 770px;
+  height: 700px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -194,8 +183,8 @@
   font-weight: 400;
   line-height: 24px;
   color: #15c39a;
-  margin-top: 40px;
-  margin-left: 150px;
+  margin-top: 20px;
+  margin-left: 120px;
   margin-bottom: 20px;
   opacity: 1;
 }
@@ -205,23 +194,23 @@
 export default {
   props: {
     copyLink: {
-      type: Function,
+      type: Function
     },
     url: {
       type: String,
-      default: "",
+      default: ""
     },
     enterClassroom: {
-      type: Function,
+      type: Function
     },
     closeBtn: {
-      type: Function,
-    },
+      type: Function
+    }
   },
   data() {
     return {
       canAnonymous: false,
-      show_url: "",
+      show_url: ""
     };
   },
   created() {
@@ -235,12 +224,12 @@ export default {
   computed: {
     getPass() {
       return this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
-    },
+    }
   },
   methods: {
     anonymousBtnClicked() {
       this.canAnonymous = !this.canAnonymous;
-    },
-  },
+    }
+  }
 };
 </script>
