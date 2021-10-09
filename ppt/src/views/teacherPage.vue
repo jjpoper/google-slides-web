@@ -250,6 +250,7 @@ import {
   getOnlineUsers,
   getAVComment,
   saveUserConfig,
+  getAllGroupMember
 } from "../model/index";
 import {
   initTeacherData,
@@ -467,7 +468,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -824,6 +825,10 @@ type: "slide"*/
         .catch((res) => {
           // console.log(res);
         });
+
+        getAllGroupMember(this.class_id).then((list) => {
+          this.setAllGroups(list)
+        })
     },
     joinRoom() {
       this.currentSo = createSo(

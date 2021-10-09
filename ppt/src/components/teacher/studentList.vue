@@ -46,12 +46,12 @@
             Class 6({{studentList.length}})     |   0 group
           </div>
         </div>
-        <div class="addGroup" >
+        <div class="addGroup" @click="clickAddGroup">
           <img src="../../assets/picture/add.png" class="titleIcon" style="margin-right: 13px"/>
           Add group
         </div>
         <div class="scroll-content">
-          <div class="groupSection">
+          <div class="groupSection" v-for="(item, index) in groupList" :key="index">
             <div class="groupName">Group1（0）</div>
             <div class="groupSelect">
               <span>-- Add students  --</span>
@@ -66,6 +66,10 @@
 </template>
 
 <script>
+import {mapState, mapActions} from 'vuex'
+import {
+  addGroup
+} from '@model/index'
 export default {
   props: {
     studentList: {
@@ -83,6 +87,11 @@ export default {
       type: Function
     }
   },
+  computed: {
+    ...mapState({
+      allGroups: state => state.teacher.allGroups,
+    }),
+  },
   data() {
     return {
       activeTab: "first",
@@ -98,6 +107,7 @@ export default {
   },
 
   methods: {
+    ...mapActions("teacher", ["updateGroup"]),
     Student() {
       let total = this.studentList.length;
       let onLine = 0;
@@ -129,6 +139,9 @@ export default {
     },
     toggleTable(status) {
       this.showTable = status
+    },
+    clickAddGroup() {
+      
     }
   },
 };
