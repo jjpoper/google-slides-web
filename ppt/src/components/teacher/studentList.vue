@@ -53,7 +53,8 @@
         <div class="scroll-content">
           <div class="groupSection" v-for="item in allGroups" :key="item.group_id">
             <div class="groupName">
-              {{item.group_name}}（{{item.members.length}}）
+              {{item.group_name}}
+              （{{item.members.length}}）
               <img src="../../assets/picture/bianji.png" class="bianji" @click="bianji(item)"/>
             </div>
             <div class="groupSelect" @click="showCurrentGroupId(item.group_id)">
@@ -64,9 +65,6 @@
               <template v-for="s in studentList"  >
                 <div v-if="otherSelectedUids.indexOf(s.user_id) > -1" :key="s.user_id" class="useritem disable">
                   <span>{{s.name}}</span>
-                  <img
-                    src="../../assets/picture/student-answered.png"
-                    style="width: 21px; height: 21px"/>
                 </div>
                 <div v-else :key="s.user_id" class="useritem" @click="changeSelected(s.user_id)">
                   <span>{{s.name}}</span>
@@ -81,6 +79,17 @@
           </div>
         </div>
       </div>
+      <el-dialog
+        width="30%"
+        title=""
+        :visible.sync="innerVisible"
+        append-to-body>
+        <div class="update-name-diaglog" style="background: 'rgba(228, 228, 228, 1)">
+          <el-input v-model="currentGroupInfo.group_name" placeholder="请输入内容"></el-input>
+          <el-button @click="hideBianji">cancel</el-button>
+          <el-button type="primary" @click="updateName">ok</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -89,7 +98,8 @@
 import {mapState, mapActions} from 'vuex'
 import {
   addGroup,
-  updateGroupMember
+  updateGroupMember,
+  updateGroupName
 } from '../../model/index'
 export default {
   props: {
@@ -144,6 +154,11 @@ export default {
       tab: 0,
       showTable: true,
       currentGroupId: '',
+      innerVisible: false,
+      currentGroupInfo: {
+        group_name: '',
+        group_id: ''
+      }
     };
   },
   created() {
@@ -200,7 +215,11 @@ export default {
     },
     showCurrentGroupId(id) {
       console.log(this.currentSelectedUids)
-      this.currentGroupId = id
+      if(!this.currentGroupId || this.currentGroupId !== id) {
+        this.currentGroupId = id
+      } else {
+        this.currentGroupId = ''
+      }
     },
     changeSelected(id){
       console.log(id)
@@ -217,13 +236,39 @@ export default {
       updateGroupMember(this.currentGroupId, this.currentSelectedUids).then(() => {
         this.updateGroup({
           "group_id": this.currentGroupId,
-          "members": this.currentSelectedUids,
+          "members": this.currentSelectedUids.map(item => {
+            return {
+              user_id: item
+            }
+          }),
         })
         this.currentGroupId = ''
       })
     },
-    bianji() {
-
+    bianji(item) {
+      this.currentGroupInfo = JSON.parse(JSON.stringify(item))
+      this.innerVisible = true
+    },
+    hideBianji() {
+      this.innerVisible = false
+      this.currentGroupInfo = {
+        group_name: '',
+        group_id: ''
+      }
+    },
+    updateName() {
+      updateGroupName(this.currentGroupInfo.group_name, this.currentGroupInfo.group_id)
+      .then(() => {
+        this.updateGroup({
+          ...this.currentGroupInfo,
+          "members": this.currentSelectedUids.map(item => {
+            return {
+              user_id: item
+            }
+          }),
+        })
+        this.hideBianji()
+      })
     }
   },
 };
