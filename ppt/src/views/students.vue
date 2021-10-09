@@ -385,7 +385,7 @@ export default {
         saveStudentStoreToken(token);
         vm.initWithToken();
       } else {
-        if (!anonymous) {
+        if (!anonymous || anonymous == "false") {
           vm.token = getStudentStoreToken();
           vm.initWithToken();
         } else {
