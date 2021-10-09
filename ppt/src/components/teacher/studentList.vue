@@ -51,8 +51,8 @@
           Add group
         </div>
         <div class="scroll-content">
-          <div class="groupSection" v-for="(item, index) in groupList" :key="index">
-            <div class="groupName">Group1（0）</div>
+          <div class="groupSection" v-for="item in allGroups" :key="item.group_id">
+            <div class="groupName">{{item.group_name}}（{{item.members.length}}）</div>
             <div class="groupSelect">
               <span>-- Add students  --</span>
               <img src="../../assets/picture/arrow-down.png" style="width: 12px; height: 7px"/>
@@ -69,7 +69,7 @@
 import {mapState, mapActions} from 'vuex'
 import {
   addGroup
-} from '@model/index'
+} from '../../model/index'
 export default {
   props: {
     studentList: {
@@ -97,8 +97,7 @@ export default {
       activeTab: "first",
       currentList: [],
       tab: 0,
-      showTable: true,
-      groupList: []
+      showTable: true
     };
   },
   created() {
@@ -141,7 +140,17 @@ export default {
       this.showTable = status
     },
     clickAddGroup() {
-      
+      const name = `Group${this.allGroups.length + 1}`
+      addGroup(window.classId, `Group${this.allGroups.length + 2}`)
+      .then((id) => {
+        if(id) {
+          this.updateGroup({
+            "group_id": id,
+            "group_name": name,
+            "members": [],
+          })
+        }
+      })
     }
   },
 };

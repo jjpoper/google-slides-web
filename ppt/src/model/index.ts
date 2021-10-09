@@ -443,9 +443,9 @@ export const updateElementItem = async (id: number, content: string, type: strin
 }
 
 // 添加分组
-export const addGroup = async (clasId: string, name: string): Promise<string> => {
+export const addGroup = async (classId: string, name: string): Promise<string> => {
   const data = await axios.post(`${PPT.requestUrl}group/add`, {
-    clas_id: clasId,
+    class_id: classId,
     name
   })
   let id = ''
