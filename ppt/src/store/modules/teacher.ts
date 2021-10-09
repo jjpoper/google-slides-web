@@ -2,7 +2,8 @@ import { TeacherActionTypes } from "./types"
 
 const state = () => ({
   studentList: [],
-  showDashFullResponse: false
+  showDashFullResponse: false,
+  allGroups: []
 })
 
 // getters
@@ -17,6 +18,12 @@ const actions = {
   setDashFullPageResponse({commit}: any, status: boolean) {
     commit('setDashFullPageResponse', status)
   },
+  setAllGroups({commit}: any, list: any) {
+    commit('setAllGroups', JSON.parse(JSON.stringify(list)))
+  },
+  updateGroup({commit}: any, data: any) {
+    commit('updateGroup', JSON.parse(JSON.stringify(data)))
+  },
 }
 
 // mutations
@@ -27,6 +34,23 @@ const mutations = {
   setDashFullPageResponse(nextState: any, status: boolean) {
     nextState.showDashFullResponse = status
   },
+  setAllGroups(nextState: any, list: any) {
+    nextState.allGroups = list
+  },
+  updateGroup(nextState: any, data: any) {
+    const {allGroups} = nextState
+    const index = allGroups.findIndex((item: any) => item.group_id === data.group_id)
+    if(index > -1) {
+      const newData = {
+        ...allGroups[index],
+        ...data
+      }
+      nextState.allGroups.splice(index, 1, newData)
+    } else {
+      nextState.allGroups.push(data)
+    }
+  },
+
 }
 
 export default {

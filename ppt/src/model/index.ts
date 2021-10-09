@@ -441,3 +441,59 @@ export const updateElementItem = async (id: number, content: string, type: strin
   return result;
 
 }
+
+// 添加分组
+export const addGroup = async (classId: string, name: string): Promise<string> => {
+  const data = await axios.post(`${PPT.requestUrl}group/add`, {
+    class_id: classId,
+    name
+  })
+  let id = ''
+  try {
+    id = data.data.data.id
+  } catch(e) {
+    // // console.log(e)
+  }
+  console.log(id, '=====')
+  return id;
+}
+
+export const deleteGroup = async (id: string): Promise<boolean> => {
+  const data = await axios.post(`${PPT.requestUrl}group/delete`, {
+    id
+  })
+  let code = ''
+  try {
+    code = data.data.code
+  } catch(e) {
+    // // console.log(e)
+  }
+  return code === 'ok';
+}
+
+export const updateGroupMember = async (id: string, uids: string[]): Promise<boolean> => {
+  const data = await axios.post(`${PPT.requestUrl}group/assign_members`, {
+    group_id: id,
+    members: uids
+  })
+  let code = ''
+  try {
+    code = data.data.code
+  } catch(e) {
+    // // console.log(e)
+  }
+  return code === 'ok';
+}
+
+export const getAllGroupMember = async (classId: string): Promise<any[]> => {
+  const data = await axios.post(`${PPT.requestUrl}group/get_all_group_and_members`, {
+    class_id: classId
+  })
+  let result = []
+  try {
+    result = data.data.data
+  } catch(e) {
+    // // console.log(e)
+  }
+  return result
+}
