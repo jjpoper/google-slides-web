@@ -155,7 +155,7 @@
       />
     </el-dialog>
 
-    <el-dialog width="70%" :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
+    <el-dialog width="85%" :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
       <studentList :closeStudents="closeStudents" :classRoomInfo="classRoomInfo" :teacherList="teacherList" :studentList="studentList" />
     </el-dialog>
 
@@ -250,6 +250,7 @@ import {
   getOnlineUsers,
   getAVComment,
   saveUserConfig,
+  getAllGroupMember
 } from "../model/index";
 import {
   initTeacherData,
@@ -467,7 +468,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -824,6 +825,10 @@ type: "slide"*/
         .catch((res) => {
           // console.log(res);
         });
+
+        getAllGroupMember(this.class_id).then((list) => {
+          this.setAllGroups(list)
+        })
     },
     joinRoom() {
       this.currentSo = createSo(
