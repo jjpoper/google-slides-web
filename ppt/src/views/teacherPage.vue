@@ -155,7 +155,7 @@
       />
     </el-dialog>
 
-    <el-dialog width="70%" :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
+    <el-dialog width="85%" :visible.sync="dialogTableVisible" custom-class="no-padding" :show-close="false">
       <studentList :closeStudents="closeStudents" :classRoomInfo="classRoomInfo" :teacherList="teacherList" :studentList="studentList" />
     </el-dialog>
 

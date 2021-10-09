@@ -83,6 +83,9 @@ html, button, input, select, textarea {
 .no-border{
   border: 1px solid rgba(236, 236, 236, 1);
 }
+.no-padding{
+  margin-top: 50px !important;
+}
 .no-padding >.el-dialog__header{
   display: none !important;
 }

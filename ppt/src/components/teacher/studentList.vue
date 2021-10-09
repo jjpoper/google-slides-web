@@ -43,7 +43,7 @@
             自定义
           </div>
           <div class="groupTextInfo">
-            Class 6({{studentList.length}})     |   0 group
+            {{classRoomInfo.class_name}} ({{studentList.length}})     |   {{allGroups.length}} group
           </div>
         </div>
         <div class="addGroup" @click="clickAddGroup">
@@ -52,12 +52,32 @@
         </div>
         <div class="scroll-content">
           <div class="groupSection" v-for="item in allGroups" :key="item.group_id">
-            <div class="groupName">{{item.group_name}}（{{item.members.length}}）</div>
-            <div class="groupSelect">
+            <div class="groupName">
+              {{item.group_name}}（{{item.members.length}}）
+              <img src="../../assets/picture/bianji.png" class="bianji" @click="bianji(item)"/>
+            </div>
+            <div class="groupSelect" @click="showCurrentGroupId(item.group_id)">
               <span>-- Add students  --</span>
               <img src="../../assets/picture/arrow-down.png" style="width: 12px; height: 7px"/>
             </div>
-            <div class="groupSelectBox"></div>
+            <div class="groupSelectBox" v-if="currentGroupId === item.group_id">
+              <template v-for="s in studentList"  >
+                <div v-if="otherSelectedUids.indexOf(s.user_id) > -1" :key="s.user_id" class="useritem disable">
+                  <span>{{s.name}}</span>
+                  <img
+                    src="../../assets/picture/student-answered.png"
+                    style="width: 21px; height: 21px"/>
+                </div>
+                <div v-else :key="s.user_id" class="useritem" @click="changeSelected(s.user_id)">
+                  <span>{{s.name}}</span>
+                  <img
+                    v-if="currentSelectedUids.indexOf(s.user_id) > -1"
+                    src="../../assets/picture/student-answered.png"
+                    style="width: 21px; height: 21px"/>
+                </div>
+              </template>
+              <div class="setting" style="position: relative; margin: 10px auto;" @click="changeGroupUsers">ok</div>
+            </div>
           </div>
         </div>
       </div>
@@ -68,7 +88,8 @@
 <script>
 import {mapState, mapActions} from 'vuex'
 import {
-  addGroup
+  addGroup,
+  updateGroupMember
 } from '../../model/index'
 export default {
   props: {
@@ -91,13 +112,38 @@ export default {
     ...mapState({
       allGroups: state => state.teacher.allGroups,
     }),
+    otherSelectedUids() {
+      if(!this.currentGroupId || this.allGroups.length === 0) return []
+      let otherUids = []
+      for(let i = 0; i < this.allGroups.length; i++) {
+        const item = this.allGroups[i]
+        if(item.group_id != this.currentGroupId) {
+          otherUids = otherUids.concat(item.members.map(u => u.user_id))
+        }
+      }
+      return otherUids
+    },
+    currentSelectedUids() {
+      if(!this.currentGroupId || this.allGroups.length === 0) return []
+      let uids = []
+      for(let i = 0; i < this.allGroups.length; i++) {
+        const item = this.allGroups[i]
+        if(item.group_id == this.currentGroupId) {
+          uids = item.members.map(u => u.user_id)
+          break
+        }
+      }
+      console.log(uids, this.currentGroupId)
+      return uids
+    }
   },
   data() {
     return {
       activeTab: "first",
       currentList: [],
       tab: 0,
-      showTable: true
+      showTable: true,
+      currentGroupId: '',
     };
   },
   created() {
@@ -151,6 +197,33 @@ export default {
           })
         }
       })
+    },
+    showCurrentGroupId(id) {
+      console.log(this.currentSelectedUids)
+      this.currentGroupId = id
+    },
+    changeSelected(id){
+      console.log(id)
+      const index = this.currentSelectedUids.indexOf(id)
+      if(index > -1) {
+        this.currentSelectedUids.splice(index, 1)
+      } else {
+        this.currentSelectedUids.push(id)
+      }
+      this.$forceUpdate()
+    },
+    changeGroupUsers() {
+      console.log(this.currentSelectedUids)
+      updateGroupMember(this.currentGroupId, this.currentSelectedUids).then(() => {
+        this.updateGroup({
+          "group_id": this.currentGroupId,
+          "members": this.currentSelectedUids,
+        })
+        this.currentGroupId = ''
+      })
+    },
+    bianji() {
+
     }
   },
 };
@@ -354,5 +427,25 @@ export default {
   border: 1px solid #DCDCDC;
   border-radius: 2px;
   min-height: 100px;
+}
+.useritem{
+  width: 100%;
+  height: 34px;
+  display: flex;
+  padding: 0 15px 0 44px;
+  box-sizing: border-box;
+  justify-content: space-between;
+  cursor: pointer;
+  align-items: center;
+}
+.useritem.disable{
+  cursor: default;
+  background-color: rgba(228, 228, 228, 1);
+}
+.bianji{
+  width: 14px;
+  height: 13px;
+  margin-left: 5px;
+  cursor: pointer;
 }
 </style>

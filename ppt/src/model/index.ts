@@ -471,24 +471,10 @@ export const deleteGroup = async (id: string): Promise<boolean> => {
   return code === 'ok';
 }
 
-export const addGroupMember = async (id: string, uid: string): Promise<boolean> => {
-  const data = await axios.post(`${PPT.requestUrl}group/add_member`, {
+export const updateGroupMember = async (id: string, uids: string[]): Promise<boolean> => {
+  const data = await axios.post(`${PPT.requestUrl}group/assign_members`, {
     group_id: id,
-    user_id: uid
-  })
-  let code = ''
-  try {
-    code = data.data.code
-  } catch(e) {
-    // // console.log(e)
-  }
-  return code === 'ok';
-}
-
-export const removeGroupMember = async (id: string, uid: string): Promise<boolean> => {
-  const data = await axios.post(`${PPT.requestUrl}group/add_member`, {
-    group_id: id,
-    user_id: uid
+    members: uids
   })
   let code = ''
   try {

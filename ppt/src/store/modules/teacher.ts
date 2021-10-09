@@ -41,7 +41,11 @@ const mutations = {
     const {allGroups} = nextState
     const index = allGroups.findIndex((item: any) => item.group_id === data.group_id)
     if(index > -1) {
-      nextState.allGroups.splice(index, data)
+      const newData = {
+        ...allGroups[index],
+        ...data
+      }
+      nextState.allGroups.splice(index, 1, newData)
     } else {
       nextState.allGroups.push(data)
     }
