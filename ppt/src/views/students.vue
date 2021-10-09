@@ -1,5 +1,8 @@
 <template>
-  <div class="page" v-if="slides && slides.length">
+  <div class="page">
+    <el-dialog :visible.sync="showLoginDialog" custom-class="custom-dialog">
+      <StudentLoginPage :joinRoom="loginRoom" />
+    </el-dialog>
     <class-room-closed
       v-if="classRoomInfo && classRoomInfo.status == 'close'"
       :class_id="classRoomInfo.class_id"
@@ -239,6 +242,7 @@ import TipsList from "@/components/common/tipsList.vue";
 import { mapActions, mapState } from "vuex";
 import tipShow from "@/components/students/tipShow.vue";
 import StudentsPptList from "@/components/students/studentsPptList.vue";
+import StudentLoginPage from "@/components/students/studentLoginPage.vue";
 
 export default {
   data() {
@@ -286,6 +290,7 @@ export default {
       showTip: false,
       tipText: "",
       websiteUrl: "",
+      showLoginDialog: false,
     };
   },
   computed: {
@@ -369,6 +374,7 @@ export default {
     TipsList,
     tipShow,
     StudentsPptList,
+    StudentLoginPage,
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -377,7 +383,6 @@ export default {
       vm.class_id = id;
       const index = to.query.p ? to.query.p : 0;
       const anonymous = to.query.anonymouse;
-      console.log(anonymous);
       vm.setStudentPageIndex(index);
       initStudentStoreSlideId(id);
       if (token) {
@@ -429,7 +434,14 @@ export default {
       // console.log("change show !!" + this.showTip);
     },
     loginWithoutToken() {
-      console.log("login without token!");
+      this.showLoginDialog = true;
+
+      console.log("login without token!", this.showLoginDialog);
+    },
+    loginRoom() {
+      this.token = getStudentStoreToken();
+      this.initWithToken();
+      this.showLoginDialog = false;
     },
     changeTipByWatchSlides() {
       if (
@@ -1076,6 +1088,24 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.custom-dialog.el-dialog {
+  padding: 0;
+  width: 520px;
+  height: 600px;
+  background-color: #f00fff00;
+  border-radius: 8px;
+  .el-dialog__header {
+    display: none;
+  }
+  .el-dialog__body {
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+</style>
 <style scoped>
 #diycolor_comment {
   top: 0;
