@@ -36,12 +36,14 @@
                 width="11.25"
                 height="12"
                 class="moreshanchu"
+                v-if="isTeacher"
               />
             </div>
-            <textarea v-model="tipsValue" @keypress="enter" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
+            <textarea v-if="isTeacher" v-model="tipsValue" @keypress="enter" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
+            <div v-else class="ppt-tips-item-text" >{{tipsValue}}</div>
           </div>
           <div class="ppt-tips-item-content right-answer-content"
-            v-if="tipsItemList[currentIndex].items[0] && 
+            v-if="isTeacher && tipsItemList[currentIndex].items[0] && 
             tipsItemList[currentIndex].items[0].type === 'choice' && 
             tipsItemList[currentIndex].items[0].data.showCorrectAnswer">
             <div class="ppt-tips-item-top">
@@ -84,6 +86,10 @@ export default {
   props: {
     close: {
       type: Function
+    },
+    isTeacher: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -223,7 +229,7 @@ export default {
   flex: 3;
   box-sizing: border-box;
   padding: 0 10px;
-  height: 100%;
+  max-height: 100%;
   position: relative;
 }
 .ppt-content-inner{

@@ -92,9 +92,6 @@ html, button, input, select, textarea {
 .no-padding >.el-dialog__body{
   padding: 0 !important;
 }
-.custom-dialog.el-dialog .el-dialog__body{
-  // height: auto !important;
-}
 </style>
 <script>
 import "./utils/pptConfig";

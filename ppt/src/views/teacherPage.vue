@@ -231,7 +231,7 @@
       custom-class="custom-dialog"
       width="80%"
     >
-      <dash-tips-modal :close="showDashTips" />
+      <dash-tips-modal :close="showDashTips" :isTeacher="false"/>
     </el-dialog>
   </div>
 </template>
