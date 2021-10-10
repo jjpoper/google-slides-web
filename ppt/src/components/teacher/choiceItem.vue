@@ -61,7 +61,7 @@
     </div>
 
     <div v-else class="personal">
-      <div v-for="(item, index) in answerList" :key="index">
+      <div v-for="(item, index) in selectedAnswerList" :key="index">
         <div v-if="shouldShow(item)">
           <!-- <template v-if="isMulti">
             <div
@@ -214,6 +214,7 @@ import {
 import ECharts from "vue-echarts";
 import commentIcon from "./commentIcon.vue";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
+import {mapState} from 'vuex'
 export default {
   components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts },
   props: {
@@ -247,6 +248,16 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+    }),
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.answerList
+      let list = this.answerList.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     bar() {
       const names = this.options.map(item => {
         return this.optFlags[item.id] + ": " + item.text;
@@ -275,7 +286,7 @@ export default {
               position: "inside",
               formatter: v => {
                 const val = v.data;
-                const len = this.answerList.length;
+                const len = this.selectedAnswerList.length;
                 if (len > 0 && val > 0) {
                   const per = ((val * 100) / len).toFixed(2);
                   return `${val}（${per}/%）`;
@@ -316,8 +327,8 @@ export default {
   },
   methods: {
     counts(id) {
-      if (this.answerList && this.answerList.length > 0) {
-        const filterData = this.answerList.filter(item => item.answer == id);
+      if (this.selectedAnswerList && this.selectedAnswerList.length > 0) {
+        const filterData = this.selectedAnswerList.filter(item => item.answer == id);
         return filterData.length;
       } else {
         return 0;
@@ -334,13 +345,13 @@ export default {
     getAnswerCount(value) {
       let count = 0;
       const { isMulti } = this;
-      for (let i = 0; i < this.answerList.length; i++) {
-        const { answer } = this.answerList[i];
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        const { answer } = this.selectedAnswerList[i];
         if (
           (!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||
           (!isMulti && value == parseInt(answer))
         ) {
-          if (this.answerList[i].show || this.flag_1) {
+          if (this.selectedAnswerList[i].show || this.flag_1) {
             count++;
           }
         }
@@ -380,17 +391,17 @@ export default {
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
       if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示
-      for (let i = 0; i < this.answerList.length; i++) {
-        if (this.answerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        if (this.selectedAnswerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
       }
       return true;
     },
 
     getUserNames(index) {
       let names = "";
-      for (let i = 0; i < this.answerList.length; i++) {
-        if (index == parseInt(this.answerList[i].answer)) {
-          names += this.getUname(this.answerList[i].user_id) + ",";
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        if (index == parseInt(this.selectedAnswerList[i].answer)) {
+          names += this.getUname(this.selectedAnswerList[i].user_id) + ",";
         }
       }
       if (names) {
