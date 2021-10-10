@@ -471,7 +471,7 @@ export const deleteGroup = async (id: string): Promise<boolean> => {
   return code === 'ok';
 }
 
-export const updateGroupName = async (id: string, name: string): Promise<boolean> => {
+export const updateGroupName = async (name: string, id: string,): Promise<boolean> => {
   const data = await axios.post(`${PPT.requestUrl}group/update`, {
     id,
     name
