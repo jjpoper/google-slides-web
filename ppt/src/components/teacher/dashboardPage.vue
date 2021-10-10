@@ -33,6 +33,7 @@
             <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
           </template>
           <dashboard-meterial
+            v-if="!showFullAnswer"
             :pptUrl="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
@@ -45,6 +46,12 @@
             :responseList="responseContentList"/>
           <DashGroupStudents v-else/>
         </div>
+        <dashboard-meterial
+          v-if="showFullAnswer"
+          :pptUrl="currentItemData.thumbnail_url"
+          :filterAddedMediaList="filterAddedMediaList"
+          :meterialVisiable="meterialVisiable"
+        />
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
