@@ -2,8 +2,8 @@
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
       <dash-top-ppt-list v-show="showPPTList"/>
-      <div class="dash-second">
-        <div class="dash-second-left">
+      <div :class="`dash-second ${showFullAnswer && 'dash-border'}`" >
+        <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
           <template v-if="showFullAnswer">
             <dash-switch-header :showres="showres" :showResponse="showResponse"/>
             <template
@@ -18,31 +18,40 @@
                   : 'content_parent'
               "
             >
-              <teacherIndexItem
-                v-if="currentItemData && currentItemData.items[0]"
-                :data="currentItemData"
-                :type="currentItemData.items[0].type"
-                :flag_1="true"
-                :currentAnswerCount="currentAnswerCount"
-                :textList="responseContentList"
-                :pptUrl="currentItemData.thumbnail_url"
-              />
-            </template>
+            <teacherIndexItem
+              v-if="currentItemData && currentItemData.items[0]"
+              :data="currentItemData"
+              :type="currentItemData.items[0].type"
+              :flag_1="true"
+              :currentAnswerCount="currentAnswerCount"
+              :textList="responseContentList"
+              :pptUrl="currentItemData.thumbnail_url"
+            />
+          </template>
           </template>
           <template v-else>
             <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
           </template>
           <dashboard-meterial
+            v-if="!showFullAnswer"
             :pptUrl="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <div class="dash-second-right" v-if="!showFullAnswer">
+        <div :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
           <dash-res-and-students
+            v-if="!showFullAnswer"
             :showResponse="showResponse"
             :responseList="responseContentList"/>
+          <DashGroupStudents v-else/>
         </div>
+        <dashboard-meterial
+          v-if="showFullAnswer"
+          :pptUrl="currentItemData.thumbnail_url"
+          :filterAddedMediaList="filterAddedMediaList"
+          :meterialVisiable="meterialVisiable"
+        />
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
@@ -59,9 +68,10 @@ import DashResAndStudents from './dashResAndStudents.vue';
 import teacherIndexItem from "./Index.vue";
 import dashTopPptList from "./dash/dashTopPptList.vue";
 import DashSwitchHeader from './dash/dashSwitchHeader.vue'
+import DashGroupStudents from './dashGroupStudents.vue'
 import {mapState} from 'vuex'
 export default {
-  components: { DashSwitchHeader, pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents, dashTopPptList},
+  components: { DashSwitchHeader, pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents, dashTopPptList, DashGroupStudents},
   props: {
     currentItemData: {
       type: Object,
@@ -224,15 +234,20 @@ svg {
   display: flex;
   margin-top: 10px;
 }
+.dash-border{
+  border: 1px solid #707070;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+}
 .dash-second-left{
   background-color: #fff;
   position: relative;
-  border: 1px solid #707070;
-  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
-  border-radius: 10px;
   flex: 1;
   overflow: hidden;
   /* display: flex; */
+}
+.dash-second-left.dash-border{
+  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
 }
 .dash-second-right{
   width: 395px;
@@ -240,6 +255,10 @@ svg {
   background-color: #fff;
   margin-left: 10px;
   box-sizing: border-box;
+}
+.dash-second-right.dash-students{
+  margin-left: 0;
+  width: 280px;
 }
 .shouqi{
   width: 30px;

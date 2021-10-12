@@ -115,47 +115,21 @@
         "
         :nextYoutube="nextYoutube"
       />
-      <!-- :url="youtubeurl":
-        :videoUrl="withKeyUrl"
-        :startTime="starttime"
-        :endTime="endtime" -->
-      <!-- <div class="youtubecontaier">
-        <el-button type="primary" @click="openYoutube">open youtube</el-button>
-        <el-input
-          v-model="youtubeurl"
-          placeholder="https://... Paste a youtube url here"
-        >
-          <el-button
-            slot="append"
-            icon="el-icon-refresh"
-            style="color: green"
-            @click="youtubePreview"
-          ></el-button>
-        </el-input>
-        <div v-if="showIframe" class="iframeyoutube">
-          <iframe
-            width="400"
-            height="300"
-            :src="withKeyUrl"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
-        <div class="time">
-          <el-input v-model="starttime" placeholder="start" type="number" />
-          <el-input
-            v-model="endtime"
-            placeholder="end"
-            type="number"
-            style="margin-left: 10px"
-          />
-        </div>
-        <el-button type="primary" @click="nextYoutube">next</el-button>
-      </div> -->
-
-      <!-- :append-to-body="true" -->
+    </el-dialog>
+    <el-dialog
+      title="website"
+      :visible.sync="showWebSite"
+      :append-to-body="true"
+    >
+      <metarial-web-site
+        style="
+          width: 100%;
+          height: 600px;
+          overflow: auto;
+          background-color: #fff;
+        "
+        :nextWebSite="nextWebSite"
+      />
     </el-dialog>
     <el-dialog
       title="Google image search"
@@ -169,46 +143,6 @@
         style="width: 100%; height: 600px; overflow: auto"
         :doneSelect="doneSelect"
       />
-      <!-- <div class="showImageSearchcontaier">
-        <div style="width: 50%">
-          <el-input placeholder="Google image search" v-model="imageName">
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="searchImage"
-            ></el-button>
-          </el-input>
-        </div>
-        <ul class="infinite-list" style="overflow: auto">
-          <li
-            @click="selectImage(index)"
-            v-for="(item, index) in imagesList"
-            :class="`infinite-list-item ${
-              index === imageSelectedIndex ? 'imageSelected' : ''
-            }`"
-            :key="index"
-          >
-            <div
-              class="innerImage"
-              :style="`background-image:url('${item.link}')`"
-            ></div>
-          </li>
-        </ul>
-        <el-button-group style="margin-top: 10px">
-          <el-button
-            type="primary"
-            :disabled="imageSelectedIndex === -1"
-            @click="doneSelect"
-            >select</el-button
-          >
-          <el-button
-            type="info"
-            style="margin-left: 10px"
-            @click="closeImageSearch"
-            >cancel</el-button
-          >
-        </el-button-group>
-      </div> -->
     </el-dialog>
   </div>
 </template>
@@ -220,10 +154,12 @@ import { getOnlineImage } from "@/model";
 import googleImageSearch from "./googleImageSearch.vue";
 import GoogleYoutubeVedio from "./googleYoutubeVedio.vue";
 import {videoTypes, audioTypes} from '@/utils/constants'
+import MetarialWebSite from './metarialWebSite.vue';
 export default {
   components: {
     googleImageSearch,
     GoogleYoutubeVedio,
+    MetarialWebSite,
   },
   data() {
     return {
@@ -239,6 +175,7 @@ export default {
       starttime: 0,
       endtime: 0,
       distroyOnClose: true,
+      showWebSite: false
     };
   },
   mounted() {},
@@ -262,7 +199,7 @@ export default {
       this.showYoutube = true;
     },
     addwebsite() {
-
+      this.showWebSite = true
     },
     openYoutube() {
       window.open("https://www.youtube.com");
@@ -293,6 +230,15 @@ export default {
           url: videoUrl,
         });
         this.showYoutube = false;
+      }
+    },
+    nextWebSite(url) {
+      if(url) {
+        EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+          type: "iframe",
+          url,
+        });
+        this.showWebSite = false;
       }
     },
     closeYoutubeDialog() {

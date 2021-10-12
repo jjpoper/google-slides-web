@@ -113,7 +113,7 @@
 }
 .copy_page {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   background: #0f3538;
   opacity: 1;
   display: flex;

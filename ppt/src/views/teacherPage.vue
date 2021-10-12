@@ -231,7 +231,7 @@
       custom-class="custom-dialog"
       width="80%"
     >
-      <dash-tips-modal :close="showDashTips" />
+      <dash-tips-modal :close="showDashTips" :isTeacher="false"/>
     </el-dialog>
   </div>
 </template>
@@ -1681,18 +1681,18 @@ type: "slide"*/
 
 <style lang="scss">
 .custom-dialog.el-dialog {
-  padding: 0;
-  width: 937px;
-  height: 770px;
-  background-color: #f00fff00;
-  border-radius: 8px;
+  // padding: 0;
+  // width: 937px;
+  // height: 770px;
+  // background-color: #f00fff00;
+  // border-radius: 8px;
   .el-dialog__header {
     display: none;
   }
   .el-dialog__body {
-    padding: 0;
-    height: 100%;
-    width: 100%;
+    // padding: 0;
+    // height: 100%;
+    // width: 100%;
   }
 }
 </style>

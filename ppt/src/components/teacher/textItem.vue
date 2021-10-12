@@ -1,5 +1,5 @@
 <template>
-  <div class="text-answer-container" v-if="textList && textList.length > 0">
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
     <div class="text-answer-tab">
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
@@ -14,7 +14,7 @@
     </div>
     <div class="text-scroll">
       <div class="text-answer-list">
-        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in textList" :key="index">
+        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
           <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
             <div
               v-if="shouldShow(item)"
@@ -44,7 +44,7 @@
           </div>
         </div>
       </div>
-      <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+      <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
         <div class="no-as-title">
           <i></i> No Response
         </div>
@@ -53,7 +53,7 @@
             {{item.user_id}}
           </p>
         </div>
-      </div>
+      </div> -->
     </div>    
   </div>
 </template>
@@ -78,8 +78,16 @@ export default {
       // console.log(noList)
       return noList
     },
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.textList
+      let list = this.textList.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     ...mapState({
-      studentList: state => state.teacher.studentList
+      studentList: state => state.teacher.studentList,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     })
   },
   components: { StudentResponseOptBar },
@@ -294,6 +302,7 @@ export default {
   flex-direction: column;
   overflow: scroll;
   position: relative;
+  padding-bottom: 100px;
 }
 .text-answer-list{
   width: 100%;

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-answer-container" v-if="answerList && answerList.length > 0">
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
     <div class="text-answer-tab">
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
@@ -15,7 +15,7 @@
     <template v-if="currentTab !== 3">
       <div class="text-scroll">
         <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
+          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
             <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
               <div
                 v-if="shouldShow(item)"
@@ -30,8 +30,8 @@
                       </Base64image>
                     </Base64image>
                   </div>
-                  <span class="text_static" v-if="flag_1 && answerList.length > 1">
-                    {{ index + 1 + " of " + answerList.length }}
+                  <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                    {{ index + 1 + " of " + selectedAnswerList.length }}
                   </span>
                 </div>
                 <div class="text-footer" v-if="flag_1">
@@ -52,7 +52,7 @@
             </div>
           </div>
         </div>
-        <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+        <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
           <div class="no-as-title">
             <i></i> No Response
           </div>
@@ -61,7 +61,7 @@
               {{item.user_id}}
             </p>
           </div>
-        </div>
+        </div> -->
       </div>    
     </template>
   </div>
@@ -85,10 +85,18 @@ export default {
       }
       return noList
     },
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.answerList
+      let list = this.answerList.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     ...mapState({
       studentList: state => state.teacher.studentList,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     ...mapGetters({
       currentPageAnswerList: 'student/currentPageAnswerList'
@@ -286,6 +294,7 @@ export default {
   flex-direction: column;
   overflow: scroll;
   position: relative;
+  padding-bottom: 100px;
 }
 .text-answer-list{
   width: 100%;

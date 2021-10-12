@@ -1,5 +1,5 @@
 <template>
-  <div class="text-answer-container" v-if="marks && marks.length > 0">
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
     <div class="text-answer-tab">
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
@@ -16,7 +16,7 @@
     <template v-if="currentTab !== 3">
       <div class="text-scroll">
         <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in marks" :key="index">
+          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
             <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
               <div
                 v-if="shouldShow(item)"
@@ -37,8 +37,8 @@
                       {{item.link}}
                     </p>
                   </div>
-                  <span class="text_static" v-if="flag_1 && marks.length > 1">
-                    {{ index + 1 + " of " + marks.length }}
+                  <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                    {{ index + 1 + " of " + selectedAnswerList.length }}
                   </span>
                 </div>
                 <div class="text-footer" v-if="flag_1">
@@ -85,8 +85,6 @@
 </template>
 
 <script>
-import { getStundentUidAndName } from "@/model/store.teacher";
-import { getCurrentPageAnswerList } from "@/model/store.teacher";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
@@ -110,7 +108,15 @@ export default {
       allRemarks: state => state.remark.allRemarks,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.marks
+      let list = this.marks.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     marks() {
       let list = []
       if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
@@ -302,6 +308,7 @@ export default {
   flex-direction: column;
   overflow: scroll;
   position: relative;
+  padding-bottom: 100px;
 }
 .text-answer-list{
   width: 100%;
