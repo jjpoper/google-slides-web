@@ -1,5 +1,21 @@
 <template>
   <div class="panel">
+    <el-dialog
+      :visible.sync="dashTipsModalVisiable"
+      custom-class="custom-dialog"
+      width="80%"
+      :append-to-body="true"
+    >
+      <dash-tips-modal :close="showDashTips" :isTeacher="false" />
+    </el-dialog>
+    <div
+      :class="dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'"
+      style="margin-right: 20px"
+    >
+      <div class="meterialimage" @click="showDashTips">
+        <div class="fullbgimg dash-tip"></div>
+      </div>
+    </div>
     <div v-if="currentModel == 'Student-Paced'" class="arrow_opts">
       <button class="control-bar__button">
         <div class="control-bar__icon" @click="lastPage()">
@@ -71,7 +87,9 @@
 <script>
 import { ClassRoomModelEnum } from "../../socket/socketEvents";
 import {mapState} from 'vuex'
+import dashTipsModal from '../teacher/dashTipsModal.vue';
 export default {
+  components: { dashTipsModal },
   computed: {
     ...mapState({
       answerdPage: state => state.student.answerdPage,
@@ -136,13 +154,17 @@ export default {
   data() {
     return {
       questionVisiable: false,
-      meterialSwitchVisiable: false
+      meterialSwitchVisiable: false,
+      dashTipsModalVisiable: false
     };
   },
   methods: {
     changeMeterial() {
       this.meterialSwitchVisiable = !this.meterialSwitchVisiable
     },
+    showDashTips() {
+      this.dashTipsModalVisiable = !this.dashTipsModalVisiable
+    }
   }
 };
 </script>
@@ -309,5 +331,32 @@ export default {
 }
 .me-hide{
   background-image:url(../../assets/picture/m-hide.png)
+}
+.button_area {
+  margin-top: 5px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #36425A;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 3px 15px;
+}
+
+.button_grey {
+  background-color: #cfcfcf;
+}
+.back_focus {
+  background-color: #fff;
+  border-radius: 8px;
+}
+.button_text {
+  line-height: 20px;
+  font-size: 14px;
+}
+.dash-tip{
+  background-image: url(../../assets/picture/dash-tip.png);
 }
 </style>

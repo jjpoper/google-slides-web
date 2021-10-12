@@ -1,51 +1,43 @@
 <template>
   <div class="res-and-student">
-    <dash-switch-header />
-    <ul class="res-list" v-if="tab === 1">
-      <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
-        <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
-        <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
-        <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
-        <div class="user-name">{{item.name}}</div>
-      </li>
-    </ul>
-    <ul class="res-list" v-if="tab === 2">
-      <!-- <div  class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div> -->
-      <li class="res-list-item" v-for="item in answerList" :key="item.id">
-        <div class="res-list-item-content">
-          <div class="user-info">
-            <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
-            <div>
-              <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
-              <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
-            </div>
-          </div>
-          <div class="ans-detail">
-            <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
-            <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
-            <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
-            <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
-            <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
-          </div>
-        </div>
-      </li>
-    </ul>
+    <div class="res-inner">
+      <div class="student-list-item select-header">
+        <el-select v-model="currentGroupId" placeholder="All" @change="changeGroup" style="background: #fff">
+          <el-option
+            label="ALL"
+            value="">
+          </el-option>
+          <el-option
+            v-for="item in allGroups"
+            :key="item.group_id"
+            :label="item.group_name"
+            :value="item.group_id">
+          </el-option>
+        </el-select>
+      </div>
+      <ul class="res-list">
+        <template  v-for="item in studentList" >
+          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
+            v-if="!currentGroupId || selectedGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id">
+            <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
+            <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
+            <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
+            <div class="user-name">{{item.name}}</div>
+          </li>
+        </template>
+      </ul>
+    </div>
   </div>
 </template>
 <script>
 import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
-import { mapState, mapGetters } from 'vuex'
-import dashRightRemarkItem from './dash-answer/dash-right-remark-item.vue'
-import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
-import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
-import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
-import DashRightTextItem from './dash-answer/dash-right-text-item.vue'
-import DashSwitchHeader from './dash/dashSwitchHeader.vue'
+import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
-  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem, DashSwitchHeader },
   computed: {
     ...mapState({
       studentList: state => state.teacher.studentList,
+      allGroups: state => state.teacher.allGroups,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
       allRemarks: state => state.remark.allRemarks,
       studentAllSlides: state => state.student.studentAllSlides,
     }),
@@ -89,7 +81,7 @@ export default {
       })
       // console.log(list, 'righten',res, this.currentPageAnswerType)
       return list;
-    }
+    },
   },
   watch: {
     currentPageAnswerType() {
@@ -109,10 +101,11 @@ export default {
   },
   data() {
     return {
-      tab: 2
+      currentGroupId: ''
     }
   },
   methods: {
+    ...mapActions("teacher", ["changeSelectedGroup"]),
     changeTab(tab) {
       this.tab = tab
     },
@@ -120,6 +113,16 @@ export default {
       if(!time) return ''
       return getAnswerTimeStr(time * 1000);
     },
+    changeGroup(id) {
+      if(!id) {
+        this.changeSelectedGroup([])
+        return
+      }
+      const data = this.allGroups.filter(item => item.group_id == id)[0]
+      console.log(data)
+      const list = data.members.map(item => item.user_id)
+      this.changeSelectedGroup(list)
+    }
   }
 }
 </script>
@@ -127,32 +130,23 @@ export default {
   .res-and-student{
     width: 100%;
     height: 100%;
+    position: relative;
+    padding: 20px 20px 20px 0;
+    box-sizing: border-box;
+  }
+  .res-inner{
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
+    background-color: #fff;
+    border: 1px solid rgba(216, 216, 216, 1);
+    border-radius: 4px;
   }
   .res-list{
     flex: 1;
     overflow-y: scroll;
-  }
-  .res-list-item{
-    width: 100%;
-    height: 280px;
-    box-sizing: border-box;
-    margin-bottom: 28px;
-    padding: 0 28px;
-  }
-  .res-list-item-content{
-    width: 100%;
-    height: 100%;
-    background: #FFFFFF;
-    border: 1px solid #F1F1F1;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);
-    opacity: 1;
-    box-sizing: border-box;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
   }
   .user-info {
     display: flex;
@@ -196,11 +190,17 @@ export default {
   }
   .student-list-item{
     width: 100%;
-    height: 77px;
+    height: 57px;
     display: flex;
     align-items: center;
-    padding-left: 50px;
+    padding-left: 15px;
     box-sizing: border-box;
+  }
+  .select-header{
+    background-color: #fafafa;
+  }
+  .disable{
+    background-color: rgba(247, 248, 255, 1);
   }
   .ans-status{
     width: 21px;

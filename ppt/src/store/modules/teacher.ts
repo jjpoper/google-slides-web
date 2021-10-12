@@ -3,7 +3,8 @@ import { TeacherActionTypes } from "./types"
 const state = () => ({
   studentList: [],
   showDashFullResponse: false,
-  allGroups: []
+  allGroups: [],
+  selectedGroupMembers: []
 })
 
 // getters
@@ -23,6 +24,9 @@ const actions = {
   },
   updateGroup({commit}: any, data: any) {
     commit('updateGroup', JSON.parse(JSON.stringify(data)))
+  },
+  changeSelectedGroup({commit}: any, list: string[]) {
+    commit('changeSelectedGroup', JSON.parse(JSON.stringify(list)))
   },
 }
 
@@ -50,7 +54,9 @@ const mutations = {
       nextState.allGroups.push(data)
     }
   },
-
+  changeSelectedGroup(nextState: any, list: any) {
+    nextState.selectedGroupMembers = list
+  }
 }
 
 export default {

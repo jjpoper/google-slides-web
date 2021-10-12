@@ -1260,7 +1260,7 @@ export default {
   bottom: 0;
   background: #d9dfe4;
   color: #fff;
-  z-index: 9999;
+  z-index: 1999;
 }
 .sfooter div {
   margin: 0 20px;
