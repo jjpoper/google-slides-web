@@ -14,6 +14,15 @@ export const getItem = ({
   })
 }
 
+//匿名登录  /account/anonymous_sign_in
+export const anmonymousLogin = async (name: string) => {
+  const data = await axios.post(`${PPT.requestUrl}account/anonymous_sign_in?`, {
+    user_name: name,
+  })
+  return data.data.data;
+}
+
+
 // 获取所有的ppt内容
 export const getAllPPTS = async (slideid: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/get_all`, {
@@ -239,7 +248,7 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   // // // // console.log(data.data.data)
   try {
     result = data.data.data.filter((item: any) => item.page_id)
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return result.reverse()
@@ -256,7 +265,7 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   // // // // console.log(data.data.data)
   try {
     result = data.data.data.filter((item: any) => item.page_id)
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return result.reverse()
@@ -451,7 +460,7 @@ export const addGroup = async (classId: string, name: string): Promise<string> =
   let id = ''
   try {
     id = data.data.data.id
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   console.log(id, '=====')
@@ -465,13 +474,13 @@ export const deleteGroup = async (id: string): Promise<boolean> => {
   let code = ''
   try {
     code = data.data.code
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return code === 'ok';
 }
 
-export const updateGroupName = async (name: string, id: string,): Promise<boolean> => {
+export const updateGroupName = async (name: string, id: string, ): Promise<boolean> => {
   const data = await axios.post(`${PPT.requestUrl}group/update`, {
     id,
     name
@@ -479,7 +488,7 @@ export const updateGroupName = async (name: string, id: string,): Promise<boolea
   let code = ''
   try {
     code = data.data.code
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return code === 'ok';
@@ -493,7 +502,7 @@ export const updateGroupMember = async (id: string, uids: string[]): Promise<boo
   let code = ''
   try {
     code = data.data.code
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return code === 'ok';
@@ -506,7 +515,7 @@ export const getAllGroupMember = async (classId: string): Promise<any[]> => {
   let result = []
   try {
     result = data.data.data
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return result

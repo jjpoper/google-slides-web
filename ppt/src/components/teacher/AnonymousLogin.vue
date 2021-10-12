@@ -18,19 +18,54 @@
       <span class="title_2">Join at join.classcipe.com</span>
       <div class="class_number">{{ getPass }}</div>
 
-      <div class="opt--item" style="margin-top: 20px">
+      <!-- <div class="opt--item" style="margin-top: 20px">
         <span class="opt--text">Option</span>
         <div class="opt--value"></div>
-      </div>
+      </div>-->
 
       <div class="opt--item">
         <span class="opt--text">Time</span>
-        <div class="opt--value"></div>
+        <el-select
+          v-model="time_type"
+          placeholder="--Select--"
+          style="width:300px;height:40px; border: 1px solid #d8d8d8;border-radius: 6px;"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
       </div>
 
-      <div class="opt--item">
+      <div class="opt--item" v-if="time_type==2">
         <span class="opt--text"></span>
-        <div class="opt--value"></div>
+        <el-select
+          v-model="time_down"
+          placeholder="--Select--"
+          style="width:300px;height:40px; border: 1px solid #d8d8d8;border-radius: 6px;"
+        >
+          <el-option
+            v-for="item in timeCounts"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </div>
+
+      <div class="opt--item" v-if="time_type==1">
+        <span class="opt--text"></span>
+
+        <el-date-picker
+          v-model="deadline"
+          type="datetime"
+          placeholder="--Select--"
+          format="yyyy-MM-dd HH:mm:ss"
+          :picker-options="pickerOptionsStart"
+          style="width:300px;height:40px; border: 1px solid #d8d8d8;border-radius: 6px;"
+        ></el-date-picker>
       </div>
 
       <div class="opt--item">
@@ -63,7 +98,7 @@
             align-items: center;
             cursor: pointer;
           "
-          @click="copyLink(canAnonymous)"
+          @click="onCopyLink(canAnonymous)"
         >
           <img src="../../assets/picture/link_icon.png" style="width: 40px; height: 40px" />
           <div class="link--text">copy link</div>
@@ -72,6 +107,95 @@
     </div>
   </div>
 </template>
+
+
+<script>
+export default {
+  props: {
+    copyLink: {
+      type: Function
+    },
+    url: {
+      type: String,
+      default: ""
+    },
+    enterClassroom: {
+      type: Function
+    },
+    closeBtn: {
+      type: Function
+    },
+    hindeTimeDialog: {
+      type: Function
+    }
+  },
+  data() {
+    return {
+      canAnonymous: false,
+      show_url: "",
+      time_type: 0,
+      deadline: "",
+      options: [
+        {
+          value: 0,
+          label: "--Select--"
+        },
+        {
+          value: 1,
+          label: "Deadline mode"
+        },
+        {
+          value: 2,
+          label: "Count down mode"
+        }
+      ],
+      time_dowm: 0,
+      timeCounts: [
+        { value: 15, label: "15  min" },
+        { value: 30, label: "30  min" },
+        { value: 45, label: "45  min" },
+        { value: 60, label: "60  min" },
+        { value: 70, label: "70  min" }
+      ],
+      pickerOptionsStart: {
+        disabledDate: time => {
+          let date = Date.now();
+          //- 8.64e7
+          return time.getTime() < Date.now() - 8.64e7; /*今天及以后*/
+          // return (
+          //   time.getTime() > Date.now() - 8.64e6
+          // ); /*今天及之前，注意数字不一样*/
+        }
+      }
+    };
+  },
+  created() {
+    let index = this.url.indexOf("?");
+    if (index > -1) {
+      this.show_url = this.url.substring(0, index);
+    } else {
+      this.show_url = this.url;
+    }
+  },
+  computed: {
+    getPass() {
+      return this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
+    }
+  },
+  methods: {
+    anonymousBtnClicked() {
+      this.canAnonymous = !this.canAnonymous;
+    },
+    setDeadLine() {
+      this.hindeTimeDialog(this.time_type, this.deadline, this.time_dowm);
+    },
+    onCopyLink(canAnonymous) {
+      this.copyLink(canAnonymous);
+      this.setDeadLine();
+    }
+  }
+};
+</script>
 
 <style scoped>
 .link--text {
@@ -190,46 +314,4 @@
 }
 </style>
 
-<script>
-export default {
-  props: {
-    copyLink: {
-      type: Function
-    },
-    url: {
-      type: String,
-      default: ""
-    },
-    enterClassroom: {
-      type: Function
-    },
-    closeBtn: {
-      type: Function
-    }
-  },
-  data() {
-    return {
-      canAnonymous: false,
-      show_url: ""
-    };
-  },
-  created() {
-    let index = this.url.indexOf("?");
-    if (index > -1) {
-      this.show_url = this.url.substring(0, index);
-    } else {
-      this.show_url = this.url;
-    }
-  },
-  computed: {
-    getPass() {
-      return this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
-    }
-  },
-  methods: {
-    anonymousBtnClicked() {
-      this.canAnonymous = !this.canAnonymous;
-    }
-  }
-};
-</script>
+

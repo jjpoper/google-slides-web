@@ -34,29 +34,49 @@
       </text>
     </svg>
 
-    <div class="line--text">
+    <div class="line--text" v-if="false">
       <span class="class--text">Class</span>
       <span class="class--value">Myp12</span>
     </div>
 
-    <div class="line--item">
+    <div class="line--item" v-if="false">
       <div class="group--text">GROUP</div>
-      <el-select
-        placeholder="--Select your group--"
-        v-model="group"
-      ></el-select>
+      <el-select placeholder="--Select your group--" v-model="group"></el-select>
     </div>
 
-    <div class="line--item">
+    <div
+      class="line--item"
+      @mouseenter="onNameMouseStatus(true)"
+      @mouseleave="onNameMouseStatus(false)"
+    >
       <div class="group--text">NAME</div>
-      <el-input placeholder="Enter name" v-model="name"></el-input>
+      <div class="name--holder" v-if="!nameMouseStatus&&!name">Enter name</div>
+      <el-input placeholder="Enter name" v-model="name" v-if="nameMouseStatus||name"></el-input>
     </div>
 
-    <div class="btn--class" @click="joinRoom">Join now</div>
+    <div class="btn--class" @click="joinRoom(name)">Join now</div>
+
+    <img
+      src="../../assets/btn_google_signin.png"
+      width="240"
+      height="50"
+      style="margin-top:30px;cursor: pointer;"
+      @click="googleLogin"
+    />
   </div>
 </template>
 
 <style scoped>
+.name--holder {
+  display: flex;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 16px;
+  color: #808191;
+  opacity: 1;
+  height: 40px;
+  align-items: center;
+}
 .btn--class {
   width: 280px;
   height: 50px;
@@ -114,7 +134,7 @@
   margin-left: 20px;
 }
 .class--text {
-  width: 36px;
+  width: 40px;
   height: 19px;
   font-size: 16px;
   font-family: FZCuYuan-M03S;
@@ -156,17 +176,24 @@
 export default {
   props: {
     joinRoom: {
-      type: Function,
+      type: Function
     },
+    googleLogin: {
+      type: Function
+    }
   },
   data() {
     return {
       group: "",
       name: "",
+      nameMouseStatus: false
     };
   },
   methods: {
     anonymousBtnClicked() {},
-  },
+    onNameMouseStatus(status) {
+      this.nameMouseStatus = status;
+    }
+  }
 };
 </script>

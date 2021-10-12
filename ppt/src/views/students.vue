@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <el-dialog :visible.sync="showLoginDialog" custom-class="custom-dialog">
-      <StudentLoginPage :joinRoom="loginRoom" />
+      <StudentLoginPage :joinRoom="loginRoom" :googleLogin="googleLogin" />
     </el-dialog>
     <class-room-closed
       v-if="classRoomInfo && classRoomInfo.status == 'close'"
@@ -112,24 +112,21 @@
 
     <div class="top_btn">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain: {{ getDeadLineStr(countDownMin) }}
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain: {{ getDeadLineStr(countDownMin) }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
         <div class="readchat comment"></div>
       </el-tooltip>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain:{{ countDownMin }} mintues.
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain:{{ countDownMin }} mintues.</div>
 
-      <div class="deadline_info" v-if="showCorrect">
-        You are unable to change your answer
-      </div>
+      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
 
       <div style="flex: 1"></div>
 
@@ -207,6 +204,7 @@ import {
   getUserProfile,
   queryClassStatus,
   getAVComment,
+  anmonymousLogin
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -216,7 +214,7 @@ import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -228,7 +226,7 @@ import {
   readStudentComment,
   getStudentStoreToken,
   saveStudentStoreToken,
-  initStudentStoreSlideId,
+  initStudentStoreSlideId
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -290,13 +288,13 @@ export default {
       showTip: false,
       tipText: "",
       websiteUrl: "",
-      showLoginDialog: false,
+      showLoginDialog: false
     };
   },
   computed: {
     ...mapState({
-      currentPageIndex: (state) => state.student.currentPageIndex,
-      studentAllSlides: (state) => state.student.studentAllSlides,
+      currentPageIndex: state => state.student.currentPageIndex,
+      studentAllSlides: state => state.student.studentAllSlides
     }),
     hasWebsite() {
       if (this.slides[this.currentPageIndex]) {
@@ -318,7 +316,7 @@ export default {
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
         return this.slides[this.currentPageIndex].elements.filter(
-          (item) => item.type !== "tip" && item.position
+          item => item.type !== "tip" && item.position
         );
       } else {
         return [];
@@ -327,12 +325,12 @@ export default {
     filterTips() {
       if (this.slides[this.currentPageIndex]) {
         return this.slides[this.currentPageIndex].elements.filter(
-          (item) => item.type === "tip"
+          item => item.type === "tip"
         );
       } else {
         return [];
       }
-    },
+    }
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
@@ -374,10 +372,10 @@ export default {
     TipsList,
     tipShow,
     StudentsPptList,
-    StudentLoginPage,
+    StudentLoginPage
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { id } = vm.$route.params;
       const { token, p } = to.query;
       vm.class_id = id;
@@ -409,7 +407,7 @@ export default {
     },
     studentAllSlides() {
       this.changeTipByWatchSlides();
-    },
+    }
   },
   methods: {
     ...mapActions("student", [
@@ -422,12 +420,12 @@ export default {
       "updateAllAnswerdList",
       "deleteOnAnswerById",
       "updateSlideItemTip",
-      "updateSlideCorrectAnswer",
+      "updateSlideCorrectAnswer"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
       "setAllRemarkList",
-      "updateLatestRemarkId",
+      "updateLatestRemarkId"
     ]),
     changeTipShow() {
       this.showTip = !this.showTip;
@@ -438,7 +436,25 @@ export default {
 
       console.log("login without token!", this.showLoginDialog);
     },
-    loginRoom() {
+    loginRoom(name) {
+      console.log(name);
+      if (!name || name.length < 1) {
+        this.$message.error("Please input your name");
+        return;
+      }
+
+      anmonymousLogin(name).then(res => {
+        console.log(res.token);
+        this.token = res.token;
+        this.initWithToken();
+        this.showLoginDialog = false;
+      });
+      // this.token = getStudentStoreToken();
+
+      //
+    },
+
+    googleLogin() {
       this.token = getStudentStoreToken();
       this.initWithToken();
       this.showLoginDialog = false;
@@ -571,7 +587,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         // console.log(url);
         if (url) {
           location.href = url;
@@ -588,7 +604,7 @@ export default {
         } else {
           // comment remark 特殊，数据不在answer内
           return this.$store.state.remark.allRemarks.filter(
-            (item) => item.page_id === page_id
+            item => item.page_id === page_id
           );
         }
       }
@@ -617,7 +633,7 @@ export default {
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, { pages: list }]) => {
         // console.log(list, "========");
         // vuex缓存答案
@@ -636,7 +652,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -667,7 +683,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
@@ -720,7 +736,7 @@ export default {
       this.uid = email;
       this.setStudentUserInfo({
         name: user_name,
-        uid: email,
+        uid: email
       });
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
@@ -730,20 +746,20 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           // console.log(this.classRoomInfo);
           this.initRoomConfig(res);
           this.afterConnectRoom();
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
     },
     afterConnectRoom() {
       this.getAllSlides();
       getAVComment(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.code == "ok") {
             let marks = [];
@@ -756,7 +772,7 @@ export default {
             this.setAllRemarkList(marks);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
     },
@@ -828,7 +844,7 @@ export default {
         classId: this.class_id,
         uid: this.uid,
         token: this.token,
-        uname: this.uname,
+        uname: this.uname
       });
     },
     msgListener(d) {
@@ -864,7 +880,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -877,9 +893,7 @@ export default {
         // 获取发出的评论id，用于删除时候调用
         this.updateLatestRemarkId(d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        const index = this.slides.findIndex(
-          (item) => d.page_id === item.page_id
-        );
+        const index = this.slides.findIndex(item => d.page_id === item.page_id);
         this.slides[index].elements.push({ id: d.id, ...d.data });
         // console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
@@ -897,7 +911,7 @@ export default {
         // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex((item) => id === item.id);
+        const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d);
@@ -919,13 +933,13 @@ export default {
     onGetTeacherComment(d) {
       const {
         item: { studentId },
-        comment_id,
+        comment_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
         addStudentComment({
           ...d.item,
-          id: comment_id,
+          id: comment_id
         });
         unreadStudentComment();
         this.unread = true;
@@ -969,7 +983,7 @@ export default {
         saveStudentsCurrentPageAnswerList(page_id, type, {
           key: "item_1",
           answer: v,
-          locked,
+          locked
         });
         this.updateAnswerdPage(this.currentPageIndex);
         this.currentAnswerd = true;
@@ -1077,15 +1091,15 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,
         key: 0,
-        content: link,
+        content: link
       });
       this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;
-    },
-  },
+    }
+  }
 };
 </script>
 
