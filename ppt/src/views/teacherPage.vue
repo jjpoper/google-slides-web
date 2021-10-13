@@ -1191,16 +1191,14 @@ type: "slide"*/
       if (count < 20) {
         queryRefreshResult(code, token)
           .then((res) => {
-            // if (res.data.status === "processing") {
-            //   setTimeout(function() {
-            //     _this.queryResult(code, token, ++count);
-            //   }, 1000);
-            // } else {
-            //   this.getAllSlides();
-            //   hideLoading();
-            // }
-            this.getAllSlides();
-            hideLoading();
+            if (res.data.status === "processing") {
+              setTimeout(function() {
+                _this.queryResult(code, token, ++count);
+              }, 1000);
+            } else {
+              this.getAllSlides();
+              hideLoading();
+            }
           })
           .catch((res) => {
             this.getAllSlides();
