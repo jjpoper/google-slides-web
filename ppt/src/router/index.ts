@@ -43,7 +43,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../components/teacher/AnonymousLogin.vue'),
+    component: () => import('../components/students/studentLoginPage.vue'),
   },
 ];
 
