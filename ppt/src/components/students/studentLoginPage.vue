@@ -39,9 +39,20 @@
       <span class="class--value">Myp12</span>
     </div>
 
-    <div class="line--item" v-if="false">
+    <div class="line--item">
       <div class="group--text">GROUP</div>
-      <el-select placeholder="--Select your group--" v-model="group"></el-select>
+      <el-select
+        placeholder="--Select your group--"
+        v-model="group"
+        style="width: 410px; height: 40px"
+      >
+        <el-option
+          v-for="item in allGroups"
+          :key="item.group_id"
+          :label="item.group_name"
+          :value="item.group_id"
+        ></el-option>
+      </el-select>
     </div>
 
     <div
@@ -50,21 +61,72 @@
       @mouseleave="onNameMouseStatus(false)"
     >
       <div class="group--text">NAME</div>
-      <div class="name--holder" v-if="!nameMouseStatus&&!name">Enter name</div>
-      <el-input placeholder="Enter name" v-model="name" v-if="nameMouseStatus||name"></el-input>
+      <div class="name--holder" v-if="!nameMouseStatus && !name">
+        Enter name
+      </div>
+      <el-input
+        placeholder="Enter name"
+        v-model="name"
+        v-if="nameMouseStatus || name"
+      ></el-input>
     </div>
 
-    <div class="btn--class" @click="joinRoom(name)">Join now</div>
+    <div class="btn--class" @click="joinRoom(name, group)">Join now</div>
 
     <img
       src="../../assets/btn_google_signin.png"
       width="240"
       height="50"
-      style="margin-top:30px;cursor: pointer;"
+      style="margin-top: 30px; cursor: pointer"
       @click="googleLogin"
     />
   </div>
 </template>
+
+<script>
+import {
+  getAllGroupMember
+} from "../../model/index";
+export default {
+  props: {
+    joinRoom: {
+      type: Function,
+    },
+    googleLogin: {
+      type: Function,
+    },
+    class_id: {
+      type: String,
+      default: "",
+    },
+  },
+  computed: {
+  },
+  data() {
+    return {
+      group: "",
+      name: "",
+      allGroups: [],
+      nameMouseStatus: false,
+    };
+  },
+
+  created() {
+    getAllGroupMember(this.class_id).then((list) => {
+      console.log(this.class_id, list);
+      this.allGroups = list;
+    });
+  },
+
+  methods: {
+    anonymousBtnClicked() {},
+    onNameMouseStatus(status) {
+      this.nameMouseStatus = status;
+      console.log(this.allGroups);
+    },
+  },
+};
+</script>
 
 <style scoped>
 .name--holder {
@@ -172,28 +234,4 @@
 }
 </style>
 
-<script>
-export default {
-  props: {
-    joinRoom: {
-      type: Function
-    },
-    googleLogin: {
-      type: Function
-    }
-  },
-  data() {
-    return {
-      group: "",
-      name: "",
-      nameMouseStatus: false
-    };
-  },
-  methods: {
-    anonymousBtnClicked() {},
-    onNameMouseStatus(status) {
-      this.nameMouseStatus = status;
-    }
-  }
-};
-</script>
+

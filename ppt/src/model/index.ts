@@ -15,11 +15,20 @@ export const getItem = ({
 }
 
 //匿名登录  /account/anonymous_sign_in
-export const anmonymousLogin = async (name: string) => {
-  const data = await axios.post(`${PPT.requestUrl}account/anonymous_sign_in?`, {
-    user_name: name,
-  })
-  return data.data.data;
+export const anmonymousLogin = async (name: string, id: any) => {
+  if (id) {
+    const data = await axios.post(`${PPT.requestUrl}account/anonymous_sign_in?`, {
+      user_name: name,
+      group_id: id,
+    })
+    return data.data.data;
+  } else {
+    const data = await axios.post(`${PPT.requestUrl}account/anonymous_sign_in?`, {
+      user_name: name,
+    })
+    return data.data.data;
+  }
+
 }
 
 
@@ -480,7 +489,7 @@ export const deleteGroup = async (id: string): Promise<boolean> => {
   return code === 'ok';
 }
 
-export const updateGroupName = async (name: string, id: string, ): Promise<boolean> => {
+export const updateGroupName = async (name: string, id: string,): Promise<boolean> => {
   const data = await axios.post(`${PPT.requestUrl}group/update`, {
     id,
     name

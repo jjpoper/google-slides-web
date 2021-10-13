@@ -85,7 +85,7 @@
         :visible.sync="innerVisible"
         append-to-body>
         <div class="update-name-diaglog" >
-          <el-input v-model="currentGroupInfo.group_name" placeholder="请输入内容"
+          <el-input v-model="currentGroupInfo.group_name" placeholder="Please input "
           style="margin-bottom: 10px; border: 1px solid rgba(228, 228, 228, 1)"
           :autofocus="true"></el-input>
           <el-button @click="hideBianji">cancel</el-button>
