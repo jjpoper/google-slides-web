@@ -1188,26 +1188,41 @@ type: "slide"*/
 
     queryResult(code, token, count) {
       let _this = this;
-      if (count < 20) {
-        queryRefreshResult(code, token)
-          .then((res) => {
-            if (res.data.status === "processing") {
-              setTimeout(function() {
-                _this.queryResult(code, token, ++count);
-              }, 1000);
-            } else {
-              this.getAllSlides();
-              hideLoading();
-            }
-          })
-          .catch((res) => {
-            this.getAllSlides();
-            hideLoading();
-          });
-      } else {
+      // if (count < 20) {
+      //   queryRefreshResult(code, token)
+      //     .then((res) => {
+      //       if (res.data.status === "processing") {
+      //         setTimeout(function() {
+      //           _this.queryResult(code, token, ++count);
+      //         }, 1000);
+      //       } else {
+      //         this.getAllSlides();
+      //         hideLoading();
+      //       }
+      //     })
+      //     .catch((res) => {
+      //       this.getAllSlides();
+      //       hideLoading();
+      //     });
+      // } else {
+      //   this.getAllSlides();
+      //   hideLoading();
+      // }
+      queryRefreshResult(code, token)
+      .then((res) => {
+        if (res.data.status === "processing") {
+          setTimeout(function() {
+            _this.queryResult(code, token);
+          }, 1000);
+        } else {
+          this.getAllSlides();
+          hideLoading();
+        }
+      })
+      .catch((res) => {
         this.getAllSlides();
         hideLoading();
-      }
+      });
     },
     getAllSlides() {
       // 初始化评论数据
