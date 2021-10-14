@@ -149,7 +149,7 @@ export default {
           label: "Count down mode"
         }
       ],
-      time_dowm: 0,
+      time_down: 0,
       timeCounts: [
         { value: 15, label: "15  min" },
         { value: 30, label: "30  min" },
@@ -187,7 +187,7 @@ export default {
       this.canAnonymous = !this.canAnonymous;
     },
     setDeadLine() {
-      this.hindeTimeDialog(this.time_type, this.deadline, this.time_dowm);
+      this.hindeTimeDialog(this.time_type, this.deadline, this.time_down);
     },
     onCopyLink(canAnonymous) {
       this.copyLink(canAnonymous);
