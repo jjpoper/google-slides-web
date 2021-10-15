@@ -12,15 +12,39 @@
             <div class="tr tname">Name</div>
             <div class="tr tname">Status</div>
             <div class="tr tname">{{tab === 0 ? 'Email' : ''}}</div>
-            <div class="tr tname">{{tab === 0 ? 'Group' : ''}}</div>
+            <div class="tr tname">
+              <template v-if="tab === 0">
+                <el-select
+                  placeholder="Group"
+                  v-model="groupValue"
+                  popper-class="tname"
+                >
+                  <el-option
+                    v-for="item in filterGroups"
+                    :key="item.group_id"
+                    :label="item.group_name"
+                    :value="item.group_id"
+                  ></el-option>
+                </el-select>
+              </template>
+            </div>
             <div class="tr tname"></div>
           </div>
-          <div class="scroll-content">
+          <div class="scroll-content" v-if="tab === 0">
+            <div v-for="(item, index) in filterStudentsList" :key=" item.user_id" :class="`th ${index % 2 !== 0 && 'gray'}`">
+              <div class="tr tname">{{item.name}}</div>
+              <div class="tr tname">{{item.state }}</div>
+              <div class="tr tname">{{item.user_id}}</div>
+              <div class="tr tname">{{getGroupName(item.user_id).group_name}}</div>
+              <div class="tr tname"></div>
+            </div>
+          </div>
+          <div class="scroll-content" v-if="tab === 1">
             <div v-for="(item, index) in currentList" :key="index" :class="`th ${index % 2 !== 0 && 'gray'}`">
               <div class="tr tname">{{item.name}}</div>
-              <div class="tr tname">{{tab === 0 ? item.state : item.user_id}}</div>
-              <div class="tr tname">{{tab === 0 ? item.user_id : ''}}</div>
-              <div class="tr tname">{{tab === 0 ? 'Group' : ''}}</div>
+              <div class="tr tname">{{item.user_id}}</div>
+              <div class="tr tname"></div>
+              <div class="tr tname"></div>
               <div class="tr tname"></div>
             </div>
           </div>
@@ -42,15 +66,18 @@
             <i class="groupRadioicon selected"></i>
             自定义
           </div>
-          <div class="groupTextInfo">
+          <!-- <div class="groupTextInfo">
             {{classRoomInfo.class_name}} ({{studentList.length}})     |   {{allGroups.length}} group
+          </div> -->
+          <div class="groupTextInfo">
+            {{allGroups.length}} Group
           </div>
         </div>
         <div class="addGroup" @click="clickAddGroup">
           <img src="../../assets/picture/add.png" class="titleIcon" style="margin-right: 13px"/>
           Add group
         </div>
-        <div class="scroll-content">
+        <div class="scroll-content" ref="scrollGroupSection" >
           <div class="groupSection" v-for="item in allGroups" :key="item.group_id">
             <div class="groupName">
               {{item.group_name}}
@@ -61,12 +88,9 @@
               <span>-- Add students  --</span>
               <img src="../../assets/picture/arrow-down.png" style="width: 12px; height: 7px"/>
             </div>
-            <div class="groupSelectBox" v-if="currentGroupId === item.group_id">
+            <div class="groupSelectBox" v-if="studentList.length > 0 && currentGroupId === item.group_id">
               <template v-for="s in studentList"  >
-                <div v-if="otherSelectedUids.indexOf(s.user_id) > -1" :key="s.user_id" class="useritem disable">
-                  <span>{{s.name}}</span>
-                </div>
-                <div v-else :key="s.user_id" class="useritem" @click="changeSelected(s.user_id)">
+                <div :key="s.user_id" @click="changeSelected(s.user_id)" :class="`useritem ${otherSelectedUids.indexOf(s.user_id) > -1 && 'disable'}`">
                   <span>{{s.name}}</span>
                   <img
                     v-if="currentSelectedUids.indexOf(s.user_id) > -1"
@@ -75,6 +99,12 @@
                 </div>
               </template>
               <div class="setting" style="position: relative; margin: 10px auto;" @click="changeGroupUsers">ok</div>
+            </div>
+            <div class="memberlist" v-if="item.members.length > 0">
+              <div class="member" v-for="u in item.members" :key="u.user_id">
+                <div class="membericon" v-if="u.user_name">{{(u.user_name || u.name).split("")[0]}}</div>
+                <div class="memberName" v-if="u.user_name">{{u.user_name || u.name}}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -101,7 +131,8 @@ import {mapState, mapActions} from 'vuex'
 import {
   addGroup,
   updateGroupMember,
-  updateGroupName
+  updateGroupName,
+  getAllGroupMember
 } from '../../model/index'
 export default {
   props: {
@@ -147,6 +178,43 @@ export default {
       }
       console.log(uids, this.currentGroupId)
       return uids
+    },
+    filterGroups() {
+      const defaultGroup = [
+        {
+          group_name: 'All',
+          group_id: -1
+        },
+        {
+          group_name: 'Not Group',
+          group_id: 0
+        },
+      ]
+      return defaultGroup.concat(this.allGroups)
+    },
+    filterStudentsList() {
+      if(this.groupValue === -1) {
+        return this.studentList
+      }
+      if(this.groupValue === 0) {
+        let list = []
+        for(let student of this.studentList) {
+          const uid = student.user_id
+          if(!this.getGroupName(uid).group_id) {
+            list.push(student)
+          }
+        }
+        return list
+      }
+      let list = []
+      for(let student of this.studentList) {
+        const uid = student.user_id
+        const gid = this.getGroupName(uid).group_id
+        if(gid == this.groupValue) {
+          list.push(student)
+        }
+      }
+      return list
     }
   },
   data() {
@@ -160,7 +228,8 @@ export default {
       currentGroupInfo: {
         group_name: '',
         group_id: ''
-      }
+      },
+      groupValue: -1
     };
   },
   created() {
@@ -169,7 +238,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("teacher", ["updateGroup"]),
+    ...mapActions("teacher", ["updateGroup", "setAllGroups"]),
     Student() {
       let total = this.studentList.length;
       let onLine = 0;
@@ -236,15 +305,7 @@ export default {
     changeGroupUsers() {
       console.log(this.currentSelectedUids)
       updateGroupMember(this.currentGroupId, this.currentSelectedUids).then(() => {
-        this.updateGroup({
-          "group_id": this.currentGroupId,
-          "members": this.currentSelectedUids.map(item => {
-            return {
-              user_id: item
-            }
-          }),
-        })
-        this.currentGroupId = ''
+        this.getAll()
       })
     },
     bianji(item) {
@@ -261,20 +322,47 @@ export default {
     updateName() {
       updateGroupName(this.currentGroupInfo.group_name, this.currentGroupInfo.group_id)
       .then(() => {
-        this.updateGroup({
-          ...this.currentGroupInfo,
-          "members": this.currentSelectedUids.map(item => {
-            return {
-              user_id: item
-            }
-          }),
-        })
-        this.hideBianji()
+        this.getAll()
       })
+    },
+    getGroupName(uid) {
+      let group = {
+        group_name: '',
+        group_id: ''
+      }
+      for(let i = 0; i < this.allGroups.length; i++) {
+        const item = this.allGroups[i]
+        const member = item.members.filter(u => u.user_id == uid)
+        if(member.length > 0) {
+          group = {
+            group_name: item.group_name,
+            group_id: item.group_id
+          }
+          break
+        }
+      }
+      return group
+    },
+    getAll() {
+      getAllGroupMember(window.classId).then((list) => {
+        this.setAllGroups(list);
+        this.currentGroupId = ''
+        this.hideBianji()
+        this.$nextTick(() => {
+          this.$refs.scrollGroupSection.scrollTop = 0
+        })
+      });
     }
   },
 };
 </script>
+<style>
+.tname input{
+  color: #323232 !important;
+  font-family: FZCuYuan-M03S;
+  font-weight: 800;
+}
+</style>
 
 <style scoped>
 .title{
@@ -351,6 +439,7 @@ export default {
   color: #323232;
   font-weight: bolder;
 }
+
 .setting{
   width: 90px;
   height: 30px;
@@ -494,5 +583,42 @@ export default {
   height: 13px;
   margin-left: 5px;
   cursor: pointer;
+}
+.memberlist{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.member{
+  width: 170px;
+  height: 50px;
+  background: #FFFFFF;
+  border-radius: 6px;
+  margin-top: 15px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 12px;
+}
+.membericon{
+  width: 30px;
+  height: 30px;
+  background: #12DEC3;
+  border-radius: 15px;
+  text-align: center;
+  line-height: 30px;
+  margin-right: 12px;
+}
+.memberName{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 50px;
+  color: #000000;
+  flex: 1;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  text-align: left;
 }
 </style>

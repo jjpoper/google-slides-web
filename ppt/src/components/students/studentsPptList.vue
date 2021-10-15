@@ -31,8 +31,7 @@ export default {
   width: 100%;
   z-index: 10000;
   top: 0;
-  background-color: red;
-  height: 180px;
+  height: 120px;
 }
 .shouqi{
   width: 100px;

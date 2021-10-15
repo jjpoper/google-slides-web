@@ -197,7 +197,7 @@
         :setTimeDialogShow="setTimeDialogShow"
         :currentMode="page_model"
         :isDashboard="isDashboard"
-        :closeBtn="closeCopyDialog"
+        :closeBtn="closeDashCopy"
       />
     </el-dialog>
 
@@ -1363,6 +1363,10 @@ type: "slide"*/
         // this.currentSo.emit('control', JSON.stringify(data));
         this.currentSo.emit("control", message);
       }
+    },
+
+    closeDashCopy() {
+      this.stepTwoDialog = false;
     },
 
     turnModel() {
