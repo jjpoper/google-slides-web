@@ -3,7 +3,7 @@
     <el-dropdown>
       <div class="">
         <i class="media-enter-icon"></i>
-        <strong class="el-dropdown-link"> Add Media </strong>
+        <strong class="el-dropdown-link"> Add Material </strong>
       </div>
       <el-dropdown-menu slot="dropdown" style="text-align: center">
         <el-tooltip content="my computer" placement="right">
@@ -124,7 +124,7 @@
       <metarial-web-site
         style="
           width: 100%;
-          height: 600px;
+          height: 300px;
           overflow: auto;
           background-color: #fff;
         "
@@ -235,7 +235,7 @@ export default {
     nextWebSite(url) {
       if(url) {
         EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
-          type: "iframe",
+          type: "website",
           url,
         });
         this.showWebSite = false;
