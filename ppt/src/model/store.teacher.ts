@@ -26,8 +26,8 @@ export const getTeacherStoreToken = (): string => {
   return getStore('teacher_token')
 }
 
-export const saveTeacherStoreToken = (token: string) => {
-  saveStore('teacher_token', token)
+export const saveTeacherStoreToken = (token: any) => {
+  saveStore('teacher_token', Array.isArray(token) ? token[0] : token)
 }
 
 // 拼接url 参数

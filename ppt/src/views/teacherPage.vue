@@ -867,7 +867,7 @@ type: "slide"*/
     },
     msgListener(d) {
       // console.log(d);
-      if (d.type === SocketEventsEnum.STUDENTS_COUNTS) {
+      if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         //  this.studentCounts = d.student_count;
         if (d.join_in) {
@@ -931,7 +931,7 @@ type: "slide"*/
             }
           }
         }
-      } else if (d.type === SocketEventsEnum.RENAME) {
+      } else if (d.mtype === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new, page_id } = d;
         for (let i = 0; i < this.studentList.length; i++) {
@@ -991,7 +991,7 @@ type: "slide"*/
             false
           );
         }
-      } else if (d.type == SocketEventsEnum.STUDETN_GO_PAGE) {
+      } else if (d.mtype == SocketEventsEnum.STUDETN_GO_PAGE) {
         const { room, user_id } = d;
         if (room != this.class_id) {
           return;
