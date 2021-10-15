@@ -4,7 +4,7 @@
       <dash-top-ppt-list v-show="showPPTList"/>
       <div :class="`dash-second ${showFullAnswer && 'dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
-          <template v-if="showFullAnswer">
+          <template v-if="showFullAnswer && hasPageAnswer">
             <dash-switch-header :showres="showres" :showResponse="showResponse"/>
             <template
               :class="
@@ -33,13 +33,13 @@
             <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
           </template>
           <dashboard-meterial
-            v-if="!showFullAnswer"
+            v-if="!showFullAnswer || !hasPageAnswer"
             :pptUrl="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <div :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
+        <div v-if="hasPageAnswer" :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
           <dash-res-and-students
             v-if="!showFullAnswer"
             :showResponse="showResponse"
@@ -69,7 +69,7 @@ import teacherIndexItem from "./Index.vue";
 import dashTopPptList from "./dash/dashTopPptList.vue";
 import DashSwitchHeader from './dash/dashSwitchHeader.vue'
 import DashGroupStudents from './dashGroupStudents.vue'
-import {mapState} from 'vuex'
+import {mapState, mapGetters,mapActions} from 'vuex'
 export default {
   components: { DashSwitchHeader, pptcontent, teacherIndexItem, DashboardMeterial, TipsList, DashResAndStudents, dashTopPptList, DashGroupStudents},
   props: {
@@ -150,12 +150,25 @@ export default {
       currentPageIndex: state => state.student.currentPageIndex,
       showFullAnswer: state => state.teacher.showDashFullResponse,
     }),
+    hasPageAnswer() {
+      const itemData = this.slides[this.currentPageIndex]
+      const type = itemData.items[0] ? itemData.items[0].type : null
+      // if(!type) {
+      //    console.log(this.currentPageAnswerType, '====')
+      //   this.setDashFullPageResponse(false)
+      // }
+      console.log(type)
+      return type && type !== null && type !== 'website'
+    }
   },
   created() {},
   mounted() {
     // console.log(this.currentItemData);
   },
   methods: {
+    ...mapActions("teacher", [
+      "setDashFullPageResponse",
+    ]),
     showCurrentStudent() {
       // console.log("studeng!!!");
     },

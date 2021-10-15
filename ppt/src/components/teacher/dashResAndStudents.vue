@@ -3,32 +3,35 @@
     <dash-switch-header />
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
-        <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
-        <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
+        <img src="../../assets/picture/student-answered.png" class="ans-status" v-if="answeredStudents.indexOf(item.user_id) > -1"/>
+        <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-else/>
         <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
         <div class="user-name">{{item.name}}</div>
       </li>
     </ul>
     <ul class="res-list" v-if="tab === 2">
       <!-- <div  class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div> -->
-      <li class="res-list-item" v-for="item in answerList" :key="item.id">
-        <div class="res-list-item-content">
-          <div class="user-info">
-            <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
-            <div>
-              <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
-              <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+      <template v-if="answerList.length > 0">
+        <li class="res-list-item" v-for="item in answerList" :key="item.id">
+          <div class="res-list-item-content">
+            <div class="user-info">
+              <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
+              <div>
+                <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
+                <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+              </div>
+            </div>
+            <div class="ans-detail">
+              <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
+              <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
+              <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
+              <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
+              <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
             </div>
           </div>
-          <div class="ans-detail">
-            <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
-            <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
-            <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
-            <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
-            <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
-          </div>
-        </div>
-      </li>
+        </li>
+      </template>
+      <loading-view v-else/>
     </ul>
   </div>
 </template>
@@ -41,8 +44,9 @@ import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
 import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
 import DashRightTextItem from './dash-answer/dash-right-text-item.vue'
 import DashSwitchHeader from './dash/dashSwitchHeader.vue'
+import LoadingView from './loadingView.vue'
 export default {
-  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem, DashSwitchHeader },
+  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem, DashSwitchHeader, LoadingView },
   computed: {
     ...mapState({
       studentList: state => state.teacher.studentList,
@@ -54,18 +58,18 @@ export default {
       currentPageId: 'student/currentPageId',
       currentPageAnswerType: 'student/currentPageAnswerType',
     }),
-    // 未答题学生
-    noAnswerStudents() {
-      let noList = []
+    // 已答题学生
+    answeredStudents() {
+      let anList = []
       for(let i = 0; i < this.studentList.length; i++) {
         const currentUser = this.studentList[i]
         const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
-        if(index === -1) {
-          noList.push(currentUser)
+        if(index > -1) {
+          anList.push(currentUser)
         }
       }
       // console.log(noList)
-      return noList
+      return anList
     },
     currentComments() {
       let list = []
