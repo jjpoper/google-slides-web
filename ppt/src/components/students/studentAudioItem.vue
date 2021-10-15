@@ -1,17 +1,17 @@
 <template>
   <div class="remark-container">
     <div class="remark-control">
-      <el-tooltip content="Audio Comment1" placement="top">
+      <el-tooltip content="Record an Aduio" placement="top">
         <div class="remark-button-outer">
           <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button" />
         </div>
       </el-tooltip>
-      <el-tooltip content="Video Comment" placement="top">
+      <el-tooltip content="Record an Video" placement="top">
         <div class="remark-button-outer">
           <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
         </div>
       </el-tooltip>
-      <el-tooltip content="Text Comment" placement="top">
+      <el-tooltip content="Upload meterial" placement="top">
         <el-upload
           class="remark-button-outer"
           action="https://dev.api.newzealand.actself.me/file/upload"
