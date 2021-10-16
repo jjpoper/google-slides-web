@@ -1,20 +1,12 @@
 <template>
   <div class="copy_page">
-    <img
-      src="../../assets/icon/dash-close.png"
-      width="20"
-      height="20"
-      class="close-btn"
-      @click="closeBtn()"
-    />
-
     <div class="content_1">
       <div class="password">
         {{getPass()}}
-        <div class="copy-btn" @click="copyLink"></div>
+        <div class="copy-btn" @click="copyUrl"></div>
       </div>
       <div class="title">{{ show_url }}</div>
-      <div class="btn_class" @click="copyLink()">
+      <div class="btn_class" @click="copyUrl">
         <img
           src="../../assets/picture/dash-lj.png"
           class="dash-share"
@@ -54,9 +46,17 @@
           src="../../assets/picture/dash-lianj.png"
           style="margin-right:10px;"
         />
-        <span class="bottom_text" style="cursor:pointer" @click="copyLink()">Share link to students</span>
+        <span class="bottom_text" style="cursor:pointer" @click="copyUrl">Share link to students</span>
       </div>
     </div>
+
+    <img
+      src="../../assets/icon/dash-close.png"
+      width="30"
+      height="30"
+      class="close-btn"
+      @click="closeBtn()"
+    />
   </div>
 </template>
 
@@ -85,7 +85,7 @@
 }
 .copy_page {
   width: 100%;
-  height: 100%;
+  height: 590px;
   background: rgba(255, 255, 255, 1);
   opacity: 1;
   display: flex;
@@ -291,6 +291,10 @@ export default {
     },
     getPass() {
       return this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
+    },
+    copyUrl() {
+      this.copyLink()
+      this.closeBtn()
     }
   }
 };

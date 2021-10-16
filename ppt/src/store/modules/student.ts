@@ -48,7 +48,8 @@ const getters = {
             currentPageIndex,
         } = currentState
         const itemData = studentAllSlides[currentPageIndex]
-        return itemData.items[0] ? itemData.items[0].type : 'none'
+        const type = itemData.items[0] ? itemData.items[0].type : null
+        return type || 'none'
     },
 }
 

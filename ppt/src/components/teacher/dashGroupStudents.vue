@@ -40,6 +40,7 @@ export default {
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
       allRemarks: state => state.remark.allRemarks,
       studentAllSlides: state => state.student.studentAllSlides,
+      currentPageIndex: state => state.student.currentPageIndex,
     }),
     ...mapGetters({
       currentPageAnswerList: 'student/currentPageAnswerList',
@@ -89,6 +90,10 @@ export default {
         // this.changeTab(1)
       }
     },
+    currentPageIndex() {
+      this.currentGroupId = ''
+      this.changeSelectedGroup([])
+    }
   },
   props: {
     showResponse: {
