@@ -85,6 +85,7 @@
       </div>
       <div style="display: flex">
         <div class="share_room" @click="copyUrl()">Share Class</div>
+        <div style="margin-right:20px; cursor: pointer;" @click="shareScreen"><svg t="1634352581902" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2514" width="48" height="48"><path d="M864 159.872L160 160c-17.696 0-32 14.176-32 31.872v448a32 32 0 0 0 32 32h704a32 32 0 0 0 32-32v-448a32 32 0 0 0-32-32zM864 640H160V191.872h704V640z" fill="#333333" p-id="2515"></path><path d="M928 32H96a96 96 0 0 0-96 96v640a95.904 95.904 0 0 0 95.68 95.936H416v38.944l-199.744 25.952A31.968 31.968 0 0 0 224 991.872h576a32 32 0 0 0 7.744-63.072L608 902.88v-38.944h320.32A95.904 95.904 0 0 0 1024 768V128a96 96 0 0 0-96-96z m32 736c0 17.632-14.368 32-32 32H96c-17.664 0-32-14.368-32-32V128a32 32 0 0 1 32-32h832c17.632 0 32 14.336 32 32v640z" fill="#333333" p-id="2516"></path></svg></div>
         <div class="number_info" @click="showStudents()">
           Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}
         </div>
@@ -246,6 +247,9 @@
     >
       <dash-tips-modal :close="showDashTips" :isTeacher="false" />
     </el-dialog>
+    <div v-show="shareing" style="width: 300px; height: 200px;position: absolute; top: 10px; left:100px; background-color: green; padding: 25px">
+      <video ref="screen-share" width="200" height="200" autoplay />
+    </div>
   </div>
 </template>
 
@@ -300,6 +304,7 @@ import StudentPacedNote from "@/components/teacher/studentPacedNote.vue";
 import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
 import DashHeader from "@/components/teacher/dashHeader.vue";
 import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
+import {openShare} from '@/utils/shareScreen';
 import { mapActions, mapState } from "vuex";
 export default {
   components: {
@@ -377,6 +382,7 @@ type: "slide"*/
       dashTipsModalVisiable: false,
       firstJoined: true,
       copyLinkStr: "",
+      shareing: false
     };
   },
   mounted() {
@@ -1707,6 +1713,15 @@ type: "slide"*/
     changeShowMetrial(status) {
       this.meterialVisiable = status;
     },
+    shareScreen() {
+      openShare(() => {
+        this.$refs['screen-share'].srcObject = null
+        this.shareing = false
+      }).then((stream) => {
+        this.$refs['screen-share'].srcObject = stream
+        this.shareing = true
+      })
+    }
   },
 };
 </script>
