@@ -243,8 +243,9 @@
 
     <el-dialog :visible.sync="showNewPromptDialog" custom-class="custom-dialog">
       <new-prompt-page
-        style="width: 1200px; height: 800px"
+        style="width: 1150px; height: 900px"
         :addPPTItem="addPPTItem"
+        :closeBtn="closeNewPrompt"
       />
     </el-dialog>
     <el-dialog
@@ -512,6 +513,9 @@ type: "slide"*/
     addprompt() {
       console.log("新增prompt!!");
       this.showNewPromptDialog = true;
+    },
+    closeNewPrompt() {
+      this.showNewPromptDialog = false;
     },
     addPPTItem(item) {
       console.log(item);
