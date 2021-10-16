@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-console */
+/* eslint-disable keyword-spacing */
+/* eslint-disable */
 export const onRecordStopped = () => {
   console.log('onRecordStopped')
 }
 
-export const onDataAvailable = () => {
-  
-}
+export const onDataAvailable = () => {}
 
 export const onScreenShareEnded = () => {
   console.log('onScreenShareEnded')
@@ -24,7 +26,7 @@ export const openShare = async (endCallBack = () => null) => {
     screenShareTrack.onmute = onScreenShareEnded;
   }
 
-  // init recorder
+  // @ts-ignore
   let recorder = new MediaRecorder(localScreenShareStream);
   recorder.onstop = endCallBack;
   recorder.ondataavailable = onDataAvailable;
