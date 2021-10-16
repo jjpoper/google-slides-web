@@ -4,21 +4,19 @@
   <div :class="`panel ${isDashboard ? 'dash-control' : ''}`">
     <template v-if="!isDashboard">
       <button class="control-bar__button">
-        <div class="control-bar__icon left" @click="lastPage()">
-        </div>
+        <div class="control-bar__icon left" @click="lastPage()"></div>
       </button>
-      <div>
-      {{currentPage}}/{{totalPage}}
-      </div>
+      <div>{{ currentPage }}/{{ totalPage }}</div>
       <button class="control-bar__button">
-        <div class="control-bar__icon right" @click="nextPage()">
-        </div>
+        <div class="control-bar__icon right" @click="nextPage()"></div>
       </button>
     </template>
 
     <template v-if="isDashboard">
       <div
-        :class="dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'"
+        :class="
+          dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'
+        "
         style="margin-right: 20px"
       >
         <div class="meterialimage" @click="showDashTips">
@@ -34,13 +32,35 @@
         </div>
       </div> -->
     </template>
-    <UploadEnter v-if="meterialVisiable"/>
+    <UploadEnter v-if="meterialVisiable" />
+
+    <div class="button_area" @click="addprompt()">
+      <svg
+        id="Layer_1"
+        data-name="Layer 1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 63.99 60.08"
+        
+      >
+        <title>icon-extension-question</title>
+        <path d="M195.45,6.24" transform="translate(0 -2.08)"></path>
+        <path
+          d="M60.08,2.08H3.92A4,4,0,0,0,0,6V46.21a4,4,0,0,0,3.92,3.92H40.62L52.37,61.87a.92.92,0,0,0,.7.29.61.61,0,0,0,.39-.1,1,1,0,0,0,.61-.9V50.22h6A4,4,0,0,0,64,46.31V6.1A4,4,0,0,0,60.08,2.08Zm-16.44,27H34.83v8.81a2.94,2.94,0,0,1-5.87,0V29.1H20.14a2.94,2.94,0,1,1,0-5.87H29V14.42a2.94,2.94,0,1,1,5.87,0v8.81h8.81a2.94,2.94,0,1,1,0,5.87Z"
+          transform="translate(0 -2.08)"
+        ></path>
+      </svg>
+      <strong class="button_text">Add prompt</strong>
+    </div>
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
-      <div class="with-outer" v-if="!isDashboard" >
+      <div class="with-outer" v-if="!isDashboard">
         <i :class="`icon-circle ${current_response === 0 && 'red-icon'}`"></i>
         <strong
-        >{{ current_response == 0 ? "No" : current_response }} Response</strong>
+          >{{
+            current_response == 0 ? "No" : current_response
+          }}
+          Response</strong
+        >
       </div>
 
       <div class="with-outer">
@@ -64,7 +84,9 @@
       <div class="meterialimage">
         <div class="fullbgimg res-show"></div>
       </div>
-      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
+      <strong class="button_text"
+        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
+      >
     </div>
     <!--material-->
     <div
@@ -73,13 +95,23 @@
       @click="changeMeterial"
     >
       <div class="meterialimage">
-        <div :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"></div>
+        <div
+          :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"
+        ></div>
       </div>
-      <strong class="button_text">{{meterialSwitchVisiable ? 'Material hiding' : 'Display material'}}</strong>
+      <strong class="button_text">{{
+        meterialSwitchVisiable ? "Material hiding" : "Display material"
+      }}</strong>
     </div>
     <!--lock-->
     <div
-      :class="isLoked() ? 'button_area back_focus' : (isLokeEnable()?'button_area':'button_area button_grey')"
+      :class="
+        isLoked()
+          ? 'button_area back_focus'
+          : isLokeEnable()
+          ? 'button_area'
+          : 'button_area button_grey'
+      "
       v-if="!isClosed && current_model != 'Student-Paced'"
       @click="dolockPage()"
     >
@@ -99,7 +131,9 @@
           fill="#36425A"
         />
       </svg>
-      <strong class="button_text">{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong>
+      <strong class="button_text"
+        >{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong
+      >
     </div>
     <!--student paced-->
     <div
@@ -127,8 +161,12 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    
-    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
+    <el-popover
+      placement="top"
+      width="400"
+      trigger="hover"
+      class="dropdown-icon"
+    >
       <!-- :open="open"
         :openProject="openProject" 
       :reopenClass="reopenClass"-->
@@ -158,7 +196,7 @@
       </svg>
     </el-popover>
     <!--end-->
-    <div class="end_button" @click="endLesson()" v-if="!isDashboard" >
+    <div class="end_button" @click="endLesson()" v-if="!isDashboard">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
     </div>
   </div>
@@ -168,16 +206,16 @@
 <script>
 import { ClassRoomModelEnum, ModalEventsNameEnum } from "@/socket/socketEvents";
 import dashboardMenu from "./teacherDashboardMenu";
-import UploadEnter from '@/components/uploadFile/uploadEnter.vue'
+import UploadEnter from "@/components/uploadFile/uploadEnter.vue";
 export default {
   props: {
     currentPage: {
       type: Number,
-      default: 1
+      default: 1,
     },
     slide_id: {
       type: String,
-      default: ""
+      default: "",
     },
     // reopenClass: {
     //   type: Function,
@@ -186,108 +224,112 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     totalPage: {
       type: Number,
-      default: 3
+      default: 3,
     },
     isClosed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     current_model: {
       type: String,
-      default: "Insturctor-Paced"
+      default: "Insturctor-Paced",
     },
 
     current_response: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     // open: {
     //   type: Function,
     // },
     turnModel: {
-      type: Function
+      type: Function,
     },
     isDashboard: {
       type: Boolean,
-      default: false
+      default: false,
     },
     dashTipsModalVisiable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     changePage: {
-      type: Function
+      type: Function,
     },
     showDashTips: {
-      type: Function
+      type: Function,
     },
     turnOff: {
-      type: Function
+      type: Function,
     },
     // open: {
     //   type: Function,
     // },
     showResponse: {
-      type: Function
+      type: Function,
     },
     isResponseShow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // openProject: {
     //   type: Function,
     // },
     endLesson: {
-      type: Function
+      type: Function,
     },
     lockPage: {
-      type: Function
+      type: Function,
     },
     slides: {
       type: Array,
-      default: []
+      default: [],
     },
     currentItemData: {
       type: Object,
       default: () => {
         return {};
-      }
+      },
+    },
+
+    addprompt: {
+      type: Function,
     },
     changeShowMetrial: {
       type: Function,
     },
     meterialVisiable: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   watch: {
     meterialSwitchVisiable() {
       // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialSwitchVisiable)
-    }
+      this.changeShowMetrial(this.meterialSwitchVisiable);
+    },
   },
   created() {
-    this.meterialSwitchVisiable = this.meterialVisiable
+    this.meterialSwitchVisiable = this.meterialVisiable;
   },
   components: {
     dashboardMenu,
-    UploadEnter
+    UploadEnter,
   },
   data() {
     return {
       dialogVisible: false,
-      meterialSwitchVisiable: false
+      meterialSwitchVisiable: false,
     };
   },
   methods: {
     changeMeterial() {
-      this.meterialSwitchVisiable = !this.meterialSwitchVisiable
+      this.meterialSwitchVisiable = !this.meterialSwitchVisiable;
     },
     lastPage() {
       // console.log(this.currentPage);
@@ -361,14 +403,14 @@ export default {
       if (this.isLokeEnable()) {
         this.lockPage();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 strong {
-  color: #36425A;
+  color: #36425a;
   font-size: 14px;
 }
 .panel {
@@ -376,11 +418,11 @@ strong {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #D9DFE4;
+  background-color: #d9dfe4;
   box-sizing: border-box;
   padding-left: 21px;
 }
-.dash-control{
+.dash-control {
   padding-right: 50px;
 }
 .svg_right {
@@ -413,16 +455,16 @@ strong {
   background-position: 0 0;
   background-repeat: no-repeat;
 }
-.control-bar__icon.left{
+.control-bar__icon.left {
   background-image: url(../../assets/picture/arrow-r.png);
 }
-.control-bar__icon.right{
+.control-bar__icon.right {
   background-image: url(../../assets/picture/arrow-l.png);
 }
-.dash-tip{
+.dash-tip {
   background-image: url(../../assets/picture/dash-tip.png);
 }
-.more-pop{
+.more-pop {
   background-image: url(../../assets/picture/more-pop.png);
 }
 
@@ -439,7 +481,7 @@ strong {
   position: relative;
   display: none;
   font-size: 13px;
-  color: #36425A;
+  color: #36425a;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -448,7 +490,7 @@ strong {
   transition: all 0.25s ease;
 }
 .icon {
-  fill: #36425A;
+  fill: #36425a;
   cursor: pointer;
 }
 .icon:hover {
@@ -458,7 +500,7 @@ strong {
   margin-left: 20px;
 }
 .pageIndex {
-  color: #36425A;
+  color: #36425a;
   font-size: 20px;
   height: 50px;
   display: flex;
@@ -483,7 +525,7 @@ strong {
   line-height: 40px;
   overflow: hidden;
   margin-right: 20px;
-  color: #36425A;
+  color: #36425a;
   cursor: pointer;
   font-size: 14px;
 }
@@ -505,7 +547,7 @@ strong {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #36425A;
+  color: #36425a;
   overflow: hidden;
   cursor: pointer;
   padding: 3px 15px;
@@ -536,35 +578,35 @@ strong {
   margin-top: 5px;
   border-radius: 4px;
 }
-.meterialimage{
+.meterialimage {
   width: 30px;
   height: 30px;
   position: relative;
 }
-.me-show{
-  background-image:url(../../assets/picture/m-show.png)
+.me-show {
+  background-image: url(../../assets/picture/m-show.png);
 }
-.me-hide{
-  background-image:url(../../assets/picture/m-hide.png)
+.me-hide {
+  background-image: url(../../assets/picture/m-hide.png);
 }
-.res-show{
-background-image:url(../../assets/picture/hide-res.png)
+.res-show {
+  background-image: url(../../assets/picture/hide-res.png);
 }
-.icon-circle{
+.icon-circle {
   width: 10px;
   height: 10px;
   border-radius: 5px;
   display: inline-block;
   margin-right: 3px;
-  background-color: #36425A;
+  background-color: #36425a;
 }
-.icon-circle.red-icon{
-  background-color: #FF1A0E;
+.icon-circle.red-icon {
+  background-color: #ff1a0e;
 }
-.icon-circle.green-icon{
+.icon-circle.green-icon {
   background-color: rgba(21, 195, 154, 1);
 }
-.with-outer{
+.with-outer {
   padding: 3px 13px;
   border-radius: 16px;
   background-color: rgba(54, 66, 90, 0.1);

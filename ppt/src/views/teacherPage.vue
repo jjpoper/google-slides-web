@@ -47,6 +47,7 @@
           :changePage="pageChange"
           :turnModel="turnModel"
           :open="open"
+          :addprompt="addprompt"
           :showResponse="showres"
           :current_response="currentAnswerCount"
           :isResponseShow="showResponse"
@@ -239,6 +240,13 @@
         :closeBtn="closeCopyDialog"
       />
     </el-dialog>
+
+    <el-dialog :visible.sync="showNewPromptDialog" custom-class="custom-dialog">
+      <new-prompt-page
+        style="width: 1200px; height: 800px"
+        :addPPTItem="addPPTItem"
+      />
+    </el-dialog>
     <el-dialog
       :visible.sync="dashTipsModalVisiable"
       custom-class="custom-dialog"
@@ -301,6 +309,7 @@ import StudentsQsModal from "@/components/teacher/studentsQsModal.vue";
 import DashHeader from "@/components/teacher/dashHeader.vue";
 import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
 import { mapActions, mapState } from "vuex";
+import NewPromptPage from "@/components/teacher/newPromptPage.vue";
 export default {
   components: {
     teacherControlPanel,
@@ -319,6 +328,7 @@ export default {
     DashHeader,
     dashCopyDialog,
     dashTipsModal,
+    NewPromptPage,
   },
 
   /*author: "yujj085@gmail.com"
@@ -377,6 +387,8 @@ type: "slide"*/
       dashTipsModalVisiable: false,
       firstJoined: true,
       copyLinkStr: "",
+      showNewPromptDialog: false,
+      inputDialog: false,
     };
   },
   mounted() {
@@ -497,6 +509,17 @@ type: "slide"*/
       "updateOneRemarkItem",
       "deleteOneRemarkItem",
     ]),
+    addprompt() {
+      console.log("新增prompt!!");
+      this.showNewPromptDialog = true;
+    },
+    addPPTItem(item) {
+      console.log(item);
+    },
+    showInputDialog() {
+      console.log("showInputDialog");
+      this.inputDialog = true;
+    },
     showDashTips() {
       this.dashTipsModalVisiable = !this.dashTipsModalVisiable;
     },
@@ -1209,20 +1232,20 @@ type: "slide"*/
       //   hideLoading();
       // }
       queryRefreshResult(code, token)
-      .then((res) => {
-        if (res.data.status === "processing") {
-          setTimeout(function() {
-            _this.queryResult(code, token);
-          }, 1000);
-        } else {
+        .then((res) => {
+          if (res.data.status === "processing") {
+            setTimeout(function () {
+              _this.queryResult(code, token);
+            }, 1000);
+          } else {
+            this.getAllSlides();
+            hideLoading();
+          }
+        })
+        .catch((res) => {
           this.getAllSlides();
           hideLoading();
-        }
-      })
-      .catch((res) => {
-        this.getAllSlides();
-        hideLoading();
-      });
+        });
     },
     getAllSlides() {
       // 初始化评论数据
@@ -1716,15 +1739,14 @@ type: "slide"*/
   // padding: 0;
   // width: 937px;
   // height: 770px;
-  // background-color: #f00fff00;
+  background-color: #f00fff00;
+  border: 0px solid #00000000;
   // border-radius: 8px;
   .el-dialog__header {
     display: none;
   }
   .el-dialog__body {
     padding: 0;
-    height: 100%;
-    width: 100%;
   }
 }
 </style>
