@@ -18,17 +18,52 @@
       <span class="title_2">Join at join.classcipe.com</span>
       <div class="class_number">{{ getPass }}</div>
 
-      <!-- <div class="opt--item" style="margin-top: 20px">
+      <div class="opt--item" style="margin-top: 20px">
         <span class="opt--text">Option</span>
-        <div class="opt--value"></div>
-      </div>-->
+        <el-popover placement="bottom" width="300" v-model="visible">
+          <div class="room--area">
+            <div
+              v-for="(item, index) in roomItems"
+              :key="index"
+              class="room--item"
+              @click="selectRoom(item)"
+            >
+              {{ item.room_name }}
+            </div>
+
+            <div class="create--room">
+              <el-input
+                placeholder="create new class"
+                v-model="newRoomName"
+                style="
+                  width: 220px;
+                  height: 40px;
+                  border: 1px solid #9f9f9f;
+                  border-radius: 6px;
+                "
+              />
+              <div class="create--confirm" @click="createNewRoomConfirm">
+                Confirm
+              </div>
+            </div>
+          </div>
+          <div slot="reference" class="opt--value room--item">
+            {{ room }}
+          </div>
+        </el-popover>
+      </div>
 
       <div class="opt--item">
         <span class="opt--text">Time</span>
         <el-select
           v-model="time_type"
           placeholder="--Select--"
-          style="width:300px;height:40px; border: 1px solid #d8d8d8;border-radius: 6px;"
+          style="
+            width: 315px;
+            height: 40px;
+            border: 1px solid #d8d8d8;
+            border-radius: 6px;
+          "
         >
           <el-option
             v-for="item in options"
@@ -39,12 +74,17 @@
         </el-select>
       </div>
 
-      <div class="opt--item" v-if="time_type==2">
+      <div class="opt--item" v-if="time_type == 2">
         <span class="opt--text"></span>
         <el-select
           v-model="time_down"
           placeholder="--Select--"
-          style="width:300px;height:40px; border: 1px solid #d8d8d8;border-radius: 6px;"
+          style="
+            width: 315px;
+            height: 40px;
+            border: 1px solid #d8d8d8;
+            border-radius: 6px;
+          "
         >
           <el-option
             v-for="item in timeCounts"
@@ -55,7 +95,7 @@
         </el-select>
       </div>
 
-      <div class="opt--item" v-if="time_type==1">
+      <div class="opt--item" v-if="time_type == 1">
         <span class="opt--text"></span>
 
         <el-date-picker
@@ -64,15 +104,22 @@
           placeholder="--Select--"
           format="yyyy-MM-dd HH:mm:ss"
           :picker-options="pickerOptionsStart"
-          style="width:300px;height:40px; border: 1px solid #d8d8d8;border-radius: 6px;"
+          style="
+            width: 315px;
+            height: 40px;
+            border: 1px solid #d8d8d8;
+            border-radius: 6px;
+          "
         ></el-date-picker>
       </div>
 
       <div class="opt--item">
         <span class="opt--text"></span>
-        <div style="display: flex; width: 300px; align-items: center">
+        <div style="display: flex; width: 315px; align-items: center">
           <div style="flex: 1"></div>
-          <div class="anonymous">Anonymous logins</div>
+          <div class="anonymous" style="margin-right: 10px">
+            Anonymous logins
+          </div>
           <div
             class="anonymous--switch"
             :style="
@@ -82,10 +129,18 @@
             "
             @click="anonymousBtnClicked"
           >
-            <div class="white--flag" style="margin-left: 3px" v-if="!canAnonymous"></div>
+            <div
+              class="white--flag"
+              style="margin-left: 3px"
+              v-if="!canAnonymous"
+            ></div>
             <div style="flex: 1"></div>
 
-            <div class="white--flag" style="margin-right: 3px" v-if="canAnonymous"></div>
+            <div
+              class="white--flag"
+              style="margin-right: 3px"
+              v-if="canAnonymous"
+            ></div>
           </div>
         </div>
       </div>
@@ -100,7 +155,10 @@
           "
           @click="onCopyLink(canAnonymous)"
         >
-          <img src="../../assets/picture/link_icon.png" style="width: 40px; height: 40px" />
+          <img
+            src="../../assets/picture/link_icon.png"
+            style="width: 40px; height: 40px"
+          />
           <div class="link--text">copy link</div>
         </div>
       </div>
@@ -109,64 +167,73 @@
 </template>
 
 
+
 <script>
 export default {
   props: {
     copyLink: {
-      type: Function
+      type: Function,
     },
     url: {
       type: String,
-      default: ""
+      default: "",
     },
     enterClassroom: {
-      type: Function
+      type: Function,
     },
     closeBtn: {
-      type: Function
+      type: Function,
     },
     hindeTimeDialog: {
-      type: Function
-    }
+      type: Function,
+    },
   },
   data() {
     return {
       canAnonymous: false,
+      room: "--Select--",
+      newRoomName: "",
+      inputDialog: false,
+      roomItems: [
+        { room_id: 14, room_name: "my class 1" },
+        { room_id: 17, room_name: "my class 2" },
+      ],
+      visible: false,
       show_url: "",
       time_type: 0,
       deadline: "",
       options: [
         {
           value: 0,
-          label: "--Select--"
+          label: "--Select--",
         },
         {
           value: 1,
-          label: "Deadline mode"
+          label: "Deadline mode",
         },
         {
           value: 2,
-          label: "Count down mode"
-        }
+          label: "Count down mode",
+        },
       ],
-      time_dowm: 0,
+      time_down: "",
       timeCounts: [
         { value: 15, label: "15  min" },
         { value: 30, label: "30  min" },
         { value: 45, label: "45  min" },
         { value: 60, label: "60  min" },
-        { value: 70, label: "70  min" }
+        { value: 70, label: "70  min" },
       ],
       pickerOptionsStart: {
-        disabledDate: time => {
+        disabledDate: (time) => {
           let date = Date.now();
           //- 8.64e7
           return time.getTime() < Date.now() - 8.64e7; /*今天及以后*/
           // return (
           //   time.getTime() > Date.now() - 8.64e6
           // ); /*今天及之前，注意数字不一样*/
-        }
-      }
+        },
+      },
     };
   },
   created() {
@@ -180,20 +247,36 @@ export default {
   computed: {
     getPass() {
       return this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
-    }
+    },
   },
   methods: {
     anonymousBtnClicked() {
       this.canAnonymous = !this.canAnonymous;
     },
+    selectRoom(item) {
+      this.room = item.room_name;
+      this.visible = false;
+    },
     setDeadLine() {
-      this.hindeTimeDialog(this.time_type, this.deadline, this.time_dowm);
+      this.hindeTimeDialog(this.time_type, this.deadline, this.time_down);
     },
     onCopyLink(canAnonymous) {
       this.copyLink(canAnonymous);
       this.setDeadLine();
-    }
-  }
+    },
+    createNewRoomConfirm() {
+      if (!this.newRoomName || this.newRoomName.length < 1) {
+        this.$message.error("Please input a name!");
+        return;
+      }
+      this.visible = false;
+      this.room = this.newRoomName;
+      var roomItem = {};
+      roomItem.room_name = this.newRoomName;
+      this.roomItems.push(roomItem);
+      this.newRoomName = "";
+    },
+  },
 };
 </script>
 
@@ -207,6 +290,32 @@ export default {
   color: #989da1;
   opacity: 1;
 }
+.create--confirm {
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  height: 40px;
+  align-items: center;
+  border-radius: 6px;
+}
+.create--confirm:hover {
+  color: white;
+  background-color: #15c39a;
+}
+.create--room {
+  width: 300px;
+  height: 40px;
+  cursor: pointer;
+  background-color: #f8f8f8;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+}
+/* .create--room:hover {
+  color: white;
+  background-color: #15c39a;
+} */
 .link--area {
   width: 390px;
   display: flex;
@@ -248,6 +357,19 @@ export default {
   flex: 1;
   border: 1px solid #d8d8d8;
   border-radius: 6px;
+}
+.room--item {
+  height: 40px;
+  align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 15px;
+  cursor: pointer;
+}
+.room--area {
+  display: flex;
+  flex-direction: column;
 }
 .opt--text {
   height: 21px;

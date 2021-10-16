@@ -191,14 +191,25 @@
       />
     </el-popover>
 
-    <img
-      src="../assets/web@2x.png"
-      width="75"
-      height="35"
-      class="web_site_icon"
-      v-if="hasWebsite"
-      @click="openWebsitePage"
-    />
+    <div class="web_site_icon">
+      <el-popover
+        placement="top"
+        width="200"
+        trigger="hover"
+        :content="item.url"
+        v-for="(item, index) in websiteList"
+        :key="index"
+      >
+        <img
+          src="../assets/web@2x.png"
+          width="75"
+          height="35"
+          slot="reference"
+          style="margin-left: 20px"
+          @click="openWebsitePage(item)"
+        />
+      </el-popover>
+    </div>
 
     <div id="diycolor_comment"></div>
   </div>
@@ -304,22 +315,16 @@ export default {
       currentPageIndex: (state) => state.student.currentPageIndex,
       studentAllSlides: (state) => state.student.studentAllSlides,
     }),
-    hasWebsite() {
+    websiteList() {
+      let list = [];
       if (this.slides[this.currentPageIndex]) {
         let elements = this.slides[this.currentPageIndex].elements;
-        console.log("computed website", elements);
-        if (elements) {
-          for (let i = 0; i < elements.length; i++) {
-            if (elements[i].type == "website") {
-              //    this.hasWebsite = true;
-              this.websiteUrl = elements[i].url;
-              return true;
-            }
-          }
+        console.log("current page website urls::", elements);
+        if (elements && elements.length > 0) {
+          list = elements.filter((item) => item.type == "website");
         }
       }
-      //  this.hasWebsite = false;
-      return false;
+      return list;
     },
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
@@ -413,6 +418,13 @@ export default {
       // console.log("set elements");
       this.doAfterPageChange();
       this.changeTipByWatchSlides();
+      // let elements = this.slides[this.currentPageIndex].elements;
+      // if (elements && elements.length > 0) {
+      //   this.websiteList = elements.filter((item) => itme.type == "website");
+      //   console.log("current page website urls::", this.websiteList);
+      // } else {
+      //   this.websiteList = [];
+      // }
     },
     studentAllSlides() {
       this.changeTipByWatchSlides();
@@ -459,7 +471,7 @@ export default {
         return;
       }
 
-      anmonymousLogin(name,group_id).then((res) => {
+      anmonymousLogin(name, group_id).then((res) => {
         console.log(res.token);
         this.token = res.token;
         this.initWithToken();
@@ -503,11 +515,11 @@ export default {
         }
       }
     },
-    openWebsitePage() {
-      console.log(this.websiteUrl);
+    openWebsitePage(item) {
+      console.log("open", item.url);
       var strWindowFeatures =
         "width=1500,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=100";
-      window.open(this.websiteUrl, "_blank", strWindowFeatures);
+      window.open(item.url, "_blank", strWindowFeatures);
     },
     loadDiyPainter() {
       this.$nextTick(() => {
@@ -1200,6 +1212,7 @@ export default {
   top: 10px;
   right: 10%;
   z-index: 9999;
+  display: flex;
 }
 .tip_area_popover {
   cursor: pointer;

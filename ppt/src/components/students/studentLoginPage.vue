@@ -34,7 +34,7 @@
       </text>
     </svg>
 
-    <div class="line--text" v-if="false">
+    <div class="line--text">
       <span class="class--text">Class</span>
       <span class="class--value">Myp12</span>
     </div>
@@ -84,9 +84,7 @@
 </template>
 
 <script>
-import {
-  getAllGroupMember
-} from "../../model/index";
+import { getAllGroupMember } from "../../model/index";
 export default {
   props: {
     joinRoom: {
@@ -100,8 +98,7 @@ export default {
       default: "",
     },
   },
-  computed: {
-  },
+  computed: {},
   data() {
     return {
       group: "",
@@ -156,7 +153,7 @@ export default {
   cursor: pointer;
 }
 .group--text {
-  width: 36px;
+  width: 60px;
   height: 14px;
   font-size: 12px;
   font-family: Inter-Bold;
@@ -196,7 +193,6 @@ export default {
   margin-left: 20px;
 }
 .class--text {
-  width: 40px;
   height: 19px;
   font-size: 16px;
   font-family: FZCuYuan-M03S;
@@ -225,7 +221,7 @@ export default {
 }
 .page {
   width: 520px;
-  height: 600px;
+  height: 660px;
   background-color: white;
   border-radius: 30px;
   display: flex;
