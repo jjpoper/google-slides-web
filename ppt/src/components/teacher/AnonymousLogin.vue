@@ -28,7 +28,7 @@
               class="room--item"
               @click="selectRoom(item)"
             >
-              {{ item.room_name }}
+              {{ item.name }}
             </div>
 
             <div class="create--room">
@@ -169,6 +169,7 @@
 
 
 <script>
+import { addRealClass, getRealClass, setRealClass } from "../../model/index";
 export default {
   props: {
     copyLink: {
@@ -193,11 +194,9 @@ export default {
       canAnonymous: false,
       room: "--Select--",
       newRoomName: "",
+      currentRoomId: -1,
       inputDialog: false,
-      roomItems: [
-        { room_id: 14, room_name: "my class 1" },
-        { room_id: 17, room_name: "my class 2" },
-      ],
+      roomItems: [],
       visible: false,
       show_url: "",
       time_type: 0,
@@ -243,6 +242,11 @@ export default {
     } else {
       this.show_url = this.url;
     }
+
+    getRealClass("yujj085@gmail.com").then((res) => {
+      console.log(res);
+      this.roomItems = res;
+    });
   },
   computed: {
     getPass() {
@@ -254,13 +258,26 @@ export default {
       this.canAnonymous = !this.canAnonymous;
     },
     selectRoom(item) {
-      this.room = item.room_name;
+      this.room = item.name;
       this.visible = false;
+      this.currentRoomId = item.id;
     },
     setDeadLine() {
       this.hindeTimeDialog(this.time_type, this.deadline, this.time_down);
     },
     onCopyLink(canAnonymous) {
+      if (this.currentRoomId != -1) {
+        setRealClass(
+          this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
+          this.canAnonymous ? 1 : 0,
+          this.currentRoomId
+        ).then((res) => {});
+      } else {
+        setRealClass(
+          this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
+          this.canAnonymous ? 1 : 0
+        ).then((res) => {});
+      }
       this.copyLink(canAnonymous);
       this.setDeadLine();
     },
@@ -270,11 +287,25 @@ export default {
         return;
       }
       this.visible = false;
-      this.room = this.newRoomName;
-      var roomItem = {};
-      roomItem.room_name = this.newRoomName;
-      this.roomItems.push(roomItem);
-      this.newRoomName = "";
+      for (let i = 0; i < this.roomItems.length; i++) {
+        if (this.roomItems[i].name == this.newRoomName) {
+          this.room = this.newRoomName;
+          this.newRoomName = "";
+          this.currentRoomId = this.roomItems[i].id;
+          return;
+        }
+      }
+      addRealClass("yujj085@gmail.com", this.newRoomName).then((res) => {
+        console.log(res);
+        if (res.code == "ok") {
+          this.room = this.newRoomName;
+          var roomItem = {};
+          roomItem.name = this.newRoomName;
+          roomItem.id = res.data;
+          this.roomItems.push(roomItem);
+          this.newRoomName = "";
+        }
+      });
     },
   },
 };

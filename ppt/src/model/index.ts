@@ -529,3 +529,32 @@ export const getAllGroupMember = async (classId: string): Promise<any[]> => {
   }
   return result
 }
+
+
+
+export const addRealClass = async (mail: string, class_name: string) => {
+  const data = await axios.post(`${PPT.requestUrl}real_class/add`, {
+    user_id: mail,
+    name: class_name
+  })
+  return data.data;
+}
+
+
+export const getRealClass = async (mail: string) => {
+  const data = await axios.post(`${PPT.requestUrl}real_class/get_all`, {
+    user_id: mail
+  })
+  return data.data.data;
+}
+
+
+export const setRealClass = async (id: string, anonymous: number, real_id: number) => {
+  const data = await axios.post(`${PPT.requestUrl}class/set`, {
+    class_id: id,
+    can_anonymous_sign_in: anonymous,
+    real_class_id: real_id
+  })
+  console.log(data.data);
+  return data.data.code;
+}
