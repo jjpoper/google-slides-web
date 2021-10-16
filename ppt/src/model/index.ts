@@ -74,6 +74,18 @@ export const queryClassStatus = async (classId: string, _token: string) => {
   return res;
 }
 
+export const queryClassStatusWithoutToken = async (classId: string) => {
+  // console.log(classId)
+  const data = await axios.post(`${PPT.requestUrl}slide/get_class`, {
+    class_id: classId,
+    //  token: _token,
+  })
+  let res = data.data.data;
+  return res;
+}
+
+
+
 //slide/get_task_result
 
 
@@ -489,7 +501,7 @@ export const deleteGroup = async (id: string): Promise<boolean> => {
   return code === 'ok';
 }
 
-export const updateGroupName = async (name: string, id: string,): Promise<boolean> => {
+export const updateGroupName = async (name: string, id: string, ): Promise<boolean> => {
   const data = await axios.post(`${PPT.requestUrl}group/update`, {
     id,
     name
