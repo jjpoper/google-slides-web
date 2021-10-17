@@ -79,10 +79,7 @@
     <comment-modal />
     <div class="top_btn" v-if="!isDashboard">
       <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
       <div style="display: flex">
         <div class="share_room" @click="copyUrl()">Share Class</div>
@@ -101,17 +98,18 @@
               d="M864 159.872L160 160c-17.696 0-32 14.176-32 31.872v448a32 32 0 0 0 32 32h704a32 32 0 0 0 32-32v-448a32 32 0 0 0-32-32zM864 640H160V191.872h704V640z"
               fill="#333333"
               p-id="2515"
-            ></path>
+            />
             <path
               d="M928 32H96a96 96 0 0 0-96 96v640a95.904 95.904 0 0 0 95.68 95.936H416v38.944l-199.744 25.952A31.968 31.968 0 0 0 224 991.872h576a32 32 0 0 0 7.744-63.072L608 902.88v-38.944h320.32A95.904 95.904 0 0 0 1024 768V128a96 96 0 0 0-96-96z m32 736c0 17.632-14.368 32-32 32H96c-17.664 0-32-14.368-32-32V128a32 32 0 0 1 32-32h832c17.632 0 32 14.336 32 32v640z"
               fill="#333333"
               p-id="2516"
-            ></path>
+            />
           </svg>
         </div>
-        <div class="number_info" @click="showStudents()">
-          Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}
-        </div>
+        <div
+          class="number_info"
+          @click="showStudents()"
+        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
         <el-tooltip content="mark up and send comment" placement="top">
           <div class="readchat comment" v-if="isDashboard">
             <el-switch
@@ -261,6 +259,7 @@
         :copyLink="copyLink"
         :enterClassroom="enterClassroom"
         :closeBtn="closeCopyDialog"
+        :user_id="uid"
       />
     </el-dialog>
 
@@ -271,11 +270,7 @@
         :closeBtn="closeNewPrompt"
       />
     </el-dialog>
-    <el-dialog
-      :visible.sync="dashTipsModalVisiable"
-      custom-class="custom-dialog"
-      width="80%"
-    >
+    <el-dialog :visible.sync="dashTipsModalVisiable" custom-class="custom-dialog" width="80%">
       <dash-tips-modal :close="showDashTips" :isTeacher="false" />
     </el-dialog>
     <div
@@ -309,12 +304,12 @@ import {
   getOnlineUsers,
   getAVComment,
   saveUserConfig,
-  getAllGroupMember,
+  getAllGroupMember
 } from "../model/index";
 import {
   initTeacherData,
   getTeacherCurrentPageAnswerList,
-  addTeacherData,
+  addTeacherData
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
@@ -322,13 +317,13 @@ import { createSo, setTeacherWxBaseParams } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   getTeacherStoreToken,
   saveTeacherStoreToken,
   saveStepOneStatus,
-  initTeacherStoreSlideId,
+  initTeacherStoreSlideId
 } from "@/model/store.teacher";
 import teacherControlPanel from "../components/teacher/teacherControlPanel";
 import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
@@ -367,7 +362,7 @@ export default {
     DashHeader,
     dashCopyDialog,
     dashTipsModal,
-    NewPromptPage,
+    NewPromptPage
   },
 
   /*author: "yujj085@gmail.com"
@@ -428,11 +423,11 @@ type: "slide"*/
       copyLinkStr: "",
       shareing: false,
       showNewPromptDialog: false,
-      inputDialog: false,
+      inputDialog: false
     };
   },
   mounted() {
-    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
 
@@ -451,19 +446,19 @@ type: "slide"*/
       }
     );
 
-    EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, (url) => {
+    EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, url => {
       this.addMediaList(url);
     });
-    EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, data => {
       this.updateMediaList(data);
     });
-    EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, (data) => {
+    EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, data => {
       this.deleteMedia(data);
     });
   },
   computed: {
     ...mapState({
-      currentPageIndex: (state) => state.student.currentPageIndex,
+      currentPageIndex: state => state.student.currentPageIndex
     }),
     currentPageId() {
       if (this.slides[this.currentPageIndex]) {
@@ -486,7 +481,7 @@ type: "slide"*/
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
         return this.slides[this.currentPageIndex].elements.filter(
-          (item) => item.type !== "tip" && item.position
+          item => item.type !== "tip" && item.position
         );
       } else {
         return [];
@@ -495,12 +490,12 @@ type: "slide"*/
     filterTips() {
       if (this.slides[this.currentPageIndex]) {
         return this.slides[this.currentPageIndex].elements.filter(
-          (item) => item.type === "tip"
+          item => item.type === "tip"
         );
       } else {
         return [];
       }
-    },
+    }
   },
   watch: {
     studentList() {
@@ -508,10 +503,10 @@ type: "slide"*/
     },
     currentPageIndex() {
       this.sendPageChangeToStudents();
-    },
+    }
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { id } = vm.$route.params;
       const { token, p } = to.query;
       // vm.slide_id = slide_id;
@@ -539,7 +534,7 @@ type: "slide"*/
       "setStudentPageIndex",
       "updateAllAnswerdList",
       "setAllAnswerdList",
-      "deleteOnAnswerById",
+      "deleteOnAnswerById"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -547,7 +542,7 @@ type: "slide"*/
       "updateLatestRemarkId",
       "addOneRemarkItem",
       "updateOneRemarkItem",
-      "deleteOneRemarkItem",
+      "deleteOneRemarkItem"
     ]),
     addprompt() {
       console.log("新增prompt!!");
@@ -572,7 +567,7 @@ type: "slide"*/
         page_id: page_id,
         url: url,
         type: type,
-        position: { x: 0, y: 0, w: 0, h: 0 },
+        position: { x: 0, y: 0, w: 0, h: 0 }
       });
       this.currentSo.emit(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
@@ -667,7 +662,7 @@ type: "slide"*/
                 answer,
                 star: responseList[i].star,
                 show: responseList[i].show,
-                key: user_id,
+                key: user_id
               });
               const data = this.currentItemData;
               EventBus.$emit("choice", { data });
@@ -683,7 +678,7 @@ type: "slide"*/
                 user_name,
                 star: responseList[i].star,
                 show: responseList[i].show,
-                key: user_id,
+                key: user_id
               });
               EventBus.$emit("draw", { user_id, content, content1, user_name });
             } else if (
@@ -704,7 +699,7 @@ type: "slide"*/
                 item_id,
                 star: responseList[i].star,
                 show: responseList[i].show,
-                key: `${item_id}_${user_id}`,
+                key: `${item_id}_${user_id}`
               });
               EventBus.$emit(itemData[0].type, { user_id, pageId });
             }
@@ -729,7 +724,7 @@ type: "slide"*/
       value,
       teacherName,
       commentType,
-      answertime,
+      answertime
     }) {
       const itemData = JSON.stringify({
         type: SocketEventsEnum.TEACHER_COMMENT,
@@ -744,7 +739,7 @@ type: "slide"*/
         teacherName,
         slideIndex: parseInt(this.currentPageIndex) + 1,
         room: this.slide_id,
-        answertime,
+        answertime
       });
       // // console.log(itemData);
       this.currentSo.emit(
@@ -788,7 +783,7 @@ type: "slide"*/
     },
 
     goToLogin() {
-      getTeacherLoginUrl().then((url) => {
+      getTeacherLoginUrl().then(url => {
         // console.log(url);
         if (url) {
           location.href = url;
@@ -823,21 +818,21 @@ type: "slide"*/
     },
     startConnectRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.initShortLinkConfig(res);
           this.classRoomInfo = res;
           if (this.directFromPlugin) {
           }
           this.afterConnectRoom();
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
     },
     afterConnectRoom() {
       this.joinRoom();
       requestRefreshPPT(this.slide_id, this.token)
-        .then((res) => {
+        .then(res => {
           // // console.log(res);
           if (res.data.task_id) {
             let code = res.data.task_id;
@@ -847,13 +842,13 @@ type: "slide"*/
             hideLoading();
           }
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res, "net request error!!");
           this.getAllSlides();
           hideLoading();
         });
       getOnlineUsers(this.token, this.class_id)
-        .then((res) => {
+        .then(res => {
           if (res.code == "ok") {
             let list = res.data;
             for (let i = 0; i < list.length; i++) {
@@ -883,10 +878,10 @@ type: "slide"*/
             }
           }
         })
-        .catch((res) => {});
+        .catch(res => {});
 
       getAVComment(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.code == "ok") {
             this.markupslist = res.data;
@@ -901,11 +896,11 @@ type: "slide"*/
             this.setAllRemarkList(marks);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
 
-      getAllGroupMember(this.class_id).then((list) => {
+      getAllGroupMember(this.class_id).then(list => {
         console.log(this.class_id);
         this.setAllGroups(list);
       });
@@ -928,7 +923,7 @@ type: "slide"*/
         classId: this.class_id,
         token: this.token,
         uid: this.uid,
-        uname: teacher.name,
+        uname: teacher.name
       });
     },
     msgListener(d) {
@@ -1040,13 +1035,19 @@ type: "slide"*/
           this.classRoomInfo.lock_page.push(page);
         } else {
           this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-            (item) => item != page
+            item => item != page
           );
         }
       } else if (d.type == SocketEventsEnum.STAR_OR_HIDE_ANSWER) {
         if (d.params) {
-          const { pageId, itemId, title, studentId, nextStatus, type } =
-            d.params;
+          const {
+            pageId,
+            itemId,
+            title,
+            studentId,
+            nextStatus,
+            type
+          } = d.params;
           this.handleStarOrHide(
             pageId,
             itemId,
@@ -1087,13 +1088,13 @@ type: "slide"*/
         this.markupslist.push(d);
         this.addOneRemarkItem({
           ...d,
-          ...d.data,
+          ...d.data
         });
         this.getResponeCount();
         return;
       } else if (d.mtype === SocketEventsEnum.STUDENT_DELETE_PPT) {
         // 删除评论ppt消息
-        const index = this.markupslist.findIndex((item) => item.id === d.id);
+        const index = this.markupslist.findIndex(item => item.id === d.id);
         // console.log("删除", index);
         this.markupslist.splice(index, 1);
         this.deleteOneRemarkItem(index);
@@ -1104,7 +1105,7 @@ type: "slide"*/
         this.updateOneRemarkItem({
           ...d,
           ...d.ppt_comment,
-          id: d.ppt_comment_id,
+          id: d.ppt_comment_id
         });
         this.$forceUpdate();
         return;
@@ -1115,13 +1116,13 @@ type: "slide"*/
         // const page_id = this.currentPageId
         this.slides[this.currentPageIndex].elements.push({
           id: d.id,
-          ...d.data,
+          ...d.data
         });
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
         // this.slides[index].elements.push(d.data)
         const { id } = d.data;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex((item) => id === item.id);
+        const itemIndex = list.findIndex(item => id === item.id);
         const nextData = { id: d.id, ...d.data };
         if (!window.isWindowActive) {
           this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
@@ -1149,7 +1150,7 @@ type: "slide"*/
         // this.slides[index].elements.push(d.data)
         const { id } = d;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex((item) => id === item.id);
+        const itemIndex = list.findIndex(item => id === item.id);
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
@@ -1178,7 +1179,7 @@ type: "slide"*/
           star: false,
           show: true,
           key: user_id,
-          ...d,
+          ...d
         });
         const data = this.currentItemData;
         EventBus.$emit("choice", { data });
@@ -1196,7 +1197,7 @@ type: "slide"*/
           star: false,
           show: true,
           key: `${item_id}_${user_id}`,
-          ...d,
+          ...d
         });
         EventBus.$emit(d.type, { user_id, page_id, item_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
@@ -1209,7 +1210,7 @@ type: "slide"*/
           show: true,
           key: user_id,
           user_name,
-          ...d,
+          ...d
         });
         EventBus.$emit("draw", { user_id, content, content1, user_name });
       } else if (d.type == SocketEventsEnum.MEDIA_INPUT) {
@@ -1275,9 +1276,9 @@ type: "slide"*/
       //   hideLoading();
       // }
       queryRefreshResult(code, token)
-        .then((res) => {
+        .then(res => {
           if (res.data.status === "processing") {
-            setTimeout(function () {
+            setTimeout(function() {
               _this.queryResult(code, token);
             }, 1000);
           } else {
@@ -1285,7 +1286,7 @@ type: "slide"*/
             hideLoading();
           }
         })
-        .catch((res) => {
+        .catch(res => {
           this.getAllSlides();
           hideLoading();
         });
@@ -1295,7 +1296,7 @@ type: "slide"*/
       initTeacherCommentData(this.class_id, this.token);
       Promise.all([
         initTeacherData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, { pages: list, elements = [] }]) => {
         // console.log(list);
         // vuex缓存答案
@@ -1305,7 +1306,7 @@ type: "slide"*/
         this.slides = list;
         // vuex 缓存全局slides
         this.setStudentAllSlides(list);
-        this.allAddedMediaList = elements.filter((item) => item.type !== "tip");
+        this.allAddedMediaList = elements.filter(item => item.type !== "tip");
         // this.allTips = elements.filter(item => item.type === "tip");
         this.getItemData();
         for (let i = 0; i < list.length; i++) {
@@ -1331,14 +1332,14 @@ type: "slide"*/
       const { page_id } = this.currentItemData;
       if (type !== "comment") {
         let list = this.$store.state.student.allAnswerList.filter(
-          (item) => item.page_id === page_id
+          item => item.page_id === page_id
         );
         // console.log(list, "lentth");
         return list;
       } else {
         // comment remark 特殊，数据不在answer内
         let list = this.$store.state.remark.allRemarks.filter(
-          (item) => item.page_id === page_id
+          item => item.page_id === page_id
         );
         return list;
       }
@@ -1522,7 +1523,7 @@ type: "slide"*/
       showLoading();
 
       endClassRoomReq(this.token, name, this.class_id)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           let _this = this;
           this.confirmCloseDialogVisible = false;
@@ -1530,7 +1531,7 @@ type: "slide"*/
             this.emitSo(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
-            setTimeout(function () {
+            setTimeout(function() {
               hideLoading();
               let url =
                 "https://docs.google.com/presentation/d/" + _this.slide_id;
@@ -1538,7 +1539,7 @@ type: "slide"*/
             }, 2000);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
           this.$message("error", "Close Session error");
           hideLoading();
@@ -1554,7 +1555,7 @@ type: "slide"*/
         this.classRoomInfo.lock_page.push(page_id);
       } else {
         let pages = this.classRoomInfo.lock_page.filter(
-          (item) => item != page_id
+          item => item != page_id
         );
         islocked = this.classRoomInfo.lock_page.length == pages.length;
         if (islocked) {
@@ -1617,7 +1618,7 @@ type: "slide"*/
     //重新开启课堂
     _reopenClass() {
       reopenClass(this.token, this.class_id)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
@@ -1632,7 +1633,7 @@ type: "slide"*/
             }
           }
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
     },
@@ -1761,10 +1762,10 @@ type: "slide"*/
     hideStepOne() {
       saveStepOneStatus(this.classRoomInfo.author, "true");
       saveUserConfig(this.token, "dashboard_step_one_hide", "1")
-        .then((res) => {
+        .then(res => {
           // console.log(res);
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
       this.stepTwoDialog = true;
@@ -1777,12 +1778,12 @@ type: "slide"*/
       openShare(() => {
         this.$refs["screen-share"].srcObject = null;
         this.shareing = false;
-      }).then((stream) => {
+      }).then(stream => {
         this.$refs["screen-share"].srcObject = stream;
         this.shareing = true;
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

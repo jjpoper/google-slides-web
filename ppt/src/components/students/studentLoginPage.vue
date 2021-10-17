@@ -34,9 +34,9 @@
       </text>
     </svg>
 
-    <div class="line--text">
+    <div class="line--text" v-if="classRoomInfo">
       <span class="class--text">Class</span>
-      <span class="class--value">Myp12</span>
+      <span class="class--value">{{classRoomInfo.real_class_name}}</span>
     </div>
 
     <div class="line--item">
@@ -61,14 +61,8 @@
       @mouseleave="onNameMouseStatus(false)"
     >
       <div class="group--text">NAME</div>
-      <div class="name--holder" v-if="!nameMouseStatus && !name">
-        Enter name
-      </div>
-      <el-input
-        placeholder="Enter name"
-        v-model="name"
-        v-if="nameMouseStatus || name"
-      ></el-input>
+      <div class="name--holder" v-if="!nameMouseStatus && !name">Enter name</div>
+      <el-input placeholder="Enter name" v-model="name" v-if="nameMouseStatus || name"></el-input>
     </div>
 
     <div class="btn--class" @click="joinRoom(name, group)">Join now</div>
@@ -84,19 +78,22 @@
 </template>
 
 <script>
-import { getAllGroupMember } from "../../model/index";
+import {
+  getAllGroupMember,
+  queryClassStatusWithoutToken
+} from "../../model/index";
 export default {
   props: {
     joinRoom: {
-      type: Function,
+      type: Function
     },
     googleLogin: {
-      type: Function,
+      type: Function
     },
     class_id: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   computed: {},
   data() {
@@ -105,14 +102,26 @@ export default {
       name: "",
       allGroups: [],
       nameMouseStatus: false,
+      classRoomInfo: null
     };
   },
 
   created() {
-    getAllGroupMember(this.class_id).then((list) => {
+    getAllGroupMember(this.class_id).then(list => {
       console.log(this.class_id, list);
       this.allGroups = list;
     });
+
+    queryClassStatusWithoutToken(this.class_id)
+      .then(res => {
+        this.classRoomInfo = res;
+        console.log(this.classRoomInfo);
+        this.initRoomConfig(res);
+        this.afterConnectRoom();
+      })
+      .catch(res => {
+        // console.log(res);
+      });
   },
 
   methods: {
@@ -120,8 +129,8 @@ export default {
     onNameMouseStatus(status) {
       this.nameMouseStatus = status;
       console.log(this.allGroups);
-    },
-  },
+    }
+  }
 };
 </script>
 
