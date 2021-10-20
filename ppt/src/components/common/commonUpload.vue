@@ -1,9 +1,9 @@
 <template>
-  <div class="upload-outer">
-    <img src="../../assets/picture/add.png" class="upload-button" />
+  <div class="upload-file">
     <input
       class="upload-file"
-      type="file" accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*"
+      type="file"
+      :accept="accept"
       @change="onUpload"/>
       <el-dialog
         v-if="progress > 0"
@@ -28,12 +28,17 @@ export default {
     onSuccess: {
       type: Function,
       default: () => null
+    },
+    accept: {
+      type: String,
+      default: '.doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*'
     }
   },
   methods: {
     onUpload(e) {
       const file = e.target.files[0]
       console.log(file)
+      this.progress = 0
       upFireBaseFile(file, this.onProgressUpLoad).then((result) => {
         this.progress = 0
         this.onSuccess(file, result)
@@ -46,19 +51,6 @@ export default {
 }
 </script>
 <style scoped>
-.upload-outer{
-  width: 60px;
-  height: 60px;
-  box-sizing: border-box;
-  padding: 10px;
-  cursor: pointer;
-  position: relative;
-}
-.upload-button{
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
 .upload-file{
   position: absolute;
   width: 100%;
@@ -66,5 +58,6 @@ export default {
   top: 0;
   left: 0;
   opacity: 0;
+  cursor: pointer;
 }
 </style>

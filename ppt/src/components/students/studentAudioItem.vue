@@ -12,7 +12,10 @@
         </div>
       </el-tooltip>
       <el-tooltip content="Upload meterial" placement="top">
-        <common-upload :onSuccess="onUpload"/>
+        <div class="remark-button-outer">
+          <img src="../../assets/picture/add.png" class="remark-button" />
+          <common-upload :onSuccess="onUpload"/>
+        </div>
       </el-tooltip>
     </div>
     <tipShow />
@@ -251,6 +254,7 @@ export default {
   height: 60px;
   box-sizing: border-box;
   padding: 10px;
+  position: relative;
 }
 .remark-button-outer.active {
   background: rgba(21, 195, 154, 0.1);

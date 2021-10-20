@@ -7,7 +7,7 @@
       </div>
       <el-dropdown-menu slot="dropdown" style="text-align: center">
         <el-tooltip content="my computer" placement="right">
-          <el-upload
+          <!-- <el-upload
             class="upload-demo"
             action="https://dev.api.newzealand.actself.me/file/upload"
             :on-success="onSuccess"
@@ -15,11 +15,15 @@
             accept="image/*,video/*,audio/*"
             list-type="picture"
           >
+            
+          </el-upload> -->
+          <div style="position: relative; cursor: pointer;">
             <el-dropdown-item
               icon="el-icon-folder-add"
               style="font-size: 30px; text-align: center; margin-bottom: 5px; margin-left: 5px"
             />
-          </el-upload>
+            <common-upload accept="image/*,video/*,audio/*" :onSuccess="onSuccess"/>
+          </div>
         </el-tooltip>
         <el-tooltip content="google drive" placement="right">
           <el-dropdown-item
@@ -155,11 +159,13 @@ import googleImageSearch from "./googleImageSearch.vue";
 import GoogleYoutubeVedio from "./googleYoutubeVedio.vue";
 import {videoTypes, audioTypes} from '@/utils/constants'
 import MetarialWebSite from './metarialWebSite.vue';
+import CommonUpload from '../common/commonUpload.vue';
 export default {
   components: {
     googleImageSearch,
     GoogleYoutubeVedio,
     MetarialWebSite,
+    CommonUpload
   },
   data() {
     return {
@@ -180,10 +186,14 @@ export default {
   },
   mounted() {},
   methods: {
-    onSuccess(response, file, fileList) {
+    onSuccess(file, result) {
       console.log(file.name);
-      const fileNameList = file.name.split(".")
-      const name = fileNameList[fileNameList.length - 1];
+      let name = file.type.split('/')[1]
+      if (!name) {
+        showToast('upload error')
+        return false
+      }
+      name = name.toLocaleLowerCase();
       let type = "image";
       if (videoTypes.indexOf(name) > -1) {
         type = "video";
@@ -192,7 +202,7 @@ export default {
       }
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
         type,
-        url: response.data,
+        url: result,
       });
     },
     addyoutube() {
