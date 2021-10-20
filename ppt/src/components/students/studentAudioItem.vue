@@ -12,16 +12,7 @@
         </div>
       </el-tooltip>
       <el-tooltip content="Upload meterial" placement="top">
-        <el-upload
-          class="remark-button-outer"
-          action="https://dev.api.newzealand.actself.me/file/upload"
-          :on-success="onUpload"
-          :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*"
-          list-type="picture"
-        >
-          <img src="../../assets/picture/add.png" class="remark-button" />
-        </el-upload>
+        <common-upload :onSuccess="onUpload"/>
       </el-tooltip>
     </div>
     <tipShow />
@@ -104,16 +95,17 @@ import AudioPlayer from "../common/audioPlayer.vue";
 import tipShow from "./tipShow.vue";
 import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
 import base64image from '../base64image.vue';
+import CommonUpload from '../common/commonUpload.vue';
 export default {
   components: {
     RecordVideo,
     RecordAudio,
     AudioPlayer,
     tipShow,
-    base64image
+    base64image,
+    CommonUpload
   },
-  computed: {
-    ...mapState({
+  computed: { ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
       userInfo: state => state.student.studentUserInfo
@@ -162,16 +154,14 @@ export default {
     cancelRecord() {
       this.recordType = null;
     },
-    onUpload(response, file, fileList) {
-      
-      // console.log(file.name);
-      const fileNameList = file.name.split(".")
-      let name = fileNameList[fileNameList.length - 1];
+    onUpload(file, result) {
+      let name = file.type.split('/')[1]
       if (!name) {
         showToast('upload error')
         return false
       }
       name = name.toLocaleLowerCase();
+      console.log(file.type, name)
       let type = 'image'
       if (videoTypes.indexOf(name) > -1) {
         type = "video";
@@ -180,7 +170,7 @@ export default {
       } else if(fileTypes.indexOf(name) > -1) {
         type = 'file'
       }
-      this.sendCommentCb(response.data, type, file.name);
+      this.sendCommentCb(result, type, file.name);
     },
     sendCommentCb(link, mediaType = "", fileName) {
       this.cancelRecord();
