@@ -189,10 +189,10 @@ export default {
     onSuccess(file, result) {
       console.log(file.name);
       let name = file.type.split('/')[1]
-      if (!name) {
-        showToast('upload error')
-        return false
-      }
+      // if (!name) {
+      //   showToast('upload error')
+      //   return false
+      // }
       name = name.toLocaleLowerCase();
       let type = "image";
       if (videoTypes.indexOf(name) > -1) {
@@ -200,6 +200,7 @@ export default {
       } else if(audioTypes.indexOf(name) > -1) {
         type = 'audio'
       }
+
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
         type,
         url: result,

@@ -22,7 +22,8 @@ const storage = getStorage();
 // var LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif?a';
 type OnProgress = any
 
-export const upFireBaseFile = async (file: File, onProgress: OnProgress) => {
+export const upFireBaseFile = async (file: File, onProgress: OnProgress = () => null) => {
+  onProgress(1)
   return new Promise((res, rej) => {
     const now = Date.now()
     console.log(now, '计时 开始上传')
@@ -39,7 +40,8 @@ export const upFireBaseFile = async (file: File, onProgress: OnProgress) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log(`Upload is ${progress}`);
         // eslint-disable-next-line no-unused-expressions
-        onProgress && onProgress(progress)
+        let value = Math.max(Math.floor(progress), 1);
+        onProgress && onProgress(Math.min(value, 99));
         // switch (snapshot.state) {
         //   case 'paused':
         //     console.log('Upload is paused');
@@ -71,6 +73,7 @@ export const upFireBaseFile = async (file: File, onProgress: OnProgress) => {
           console.log('File available at', downloadURL);
           console.log(Date.now() - now, '计时 上传成功')
           res(downloadURL)
+          onProgress(100)
         });
       });
   })

@@ -195,6 +195,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
   }
   // let list = data.data.data.pages
   // // // console.log(data.data.data)
+  // debugger
   try {
     result = data.data.data
   } catch (e) {

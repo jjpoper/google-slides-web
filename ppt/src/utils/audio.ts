@@ -1,6 +1,7 @@
 import { upLoadFile } from '@/model';
 import RecordRTC from 'recordrtc'
 import { hideLoading, showLoading, showToast } from './loading';
+import { upFireBaseFile } from './uploadFile';
 
 let microphone: any = null
 const isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
@@ -72,22 +73,31 @@ export const endRecordAudio = () => {
   });
 }
 
-export const saveRecordAudio = async (): Promise<any> => {
+export const saveRecordAudio = async (onProgressUpLoad: any = () => null): Promise<any> => {
   return new Promise((res, rej) => {
     recorder.stopRecording(() => {
       const blobData = recorder.getBlob()
       // domAudioElement.src = URL.createObjectURL(recorder.getBlob())
-      const files = new File([blobData], 'mp3', {
+      const now = Date.now()
+      const file = new File([blobData], now.toString(), {
           type: 'audio/mp3',
+          lastModified: now
       });
       // showLoading('uploading')
-      upLoadFile(files).then((data) => {
-        // hideLoading()
-        res(data)
-      }).catch(() => {
-        // hideLoading()
-        showToast('upload failed, please try again', 'error')
+      // upLoadFile(files).then((data) => {
+      //   // hideLoading()
+      //   res(data)
+      // }).catch(() => {
+      //   // hideLoading()
+      //   showToast('upload failed, please try again', 'error')
+      // })
+      upFireBaseFile(file, onProgressUpLoad).then((result) => {
+        res(result)
+        setTimeout(() => {
+          onProgressUpLoad(0)
+        }, 50);
       })
+
       microphone.stop();
       microphone = null;
     });

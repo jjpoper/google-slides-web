@@ -3,6 +3,7 @@
 import { upLoadFile } from '@/model';
 import RecordRTC from 'recordrtc'
 import { hideLoading, showLoading, showToast } from './loading';
+import { upFireBaseFile } from './uploadFile';
 
 function onMediaError() {
   // // console.error('media error', e);
@@ -68,7 +69,7 @@ export const endRecord = () => {
   });
 }
 
-export const saveRecordVideo = async (): Promise<any> => {
+export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promise<any> => {
   return new Promise((res, rej) => {
     domVideoElement.pause();
     mediaRecorder.stopRecording(() => {
@@ -76,15 +77,24 @@ export const saveRecordVideo = async (): Promise<any> => {
       const blobData = mediaRecorder.getBlob()
       domVideoElement.src = URL.createObjectURL(blobData);
       // // console.log(URL.createObjectURL(blobData))
-      let files = new window.File([blobData], 'webm')
-
+      const now = Date.now()
+      let file = new window.File([blobData], `${now.toString()}.webm`, {type: "video/webm", lastModified: Date.now()})
+      console.log(file)
       // showLoading('uploading')
-      upLoadFile(files).then((data) => {
-        // hideLoading()
-        res(data)
-      }).catch(() => {
-        // hideLoading()
-        showToast('upload failed, please try again', 'error')
+      // upLoadFile(files).then((data) => {
+      //   // hideLoading()
+      //   res(data)
+      // }).catch(() => {
+      //   // hideLoading()
+      //   showToast('upload failed, please try again', 'error')
+      // })
+      // return
+
+      upFireBaseFile(file, onProgressUpLoad).then((result) => {
+        res(result)
+        setTimeout(() => {
+          onProgressUpLoad(0)
+        }, 50);
       })
 
       mediaRecorder.camera.stop();
