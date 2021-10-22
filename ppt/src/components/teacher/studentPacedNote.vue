@@ -26,7 +26,8 @@
         </div>
       </div>
     </div> -->
-    <div class="lock-modal">
+
+    <!-- <div class="lock-modal">
       <img
         src="../../assets/icon/dash-close.png"
         width="20"
@@ -56,6 +57,41 @@
           <strong>Undo</strong>
       </div>
       </div>
+    </div> -->
+
+    <div class="lock-modal">
+      <img
+        src="../../assets/icon/dash-close.png"
+        width="20"
+        height="20"
+        class="close-btn"
+        @click="cancelModeChange()"
+      />
+      <p class="info title">Use Student-Paced Mode</p>
+      <div class="detail">
+        <img
+          src="../../assets/picture/student-paced.png"
+          class="teacher-lock"
+        />
+        <p class="info">
+          <!-- Navigating through slides in Student-Paced Mode will ont affectthe
+          Projector or Student displays.To bring everyone back together,turn off
+          Student-Paced.
+          <br />
+          To assign this for homework,send your students to
+          <br />
+          <span class="link">https://dev.classcipe.com/</span> -->
+        </p>
+      </div>
+      <div class="bottom">
+        <div class="confirm_btn" @click="confirmModeChange()">
+          <strong>Confirm</strong>
+        </div>
+
+        <div class="confirm_btn cancel" @click="cancelModeChange()">
+          <strong>Cancel</strong>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -73,51 +109,51 @@
   position: fixed;
   top: 0;
 }
-.lock-modal{
+.lock-modal {
   width: 90%;
   height: 510px;
   position: relative;
   background-color: #fff;
-  border-radius: 10px; 
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   padding-top: 20px;
 }
-.detail{
+.detail {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding:0 20px;
+  padding: 0 20px;
 }
-.close-btn{
+.close-btn {
   position: absolute;
   top: 25px;
   right: 25px;
   cursor: pointer;
 }
-.teacher-lock{
+.teacher-lock {
   width: 30%;
   /* height: 306px; */
   margin-right: 20px;
 }
-.info{
+.info {
   font-size: 22px;
   font-family: FZCuYuan-M03S;
   font-weight: 700;
   line-height: 43px;
-  color: #05272A;
+  color: #05272a;
   text-align: left;
 }
-.title{
+.title {
   font-size: 34px;
   text-align: center;
 }
-.link{
+.link {
   color: rgba(21, 195, 154, 1);
 }
-.bottom{
+.bottom {
   width: 100%;
   height: 100px;
   display: flex;
@@ -125,10 +161,10 @@
   justify-content: center;
   background-color: rgba(237, 240, 243, 1);
 }
-.confirm_btn{
+.confirm_btn {
   padding: 0 30px;
   height: 50px;
-  background: #15C39A;
+  background: #15c39a;
   opacity: 1;
   border-radius: 25px;
   color: #fff;
@@ -139,9 +175,9 @@
   text-align: center;
   cursor: pointer;
 }
-.cancel{
+.cancel {
   background-color: rgba(188, 188, 188, 1);
-  color:rgba(17, 20, 45, 1);
+  color: rgba(17, 20, 45, 1);
   margin-left: 40px;
 }
 </style>
@@ -150,11 +186,11 @@
 export default {
   props: {
     confirmModeChange: {
-      type: Function
+      type: Function,
     },
     cancelModeChange: {
-      type: Function
-    }
-  }
+      type: Function,
+    },
+  },
 };
 </script>

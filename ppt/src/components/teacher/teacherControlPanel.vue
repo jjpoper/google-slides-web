@@ -34,7 +34,26 @@
         </div>
       </div> -->
     </template>
-    <UploadEnter v-if="meterialVisiable"/>
+    <UploadEnter v-if="meterialVisiable" />
+
+    <!-- 提交pro 暂时隐藏-->
+
+    <!-- <div class="button_area" @click="addprompt()">
+      <svg
+        id="Layer_1"
+        data-name="Layer 1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 63.99 60.08"
+      >
+        <title>icon-extension-question</title>
+        <path d="M195.45,6.24" transform="translate(0 -2.08)"></path>
+        <path
+          d="M60.08,2.08H3.92A4,4,0,0,0,0,6V46.21a4,4,0,0,0,3.92,3.92H40.62L52.37,61.87a.92.92,0,0,0,.7.29.61.61,0,0,0,.39-.1,1,1,0,0,0,.61-.9V50.22h6A4,4,0,0,0,64,46.31V6.1A4,4,0,0,0,60.08,2.08Zm-16.44,27H34.83v8.81a2.94,2.94,0,0,1-5.87,0V29.1H20.14a2.94,2.94,0,1,1,0-5.87H29V14.42a2.94,2.94,0,1,1,5.87,0v8.81h8.81a2.94,2.94,0,1,1,0,5.87Z"
+          transform="translate(0 -2.08)"
+        ></path>
+      </svg>
+      <strong class="button_text">Add prompt</strong>
+    </div> -->
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
       <div class="with-outer" v-if="!isDashboard" >
@@ -127,11 +146,13 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    
-    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
-      <!-- :open="open"
-        :openProject="openProject" 
-      :reopenClass="reopenClass"-->
+    <el-popover
+      placement="top"
+      width="400"
+      trigger="hover"
+      class="dropdown-icon"
+      style="display: none"
+    >
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
