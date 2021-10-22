@@ -743,7 +743,7 @@ export default {
     },
     pageChange(page) {
       // console.log(page, "pageChange", this.currentPageIndex);
-      const nextPage = page - 1;
+      const nextPage = page;
       if (this.currentPageIndex != nextPage) {
         this.setStudentPageIndex(nextPage);
       } else {
@@ -876,7 +876,8 @@ export default {
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
-          const nextPageIndex = parseInt(d.params.page) + 1;
+          const nextPageIndex = parseInt(d.params.page);
+          console.log(this.currentPageIndex, nextPageIndex, '===new')
           if (this.currentPageIndex != nextPageIndex) {
             this.pageChange(nextPageIndex);
           }
@@ -1030,12 +1031,12 @@ export default {
     },
     lastPage() {
       if (this.currentPageIndex > 0) {
-        this.pageChange(this.currentPageIndex);
+        this.pageChange(this.currentPageIndex - 1);
       }
     },
     nextPage() {
       if (this.currentPageIndex < this.slides.length - 1) {
-        this.pageChange(parseInt(this.currentPageIndex) + 2);
+        this.pageChange(parseInt(this.currentPageIndex) + 1);
       }
     },
     isShowRightAnswer() {
