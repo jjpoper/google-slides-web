@@ -147,10 +147,7 @@
       <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon">
-      <!-- :open="open"
-        :openProject="openProject" 
-      :reopenClass="reopenClass"-->
+    <!-- <el-popover placement="top" width="400" trigger="hover" class="dropdown-icon" style="display:none">
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
@@ -175,7 +172,7 @@
         <circle cx="10" cy="16" r="2" fill="#36425A" />
         <circle cx="10" cy="24" r="2" fill="#36425A" />
       </svg>
-    </el-popover>
+    </el-popover> -->
 
     <div class="end_button" @click="endLesson()">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
