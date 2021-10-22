@@ -34,13 +34,14 @@
     </template>
     <UploadEnter v-if="meterialVisiable" />
 
-    <div class="button_area" @click="addprompt()">
+    <!-- 提交pro 暂时隐藏-->
+
+    <!-- <div class="button_area" @click="addprompt()">
       <svg
         id="Layer_1"
         data-name="Layer 1"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 63.99 60.08"
-        
       >
         <title>icon-extension-question</title>
         <path d="M195.45,6.24" transform="translate(0 -2.08)"></path>
@@ -50,7 +51,7 @@
         ></path>
       </svg>
       <strong class="button_text">Add prompt</strong>
-    </div>
+    </div> -->
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
       <div class="with-outer" v-if="!isDashboard">
@@ -166,10 +167,8 @@
       width="400"
       trigger="hover"
       class="dropdown-icon"
+      style="display: none"
     >
-      <!-- :open="open"
-        :openProject="openProject" 
-      :reopenClass="reopenClass"-->
       <dashboardMenu
         v-if="classRoomInfo"
         :current_model="current_model"
@@ -196,9 +195,9 @@
       </svg>
     </el-popover>
     <!--end-->
-    <div class="end_button" @click="endLesson()" v-if="!isDashboard">
+    <!-- <div class="end_button" @click="endLesson()" v-if="!isDashboard">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
-    </div>
+    </div> -->
   </div>
 </template>
 
