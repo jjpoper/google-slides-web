@@ -195,9 +195,9 @@
       </svg>
     </el-popover>
     <!--end-->
-    <div class="end_button" @click="endLesson()" v-if="!isDashboard">
+    <!-- <div class="end_button" @click="endLesson()" v-if="!isDashboard">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
-    </div>
+    </div> -->
   </div>
 </template>
 
