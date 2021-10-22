@@ -1,64 +1,52 @@
 <template>
-  <div class="upload-outer">
-    <img src="../../assets/picture/add.png" class="upload-button" />
+  <div class="upload-file">
     <input
       class="upload-file"
-      type="file" accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*"
+      type="file"
+      :accept="accept"
       @change="onUpload"/>
-      <el-dialog
-        v-if="progress > 0"
-        :title="`uploading ${progress}%`"
-        visible
-        :append-to-body="true"
-        :show-close="false"
-      >
-      </el-dialog>
+      <common-progress :progress="progress"/>
   </div>
 </template>
 <script>
 import {upFireBaseFile} from '@/utils/uploadFile'
+import commonProgress from './commonProgress.vue'
 export default {
+  components: { commonProgress },
   data() {
     return {
-      progress: 0,
-      showProgress: false
+      progress: 0
     }
   },
   props: {
     onSuccess: {
       type: Function,
       default: () => null
+    },
+    accept: {
+      type: String,
+      default: '.doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*'
     }
   },
   methods: {
     onUpload(e) {
       const file = e.target.files[0]
       console.log(file)
+      // return
       upFireBaseFile(file, this.onProgressUpLoad).then((result) => {
-        this.progress = 0
         this.onSuccess(file, result)
+        setTimeout(() => {
+          this.progress = 0
+        }, 50);
       })
     },
     onProgressUpLoad(progress) {
-      this.progress = parseInt(progress)
+      this.progress = progress
     }
   }
 }
 </script>
 <style scoped>
-.upload-outer{
-  width: 60px;
-  height: 60px;
-  box-sizing: border-box;
-  padding: 10px;
-  cursor: pointer;
-  position: relative;
-}
-.upload-button{
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
 .upload-file{
   position: absolute;
   width: 100%;
@@ -66,5 +54,6 @@ export default {
   top: 0;
   left: 0;
   opacity: 0;
+  cursor: pointer;
 }
 </style>

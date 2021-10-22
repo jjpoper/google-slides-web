@@ -13,27 +13,32 @@
         <div class="tips-area"></div>
       </el-tooltip>
     </div>
-    <div class="fixed-area" v-if="!audioUrl">
-      <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
-      <div class="audio-line animation-line">
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-      </div>
-      <div class="record-footer">
-        <i class="done" @click="done"></i>
-        <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
+    <div v-show="!endRecording">
+      <div class="fixed-area" v-if="!audioUrl">
+        <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
+        <div class="audio-line animation-line">
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+        </div>
+        <div class="record-footer">
+          <i class="done" @click="done"></i>
+          <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
+        </div>
       </div>
     </div>
+    <common-progress :progress="progress"/>
   </div>
 </template>
 <script>
 import {startRecordAudio, pauseRecordAudio, resumeRecordAudio, saveRecordAudio, endRecordAudio} from '@/utils/audio'
 import audioPlayer from './audioPlayer.vue'
+import { upFireBaseFile } from '@/utils/uploadFile'
+import CommonProgress from './commonProgress.vue'
 export default {
-  components: { audioPlayer },
+  components: { audioPlayer, CommonProgress },
   props: {
     onSend: {
       type: Function,
@@ -55,7 +60,8 @@ export default {
       color: '#999',
       maxTime: 120, // 秒
       audioUrl: '',
-      visible: false
+      visible: false,
+      progress: 0
     }
   },
   mounted() {
@@ -98,15 +104,18 @@ export default {
       if(!this.endRecording) {
         this.onRecordDone()
         this.endRecording = true
-        saveRecordAudio().then((d) => {
-          if(d.data) {
+        saveRecordAudio(this.onProgressUpLoad).then((url) => {
+          if(url) {
             // 发送url信息
-            this.audioUrl = d.data
+            this.audioUrl = url
             this.visible = true
           }
         })
         this.clearCount()
       }
+    },
+    onProgressUpLoad(progress) {
+      this.progress = progress
     },
     startRecord() {
       this.timeValue = 0
@@ -165,8 +174,11 @@ export default {
   cursor: pointer;
   text-align: center;
 }
-.cancel.primary{
+.cancel:hover{
   background-color: rgba(21, 195, 154, 1);
+}
+.cancel.primary{
+  /* background-color: rgba(21, 195, 154, 1); */
   margin-left: 12px;
 }
 .fixed-area{
@@ -197,7 +209,7 @@ export default {
   width: 14px;
   height: 14px;
   cursor: pointer;
-  background-color: #fff;
+  background-color: red;
   margin-right: 30px;
 }
 .record-time{

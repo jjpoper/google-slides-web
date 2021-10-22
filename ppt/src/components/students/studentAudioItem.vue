@@ -11,8 +11,11 @@
           <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
         </div>
       </el-tooltip>
-      <el-tooltip content="Upload meterial" placement="top">
-        <common-upload :onSuccess="onUpload"/>
+      <el-tooltip content="Upload Material" placement="top">
+        <div class="remark-button-outer">
+          <img src="../../assets/picture/add.png" class="remark-button" />
+          <common-upload :onSuccess="onUpload"/>
+        </div>
       </el-tooltip>
     </div>
     <tipShow />
@@ -155,21 +158,24 @@ export default {
       this.recordType = null;
     },
     onUpload(file, result) {
-      let name = file.type.split('/')[1]
-      if (!name) {
-        showToast('upload error')
-        return false
-      }
-      name = name.toLocaleLowerCase();
-      console.log(file.type, name)
+      const nameList = file.type.split('/')
+      let name = nameList[1]
       let type = 'image'
-      if (videoTypes.indexOf(name) > -1) {
-        type = "video";
-      } else if(audioTypes.indexOf(name) > -1) {
-        type = 'audio'
-      } else if(fileTypes.indexOf(name) > -1) {
+      if(name) {
+        name = name.toLocaleLowerCase();
+        console.log(file.type, name)
+        type = 'image'
+        if (videoTypes.indexOf(name) > -1) {
+          type = "video";
+        } else if(audioTypes.indexOf(name) > -1) {
+          type = 'audio'
+        } else if(fileTypes.indexOf(name) > -1) {
+          type = 'file'
+        }
+      } else {
         type = 'file'
       }
+      
       this.sendCommentCb(result, type, file.name);
     },
     sendCommentCb(link, mediaType = "", fileName) {
@@ -251,6 +257,7 @@ export default {
   height: 60px;
   box-sizing: border-box;
   padding: 10px;
+  position: relative;
 }
 .remark-button-outer.active {
   background: rgba(21, 195, 154, 0.1);

@@ -1,5 +1,5 @@
 <template>
-  <div class="record-area">
+  <div class="record-area" v-show="!endRecording">
     <div class="fixed-area">
       <video id="record-video" width="280" height="150" ref="videoRef"/>
       <!-- <div style="width: 280px; height: 150px"></div> -->
@@ -11,11 +11,14 @@
         <p class="record-time">{{getTime(timeValue)}} / 02:00</p>
       </div>
     </div>
+    <common-progress :progress="progress"/>
   </div> 
 </template>
 <script>
 import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo, endRecord} from '@/utils/video'
+import commonProgress from './commonProgress.vue'
 export default {
+  components: { commonProgress },
   props: {
     onSend: {
       type: Function,
@@ -24,8 +27,10 @@ export default {
   },
   data() {
     return {
+      isRecording: true,
       endRecording: false,
       timeValue: 0,
+      progress: 0,
       maxTime: 120 // 秒
     }
   },
@@ -73,14 +78,17 @@ export default {
       if(!this.endRecording) {
         this.endRecording = true
         this.isRecording = false
-        saveRecordVideo().then((d) => {
-          if(d.data) {
+        saveRecordVideo(this.onProgressUpLoad).then((url) => {
+          if(url) {
             // 发送url信息
-            this.onSend(d.data, 'video')
+            this.onSend(url, 'video')
           }
         })
         this.clearCount()
       }
+    },
+    onProgressUpLoad(progress) {
+      this.progress = progress
     },
     startRecord() {
       startRecordVideo(document.getElementById("record-video"))
