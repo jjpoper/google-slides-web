@@ -113,7 +113,13 @@
           ? 'button_area'
           : 'button_area button_grey'
       "
-      v-if="!isClosed && current_model != 'Student-Paced'"
+      v-if="
+        currentItemData &&
+        currentItemData.items &&
+        currentItemData.items[0] &&
+        !isClosed &&
+        current_model != 'Student-Paced'
+      "
       @click="dolockPage()"
     >
       <svg
@@ -167,7 +173,6 @@
       width="400"
       trigger="hover"
       class="dropdown-icon"
-      style="display: none"
     >
       <dashboardMenu
         v-if="classRoomInfo"
@@ -195,9 +200,9 @@
       </svg>
     </el-popover>
     <!--end-->
-    <!-- <div class="end_button" @click="endLesson()" v-if="!isDashboard">
+    <div class="end_button" @click="endLesson()" v-if="!isDashboard">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
-    </div> -->
+    </div>
   </div>
 </template>
 
