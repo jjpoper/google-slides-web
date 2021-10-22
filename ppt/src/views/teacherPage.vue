@@ -1162,8 +1162,7 @@ type: "slide"*/
 
     queryResult(code, token, count) {
       let _this = this;
-      if (count < 20) {
-        queryRefreshResult(code, token)
+      queryRefreshResult(code, token)
           .then(res => {
             if (res.data.status === "processing") {
               setTimeout(function() {
@@ -1178,10 +1177,6 @@ type: "slide"*/
             this.getAllSlides();
             hideLoading();
           });
-      } else {
-        this.getAllSlides();
-        hideLoading();
-      }
     },
     getAllSlides() {
       // 初始化评论数据
