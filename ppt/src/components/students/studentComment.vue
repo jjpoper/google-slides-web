@@ -4,7 +4,7 @@
       <p>Student Feedback</p>
       <i @click="hidecomment"></i>
     </div>
-    <tipShow />
+    <!-- <tipShow /> -->
     <div class="feeditem" v-for="(item, index) in commentList" :key="index.toString()">
       <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
       <div :class="`readed ${item.id && unreadIdList.indexOf(item.id) > -1 ? 'unreadborder' : ''}`">

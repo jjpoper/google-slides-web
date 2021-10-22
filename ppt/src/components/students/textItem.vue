@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <tipShow />
+    <!-- <tipShow /> -->
     <div v-if="showCorrect" class="answer_text">{{ data.items[0].data.answer }}</div>
     <el-switch
       v-if="hasAnswer()"

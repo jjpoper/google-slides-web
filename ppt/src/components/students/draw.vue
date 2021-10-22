@@ -370,7 +370,7 @@
                   <path
                     id="路径_604"
                     data-name="路径 604"
-                    :fill="currentTab == 3 ? color : 'rgb(171, 178, 218)'"
+                    :fill="currentTab == 3 ? 'red' : 'rgb(171, 178, 218)'"
                     d="M95.317,109.056l-7.122-6.72a2.524,2.524,0,0,0-3.556.087L73.3,114.338a2.521,2.521,0,0,0,0,3.529l4.083,4.085a3.78,3.78,0,0,0,2.672,1.109H93.665a1.26,1.26,0,1,0,0-2.521h-6.3l7.98-7.84.077-.077,0,0A2.523,2.523,0,0,0,95.317,109.056ZM84.5,119.771a2.512,2.512,0,0,1-1.766.718H80.063a1.257,1.257,0,0,1-.895-.365l-4.083-4.083,2.936-3.013,6.63,6.643-.151.1Z"
                     transform="translate(705.425 783.354)"
                   />
@@ -498,6 +498,7 @@
               </div>
             </div>
           </div>
+          <!-- :class="currentOnColorFlag ? '' : 'cls-1-color-flag-gray'" -->
           <div
             class="eraser"
             slot="reference"
@@ -509,14 +510,9 @@
               width="25.842"
               height="27.234"
               viewBox="0 0 27.842 29.234"
-              :class="currentOnColorFlag ? '' : 'cls-1-color-flag-gray'"
-              :style="
-                currentOnColorFlag
-                  ? `fill:${color};stroke-linecap: round;stroke-linejoin: round;cursor: pointer;stroke: ${
-                      color == '#FFFFFF' ? '#36425a' : '#FFFFFF00'
-                    };`
-                  : ''
-              "
+              :style="`fill:${color};stroke-linecap: round;stroke-linejoin: round;cursor: pointer;stroke: ${
+                color == '#FFFFFF' ? '#36425a' : '#FFFFFF00'
+              };`"
             >
               <path
                 id="颜料填充白色"
@@ -1073,6 +1069,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 #keyword-box {
   margin: 10px 0;

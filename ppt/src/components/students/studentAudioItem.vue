@@ -18,7 +18,7 @@
         </div>
       </el-tooltip>
     </div>
-    <tipShow />
+    <!-- <tipShow /> -->
     <ul class="remark-list">
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">

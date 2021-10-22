@@ -27,7 +27,9 @@
               :key="index"
               class="room--item"
               @click="selectRoom(item)"
-            >{{ item.name }}</div>
+            >
+              {{ item.name }}
+            </div>
 
             <div class="create--room">
               <el-input
@@ -40,7 +42,9 @@
                   border-radius: 6px;
                 "
               />
-              <div class="create--confirm" @click="createNewRoomConfirm">Confirm</div>
+              <div class="create--confirm" @click="createNewRoomConfirm">
+                Confirm
+              </div>
             </div>
           </div>
           <div slot="reference" class="opt--value room--item">{{ room }}</div>
@@ -111,7 +115,9 @@
         <span class="opt--text"></span>
         <div style="display: flex; width: 315px; align-items: center">
           <div style="flex: 1"></div>
-          <div class="anonymous" style="margin-right: 10px">Anonymous logins</div>
+          <div class="anonymous" style="margin-right: 10px">
+            Anonymous logins
+          </div>
           <div
             class="anonymous--switch"
             :style="
@@ -121,10 +127,18 @@
             "
             @click="anonymousBtnClicked"
           >
-            <div class="white--flag" style="margin-left: 3px" v-if="!canAnonymous"></div>
+            <div
+              class="white--flag"
+              style="margin-left: 3px"
+              v-if="!canAnonymous"
+            ></div>
             <div style="flex: 1"></div>
 
-            <div class="white--flag" style="margin-right: 3px" v-if="canAnonymous"></div>
+            <div
+              class="white--flag"
+              style="margin-right: 3px"
+              v-if="canAnonymous"
+            ></div>
           </div>
         </div>
       </div>
@@ -139,7 +153,10 @@
           "
           @click="onCopyLink(canAnonymous)"
         >
-          <img src="../../assets/picture/link_icon.png" style="width: 40px; height: 40px" />
+          <img
+            src="../../assets/picture/link_icon.png"
+            style="width: 40px; height: 40px"
+          />
           <div class="link--text">copy link</div>
         </div>
       </div>
@@ -154,25 +171,25 @@ import { addRealClass, getRealClass, setRealClass } from "../../model/index";
 export default {
   props: {
     copyLink: {
-      type: Function
+      type: Function,
     },
     url: {
       type: String,
-      default: ""
+      default: "",
     },
     enterClassroom: {
-      type: Function
+      type: Function,
     },
     closeBtn: {
-      type: Function
+      type: Function,
     },
     hindeTimeDialog: {
-      type: Function
+      type: Function,
     },
     user_id: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
   },
   data() {
     return {
@@ -189,16 +206,16 @@ export default {
       options: [
         {
           value: 0,
-          label: "--Select--"
+          label: "--Select--",
         },
         {
           value: 1,
-          label: "Deadline mode"
+          label: "Deadline mode",
         },
         {
           value: 2,
-          label: "Count down mode"
-        }
+          label: "Count down mode",
+        },
       ],
       time_down: "",
       timeCounts: [
@@ -206,18 +223,18 @@ export default {
         { value: 30, label: "30  min" },
         { value: 45, label: "45  min" },
         { value: 60, label: "60  min" },
-        { value: 70, label: "70  min" }
+        { value: 70, label: "70  min" },
       ],
       pickerOptionsStart: {
-        disabledDate: time => {
+        disabledDate: (time) => {
           let date = Date.now();
           //- 8.64e7
           return time.getTime() < Date.now() - 8.64e7; /*今天及以后*/
           // return (
           //   time.getTime() > Date.now() - 8.64e6
           // ); /*今天及之前，注意数字不一样*/
-        }
-      }
+        },
+      },
     };
   },
   created() {
@@ -228,15 +245,34 @@ export default {
       this.show_url = this.url;
     }
 
-    getRealClass(this.user_id).then(res => {
+    getRealClass(this.user_id).then((res) => {
       console.log(res);
       this.roomItems = res;
     });
   },
+  watch: {
+    time_type() {
+      console.log(this.time_type);
+      if (this.time_type == 0) {
+        this.setDeadLine();
+      }
+    },
+    deadline() {
+      if (this.time_type == 1) {
+        this.setDeadLine();
+      }
+    },
+    time_down() {
+      console.log(this.time_down);
+      if (this.time_type == 2) {
+        this.setDeadLine();
+      }
+    },
+  },
   computed: {
     getPass() {
       return this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
-    }
+    },
   },
   methods: {
     anonymousBtnClicked() {
@@ -248,6 +284,7 @@ export default {
       this.currentRoomId = item.id;
     },
     setDeadLine() {
+      console.log("setDeadLine", this.time_type);
       this.hindeTimeDialog(this.time_type, this.deadline, this.time_down);
     },
     onCopyLink(canAnonymous) {
@@ -256,12 +293,12 @@ export default {
           this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
           this.canAnonymous ? 1 : 0,
           this.currentRoomId
-        ).then(res => {});
+        ).then((res) => {});
       } else {
         setRealClass(
           this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
           this.canAnonymous ? 1 : 0
-        ).then(res => {});
+        ).then((res) => {});
       }
       this.copyLink(canAnonymous);
       this.setDeadLine();
@@ -280,7 +317,7 @@ export default {
           return;
         }
       }
-      addRealClass(this.user_id, this.newRoomName).then(res => {
+      addRealClass(this.user_id, this.newRoomName).then((res) => {
         console.log(res);
         if (res.code == "ok") {
           this.room = this.newRoomName;
@@ -291,8 +328,8 @@ export default {
           this.newRoomName = "";
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
