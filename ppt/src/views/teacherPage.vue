@@ -106,10 +106,10 @@
             />
           </svg>
         </div>
-        <div
+        <!-- <div
           class="number_info"
           @click="showStudents()"
-        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
+        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div> -->
         <el-tooltip content="mark up and send comment" placement="top">
           <div class="readchat comment" v-if="isDashboard">
             <el-switch
@@ -139,6 +139,9 @@
       :className="classRoomInfo.class_name"
       :openProject="openProject"
       :endLesson="endLesson"
+      :showStudents="showStudents"
+      :getStudentOnLineCount="getStudentOnLineCount"
+      :studentList="studentList"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">

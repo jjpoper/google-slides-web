@@ -13,9 +13,15 @@
         <div class="more-icon" slot="reference"><i></i><i></i><i></i></div>
       </el-popover>
     </div>
-    <div class="invite-button" @click="share">
-      <img src="../../assets/picture/invite.png" class="invite"/>
-      <span>Invite</span>
+    <div class="right-btns">
+      <div class="invite-button" @click="share">
+        <img src="../../assets/picture/invite.png" class="invite"/>
+        <span>Invite</span>
+      </div>
+      <div
+        class="invite-button"
+        @click="showStudents"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
     </div>
   </div>
 </template>
@@ -39,6 +45,16 @@ export default {
     className: {
       type: String,
       default: false,
+    },
+    showStudents: {
+      type: Function,
+    },
+    getStudentOnLineCount: {
+      type: Function,
+    },
+    studentList: {
+      type: Array,
+      default: () => []
     },
   },
   methods: {
@@ -64,6 +80,11 @@ export default {
   padding-left: 30px;
   padding-right: 100px;
 }
+.right-btns{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .invite-button{
   width: 120px;
   height: 40px;
@@ -78,6 +99,7 @@ export default {
   line-height: 24px;
   color: #FFFFFF;
   cursor: pointer;
+  margin-left: 10px;
 }
 .invite{
   width: 23px;

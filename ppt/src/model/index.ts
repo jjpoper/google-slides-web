@@ -153,8 +153,9 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
 }
 
 const filterHref = () => {
-  const url = location.href
-  return url.split("&token")[0]
+  // const url = location.href
+  // return url.split("&token")[0]
+  return location.origin + location.pathname
 }
 
 // 获取授权登录
@@ -193,6 +194,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
     },
     logout: false
   }
+  // debugger
   // let list = data.data.data.pages
   // // // console.log(data.data.data)
   // debugger
