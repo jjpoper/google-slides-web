@@ -316,6 +316,7 @@ import {
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
+import { getJSONValue } from "../utils/help";
 import { createSo, setTeacherWxBaseParams } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
@@ -645,42 +646,47 @@ type: "slide"*/
       }
       let responseList = this.getCurrentPageAnswer();
       for (; i < responseList.length; i++) {
+        const responseItem = {
+          ...responseList[i],
+          ...getJSONValue(responseList[i].data)
+        }
+        let newList = []
         if (
-          (responseList[i].item_id == itemId ||
-            responseList[i].answer == itemId ||
-            responseList[i].key == studentId) &&
-          responseList[i].user_id == studentId
+          (responseItem.item_id == itemId ||
+            responseItem.answer == itemId ||
+            responseItem.key == studentId) &&
+          (responseItem.user_id == studentId || responseItem.student_user_id == studentId)
         ) {
           if (type == "star") {
-            responseList[i].star = nextStatus;
+            responseItem.star = nextStatus;
           } else if (type == "show") {
-            responseList[i].show = nextStatus;
+            responseItem.show = nextStatus;
           }
           if (itemData[0]) {
             if (itemData[0].type == "choice") {
               const user_id = studentId;
               const answer = itemId;
-              addTeacherData(pageId, itemData[0].type, {
+              newList = addTeacherData(pageId, itemData[0].type, {
                 user_id,
                 answer,
-                star: responseList[i].star,
-                show: responseList[i].show,
+                star: responseItem.star,
+                show: responseItem.show,
                 key: user_id
               });
               const data = this.currentItemData;
               EventBus.$emit("choice", { data });
             } else if (itemData[0].type == "draw") {
               const user_id = studentId;
-              const content = responseList[i].content;
-              const content1 = responseList[i].content1;
-              const user_name = responseList[i].user_name;
-              addTeacherData(pageId, itemData[0].type, {
+              const content = responseItem.content;
+              const content1 = responseItem.content1;
+              const user_name = responseItem.user_name;
+              newList = addTeacherData(pageId, itemData[0].type, {
                 user_id,
                 content,
                 content1,
                 user_name,
-                star: responseList[i].star,
-                show: responseList[i].show,
+                star: responseItem.star,
+                show: responseItem.show,
                 key: user_id
               });
               EventBus.$emit("draw", { user_id, content, content1, user_name });
@@ -690,22 +696,26 @@ type: "slide"*/
               itemData[0].type == "media"
             ) {
               const user_id = studentId;
-              const content = responseList[i].content;
-              const content1 = responseList[i].content1;
-              const user_name = responseList[i].user_name;
-              const item_id = responseList[i].item_id;
-              addTeacherData(pageId, itemData[0].type, {
+              const content = responseItem.content;
+              const content1 = responseItem.content1;
+              const user_name = responseItem.user_name;
+              const item_id = responseItem.item_id;
+              // debugger
+              newList = addTeacherData(pageId, itemData[0].type, {
                 user_id,
                 content,
                 content1,
                 user_name,
                 item_id,
-                star: responseList[i].star,
-                show: responseList[i].show,
+                star: responseItem.star,
+                show: responseItem.show,
                 key: `${item_id}_${user_id}`
               });
               EventBus.$emit(itemData[0].type, { user_id, pageId });
             }
+          }
+          if (newList && newList.length > 0) {
+            this.setAllAnswerdList(newList);
           }
           //发送一个ws消息通知其他端，更新状态
           if (sendWSMsg) {
@@ -1290,8 +1300,7 @@ type: "slide"*/
           }
         })
         .catch(res => {
-          this.getAllSlides();
-          hideLoading();
+          _this.queryResult(code, token);
         });
     },
     getAllSlides() {

@@ -33,7 +33,7 @@ export default {
   position: relative;
   float: left;
   margin: 0 -1px;
-  min-width: 30px;
+  min-width: 40px;
   height: 18px;
   line-height: 16px;
   text-align: right;
@@ -46,7 +46,7 @@ export default {
  
 }
 .progress > span > span {
-  padding: 0 8px;
+  padding: 0;
   font-size: 11px;
   font-weight: bold;
   color: #fff;
