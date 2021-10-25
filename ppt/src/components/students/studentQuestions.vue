@@ -32,19 +32,19 @@
               <div
                 slot="reference"
                 v-if="item.pointType !== 'box'" 
-                :class="`markitemopacity markitem ${(currentRemarkIndex === index || !item.id) ? 'markitemhover' : ''}`"
-                :style="`top:${item.top}px;left:${item.left}px;`"
+                :class="`markitem ${(currentRemarkIndex === index || !item.id) ? 'markitemhover' : ''}`"
+                :style="`top:${item.top}px;left:${item.left}px;border-color:${item.background}`"
                 @mousedown.stop="selectMark(item, index)"
                 @mouseup.stop
                 @mouseleave.stop
                 @click.stop
               >
-                <div class="innermark" :style="`background-color:${item.background || 'red'}; `"/>
+                <div class="markitemopacity innermark" :style="`background-color:${item.background}; `"/>
               </div>
               <div
                 slot="reference"
                 v-else-if="item.pointType === 'box'"
-                :class="`markitemopacity markitembox ${(currentRemarkIndex === index || !item.id) ? 'markitemhover' : ''}`"
+                :class="`markitembox ${(currentRemarkIndex === index || !item.id) ? 'markboxhover' : ''}`"
                 :style="`top:${item.top - 6}px; left:${item.left - 6}px;`"
                 @mousedown.stop="selectMark(item, index)"
                 @click.stop
@@ -52,6 +52,7 @@
                 @mouseleave.stop
               >
                 <div
+                  class="markitemopacity"
                   :style="`width:${item.width}px;
                   height:${item.height}px;
                   border: 2px solid ${item.background}`"
@@ -550,12 +551,12 @@ export default {
 .markitem {
   width: 30px;
   height: 30px;
-  border-radius: 15px;
-  box-sizing: border-box;
+  border-radius: 30px;
+  /* box-sizing: border-box; */
   position: absolute;
   z-index: 999;
   cursor: pointer;
-  border: 2px solid transparent;
+  /* border: 2px solid transparent; */
 }
 .markitembox{
   position: absolute;
@@ -565,12 +566,20 @@ export default {
   border: 2px solid transparent;
 }
 .markitemhover{
-  box-shadow: 0 0 20px #f00
+  transform: scale(1.5);
+  border-width: 2px;
+  border-style: solid;
+}
+.markboxhover{
+ box-shadow: 0 0 20px #f00
 }
 .markitem:hover{
-  box-shadow: 0 0 20px #f00
+  /* */
+  transform: scale(1.5);
+  border-width: 2px;
+  border-style: solid;
 }
-.markitembox:hover{
+.markboxhover:hover{
   box-shadow: 0 0 20px #f00
 }
 .markpos {
@@ -578,10 +587,10 @@ export default {
   opacity: 0;
 }
 .innermark{
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  margin: 3px;
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  /* margin: 3px; */
 }
 .buttonlist {
   /* width: 100px;
@@ -726,7 +735,7 @@ export default {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);;
 }
 .markitemopacity{
-  opacity: 0.8;
+  opacity: 0.5;
   /* box-shadow:0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24); */
 }
 </style>

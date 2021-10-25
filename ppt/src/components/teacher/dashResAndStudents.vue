@@ -91,7 +91,7 @@ export default {
           ...data
         }
       })
-      // console.log(list, 'righten',res, this.currentPageAnswerType)
+      console.log(list, 'righten')
       return list;
     }
   },

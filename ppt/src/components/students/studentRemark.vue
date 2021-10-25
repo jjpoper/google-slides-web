@@ -3,23 +3,29 @@
     <div class="remark-control" v-if="!disable">
       <el-tooltip content="Audio Comment" placement="top">
         <div
-          :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.AUDIO && 'active'}`"
+          @click="audio"
+          class="remark-button-outer"
         >
-          <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button" />
+          <img v-show="currentInputType === ModalEventsTypeEnum.AUDIO" src="../../assets/picture/voice-button.png" class="remark-button" />
+          <img v-show="currentInputType !== ModalEventsTypeEnum.AUDIO" src="../../assets/picture/voice-button-gray.png" class="remark-button" />
         </div>
       </el-tooltip>
       <el-tooltip content="Video Comment" placement="top">
         <div
-          :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.VIDEO && 'active'}`"
+         @click="video"
+         class="remark-button-outer"
         >
-          <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
+          <img v-show="currentInputType === ModalEventsTypeEnum.VIDEO" src="../../assets/picture/video.png" class="remark-button" />
+          <img v-show="currentInputType !== ModalEventsTypeEnum.VIDEO" src="../../assets/picture/video-gray.png" class="remark-button" />
         </div>
       </el-tooltip>
       <el-tooltip content="Text Comment" placement="top">
         <div
-          :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.TEXT && 'active'}`"
+          @click="text"
+          class="remark-button-outer"
         >
-          <img @click="text" src="../../assets/picture/new-comment.png" class="remark-button" />
+          <img v-show="currentInputType === ModalEventsTypeEnum.TEXT" src="../../assets/picture/new-comment.png" class="remark-button" />
+          <img v-show="currentInputType !== ModalEventsTypeEnum.TEXT" src="../../assets/picture/new-comment-gray.png" class="remark-button" />
         </div>
       </el-tooltip>
     </div>
@@ -346,7 +352,7 @@ export default {
   width: 34px;
   height: 34px;
   border-radius: 17px;
-  background-image: url(../../assets/picture/delete.png);
+  background-image: url(../../assets/picture/morshanchu@2x.png);
   background-size: 16px 16px;
   background-position: 9px 9px;
   background-repeat: no-repeat;
@@ -367,13 +373,14 @@ export default {
   width: 310px;
   height: auto;
   background: #ffffff;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 3px 6px rgba(214, 214, 214, 1);
   opacity: 1;
   border-radius: 6px;
   margin-bottom: 15px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 .remark-list-item.record-item {
   height: auto;
@@ -382,12 +389,13 @@ export default {
   height: 180px;
 }
 .remark-list-item.active-item {
-  box-shadow: 0px 3px 6px #15c39a;
+  /* box-shadow: 0px 3px 6px #15c39a; */
+  border: 1px solid rgba(21, 195, 154, 1)
 }
 .item-header {
   width: 310px;
   height: 60px;
-  background: #15c39a;
+  background: rgba(248, 251, 255, 1);
   opacity: 1;
   border-radius: 6px 6px 0px 0px;
   display: flex;
@@ -405,7 +413,7 @@ export default {
   height: 34px;
   border-radius: 17px;
   margin-right: 11px;
-  background-color: #fff;
+  background-color: #eee;
   line-height: 34px;
   text-align: center;
   font-size: 20px;
