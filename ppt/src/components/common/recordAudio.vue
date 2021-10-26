@@ -201,16 +201,16 @@ export default {
   box-sizing: border-box;
   background-color: rgba(43,51,63,0.7);
   width: 100%;
-  padding-left: 20px;
+  padding-left: 10px;
   display: flex;
   align-items: center;
 }
 .done{
-  width: 14px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   background-color: red;
-  margin-right: 30px;
+  margin-right: 20px;
 }
 .record-time{
   font-size: 10px;
@@ -220,31 +220,31 @@ export default {
 .animation-line>div:nth-of-type(1){
   width: 3px;
   height: 5px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .4s;/*动画延迟  */
 }
 .animation-line>div:nth-of-type(2){
   width: 3px;
   height:10px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .8s;
 }
 .animation-line>div:nth-of-type(3){
   width: 4px;
   height: 15px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .1s;
 }
 .animation-line>div:nth-of-type(4){
   width: 3px;
   height: 10px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .8s;
 }
 .animation-line>div:nth-of-type(5){
   width: 3px;
   height: 5px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .4s;
 }
 .animation-line>div{/* 动画统一属性 */
