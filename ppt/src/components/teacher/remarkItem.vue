@@ -4,14 +4,14 @@
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
       <button :class="`button-static ${currentTab === 3 && 'active'}`" @click="changeTab(3)"></button>
-      <el-select v-model="sortValue" placeholder="Sort" v-show="currentTab !== 3">
+      <!-- <el-select v-model="sortValue" placeholder="Sort" v-show="currentTab !== 3">
         <el-option
           v-for="item in options"
           :key="item.value"
           :label="item.label"
           :value="item.value">
         </el-option>
-      </el-select>
+      </el-select> -->
     </div>
     <template v-if="currentTab !== 3">
       <div class="text-scroll">

@@ -3,14 +3,14 @@
     <div class="text-answer-tab">
       <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
       <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <el-select v-model="sortValue" placeholder="Sort">
+      <!-- <el-select v-model="sortValue" placeholder="Sort">
         <el-option
           v-for="item in options"
           :key="item.value"
           :label="item.label"
           :value="item.value">
         </el-option>
-      </el-select>
+      </el-select> -->
     </div>
     <div class="text-scroll">
       <div class="text-answer-list">
