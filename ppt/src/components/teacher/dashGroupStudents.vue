@@ -54,10 +54,10 @@ export default {
         const currentUser = this.studentList[i]
         const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
         if(index === -1) {
-          noList.push(currentUser)
+          noList.push(currentUser.user_id)
         }
       }
-      // console.log(noList)
+      console.log(noList, 'nolist')
       return noList
     },
     currentComments() {
@@ -200,6 +200,7 @@ export default {
     align-items: center;
     padding-left: 15px;
     box-sizing: border-box;
+    cursor: pointer;
   }
   .select-header{
     background-color: #fafafa;
