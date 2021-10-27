@@ -1,6 +1,7 @@
 <template>
   <div class="header">
     <div class="left-area">
+      <div class="dash-left" @click="handleBack"></div>
       <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       <p>课程标题：{{className}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
@@ -23,6 +24,17 @@
         @click="showStudents"
       >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
     </div>
+    <el-dialog
+      title="The class is still in progress, are you sure you want to leave?"
+      :visible.sync="showBackConfirm"
+      :append-to-body="true"
+    >
+      <!-- <span>The class is still in progress, are you sure you want to leave?</span> -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showBackConfirm = false">No</el-button>
+        <el-button type="primary" @click="backtToClass">Yes</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -57,10 +69,21 @@ export default {
       default: () => []
     },
   },
+  data() {
+    return {
+      showBackConfirm: false
+    }
+  },
   methods: {
     // openProject() {
     //   this
     // }
+    handleBack() {
+      this.showBackConfirm = true
+    },
+    backtToClass() {
+      window.history.back()
+    }
   }
 }
 </script>
@@ -168,5 +191,14 @@ export default {
 }
 .tab:hover{
   background-color: rgba(228, 228, 228, 1);
+}
+.dash-left{
+  width: 30px;
+  height: 30px;
+  background-image: url(../../assets/picture/dash-left.png);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+  cursor: pointer;
+  margin-right: 20px;
 }
 </style>
