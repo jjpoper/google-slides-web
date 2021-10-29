@@ -17,8 +17,9 @@
       </div>
       <ul class="res-list">
         <template  v-for="item in studentList" >
-          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
-            v-if="!currentGroupId || selectedGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id">
+          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'} ${(selectedGroupMembers.length > 0 && selectedGroupMembers.indexOf(item.user_id) === -1) && 'notSelected'}`"
+            v-if="!currentGroupId || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
+            @click="selectUsers(item)">
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
             <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
@@ -38,6 +39,7 @@ export default {
       studentList: state => state.teacher.studentList,
       allGroups: state => state.teacher.allGroups,
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+      currentGroupMembers: state => state.teacher.currentGroupMembers,
       allRemarks: state => state.remark.allRemarks,
       studentAllSlides: state => state.student.studentAllSlides,
       currentPageIndex: state => state.student.currentPageIndex,
@@ -93,6 +95,7 @@ export default {
     currentPageIndex() {
       this.currentGroupId = ''
       this.changeSelectedGroup([])
+      this.changeGroupMembers([])
     }
   },
   props: {
@@ -110,7 +113,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("teacher", ["changeSelectedGroup"]),
+    ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
     changeTab(tab) {
       this.tab = tab
     },
@@ -121,12 +124,19 @@ export default {
     changeGroup(id) {
       if(!id) {
         this.changeSelectedGroup([])
+        this.changeGroupMembers([])
         return
       }
       const data = this.allGroups.filter(item => item.group_id == id)[0]
       console.log(data)
       const list = data.members.map(item => item.user_id)
+      console.log(list)
       this.changeSelectedGroup(list)
+      this.changeGroupMembers(list)
+    },
+    selectUsers(item) {
+      console.log(item)
+      this.changeSelectedGroup([item.user_id])
     }
   }
 }
@@ -207,6 +217,9 @@ export default {
   }
   .disable{
     background-color: rgba(247, 248, 255, 1);
+  }
+  .notSelected{
+    opacity: 0.3;
   }
   .ans-status{
     width: 21px;
