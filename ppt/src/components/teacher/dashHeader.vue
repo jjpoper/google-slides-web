@@ -8,7 +8,7 @@
          <div class="dash-drop">
           <div class="title">Settings</div>
           <div class="tab" @click="openProject">Open project in new window</div>
-          <div class="tab">Ipad/手机端控制</div>
+          <div class="tab">Ipad/Phone Control</div>
           <div class="tab" @click="endLesson">End This Session</div>
         </div>
         <div class="more-icon" slot="reference"><i></i><i></i><i></i></div>
