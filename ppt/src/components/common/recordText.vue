@@ -6,9 +6,9 @@
       v-model="commentValue"
       placeholder=""
     ></textarea>
-    <div class="text-placeholder" v-show="showPlaceholder">
+    <!-- <div class="text-placeholder" v-show="showPlaceholder">
       Lonve feedback for this ppt
-    </div>
+    </div> -->
   </div>
   <div class="footer-button" @click="sendMessage">
     <div :class="`send-button ${!showPlaceholder && 'active'}`">Send</div>
@@ -64,7 +64,7 @@ export default {
 }
 .textarea-box{
   width: 100%;
-  height: 50px;
+  height: 30px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid #D8D8D8;
   opacity: 1;
@@ -75,7 +75,7 @@ export default {
 .textarea {
   background-color: transparent;
   width: 100%;
-  height: 50px;
+  height: 30px;
   padding: 5px;
   border: none;
   box-sizing: border-box;
