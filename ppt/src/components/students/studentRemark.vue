@@ -352,7 +352,7 @@ export default {
   width: 34px;
   height: 34px;
   border-radius: 17px;
-  background-image: url(../../assets/picture/morshanchu@2x.png);
+  background-image: url(../../assets/picture/delete.png);
   background-size: 16px 16px;
   background-position: 9px 9px;
   background-repeat: no-repeat;
@@ -386,16 +386,16 @@ export default {
   height: auto;
 }
 .remark-list-item.text-item {
-  height: 180px;
+  max-height: 180px;
 }
 .remark-list-item.active-item {
-  /* box-shadow: 0px 3px 6px #15c39a; */
-  border: 1px solid rgba(21, 195, 154, 1)
+  box-shadow: 0px 3px 6px #15c39a;
+  /* border: 1px solid rgba(21, 195, 154, 1) */
 }
 .item-header {
   width: 310px;
-  height: 60px;
-  background: rgba(248, 251, 255, 1);
+  min-height: 45px;
+  background: rgba(21, 195, 154, 1);
   opacity: 1;
   border-radius: 6px 6px 0px 0px;
   display: flex;

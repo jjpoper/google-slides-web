@@ -15,6 +15,9 @@ html {
 ul,li{
   list-style: none;
 }
+*{
+  outline: none;
+}
 
 html, button, input, select, textarea {
     font-family: ProximaNovaSoft-Medium, sans-serif;
