@@ -2,9 +2,6 @@
   <div class="switch-header">
     <div v-if="showFullAnswer" @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div>
     <div class="switch-content">
-      <!-- <div :class="`switch-button ${tab === 1 && 'active'}`" @click="changeTab(1)">
-        Student
-      </div> -->
       <div v-show="currentPageAnswerType !== 'none'"
         :class="`switch-button ${tab === 2 && 'active'}`"
         @click="changeTab(2)">

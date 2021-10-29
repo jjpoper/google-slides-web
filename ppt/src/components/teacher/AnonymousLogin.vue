@@ -2,17 +2,7 @@
   <div class="page">
     <img src="../../assets/picture/invate_icon.png" width="316" height="178" />
     <div class="login_right">
-      <img
-        src="../../assets/picture/close_icon.png"
-        style="
-          width: 30px;
-          height: 30px;
-          margin-top: 10px;
-          margin-left: 93%;
-          cursor: pointer;
-        "
-        @click="closeBtn"
-      />
+      <div @click="closeBtn" class="common-close-btn"></div>
 
       <span class="title_1">Invite students to study</span>
       <span class="title_2">Join at join.classcipe.com</span>

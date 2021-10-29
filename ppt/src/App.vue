@@ -104,6 +104,17 @@ html, button, input, select, textarea {
 .el-dialog{
   box-shadow: none !important
 }
+.common-close-btn{
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  background-image: url(./assets/picture/close_icon.png);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+}
 </style>
 <script>
 import "./utils/pptConfig";

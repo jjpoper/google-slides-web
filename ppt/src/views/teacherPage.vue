@@ -252,10 +252,11 @@
     <el-dialog
       :visible.sync="showCopyLinkDialog"
       custom-class="custom-dialog"
+      width="80%"
       @close="closeCopyLinkDialog()"
     >
       <AnonymousLogin
-        style="width: 937px; height: 660px"
+        style="height: 660px"
         v-if="classRoomInfo"
         :hindeTimeDialog="hindeTimeDialog"
         :url="getStudentUrl()"
@@ -1393,11 +1394,13 @@ type: "slide"*/
     },
 
     copyUrl() {
-      if (this.isDashboard) {
-        this.stepTwoDialog = true;
-      } else {
-        this.showCopyLinkDialog = true;
-      }
+      // if (this.isDashboard) {
+      //   this.stepTwoDialog = true;
+      // } else {
+      //   this.showCopyLinkDialog = true;
+      // }
+
+      this.showCopyLinkDialog = true;
     },
     closeCopyDialog() {
       this.showCopyLinkDialog = false;
