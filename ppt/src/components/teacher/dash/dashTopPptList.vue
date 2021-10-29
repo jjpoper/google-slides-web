@@ -223,7 +223,7 @@ export default {
 }
 
 .image_parent_focus {
-  border: 1px solid #21A28B;
+  border: 3px solid #21A28B;
   outline: none !important;
 }
 .image_parent {

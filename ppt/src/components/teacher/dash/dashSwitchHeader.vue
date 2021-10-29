@@ -11,9 +11,11 @@
         Response
       </div>
     </div>
-    <div
-      :class="`full-answer-button ${showFullAnswer && 'active'}`"
-      @click="setDashFullPageResponse(!showFullAnswer)"></div>
+    <el-tooltip :content="`${showFullAnswer ? 'Split Screen' : 'Full Screen'}`" placement="top">
+      <div
+        :class="`full-answer-button ${showFullAnswer && 'active'}`"
+        @click="setDashFullPageResponse(!showFullAnswer)"></div>
+    </el-tooltip>
   </div>
 </template>
 <script>

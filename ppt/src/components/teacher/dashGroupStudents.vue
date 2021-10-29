@@ -17,12 +17,12 @@
       </div>
       <ul class="res-list">
         <template  v-for="item in studentList" >
-          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'} ${(selectedGroupMembers.length > 0 && selectedGroupMembers.indexOf(item.user_id) === -1) && 'notSelected'}`"
+          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
             v-if="!currentGroupId || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
             @click="selectUsers(item)">
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
-            <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
+            <div :class="`user-icon student-icon ${getSelected(item.user_id)}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
             <div class="user-name">{{item.name}}</div>
           </li>
         </template>
@@ -109,7 +109,8 @@ export default {
   },
   data() {
     return {
-      currentGroupId: ''
+      currentGroupId: '',
+      selectedStudents: false, // 是否选中学生
     }
   },
   methods: {
@@ -122,6 +123,7 @@ export default {
       return getAnswerTimeStr(time * 1000);
     },
     changeGroup(id) {
+      this.selectedStudents = false
       if(!id) {
         this.changeSelectedGroup([])
         this.changeGroupMembers([])
@@ -136,7 +138,23 @@ export default {
     },
     selectUsers(item) {
       console.log(item)
-      this.changeSelectedGroup([item.user_id])
+      this.selectedStudents = true
+      const {user_id} = item
+      const newList = this.selectedGroupMembers.concat([])
+      const index = newList.indexOf(user_id)
+      if(index > -1) {
+        newList.splice(index, 1)
+      } else {
+        newList.push(user_id)
+      }
+      this.changeSelectedGroup(newList)
+    },
+    getSelected(user_id) {
+      if(this.selectedStudents) {
+        const list = this.selectedGroupMembers
+        const isSelected = list.length > 0 && list.indexOf(user_id) > -1
+        return isSelected ? 'selected' : ''
+      }
     }
   }
 }
@@ -173,12 +191,15 @@ export default {
     height: 52px;
     border-radius: 26px;
     margin-right: 11px;
-    background-color: red;
     line-height: 52px;
     text-align: center;
     font-size: 20px;
     font-family: Inter-Bold;
     color: #fff;
+    background-color: #afafaf;
+  }
+  .user-icon.selected{
+    background-color: red;
   }
   .student-icon{
     width: 44px;
