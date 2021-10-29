@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <div class="aligncenter">
+    <div class="aligncenter" v-if="currentModel == 'Student-Paced'">
       <div
         class="button_area"
         @click="changeMeterial"
