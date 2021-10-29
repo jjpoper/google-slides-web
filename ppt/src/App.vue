@@ -101,6 +101,9 @@ html, button, input, select, textarea {
     display: none;
   }
 }
+.el-dialog{
+  box-shadow: none !important
+}
 </style>
 <script>
 import "./utils/pptConfig";

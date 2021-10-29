@@ -274,7 +274,7 @@
       />
     </el-dialog>
     <el-dialog :visible.sync="dashTipsModalVisiable" custom-class="custom-dialog" width="80%">
-      <dash-tips-modal :close="showDashTips" :isTeacher="false" />
+      <dash-tips-modal :close="showDashTips" :isTeacher="true" />
     </el-dialog>
     <div
       v-show="shareing"

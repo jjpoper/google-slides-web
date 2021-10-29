@@ -1,21 +1,6 @@
 <template>
   <div class="panel">
-    <el-dialog
-      :visible.sync="dashTipsModalVisiable"
-      custom-class="custom-dialog"
-      width="80%"
-      :append-to-body="true"
-    >
-      <dash-tips-modal :close="showDashTips" :isTeacher="false" />
-    </el-dialog>
-    <div
-      :class="dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'"
-      style="margin-right: 20px"
-    >
-      <div class="meterialimage" @click="showDashTips">
-        <div class="fullbgimg dash-tip"></div>
-      </div>
-    </div>
+    <student-tips-modal />
     <div v-if="currentModel == 'Student-Paced'" class="arrow_opts">
       <button class="control-bar__button">
         <div class="control-bar__icon" @click="lastPage()">
@@ -87,9 +72,9 @@
 <script>
 import { ClassRoomModelEnum } from "../../socket/socketEvents";
 import {mapState} from 'vuex'
-import dashTipsModal from '../teacher/dashTipsModal.vue';
+import StudentTipsModal from './studentTipsModal.vue';
 export default {
-  components: { dashTipsModal },
+  components: { StudentTipsModal },
   computed: {
     ...mapState({
       answerdPage: state => state.student.answerdPage,
@@ -155,16 +140,12 @@ export default {
     return {
       questionVisiable: false,
       meterialSwitchVisiable: false,
-      dashTipsModalVisiable: false
     };
   },
   methods: {
     changeMeterial() {
       this.meterialSwitchVisiable = !this.meterialSwitchVisiable
     },
-    showDashTips() {
-      this.dashTipsModalVisiable = !this.dashTipsModalVisiable
-    }
   }
 };
 </script>

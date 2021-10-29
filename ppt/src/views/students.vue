@@ -333,9 +333,11 @@ export default {
     },
     filterTips() {
       if (this.slides[this.currentPageIndex]) {
-        return this.slides[this.currentPageIndex].elements.filter(
+        const tips = this.slides[this.currentPageIndex].elements.filter(
           item => item.type === "tip"
         );
+        console.log(tips, 'tips')
+        return tips
       } else {
         return [];
       }
@@ -945,6 +947,7 @@ export default {
       } else if (d.mtype === SocketEventsEnum.UPDATE_TIP) {
         console.log(d);
         this.updateSlideItemTip(d);
+        EventBus.$emit("set-unread-tip");
       } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
         console.log(d);
         if (d.page_id === this.currentItemData.page_id) {
