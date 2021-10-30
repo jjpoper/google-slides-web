@@ -32,7 +32,11 @@
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
-          <record-video v-if="recordType === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
+          <record-video
+            v-if="recordType === ModalEventsTypeEnum.VIDEO"
+            :onSend="sendCommentCb"
+            :cancel="cancelRecord"
+          />
           <record-audio
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"

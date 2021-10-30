@@ -1,6 +1,12 @@
+import { showToast } from '@/utils/loading';
 import axios from 'axios';
 import PPT from '../utils/pptConfig'
-import { connect } from 'echarts/core';
+
+axios.interceptors.response.use((res: any) => {
+  return res;
+}, error => {
+  showToast('system error', 'error')
+})
 
 export const getItem = ({
   slideid,

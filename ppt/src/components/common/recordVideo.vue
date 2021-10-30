@@ -11,11 +11,11 @@
         <p class="record-time">{{getTime(timeValue)}} / 02:00</p>
       </div>
     </div>
-    <common-progress :progress="progress"/>
+    <common-progress :progress="progress" :cancel="cancelUp"/>
   </div> 
 </template>
 <script>
-import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo, endRecord} from '@/utils/video'
+import {startRecordVideo, pauseRecordVideo, resumeRecordVideo, saveRecordVideo, endRecord, cancelUpVideo} from '@/utils/video'
 import commonProgress from './commonProgress.vue'
 export default {
   components: { commonProgress },
@@ -23,7 +23,11 @@ export default {
     onSend: {
       type: Function,
       default: () => null
-    }
+    },
+    cancel: {
+      type: Function,
+      default: () => null
+    },
   },
   data() {
     return {
@@ -97,6 +101,12 @@ export default {
       this.timeValue = 0
       this.count()
     },
+    cancelUp() {
+      cancelUpVideo()
+      this.onProgressUpLoad(0)
+      console.log('onProgressUpLoad')
+      this.cancel()
+    }
   }
 }
 </script>

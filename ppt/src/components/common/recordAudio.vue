@@ -29,13 +29,12 @@
         </div>
       </div>
     </div>
-    <common-progress :progress="progress"/>
+    <common-progress :progress="progress" :cancel="cancelUp"/>
   </div>
 </template>
 <script>
-import {startRecordAudio, pauseRecordAudio, resumeRecordAudio, saveRecordAudio, endRecordAudio} from '@/utils/audio'
+import {startRecordAudio, saveRecordAudio, endRecordAudio, cancelUpAudio} from '@/utils/audio'
 import audioPlayer from './audioPlayer.vue'
-import { upFireBaseFile } from '@/utils/uploadFile'
 import CommonProgress from './commonProgress.vue'
 export default {
   components: { audioPlayer, CommonProgress },
@@ -126,6 +125,11 @@ export default {
     sendRecord(){
        this.onSend(this.audioUrl, 'audio')
     },
+    cancelUp() {
+      cancelUpAudio()
+      this.onProgressUpLoad(0)
+      this.cancel()
+    }
   }
 
 }

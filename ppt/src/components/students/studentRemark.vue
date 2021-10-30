@@ -46,6 +46,7 @@
           <record-video
             v-if="currentInputType === ModalEventsTypeEnum.VIDEO"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
           <record-audio
             v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO"
@@ -251,6 +252,7 @@ export default {
       );
     },
     cancelRecord() {
+      console.log('cancelRecord')
       this.changeRemarkIndex(-1);
       this.setCurrentRemarkOptions(null);
     },

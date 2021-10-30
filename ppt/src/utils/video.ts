@@ -14,6 +14,7 @@ const mediaConstraints = {
 };
 let mediaRecorder: any = null
 let domVideoElement: any = null
+let upFileInstance: any = null
 
 const closePictureInPicture = () => {
   const dom: any = document
@@ -69,6 +70,13 @@ export const endRecord = () => {
   });
 }
 
+export const cancelUpVideo = () => {
+  if(upFileInstance) {
+    upFileInstance.cancel()
+    upFileInstance = null
+  }
+}
+
 export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promise<any> => {
   return new Promise((res, rej) => {
     domVideoElement.pause();
@@ -90,12 +98,17 @@ export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promi
       // })
       // return
 
-      upFireBaseFile(file, onProgressUpLoad).then((result) => {
-        res(result)
-        setTimeout(() => {
-          onProgressUpLoad(0)
-        }, 50);
-      })
+      upFileInstance = upFireBaseFile(
+        file,
+        onProgressUpLoad,
+        ((result: any) => {
+          res(result)
+          setTimeout(() => {
+            onProgressUpLoad(0)
+            upFileInstance = null
+          }, 50);
+        })
+      )
 
       mediaRecorder.camera.stop();
       mediaRecorder.destroy();

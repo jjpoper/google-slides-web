@@ -1,21 +1,33 @@
 <template>
-  <div class="upload-file">
-    <input
-      class="upload-file"
-      type="file"
-      :accept="accept"
-      @change="onUpload"/>
-      <common-progress :progress="progress"/>
+  <div>
+    <div class="upload-file" >
+      <input
+        v-if="progress <= 0"
+        class="upload-file"
+        type="file"
+        :accept="accept"
+        :value="upValue"
+        @change="onUpload"/>
+      <div
+        v-else
+        class="upload-file"
+        @click="showUnUpload"/>  
+    </div>
+    
+    <common-progress :progress="progress" :cancel="cancel" :showCancel="true"/>
   </div>
 </template>
 <script>
 import {upFireBaseFile} from '@/utils/uploadFile'
 import commonProgress from './commonProgress.vue'
+import { showToast } from '@/utils/loading'
 export default {
   components: { commonProgress },
   data() {
     return {
-      progress: 0
+      progress: 0,
+      upValue: '',
+      uploader: null
     }
   },
   props: {
@@ -33,15 +45,32 @@ export default {
       const file = e.target.files[0]
       console.log(file)
       // return
-      upFireBaseFile(file, this.onProgressUpLoad).then((result) => {
-        this.onSuccess(file, result)
-        setTimeout(() => {
-          this.progress = 0
-        }, 50);
-      })
+      this.uploader = upFireBaseFile(
+        file,
+        this.onProgressUpLoad,
+        ((result) => {
+          this.onSuccess(file, result)
+          setTimeout(() => {
+            this.progress = 0
+          }, 50);
+        })
+      )
     },
     onProgressUpLoad(progress) {
       this.progress = progress
+    },
+    cancel() {
+      if(this.uploader) {
+        this.uploader.cancel()
+      }
+      this.end()
+    },
+    end() {
+      this.progress = 0
+      this.upValue = ''
+    },
+    showUnUpload() {
+      showToast('the file is uploading, please wait', 'warning')
     }
   }
 }
