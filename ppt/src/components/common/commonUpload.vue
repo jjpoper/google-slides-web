@@ -2,18 +2,16 @@
   <div>
     <div class="upload-file" >
       <input
-        v-if="progress <= 0"
         class="upload-file"
         type="file"
         :accept="accept"
-        :value="upValue"
+        ref="uploadFile"
         @change="onUpload"/>
-      <div
+      <!-- <div
         v-else
         class="upload-file"
-        @click="showUnUpload"/>  
+        @click="showUnUpload"/>   -->
     </div>
-    
     <common-progress :progress="progress" :cancel="cancel" :showCancel="true"/>
   </div>
 </template>
@@ -26,7 +24,6 @@ export default {
   data() {
     return {
       progress: 0,
-      upValue: '',
       uploader: null
     }
   },
@@ -38,12 +35,20 @@ export default {
     accept: {
       type: String,
       default: '.doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*'
+    },
+    onlyGetFile: {
+      type: Boolean,
+      default: false // 是否只得到本地file，单独做上传处理，默认false
     }
   },
   methods: {
     onUpload(e) {
       const file = e.target.files[0]
-      console.log(file)
+      if(this.onlyGetFile) {
+        this.onSuccess(file)
+        this.end()
+        return
+      }
       // return
       this.uploader = upFireBaseFile(
         file,
@@ -67,7 +72,7 @@ export default {
     },
     end() {
       this.progress = 0
-      this.upValue = ''
+      this.$refs.uploadFile.value = ''
     },
     showUnUpload() {
       showToast('the file is uploading, please wait', 'warning')

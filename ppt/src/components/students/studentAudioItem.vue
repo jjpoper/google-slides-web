@@ -14,7 +14,7 @@
       <el-tooltip content="Upload Material" placement="top">
         <div class="remark-button-outer">
           <img src="../../assets/picture/add.png" class="remark-button" />
-          <common-upload :onSuccess="onUpload"/>
+          <common-upload :onSuccess="pushToUploadPool" :onlyGetFile="true"/>
         </div>
       </el-tooltip>
     </div>
@@ -44,6 +44,20 @@
             :onRecordDone="focusIndex"
           />
         </div>
+      </li>
+      <li
+        class="remark-list-item" v-for="item in uploadPool" :key="item.id">
+        <uploading-progress :onSuccess="onProgressDone" :item="item">
+          <div class="item-header">
+            <div class="user-info">
+              <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
+              <div>
+                <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
+              </div>
+            </div>
+            <div @click.stop="cancelUpLoad(item.id)" class="delete-button"></div>
+          </div>
+        </uploading-progress>
       </li>
       <li
         class="remark-list-item" 
@@ -96,13 +110,13 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { deleteMedia, sendAudioOrVideoAnswer } from "@/socket/socket.student";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
-import { showToast } from "@/utils/loading";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
 import tipShow from "./tipShow.vue";
 import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
 import base64image from '../base64image.vue';
 import CommonUpload from '../common/commonUpload.vue';
+import UploadingProgress from '../common/uploadingProgress.vue';
 export default {
   components: {
     RecordVideo,
@@ -110,7 +124,8 @@ export default {
     AudioPlayer,
     tipShow,
     base64image,
-    CommonUpload
+    CommonUpload,
+    UploadingProgress
   },
   computed: { ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
@@ -138,7 +153,8 @@ export default {
   data() {
     return {
       ModalEventsTypeEnum,
-      recordType: null
+      recordType: null,
+      uploadPool: [], // {id: date.now, file}
     };
   },
   methods: {
@@ -160,6 +176,10 @@ export default {
     },
     cancelRecord() {
       this.recordType = null;
+    },
+    onProgressDone(item, result){
+      this.cancelUpLoad(item.id)
+      this.onUpload(item.file, result)
     },
     onUpload(file, result) {
       const nameList = file.type.split('/')
@@ -224,6 +244,17 @@ export default {
           this.$refs.activeRef[0].focus();
         }
       });
+    },
+    pushToUploadPool(file) {
+      console.log(file)
+      this.uploadPool.push({
+        file,
+        id: Date.now()
+      })
+    },
+    cancelUpLoad(id) {
+      const index = this.uploadPool.findIndex(item => item.id == id)
+      this.uploadPool.splice(index, 1)
     }
   }
 };
@@ -310,6 +341,8 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+  min-height: 130px;
 }
 .remark-list-item.record-item {
   height: auto;
