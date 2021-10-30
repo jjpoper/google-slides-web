@@ -51,6 +51,10 @@ export default {
       type: Function,
       default: () => null
     },
+    autoDone: {
+      type: Boolean,
+      default: false // 自动完成提交，不要二次确认
+    }
   },
   data() {
     return {
@@ -105,9 +109,13 @@ export default {
         this.endRecording = true
         saveRecordAudio(this.onProgressUpLoad).then((url) => {
           if(url) {
-            // 发送url信息
-            this.audioUrl = url
-            this.visible = true
+            if(this.autoDone) {
+              this.onSend(url)
+            } else {
+              // 发送url信息
+              this.audioUrl = url
+              this.visible = true
+            }
           }
         })
         this.clearCount()

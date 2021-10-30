@@ -6,6 +6,20 @@
         <strong class="el-dropdown-link"> Add Material </strong>
       </div>
       <el-dropdown-menu slot="dropdown" style="text-align: center">
+        <el-tooltip content="Record Audio" placement="right">
+          <div style="position: relative; cursor: pointer;">
+            <div class="remark-button-outer">
+              <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button" />
+            </div>
+          </div>
+        </el-tooltip>
+        <el-tooltip content="Record Video" placement="right">
+          <div style="position: relative; cursor: pointer;">
+            <div class="remark-button-outer">
+              <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
+            </div>
+          </div>
+        </el-tooltip>
         <el-tooltip content="my computer" placement="right">
           <!-- <el-upload
             class="upload-demo"
@@ -148,10 +162,23 @@
         :doneSelect="doneSelect"
       />
     </el-dialog>
+    <div style="position: absolute">
+      <record-video
+        v-if="recordType === ModalEventsTypeEnum.VIDEO"
+        :onSend="onSendVideo"
+        :cancel="cancelRecord"
+      />
+      <record-audio
+        v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
+        :onSend="onSendAudio"
+        :cancel="cancelRecord"
+        :autoDone="true"
+      />
+    </div>
   </div>
 </template>
 <script>
-import { ModalEventsNameEnum } from "@/socket/socketEvents";
+import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
 import GooglePicker from "@/utils/googlePicker";
 import { hideLoading, showLoading, showToast } from "@/utils/loading";
 import { getOnlineImage } from "@/model";
@@ -160,12 +187,16 @@ import GoogleYoutubeVedio from "./googleYoutubeVedio.vue";
 import {videoTypes, audioTypes} from '@/utils/constants'
 import MetarialWebSite from './metarialWebSite.vue';
 import CommonUpload from '../common/commonUpload.vue';
+import RecordAudio from '../common/recordAudio.vue';
+import RecordVideo from '../common/recordVideo.vue';
 export default {
   components: {
     googleImageSearch,
     GoogleYoutubeVedio,
     MetarialWebSite,
-    CommonUpload
+    CommonUpload,
+    RecordAudio,
+    RecordVideo
   },
   data() {
     return {
@@ -181,7 +212,9 @@ export default {
       starttime: 0,
       endtime: 0,
       distroyOnClose: true,
-      showWebSite: false
+      showWebSite: false,
+      recordType: null,
+      ModalEventsTypeEnum
     };
   },
   mounted() {},
@@ -329,6 +362,28 @@ export default {
     addGoogleImage() {
       this.showImageSearch = true;
     },
+    audio() {
+      this.recordType = ModalEventsTypeEnum.AUDIO;
+    },
+    video() {
+      this.recordType = ModalEventsTypeEnum.VIDEO;
+    },
+    cancelRecord() {
+      this.recordType = null
+    },
+    onSendAudio(url) {
+      console.log(url)
+      EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+        type: "audio",
+        url,
+      });
+    },
+    onSendVideo(url) {
+      EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+        type: "video",
+        url,
+      });
+    },
   },
 };
 </script>
@@ -396,5 +451,9 @@ export default {
   flex-direction: row;
   width: 200px;
   align-items: center;
+}
+.remark-button{
+  width: 32px;
+  height: 32px;
 }
 </style>
