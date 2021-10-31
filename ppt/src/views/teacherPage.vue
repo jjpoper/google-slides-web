@@ -428,7 +428,8 @@ type: "slide"*/
       copyLinkStr: "",
       shareing: false,
       showNewPromptDialog: false,
-      inputDialog: false
+      inputDialog: false,
+      sendControlDelay: null,
     };
   },
   mounted() {
@@ -966,11 +967,9 @@ type: "slide"*/
             }
             this.studentCounts = this.studentList.length;
 
-            //发送一个页面同步消息
+            // 新的学生加入 发送一个页面同步消息，让学生跳转到指定也么
             if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
-              this.emitSo(
-                `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
-              );
+              this.sendPageControl()
             }
           } else if (d.join_in.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
@@ -1261,10 +1260,21 @@ type: "slide"*/
       this.getItemData();
       const notSend = false;
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
+        this.sendPageControl()
+      }
+    },
+
+    // 老师控制分页
+    sendPageControl() {
+      if(this.sendControlDelay) {
+        clearTimeout(this.sendControlDelay)
+        this.sendControlDelay = null
+      }
+      this.sendControlDelay = setTimeout(() => {
         this.emitSo(
           `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
         );
-      }
+      }, 500)
     },
 
     queryResult(code, token, count) {
@@ -1486,10 +1496,8 @@ type: "slide"*/
         );
 
         if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
-          //如果从学生模式切换到老师模式，则通知学生进行页面切换操作
-          this.emitSo(
-            `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
-          );
+          // 如果从学生模式切换到老师模式，则通知学生进行页面切换操作
+          this.sendPageControl()
         }
       }
     },
@@ -1689,9 +1697,7 @@ type: "slide"*/
       this.currentItemData.flag = this.isDashboard;
       this.getResponeCount();
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
-        this.emitSo(
-          `{"room":"${this.class_id}", "type": "${SocketEventsEnum.GO_PAGE}","token": "${this.token}","class_id":"${this.class_id}", "params": {"page": "${this.currentPageIndex}"}}`
-        );
+        this.sendPageControl()
       }
       for (let i = 0; i < this.slides.length; i++) {
         this.isFocus[i] = i == index;
