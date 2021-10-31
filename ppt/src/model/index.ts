@@ -5,7 +5,7 @@ import PPT from '../utils/pptConfig'
 axios.interceptors.response.use((res: any) => {
   return res;
 }, error => {
-  showToast('system error', 'error')
+  showToast('service error', 'error')
 })
 
 export const getItem = ({
