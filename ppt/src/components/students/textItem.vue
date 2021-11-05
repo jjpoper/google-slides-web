@@ -107,7 +107,7 @@ export default {
   data() {
     return {
       addDisable: false,
-      maxCount: 4,
+      maxCount: 5,
       inputCount: 1,
       arrList: getCurrentPageStudentAnswerList(
         this.data.page_id,

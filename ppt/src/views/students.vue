@@ -111,9 +111,11 @@
     </div>
 
     <div class="top_btn">
-      <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
-      </div>
+      <el-tooltip :content="`${online ? 'Online' : 'Offline'}`" placement="top">
+        <div class="online_status">
+          <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        </div>
+      </el-tooltip>
       <div
         class="deadline_info"
         v-if="showRemainTime()"

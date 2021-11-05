@@ -5,14 +5,15 @@
       class="textarea"
       v-model="commentValue"
       placeholder=""
+      @blur="sendMessage"
     ></textarea>
     <!-- <div class="text-placeholder" v-show="showPlaceholder">
       Lonve feedback for this ppt
     </div> -->
   </div>
-  <div class="footer-button" @click="sendMessage">
+  <!-- <div class="footer-button" @click="sendMessage">
     <div :class="`send-button ${!showPlaceholder && 'active'}`">Send</div>
-  </div>
+  </div> -->
 </div>
 </template>
 <script>

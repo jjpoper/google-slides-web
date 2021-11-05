@@ -4,7 +4,7 @@
       <dash-top-ppt-list v-show="showPPTList"/>
       <div :class="`dash-second ${showFullAnswer && 'dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
-          <template v-if="showFullAnswer && hasPageAnswer">
+          <template v-if="showFullAnswer && shouldShowPageAnswer">
             <dash-switch-header :showres="showres" :showResponse="showResponse"/>
             <template
               :class="
@@ -33,18 +33,20 @@
             <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
           </template>
           <dashboard-meterial
-            v-if="!showFullAnswer || !hasPageAnswer"
+            v-if="!showFullAnswer || !shouldShowPageAnswer"
             :pptUrl="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <div v-if="hasPageAnswer" :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
+        <div v-if="shouldShowPageAnswer"
+          v-show="!showFullAnswer || studentList.length > 0"
+          :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
           <dash-res-and-students
             v-if="!showFullAnswer"
             :showResponse="showResponse"
             :responseList="responseContentList"/>
-          <DashGroupStudents v-else/>
+          <DashGroupStudents />
         </div>
         <dashboard-meterial
           v-if="showFullAnswer"
@@ -149,8 +151,10 @@ export default {
     ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
       showFullAnswer: state => state.teacher.showDashFullResponse,
+      studentList: state => state.teacher.studentList || [],
     }),
-    hasPageAnswer() {
+    // 互动题型
+    shouldShowPageAnswer() {
       const itemData = this.slides[this.currentPageIndex]
       const type = itemData.items[0] ? itemData.items[0].type : null
       // if(!type) {

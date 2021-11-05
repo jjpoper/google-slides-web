@@ -1,7 +1,7 @@
 <template>
-  <div class="res-and-student">
+  <div class="res-and-student" >
     <div class="res-inner">
-      <div class="student-list-item select-header">
+      <div class="student-list-item select-header" v-if="allGroups.length > 0">
         <el-select v-model="currentGroupId" placeholder="All" @change="changeGroup" style="background: #fff">
           <el-option
             label="ALL"

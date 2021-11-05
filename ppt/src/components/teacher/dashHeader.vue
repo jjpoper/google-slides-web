@@ -2,7 +2,9 @@
   <div class="header">
     <div class="left-area">
       <div class="dash-left" @click="handleBack"></div>
-      <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
+      <el-tooltip :content="`${online ? 'Online' : 'Offline'}`" placement="top">
+        <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
+      </el-tooltip>
       <p>课程标题：{{className}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">

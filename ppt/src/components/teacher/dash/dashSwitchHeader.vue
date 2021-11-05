@@ -1,13 +1,13 @@
 <template>
   <div class="switch-header">
     <div v-if="showFullAnswer" @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div>
-    <div class="switch-content">
+    <!-- <div class="switch-content">
       <div v-show="currentPageAnswerType !== 'none'"
         :class="`switch-button ${tab === 2 && 'active'}`"
         @click="changeTab(2)">
         Response
       </div>
-    </div>
+    </div> -->
     <el-tooltip :content="`${showFullAnswer ? 'Split Screen' : 'Full Screen'}`" placement="top">
       <div
         :class="`full-answer-button ${showFullAnswer && 'active'}`"
@@ -110,16 +110,16 @@ export default {
   }
   .showResButoon{
     width: 120px;
-    height: 30px;
+    height: 50px;
     border-radius: 4px;
     background-color: rgba(21, 195, 154, 1);
     font-size: 14px;
     font-family: Inter-Bold;
-    line-height: 30px;
+    line-height: 50px;
     color: #FFFFFF;
     cursor: pointer;
     text-align: center;
     position: relative;
-    margin-right: 30px;
+    /* margin-right: 30px; */
   }
 </style>

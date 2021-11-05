@@ -1,6 +1,6 @@
 <template>
   <div class="record-area">
-    <div v-if="audioUrl">
+    <!-- <div v-if="audioUrl">
       <audio-player :url="audioUrl"/>
       <el-tooltip popper-class="no-border" placement="bottom-start" width="258" :value="true" effect="light" :manual="true">
         <div slot="content" style="width: 258px">
@@ -12,7 +12,7 @@
         </div>
         <div class="tips-area"></div>
       </el-tooltip>
-    </div>
+    </div> -->
     <div v-show="!endRecording">
       <div class="fixed-area" v-if="!audioUrl">
         <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
@@ -114,7 +114,7 @@ export default {
             } else {
               // 发送url信息
               this.audioUrl = url
-              this.visible = true
+              this.sendRecord()
             }
           }
         })
