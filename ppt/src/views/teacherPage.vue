@@ -204,14 +204,13 @@
     </el-dialog>
 
     <!-- @close="closeCopyLinkDialog()" -->
-    <el-dialog
+    <!-- <el-dialog
       :title="getStepTwoTitle()"
       :visible.sync="stepTwoDialog"
       @open="openCopyLinkDialog()"
       custom-class="custom-dialog"
       width="80%"
     >
-      <!-- <stepTwoView :copyUrl="copyLink" :closeTwo="closeTwo" /> -->
       <dash-copy-dialog
         v-if="classRoomInfo"
         :getStudentOnLineCount="getStudentOnLineCount"
@@ -224,7 +223,7 @@
         :isDashboard="isDashboard"
         :closeBtn="closeDashCopy"
       />
-    </el-dialog>
+    </el-dialog> -->
 
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
       <feedbackTimePanel
@@ -433,6 +432,7 @@ type: "slide"*/
     };
   },
   mounted() {
+    this.addWindowListener()
     EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
@@ -550,6 +550,18 @@ type: "slide"*/
       "updateOneRemarkItem",
       "deleteOneRemarkItem"
     ]),
+    // 监听dash和project之间通信
+    addWindowListener() {
+      window.addEventListener('storage', (e) => {
+        //获取被修改的键值
+        console.log(e.key)
+        if (e.key == 'toggleCopyUrlLink') {
+          const value = localStorage.toggleCopyUrlLink
+          console.log(Boolean(+value))
+          this.showCopyLinkDialog = Boolean(+value)
+        }
+      },false);
+    },
     addprompt() {
       console.log("新增prompt!!");
       this.showNewPromptDialog = true;
@@ -836,7 +848,8 @@ type: "slide"*/
         .then(res => {
           this.initShortLinkConfig(res);
           this.classRoomInfo = res;
-          if (this.directFromPlugin) {
+          if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard) {
+            // window.open(location.href.replace(/\/d\//, '/t/'))
           }
           this.afterConnectRoom();
         })
@@ -889,7 +902,7 @@ type: "slide"*/
                 this.stepTwoDialog = true;
               }
             } else {
-              this.showCopyLinkDialog = true;
+              this.copyUrl()
             }
           }
         })
@@ -1093,7 +1106,7 @@ type: "slide"*/
         if (this.isDashboard) {
           this.stepTwoDialog = true;
         } else {
-          this.showCopyLinkDialog = true;
+          this.copyUrl()
           this.copyLinkStr = "";
         }
       } else if (d.mtype === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
@@ -1411,9 +1424,11 @@ type: "slide"*/
       // }
 
       this.showCopyLinkDialog = true;
+      localStorage.setItem('toggleCopyUrlLink', 1);
     },
     closeCopyDialog() {
       this.showCopyLinkDialog = false;
+      localStorage.setItem('toggleCopyUrlLink', 0);
     },
 
     getBtnString() {

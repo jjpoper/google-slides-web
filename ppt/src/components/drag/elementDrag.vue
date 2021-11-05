@@ -23,6 +23,7 @@
     v-on:deactivated="deactivated"
     dragHandle=".dragitem"
     ref="vueDrag"
+    v-if="rect.id"
   >
     <el-popover
     placement="right"
