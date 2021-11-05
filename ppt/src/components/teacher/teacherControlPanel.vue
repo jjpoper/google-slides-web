@@ -157,17 +157,17 @@
     </div> -->
     <!--material-->
     <div
-      :class="meterialSwitchVisiable ? 'button_area back_focus' : 'button_area'"
+      :class="meterialVisiable ? 'button_area back_focus' : 'button_area'"
       style="margin-right: 20px"
       @click="changeMeterial"
     >
       <div class="meterialimage">
         <div
-          :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"
+          :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"
         ></div>
       </div>
       <strong class="button_text">{{
-        meterialSwitchVisiable ? "Material hiding" : "Display material"
+        meterialVisiable ? "Material hiding" : "Display material"
       }}</strong>
     </div>
 
@@ -315,15 +315,6 @@ export default {
       default: false,
     },
   },
-  watch: {
-    meterialSwitchVisiable() {
-      // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialSwitchVisiable);
-    },
-  },
-  created() {
-    this.meterialSwitchVisiable = this.meterialVisiable;
-  },
   components: {
     dashboardMenu,
     UploadEnter,
@@ -331,12 +322,11 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      meterialSwitchVisiable: false,
     };
   },
   methods: {
     changeMeterial() {
-      this.meterialSwitchVisiable = !this.meterialSwitchVisiable;
+      this.changeShowMetrial(!this.meterialVisiable);
     },
     lastPage() {
       // console.log(this.currentPage);

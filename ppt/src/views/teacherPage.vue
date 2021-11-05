@@ -560,11 +560,21 @@ type: "slide"*/
         //获取被修改的键值
         console.log(e.key)
         if (e.key == 'toggleCopyUrlLink') {
-          const value = localStorage.toggleCopyUrlLink
-          console.log(Boolean(+value))
-          this.showCopyLinkDialog = Boolean(+value)
+          const value = this.getSyncLocalStorageValue('toggleCopyUrlLink')
+          this.showCopyLinkDialog = value
+          return
+        }
+        if (e.key == 'toggleMetarial') {
+          const status = this.getSyncLocalStorageValue('toggleMetarial')
+          this.meterialVisiable = status;
+          this.metrialStatusMap[this.currentPageId] = status
+          return
         }
       },false);
+    },
+    // 获取同步信息值
+    getSyncLocalStorageValue(key) {
+      return localStorage.getItem(key) === 'true'
     },
     addprompt() {
       console.log("新增prompt!!");
@@ -1428,11 +1438,11 @@ type: "slide"*/
       // }
 
       this.showCopyLinkDialog = true;
-      localStorage.setItem('toggleCopyUrlLink', 1);
+      this.setLocalStorageValue('toggleCopyUrlLink', true);
     },
     closeCopyDialog() {
       this.showCopyLinkDialog = false;
-      localStorage.setItem('toggleCopyUrlLink', 0);
+      this.setLocalStorageValue('toggleCopyUrlLink', false);
     },
 
     getBtnString() {
@@ -1814,6 +1824,8 @@ type: "slide"*/
     changeShowMetrial(status) {
       this.meterialVisiable = status;
       this.metrialStatusMap[this.currentPageId] = status
+      // localStorage.toggleMetarial = status
+      this.setLocalStorageValue('toggleMetarial', status)
     },
     shareScreen() {
       openShare(() => {
@@ -1823,6 +1835,15 @@ type: "slide"*/
         this.$refs["screen-share"].srcObject = stream;
         this.shareing = true;
       });
+    },
+    setLocalStorageValue(key, value) {
+      // value = '1' || '2'
+      // const oldValue = localStorage.getItem(key)
+      // if(oldValue === value) {
+      //   localStorage.setItem(key) 
+      // }
+      localStorage.removeItem(key)
+      localStorage.setItem(key, value) 
     }
   }
 };

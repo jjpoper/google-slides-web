@@ -2,7 +2,7 @@
   <div class="header">
     <div class="left-area">
       <div class="dash-left" @click="handleBack"></div>
-      <el-tooltip :content="`${online ? 'Online' : 'Offline'}`" placement="top">
+      <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
         <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       </el-tooltip>
       <p>课程标题：{{className}}</p>
