@@ -431,6 +431,7 @@ type: "slide"*/
       showNewPromptDialog: false,
       inputDialog: false,
       sendControlDelay: null,
+      metrialStatusMap: {}
     };
   },
   mounted() {
@@ -511,6 +512,7 @@ type: "slide"*/
     },
     currentPageIndex() {
       this.sendPageChangeToStudents();
+      this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -1811,6 +1813,7 @@ type: "slide"*/
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;
+      this.metrialStatusMap[this.currentPageId] = status
     },
     shareScreen() {
       openShare(() => {

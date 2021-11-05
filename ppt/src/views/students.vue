@@ -305,7 +305,8 @@ export default {
       showTip: false,
       tipText: "",
       websiteUrl: "",
-      showLoginDialog: false
+      showLoginDialog: false,
+      metrialStatusMap: {}
     };
   },
   computed: {
@@ -418,6 +419,7 @@ export default {
       // console.log("set elements");
       this.doAfterPageChange();
       this.changeTipByWatchSlides();
+      this.meterialVisiable = this.metrialStatusMap[this.currentPageIndex]
       // let elements = this.slides[this.currentPageIndex].elements;
       // if (elements && elements.length > 0) {
       //   this.websiteList = elements.filter((item) => itme.type == "website");
@@ -1128,6 +1130,7 @@ export default {
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;
+      this.metrialStatusMap[this.currentPageIndex] = status
     }
   }
 };
