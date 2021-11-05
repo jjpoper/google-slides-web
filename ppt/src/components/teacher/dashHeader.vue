@@ -9,7 +9,8 @@
           <div class="title">Settings</div>
           <div class="tab" @click="openProject">Open project in new window</div>
           <div class="tab">Ipad/Phone Control</div>
-          <div class="tab" @click="endLesson">End This Session</div>
+          <div class="tab" v-if="isClosed" @click="reopenClass">Reopen This Session</div>
+          <div class="tab" v-else @click="endLesson">End This Session</div>
         </div>
         <div class="more-icon" slot="reference"><i></i><i></i><i></i></div>
       </el-popover>
@@ -54,11 +55,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    isClosed: {
+      type: Boolean,
+      default: false,
+    },
     className: {
       type: String,
       default: false,
     },
     showStudents: {
+      type: Function,
+    },
+    reopenClass: {
       type: Function,
     },
     getStudentOnLineCount: {

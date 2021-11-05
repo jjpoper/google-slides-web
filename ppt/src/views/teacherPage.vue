@@ -140,8 +140,10 @@
       :openProject="openProject"
       :endLesson="endLesson"
       :showStudents="showStudents"
+      :isClosed="classRoomInfo.status == 'close'"
       :getStudentOnLineCount="getStudentOnLineCount"
       :studentList="studentList"
+      :reopenClass="_reopenClass"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
