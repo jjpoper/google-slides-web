@@ -57,6 +57,7 @@
           <record-text
             v-else-if="currentInputType === ModalEventsTypeEnum.TEXT"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
         </div>
       </li>
@@ -92,9 +93,9 @@
             preload="none"
           />
           <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
-          <p class="remark-text" v-else-if="item.type === 'text'">
-            {{item.link}}
-          </p>
+          <div @click.stop v-else-if="item.type === 'text'">
+            <remark-text :item="item" :index="index"/>
+          </div>
         </div>
       </li>
     </ul>
@@ -113,6 +114,7 @@ import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 import AudioPlayer from '../common/audioPlayer.vue';
 import tipShow from "./tipShow.vue";
+import RemarkText from './remarkTextComp.vue';
 export default {
   props: {
     disable: {
@@ -122,7 +124,8 @@ export default {
   },
   components:{
     RecordVideo, RecordAudio, RecordText,
-    AudioPlayer,tipShow
+    AudioPlayer,tipShow,
+    RemarkText
   },
   computed: {
     ...mapState({

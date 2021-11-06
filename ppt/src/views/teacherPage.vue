@@ -864,8 +864,9 @@ type: "slide"*/
         .then(res => {
           this.initShortLinkConfig(res);
           this.classRoomInfo = res;
-          if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard) {
-            // window.open(location.href.replace(/\/d\//, '/t/'))
+          // 有 referrer 的前提下新开一个 project
+          if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard && document.referrer) {
+            window.open(location.href.replace(/\/d\//, '/t/'))
           }
           this.afterConnectRoom();
         })

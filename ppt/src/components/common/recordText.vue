@@ -2,9 +2,11 @@
 <div class="edit-area">
   <div class="textarea-box">
     <textarea
+      ref="textareaRecord"
       class="textarea"
       v-model="commentValue"
       placeholder=""
+      :autofocus="true"
       @blur="sendMessage"
     ></textarea>
     <!-- <div class="text-placeholder" v-show="showPlaceholder">
@@ -22,6 +24,14 @@ export default {
     onSend: {
       type: Function,
       default: () => null
+    },
+    cancel: {
+      type: Function,
+      default: () => null
+    },
+    defaultText: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -35,10 +45,17 @@ export default {
       sendDelay: null,
     }
   },
+  created() {
+    this.commentValue = this.defaultText
+  },
+  mounted() {
+    this.$refs.textareaRecord.focus()
+  },
   methods: {
     sendMessage() {
       if (!this.commentValue) {
-        this.$message.warning("Please input your comment");
+        // this.$message.warning("Please input your comment");
+        this.cancel()
         return;
       }
       this.onSend(this.commentValue, 'text')
