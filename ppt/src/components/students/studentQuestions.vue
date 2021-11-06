@@ -33,7 +33,7 @@
                 slot="reference"
                 v-if="item.pointType !== 'box'" 
                 :class="`markitem ${(currentRemarkIndex === index || !item.id) ? 'markitemhover' : ''}`"
-                :style="`top:${item.top}px;left:${item.left}px;border-color:${item.background}`"
+                :style="`top:${item.top}px;left:${item.left}px;`"
                 @mousedown.stop="selectMark(item, index)"
                 @mouseup.stop
                 @mouseleave.stop
@@ -567,8 +567,15 @@ export default {
 }
 .markitemhover{
   /* transform: scale(1.5); */
-  border-width: 2px;
-  border-style: solid;
+  border: 5px solid #777;
+  background: #fff;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  /* box-sizing: border-box; */
+  transform: translate(-10px, -10px);
 }
 .markboxhover{
  box-shadow: 0 0 20px #f00
@@ -576,8 +583,15 @@ export default {
 .markitem:hover{
   /* */
   /* transform: scale(1.5); */
-  border-width: 2px;
-  border-style: solid;
+  border: 5px solid #777;
+  background: #fff;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  /* box-sizing: border-box; */
+  transform: translate(-10px, -10px);
 }
 .markboxhover:hover{
   box-shadow: 0 0 20px #f00
