@@ -5,7 +5,6 @@
       <div :class="`dash-second ${showFullAnswer && 'dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
           <template v-if="showFullAnswer && shouldShowPageAnswer">
-            <dash-switch-header :showres="showres" :showResponse="showResponse"/>
             <template
               :class="
                 showResponse &&
@@ -54,6 +53,7 @@
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
         />
+        <dash-switch-header :showres="showres" :showResponse="showResponse"/>
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
@@ -250,6 +250,7 @@ svg {
   overflow: hidden;
   display: flex;
   margin-top: 10px;
+  position: relative;
 }
 .dash-border{
   border: 1px solid #707070;
@@ -267,15 +268,15 @@ svg {
   box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
 }
 .dash-second-right{
-  width: 395px;
+  width: 300px;
   height: 100%;
   background-color: #fff;
   margin-left: 10px;
   box-sizing: border-box;
 }
 .dash-second-right.dash-students{
-  margin-left: 0;
-  width: 280px;
+  /* margin-left: 0;
+  width: 300px; */
 }
 .shouqi{
   width: 30px;

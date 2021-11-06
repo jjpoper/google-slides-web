@@ -1,6 +1,6 @@
 <template>
   <div class="res-and-student">
-    <dash-switch-header />
+    <!-- <dash-switch-header /> -->
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
         <img src="../../assets/picture/student-answered.png" class="ans-status" v-if="answeredStudents.indexOf(item.user_id) > -1"/>
@@ -134,6 +134,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
+    margin-top: 10px;
   }
   .res-list{
     flex: 1;
