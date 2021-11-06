@@ -35,6 +35,22 @@ export const setTeacherWxBaseParams = ({
 
 let windowStudentWs: any = null
 
+const BaseWsRequest = (action: string, message: string) => {
+  if(windowStudentWs) {
+    windowStudentWs.emit(action, message);
+  }
+}
+
+const TimerJoinRoom = () => {
+  setInterval(() => {
+    const {
+      classId,
+      token
+    } = BaseTeacherParams
+    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
+  }, 5000)
+}
+
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
   // console.log(classId, "create ws socket")
   const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
@@ -42,6 +58,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
     // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
     socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
       // console.log("老师加入房间")
+      TimerJoinRoom()
     });
 
     // console.log('connect 状态 上线')
@@ -117,12 +134,6 @@ export const createSo = (room: string, token: string, classId: string, callback:
   windowStudentWs = socket
   return socket
 
-}
-
-const BaseWsRequest = (action: string, message: string) => {
-  if(windowStudentWs) {
-    windowStudentWs.emit(action, message);
-  }
 }
 
 export const changeTips = (pageId: string, tip: string, id: number) => {
