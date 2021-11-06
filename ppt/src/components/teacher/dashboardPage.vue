@@ -47,12 +47,12 @@
             :responseList="responseContentList"/>
           <DashGroupStudents />
         </div>
-        <dashboard-meterial
+        <!-- <dashboard-meterial
           v-if="showFullAnswer"
           :pptUrl="currentItemData.thumbnail_url"
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
-        />
+        /> -->
         <dash-switch-header :showres="showres" :showResponse="showResponse" v-if="shouldShowPageAnswer"/>
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>

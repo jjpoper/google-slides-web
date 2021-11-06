@@ -9,6 +9,23 @@
       <div class="class_number">{{ getPass }}</div>
 
       <div class="opt--item" style="margin-top: 20px">
+        <span class="opt--text">Classname</span>
+        <div class="room--area">
+          <el-input
+              placeholder="create new class"
+              v-model="className"
+              style="
+                width: 317px;
+                height: 40px;
+                border: 1px solid #d8d8d8;
+                border-radius: 6px;
+              "
+              @blur="changeName"
+            />
+        </div>
+      </div>
+
+      <div class="opt--item" style="margin-top: 20px">
         <span class="opt--text">Option</span>
         <el-popover placement="bottom" width="300" v-model="visible">
           <div class="room--area">
@@ -157,7 +174,7 @@
 
 
 <script>
-import { addRealClass, getRealClass, setRealClass } from "../../model/index";
+import { addRealClass, getRealClass, renameClass, setRealClass } from "../../model/index";
 export default {
   props: {
     copyLink: {
@@ -179,6 +196,10 @@ export default {
     user_id: {
       type: String,
       default: "",
+    },
+    classRoomInfo: {
+      type: Object,
+      default: () => {},
     },
   },
   data() {
@@ -225,6 +246,7 @@ export default {
           // ); /*今天及之前，注意数字不一样*/
         },
       },
+      className: ''
     };
   },
   created() {
@@ -239,6 +261,8 @@ export default {
       console.log(res);
       this.roomItems = res;
     });
+
+    this.className = this.classRoomInfo.class_name
   },
   watch: {
     time_type() {
@@ -319,6 +343,11 @@ export default {
         }
       });
     },
+    changeName() {
+      if(this.className !== this.classRoomInfo.class_name) {
+        renameClass(this.className, this.classRoomInfo.class_id)
+      }
+    }
   },
 };
 </script>
@@ -422,7 +451,7 @@ export default {
   line-height: 22px;
   color: #000000;
   opacity: 1;
-  width: 90px;
+  width: 100px;
 }
 .page {
   width: 937px;

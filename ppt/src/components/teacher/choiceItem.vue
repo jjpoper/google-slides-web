@@ -321,7 +321,7 @@ export default {
   position: relative;
 }
 .text-item-outer1.full-text-area{
-  height: 148px;
+  /* height: 148px; */
 }
 .text-item-outer5.full-text-area{
   padding-bottom: 45%;

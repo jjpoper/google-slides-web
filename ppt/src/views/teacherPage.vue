@@ -266,6 +266,7 @@
         :enterClassroom="enterClassroom"
         :closeBtn="closeCopyDialog"
         :user_id="uid"
+        :classRoomInfo="classRoomInfo"
       />
     </el-dialog>
 
@@ -557,21 +558,21 @@ type: "slide"*/
     ]),
     // 监听dash和project之间通信
     addWindowListener() {
-      window.addEventListener('storage', (e) => {
-        //获取被修改的键值
-        console.log(e.key)
-        if (e.key == 'toggleCopyUrlLink') {
-          const value = this.getSyncLocalStorageValue('toggleCopyUrlLink')
-          this.showCopyLinkDialog = value
-          return
-        }
-        if (e.key == 'toggleMetarial') {
-          const status = this.getSyncLocalStorageValue('toggleMetarial')
-          this.meterialVisiable = status;
-          this.metrialStatusMap[this.currentPageId] = status
-          return
-        }
-      },false);
+      // window.addEventListener('storage', (e) => {
+      //   //获取被修改的键值
+      //   console.log(e.key)
+      //   if (e.key == 'toggleCopyUrlLink') {
+      //     const value = this.getSyncLocalStorageValue('toggleCopyUrlLink')
+      //     this.showCopyLinkDialog = value
+      //     return
+      //   }
+      //   if (e.key == 'toggleMetarial') {
+      //     const status = this.getSyncLocalStorageValue('toggleMetarial')
+      //     this.meterialVisiable = status;
+      //     this.metrialStatusMap[this.currentPageId] = status
+      //     return
+      //   }
+      // },false);
     },
     // 获取同步信息值
     getSyncLocalStorageValue(key) {

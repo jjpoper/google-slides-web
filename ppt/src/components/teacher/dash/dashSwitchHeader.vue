@@ -71,6 +71,7 @@ export default {
     top: 0;
     right: 280px;
     /* background-color:  red; */
+    z-index: 10;
   }
   .small{
     width: 50px;
