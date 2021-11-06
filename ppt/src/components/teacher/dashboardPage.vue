@@ -2,7 +2,7 @@
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
       <dash-top-ppt-list v-show="showPPTList"/>
-      <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${(showResponse || isLockPage) && 'red-dash-border'}`" >
+      <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${((showResponse && shouldShowPageAnswer) || isLockPage) && 'red-dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
           <template v-if="showFullAnswer && shouldShowPageAnswer">
             <template
@@ -53,7 +53,7 @@
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
         />
-        <dash-switch-header :showres="showres" :showResponse="showResponse"/>
+        <dash-switch-header :showres="showres" :showResponse="showResponse" v-if="shouldShowPageAnswer"/>
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
