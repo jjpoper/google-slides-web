@@ -34,6 +34,7 @@
           :meterialVisiable="meterialVisiable"
           :filterTips="filterTips"
           :overviewModalVisiable="overviewModalVisiable"
+          :isLockPage="isLoked()"
         />
       </div>
 
@@ -504,7 +505,7 @@ type: "slide"*/
       } else {
         return [];
       }
-    }
+    },
   },
   watch: {
     studentList() {
@@ -1844,7 +1845,26 @@ type: "slide"*/
       // }
       localStorage.removeItem(key)
       localStorage.setItem(key, value) 
-    }
+    },
+    isLoked() {
+      if (
+        !this.classRoomInfo.lock_page ||
+        !this.slides ||
+        !this.slides[this.currentPageIndex]
+      ) {
+        return false;
+      } else {
+        for (let i = 0; i < this.classRoomInfo.lock_page.length; i++) {
+          if (
+            this.classRoomInfo.lock_page[i] ===
+            this.slides[this.currentPageIndex].page_id
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
   }
 };
 </script>
