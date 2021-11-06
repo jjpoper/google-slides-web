@@ -1600,8 +1600,9 @@ type: "slide"*/
             controlProject({"result": true, "controlType": 4})
             setTimeout(function() {
               hideLoading();
-              let url =
-                "https://docs.google.com/presentation/d/" + _this.slide_id;
+              // let url =
+              //   "https://docs.google.com/presentation/d/" + _this.slide_id;
+              let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
               window.location.href = url;
 
             }, 2000);

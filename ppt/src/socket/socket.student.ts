@@ -51,7 +51,7 @@ const TimerJoinRoom = () => {
       token
     } = BaseStudentParams
     BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
-  }, 120000)
+  }, 10000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
