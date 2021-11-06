@@ -1064,7 +1064,7 @@ type: "slide"*/
               ? ClassRoomModelEnum.STUDENT_MODEL
               : ClassRoomModelEnum.TEACHER_MODEL;
         }
-      } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
+      } else if (d.type == SocketEventsEnum.ASYNC_DASH_PROJECT) {
         this.handelControlSelf(d)
         return
       } else if (d.type == SocketEventsEnum.LOCK_PAGE) {

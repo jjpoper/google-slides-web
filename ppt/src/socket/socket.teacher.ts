@@ -162,6 +162,6 @@ export const controlProject = (params = {}) => {
   } = BaseTeacherParams
   BaseWsRequest(
     "control",
-    `{"room":"${classId}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${token}","class_id":"${classId}","params": ${JSON.stringify(params)}}`
+    `{"room":"${classId}", "type": "${SocketEventsEnum.ASYNC_DASH_PROJECT}", "token": "${token}","class_id":"${classId}","params": ${JSON.stringify(params)}}`
   );
 }
