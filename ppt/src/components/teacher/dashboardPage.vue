@@ -2,7 +2,7 @@
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
       <dash-top-ppt-list v-show="showPPTList"/>
-      <div :class="`dash-second ${showFullAnswer && 'dash-border'}`" >
+      <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${showResponse && 'red-dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
           <template v-if="showFullAnswer && shouldShowPageAnswer">
             <template
@@ -256,6 +256,9 @@ svg {
   border: 1px solid #707070;
   background-color: rgba(255, 255, 255, 1);
   border-radius: 10px;
+}
+.red-dash-border{
+  border: 2px solid red;
 }
 .dash-second-left{
   background-color: #fff;
