@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
-      <dash-top-ppt-list v-show="showPPTList"/>
+      <dash-top-ppt-list v-show="showPPTList" :changePage="changePage"/>
       <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${((showResponse && shouldShowPageAnswer) || isLockPage) && 'red-dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
           <template v-if="showFullAnswer && shouldShowPageAnswer">
@@ -143,6 +143,9 @@ export default {
     overviewModalVisiable: {
       type: Boolean,
       default: false,
+    },
+    changePage: {
+      type: Function,
     },
   },
   data() {

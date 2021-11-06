@@ -942,7 +942,7 @@ export default {
         // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex(item => id === item.id);
+        const itemIndex = list.findIndex(item => id == item.id);
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d);

@@ -35,6 +35,7 @@
           :filterTips="filterTips"
           :overviewModalVisiable="overviewModalVisiable"
           :isLockPage="isLoked()"
+          :changePage="pageChange"
         />
       </div>
 
@@ -865,7 +866,7 @@ type: "slide"*/
           this.initShortLinkConfig(res);
           this.classRoomInfo = res;
           // 有 referrer 的前提下新开一个 project
-          if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard && document.referrer) {
+          if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard && document.referrer.indexOf('classcipe.com') > -1) {
             window.open(location.href.replace(/\/d\//, '/t/'))
           }
           this.afterConnectRoom();
@@ -1063,10 +1064,6 @@ type: "slide"*/
         if (d.room == this.class_id) {
           this.showResponse = d.params.response;
         }
-      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
-        if (!this.classRoomInfo) return;
-        this.classRoomInfo.status = d.params.status;
-        this.$forceUpdate();
       } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
         let locked = d.params.lock;
@@ -1193,12 +1190,17 @@ type: "slide"*/
         // this.slides[index].elements.push(d.data)
         const { id } = d;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex(item => id === item.id);
+        const itemIndex = list.findIndex(item => id == item.id);
+        console.log(id, itemIndex, list)
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
         this.getResponeCount();
-      }
+      } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
+        if (!this.classRoomInfo) return;
+        this.classRoomInfo.status = d.params.status;
+        this.$forceUpdate();
+      } 
 
       // 回答问题
       const { room, page_id } = d;
@@ -1278,20 +1280,21 @@ type: "slide"*/
 
     pageChange(value, notSend) {
       // console.log(value, "pageChage!!!" + this.isDashboard);
-      if (this.isDashboard) {
-        this.giveFocus(value - 1, notSend);
-        return;
-      }
+      // if (this.isDashboard) {
+        
+      // }
+      this.giveFocus(value - 1, notSend);
+      return;
       this.setStudentPageIndex(value - 1);
     },
 
     sendPageChangeToStudents() {
       this.questionModalVisiable = false; //与控制面板中的comment显示与否的按钮保持同步
       this.getItemData();
-      const notSend = false;
-      if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
-        this.sendPageControl()
-      }
+      // const notSend = false;
+      // if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
+      //   this.sendPageControl()
+      // }
     },
 
     // 老师控制分页

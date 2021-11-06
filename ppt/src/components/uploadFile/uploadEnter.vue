@@ -377,12 +377,14 @@ export default {
         type: "audio",
         url,
       });
+      this.recordType = null
     },
     onSendVideo(url) {
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
         type: "video",
         url,
       });
+      this.recordType = null
     },
   },
 };

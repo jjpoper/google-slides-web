@@ -60,8 +60,7 @@
           <audio-player :url="rect.url" class="full"/>
         </div>
         <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
-          <iframe
-          class="full" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <youtube :rect="rect"/>
           <!-- <div class="mask"></div> -->
         </div>
         <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
@@ -79,6 +78,7 @@
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
 import VueDragResize from 'vue-drag-resize';
 import AudioPlayer from '../common/audioPlayer.vue';
+import Youtube from './youtube.vue';
 export default {
   props: {
     rect: {
@@ -114,16 +114,10 @@ export default {
   },
   components: {
     VueDragResize,
-    AudioPlayer
+    AudioPlayer,
+    Youtube
   },
   methods: {
-    getIframe(url){
-      const formatId = url.split('?v=')[1]
-      if(formatId) {
-        return `https://www.youtube.com/embed/${formatId}`
-      }
-      return url
-    },
     changeData(newRect, index) {
       if(this.teacher && window.isWindowActive) {
         this.update(newRect, index)
