@@ -391,8 +391,8 @@ export default {
   max-height: 180px;
 }
 .remark-list-item.active-item {
-  box-shadow: 0px 3px 6px #15c39a;
-  /* border: 1px solid rgba(21, 195, 154, 1) */
+  /* box-shadow: 0px 3px 6px #15c39a; */
+  border: 2px solid red
 }
 .item-header {
   width: 310px;

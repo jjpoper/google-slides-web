@@ -26,7 +26,7 @@
                     v-else-if="item.content.mediaType === 'file'"
                   >
                     <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
-                    <div class="file-name">
+                    <div class="file-name" style="flex: 1">
                       <p class="file-name">{{item.content.fileName}}</p>
                       <a :href="item.content.link" target="blank" download class="download-text">Download</a>
                     </div>
@@ -444,7 +444,7 @@ video{
   top: 0
 }
 .remark-file{
-  height: 60px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   overflow: hidden;

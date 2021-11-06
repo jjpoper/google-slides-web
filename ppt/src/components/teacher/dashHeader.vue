@@ -203,11 +203,11 @@ export default {
   background-color: rgba(228, 228, 228, 1);
 }
 .dash-left{
-  width: 30px;
-  height: 30px;
-  background-image: url(../../assets/picture/dash-left.png);
+  width: 50px;
+  height: 50px;
+  background-image: url(../../assets/picture/return.png);
   background-repeat: no-repeat;
-  background-size: 30px 30px;
+  background-size: 50px 50px;
   cursor: pointer;
   margin-right: 20px;
 }

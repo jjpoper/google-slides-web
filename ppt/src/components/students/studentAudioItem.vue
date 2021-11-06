@@ -91,7 +91,7 @@
           />
           <div class="remark-file" v-else-if="item.content.mediaType === 'file'">
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
-            <div>
+            <div style="flex: 1">
               <p class="file-name">{{item.content.fileName}}</p>
               <a :href="item.content.link" target="blank" download class="download-text">Download</a>
             </div>
@@ -402,7 +402,7 @@ export default {
   word-break: break-all;
 }
 .remark-file {
-  height: 60px;
+  min-height: 60px;
   display: flex;
   align-items: center;
 }

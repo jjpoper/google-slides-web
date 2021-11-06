@@ -566,7 +566,7 @@ export default {
   border: 2px solid transparent;
 }
 .markitemhover{
-  transform: scale(1.5);
+  /* transform: scale(1.5); */
   border-width: 2px;
   border-style: solid;
 }
@@ -575,7 +575,7 @@ export default {
 }
 .markitem:hover{
   /* */
-  transform: scale(1.5);
+  /* transform: scale(1.5); */
   border-width: 2px;
   border-style: solid;
 }
