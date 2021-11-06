@@ -1,11 +1,11 @@
 <template>
-  <!-- <div class="fixprogress" v-if="progress > 0">
+  <div class="fixprogress" v-if="progress > 0">
     <div class="progress">
       <span :style="`width: ${progress}%;`"><span>{{progress}}%</span></span>
     </div>
     <div class="cancel" @click="cancel" v-if="showCancel">cancel</div>
-  </div> -->
-  <el-dialog
+  </div>
+  <!-- <el-dialog
     v-if="progress > 0"
     title="Uploading"
     visible
@@ -16,7 +16,7 @@
       <span :style="`width: ${progress}%;`"><span>{{progress}}%</span></span>
     </div>
     <div class="cancel" @click="cancel" v-if="showCancel">cancel</div>
-  </el-dialog>
+  </el-dialog> -->
 </template>
 <script>
 export default {
@@ -44,10 +44,10 @@ export default {
   right: 20px;
   z-index: 999;
   background-color: #b1abab;
-  padding: 50px 10px;
+  padding: 10px 10px;
   box-sizing: border-box;
   border-radius: 10px;
-  height: 141px;
+  height: 75px;
 }
 .progress {
   height: 20px;

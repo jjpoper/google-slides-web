@@ -8,7 +8,7 @@
         Response
       </div>
     </div> -->
-    <el-tooltip :content="`${showFullAnswer ? 'Split Screen' : 'Full Screen'}`" placement="top">
+    <el-tooltip :content="`${showFullAnswer ? 'Show Less' : 'Show More'}`" placement="top">
       <div
         :class="`full-answer-button ${showFullAnswer && 'active'}`"
         @click="setDashFullPageResponse(!showFullAnswer)"></div>
