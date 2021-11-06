@@ -974,6 +974,11 @@ type: "slide"*/
         if (controlType == 4 && !this.isDashboard) {
           window.close()
         }
+        // youtube视频同步
+        if(controlType == 5) {
+          const {id, nextStatus} = result
+          EventBus.$emit('youtubePlayer', {id, nextStatus})
+        }
       }
     },
     msgListener(d) {
@@ -1286,9 +1291,9 @@ type: "slide"*/
       // if (this.isDashboard) {
         
       // }
+      console.log('setStudentPageIndex pageChange')
       this.giveFocus(value - 1, notSend);
       return;
-      this.setStudentPageIndex(value - 1);
     },
 
     sendPageChangeToStudents() {
@@ -1382,8 +1387,10 @@ type: "slide"*/
         this.currentItemData =
           this.slides[this.currentPageIndex] || this.slides[0];
         // console.log('getItemData', this.currentItemData)
-        this.currentItemData.flag = this.isDashboard;
-        this.getResponeCount();
+        if(this.currentItemData) {
+          this.currentItemData.flag = this.isDashboard;
+          this.getResponeCount();
+        }
       });
     },
     getCurrentPageAnswer() {
@@ -1729,11 +1736,14 @@ type: "slide"*/
       this.stepTwoDialog = false;
     },
     giveFocus(index, notSend) {
-      // console.log(index, notSend, 'giveFocus')
-      this.setStudentPageIndex(index);
-      this.currentItemData = this.slides[index];
-      this.currentItemData.flag = this.isDashboard;
-      this.getResponeCount();
+      console.log(index, notSend, 'giveFocus', this.page_model ,ClassRoomModelEnum.STUDENT_MODEL)
+      if(index != this.currentPageIndex || !this.currentItemData) {
+        this.setStudentPageIndex(index);
+        this.currentItemData = this.slides[index];
+        this.currentItemData.flag = this.isDashboard;
+        this.getResponeCount();
+      }
+      
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.sendPageControl()
       }
