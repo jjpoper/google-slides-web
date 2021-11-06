@@ -153,3 +153,15 @@ export const changeAnswer = (pageId: string, correctanswer: number[]) => {
     `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "correct_answer": ${JSON.stringify(correctanswer)}}`
     );
 }
+
+// dash 和 project 互相控制
+export const controlProject = (params = {}) => {
+  const {
+    classId,
+    token
+  } = BaseTeacherParams
+  BaseWsRequest(
+    "control",
+    `{"room":"${classId}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${token}","class_id":"${classId}","params": ${JSON.stringify(params)}}`
+  );
+}

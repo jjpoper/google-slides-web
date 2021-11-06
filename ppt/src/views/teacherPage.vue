@@ -322,7 +322,7 @@ import {
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { getJSONValue } from "../utils/help";
-import { createSo, setTeacherWxBaseParams } from "../socket/socket.teacher";
+import { createSo, setTeacherWxBaseParams, controlProject } from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -438,7 +438,6 @@ type: "slide"*/
     };
   },
   mounted() {
-    this.addWindowListener()
     EventBus.$on(ModalEventsNameEnum.TEACHER_SEND_COMMENT, data => {
       this.sendComment(data);
     });
@@ -557,28 +556,6 @@ type: "slide"*/
       "updateOneRemarkItem",
       "deleteOneRemarkItem"
     ]),
-    // 监听dash和project之间通信
-    addWindowListener() {
-      // window.addEventListener('storage', (e) => {
-      //   //获取被修改的键值
-      //   console.log(e.key)
-      //   if (e.key == 'toggleCopyUrlLink') {
-      //     const value = this.getSyncLocalStorageValue('toggleCopyUrlLink')
-      //     this.showCopyLinkDialog = value
-      //     return
-      //   }
-      //   if (e.key == 'toggleMetarial') {
-      //     const status = this.getSyncLocalStorageValue('toggleMetarial')
-      //     this.meterialVisiable = status;
-      //     this.metrialStatusMap[this.currentPageId] = status
-      //     return
-      //   }
-      // },false);
-    },
-    // 获取同步信息值
-    getSyncLocalStorageValue(key) {
-      return localStorage.getItem(key) === 'true'
-    },
     addprompt() {
       console.log("新增prompt!!");
       this.showNewPromptDialog = true;
@@ -972,6 +949,33 @@ type: "slide"*/
         uname: teacher.name
       });
     },
+    // dash 和 project 同步
+    handelControlSelf(d) {
+      if (d.room == this.class_id) {
+        const {params} = d
+        const {controlType, result} = params
+        if(controlType == 1) {
+          // 是否展示 response
+          this.showResponse = result;
+          return
+        }
+        // toggleMetarial 是否展示
+        if (controlType == 2) {
+          this.meterialVisiable = result;
+          this.metrialStatusMap[this.currentPageId] = result
+          return
+        }
+        // 分享弹框是否展示
+        if (controlType == 3) {
+          this.showCopyLinkDialog = result
+          return
+        }
+        // dash end class，project 关闭window
+        if (controlType == 4 && !this.isDashboard) {
+          window.close()
+        }
+      }
+    },
     msgListener(d) {
       // console.log(d);
       if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
@@ -1061,9 +1065,8 @@ type: "slide"*/
               : ClassRoomModelEnum.TEACHER_MODEL;
         }
       } else if (d.type == SocketEventsEnum.SHOW_RESPONSE) {
-        if (d.room == this.class_id) {
-          this.showResponse = d.params.response;
-        }
+        this.handelControlSelf(d)
+        return
       } else if (d.type == SocketEventsEnum.LOCK_PAGE) {
         if (!this.classRoomInfo) return;
         let locked = d.params.lock;
@@ -1444,11 +1447,11 @@ type: "slide"*/
       // }
 
       this.showCopyLinkDialog = true;
-      this.setLocalStorageValue('toggleCopyUrlLink', true);
+      controlProject({"result": true, "controlType": 3})
     },
     closeCopyDialog() {
       this.showCopyLinkDialog = false;
-      this.setLocalStorageValue('toggleCopyUrlLink', false);
+      controlProject({"result": false, "controlType": 3})
     },
 
     getBtnString() {
@@ -1539,9 +1542,7 @@ type: "slide"*/
 
     showres() {
       this.showResponse = !this.showResponse;
-      this.emitSo(
-        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.SHOW_RESPONSE}", "token": "${this.token}","class_id":"${this.class_id}","params": {"response": ${this.showResponse}}}`
-      );
+      controlProject({"result": this.showResponse, "controlType": 1})
     },
     leavePage() {
       let url = "";
@@ -1589,11 +1590,13 @@ type: "slide"*/
             this.emitSo(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
+            controlProject({"result": true, "controlType": 4})
             setTimeout(function() {
               hideLoading();
               let url =
                 "https://docs.google.com/presentation/d/" + _this.slide_id;
               window.location.href = url;
+
             }, 2000);
           }
         })
@@ -1831,7 +1834,7 @@ type: "slide"*/
       this.meterialVisiable = status;
       this.metrialStatusMap[this.currentPageId] = status
       // localStorage.toggleMetarial = status
-      this.setLocalStorageValue('toggleMetarial', status)
+      controlProject({"result": status, "controlType": 2})
     },
     shareScreen() {
       openShare(() => {
@@ -1841,15 +1844,6 @@ type: "slide"*/
         this.$refs["screen-share"].srcObject = stream;
         this.shareing = true;
       });
-    },
-    setLocalStorageValue(key, value) {
-      // value = '1' || '2'
-      // const oldValue = localStorage.getItem(key)
-      // if(oldValue === value) {
-      //   localStorage.setItem(key) 
-      // }
-      localStorage.removeItem(key)
-      localStorage.setItem(key, value) 
     },
     isLoked() {
       if (
