@@ -7,6 +7,7 @@
       v-model="commentValue"
       placeholder=""
       :autofocus="true"
+      spellcheck="false"
       @blur="sendMessage"
     ></textarea>
     <!-- <div class="text-placeholder" v-show="showPlaceholder">
@@ -89,6 +90,7 @@ export default {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  outline:none;
 }
 .textarea {
   background-color: transparent;
