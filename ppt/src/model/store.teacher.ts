@@ -93,7 +93,7 @@ export const addTeacherComment = (data: ANY) => {
 // 获取学生端当前page的回答列表信息
 export const getCurrentPageAnswerList = (pageId: string, type: string) => {
   // @ts-ignore
-  return getTeacherCurrentPageAnswerList(pageId, type)
+  return getTeacherCurrentPageAnswerList(pageId, type).reverse()
 }
 
 interface SavaParams {

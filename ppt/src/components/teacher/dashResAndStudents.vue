@@ -78,7 +78,7 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
-      list.reverse()
+      // list.reverse()
       return list;
     },
     answerList() {
@@ -92,7 +92,7 @@ export default {
         }
       })
       console.log(list, 'righten')
-      return list;
+      return list.reverse();
     }
   },
   watch: {

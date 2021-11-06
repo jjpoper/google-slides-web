@@ -163,7 +163,7 @@ export default {
       this.changeItemId = data.item_id;
       let _this = this;
 
-      this.resortList()
+      // this.resortList()
       setTimeout(function () {
         _this.isTextChanging = false;
       }, 3000);
@@ -204,6 +204,8 @@ export default {
       this.currentTab = i
     },
     resortList() {
+      // this.textList = this.textList.reverse()
+      return
       const {textList} = this
       try {
         if(this.sortValue === 1) {

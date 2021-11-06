@@ -184,6 +184,8 @@ export default {
     },
     resortList(list) {
       let newList = JSON.parse(JSON.stringify(list))
+
+      return newList.reverse()
       try {
         if(this.sortValue === 1) {
           newList = newList.sort((prev, next) => {
