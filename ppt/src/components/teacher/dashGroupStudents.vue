@@ -173,7 +173,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
-    background-color: #fff;
+    background-color: #ebe7e7;
     border: 1px solid rgba(216, 216, 216, 1);
     border-radius: 4px;
   }

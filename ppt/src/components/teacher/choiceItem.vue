@@ -1,10 +1,6 @@
 <template>
   <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
-    <div class="text-answer-tab">
-      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
-      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <button :class="`button-statics ${currentTab === 3 && 'active'}`" @click="changeTab(3)"></button>
-    </div>
+    <common-switch-tab :currentTab="currentTab" :changeTab="changeTab" hasStatics/>
     <div class="text-scroll">
       <div class="text-answer-list" v-if="currentTab !== 3">
         <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
@@ -61,8 +57,9 @@ import ECharts from "vue-echarts";
 import commentIcon from "./commentIcon.vue";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import {mapState} from 'vuex'
+import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
-  components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts },
+  components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab },
   props: {
     data: {
       type: Object,
@@ -276,40 +273,6 @@ export default {
   position: relative;
   background-color: #fff;
 }
-.text-answer-tab{
-  width: 100%;
-  height: 90px;
-  display: flex;
-  align-items: center;
-}
-.text-answer-tab button{
-  width: 32px;
-  height: 32px;
-  margin-right: 22px;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 32px 32px;
-  cursor: pointer;
-  border: none;
-}
-.button-colum{
-  background-image: url(../../assets/picture/colum.png);
-}
-.button-colum.active{
-  background-image: url(../../assets/picture/colum-s.png);
-}
-.button-statics{
-  background-image: url(../../assets/picture/static.png);
-}
-.button-statics.active{
-  background-image: url(../../assets/picture/static-s.png);
-}
-.button-row{
-  background-image: url(../../assets/picture/row.png);
-}
-.button-row.active{
-  background-image: url(../../assets/picture/row-s.png);
-}
 .text-scroll{
   width: 100%;
   height: 100%;
@@ -348,7 +311,7 @@ export default {
   background-color: #f8f1d3;
 }
 .text-item-outer1{
-  height: 290px;
+  /* height: 290px; */
   width: 100%;
   position: relative;
 }
@@ -365,7 +328,7 @@ export default {
 }
 .text-list-item {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   border-radius: 8px;
   margin-right: 10px;
   border: 1px solid #F1F1F1;
@@ -373,7 +336,7 @@ export default {
   background-color: #fff;
   box-sizing: border-box;
   padding: 10px;
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   overflow: hidden;
@@ -385,7 +348,7 @@ export default {
 }
 .text_area {
   width: 100%;
-  height: 59%;
+  /* height: 59%; */
   background: rgba(228,228,228,0.3);
   border-radius: 6px;
   font-size: 14px;
