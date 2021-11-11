@@ -1,21 +1,30 @@
 <template>
-  <div class="upload-file">
-    <input
-      class="upload-file"
-      type="file"
-      :accept="accept"
-      @change="onUpload"/>
-      <common-progress :progress="progress"/>
+  <div>
+    <div class="upload-file" >
+      <input
+        class="upload-file"
+        type="file"
+        :accept="accept"
+        ref="uploadFile"
+        @change="onUpload"/>
+      <!-- <div
+        v-else
+        class="upload-file"
+        @click="showUnUpload"/>   -->
+    </div>
+    <common-progress :progress="progress" :cancel="cancel" :showCancel="true"/>
   </div>
 </template>
 <script>
 import {upFireBaseFile} from '@/utils/uploadFile'
 import commonProgress from './commonProgress.vue'
+import { showToast } from '@/utils/loading'
 export default {
   components: { commonProgress },
   data() {
     return {
-      progress: 0
+      progress: 0,
+      uploader: null
     }
   },
   props: {
@@ -26,22 +35,47 @@ export default {
     accept: {
       type: String,
       default: '.doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*'
+    },
+    onlyGetFile: {
+      type: Boolean,
+      default: false // 是否只得到本地file，单独做上传处理，默认false
     }
   },
   methods: {
     onUpload(e) {
       const file = e.target.files[0]
-      console.log(file)
+      if(this.onlyGetFile) {
+        this.onSuccess(file)
+        this.end()
+        return
+      }
       // return
-      upFireBaseFile(file, this.onProgressUpLoad).then((result) => {
-        this.onSuccess(file, result)
-        setTimeout(() => {
-          this.progress = 0
-        }, 50);
-      })
+      this.uploader = upFireBaseFile(
+        file,
+        this.onProgressUpLoad,
+        ((result) => {
+          this.onSuccess(file, result)
+          setTimeout(() => {
+            this.progress = 0
+          }, 50);
+        })
+      )
     },
     onProgressUpLoad(progress) {
       this.progress = progress
+    },
+    cancel() {
+      if(this.uploader) {
+        this.uploader.cancel()
+      }
+      this.end()
+    },
+    end() {
+      this.progress = 0
+      this.$refs.uploadFile.value = ''
+    },
+    showUnUpload() {
+      showToast('the file is uploading, please wait', 'warning')
     }
   }
 }

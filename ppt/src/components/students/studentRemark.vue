@@ -3,23 +3,29 @@
     <div class="remark-control" v-if="!disable">
       <el-tooltip content="Audio Comment" placement="top">
         <div
-          :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.AUDIO && 'active'}`"
+          @click="audio"
+          class="remark-button-outer"
         >
-          <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button" />
+          <img v-show="currentInputType === ModalEventsTypeEnum.AUDIO" src="../../assets/picture/voice-button.png" class="remark-button" />
+          <img v-show="currentInputType !== ModalEventsTypeEnum.AUDIO" src="../../assets/picture/voice-button-gray.png" class="remark-button" />
         </div>
       </el-tooltip>
       <el-tooltip content="Video Comment" placement="top">
         <div
-          :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.VIDEO && 'active'}`"
+         @click="video"
+         class="remark-button-outer"
         >
-          <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
+          <img v-show="currentInputType === ModalEventsTypeEnum.VIDEO" src="../../assets/picture/video.png" class="remark-button" />
+          <img v-show="currentInputType !== ModalEventsTypeEnum.VIDEO" src="../../assets/picture/video-gray.png" class="remark-button" />
         </div>
       </el-tooltip>
       <el-tooltip content="Text Comment" placement="top">
         <div
-          :class="`remark-button-outer ${currentInputType === ModalEventsTypeEnum.TEXT && 'active'}`"
+          @click="text"
+          class="remark-button-outer"
         >
-          <img @click="text" src="../../assets/picture/new-comment.png" class="remark-button" />
+          <img v-show="currentInputType === ModalEventsTypeEnum.TEXT" src="../../assets/picture/new-comment.png" class="remark-button" />
+          <img v-show="currentInputType !== ModalEventsTypeEnum.TEXT" src="../../assets/picture/new-comment-gray.png" class="remark-button" />
         </div>
       </el-tooltip>
     </div>
@@ -40,6 +46,7 @@
           <record-video
             v-if="currentInputType === ModalEventsTypeEnum.VIDEO"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
           <record-audio
             v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO"
@@ -50,6 +57,7 @@
           <record-text
             v-else-if="currentInputType === ModalEventsTypeEnum.TEXT"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
           />
         </div>
       </li>
@@ -85,9 +93,9 @@
             preload="none"
           />
           <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
-          <p class="remark-text" v-else-if="item.type === 'text'">
-            {{item.link}}
-          </p>
+          <div @click.stop v-else-if="item.type === 'text'">
+            <remark-text :item="item" :index="index"/>
+          </div>
         </div>
       </li>
     </ul>
@@ -106,6 +114,7 @@ import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 import AudioPlayer from '../common/audioPlayer.vue';
 import tipShow from "./tipShow.vue";
+import RemarkText from './remarkTextComp.vue';
 export default {
   props: {
     disable: {
@@ -115,7 +124,8 @@ export default {
   },
   components:{
     RecordVideo, RecordAudio, RecordText,
-    AudioPlayer,tipShow
+    AudioPlayer,tipShow,
+    RemarkText
   },
   computed: {
     ...mapState({
@@ -245,6 +255,7 @@ export default {
       );
     },
     cancelRecord() {
+      console.log('cancelRecord')
       this.changeRemarkIndex(-1);
       this.setCurrentRemarkOptions(null);
     },
@@ -367,27 +378,29 @@ export default {
   width: 310px;
   height: auto;
   background: #ffffff;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 3px 6px rgba(214, 214, 214, 1);
   opacity: 1;
   border-radius: 6px;
   margin-bottom: 15px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 .remark-list-item.record-item {
   height: auto;
 }
 .remark-list-item.text-item {
-  height: 180px;
+  max-height: 180px;
 }
 .remark-list-item.active-item {
-  box-shadow: 0px 3px 6px #15c39a;
+  /* box-shadow: 0px 3px 6px #15c39a; */
+  border: 2px solid red
 }
 .item-header {
   width: 310px;
-  height: 60px;
-  background: #15c39a;
+  min-height: 45px;
+  background: rgba(21, 195, 154, 1);
   opacity: 1;
   border-radius: 6px 6px 0px 0px;
   display: flex;
@@ -405,7 +418,7 @@ export default {
   height: 34px;
   border-radius: 17px;
   margin-right: 11px;
-  background-color: #fff;
+  background-color: #eee;
   line-height: 34px;
   text-align: center;
   font-size: 20px;

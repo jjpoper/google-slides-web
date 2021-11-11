@@ -1,17 +1,6 @@
 <template>
   <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
-    <div class="text-answer-tab">
-      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
-      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <el-select v-model="sortValue" placeholder="Sort">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-    </div>
+    <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
     <template v-if="currentTab !== 3">
       <div class="text-scroll">
         <div class="text-answer-list">
@@ -71,6 +60,7 @@
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState, mapGetters } from 'vuex'
 import Base64image from '../base64image.vue';
+import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
   computed: {
     // 未答题学生
@@ -123,7 +113,7 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].thumbnail_url
     }
   },
-  components: { StudentResponseOptBar, Base64image },
+  components: { StudentResponseOptBar, Base64image, CommonSwitchTab },
   props: {
     data: {
       type: Object,
@@ -184,6 +174,8 @@ export default {
     },
     resortList(list) {
       let newList = JSON.parse(JSON.stringify(list))
+
+      return newList.reverse()
       try {
         if(this.sortValue === 1) {
           newList = newList.sort((prev, next) => {
@@ -253,40 +245,6 @@ export default {
   flex-direction: column;
   position: relative;
   background-color: #fff;
-}
-.text-answer-tab{
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-}
-.text-answer-tab button{
-  width: 32px;
-  height: 32px;
-  margin-right: 22px;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 32px 32px;
-  cursor: pointer;
-  border: none;
-}
-.button-colum{
-  background-image: url(../../assets/picture/colum.png);
-}
-.button-colum.active{
-  background-image: url(../../assets/picture/colum-s.png);
-}
-.button-row{
-  background-image: url(../../assets/picture/row.png);
-}
-.button-row.active{
-  background-image: url(../../assets/picture/row-s.png);
-}
-.button-static{
-  background-image: url(../../assets/picture/static.png);
-}
-.button-static.active{
-  background-image: url(../../assets/picture/static-s.png);
 }
 .text-scroll{
   width: 100%;

@@ -1,11 +1,10 @@
 <template>
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
-      <dash-top-ppt-list v-show="showPPTList"/>
-      <div :class="`dash-second ${showFullAnswer && 'dash-border'}`" >
+      <dash-top-ppt-list v-show="showPPTList" :changePage="changePage"/>
+      <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${((showResponse && shouldShowPageAnswer) || isLockPage) && 'red-dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
-          <template v-if="showFullAnswer && hasPageAnswer">
-            <dash-switch-header :showres="showres" :showResponse="showResponse"/>
+          <template v-if="showFullAnswer && shouldShowPageAnswer">
             <template
               :class="
                 showResponse &&
@@ -33,25 +32,28 @@
             <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
           </template>
           <dashboard-meterial
-            v-if="!showFullAnswer || !hasPageAnswer"
+            v-if="!showFullAnswer || !shouldShowPageAnswer"
             :pptUrl="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <div v-if="hasPageAnswer" :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
+        <div v-if="shouldShowPageAnswer"
+          v-show="!showFullAnswer || studentList.length > 0"
+          :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
           <dash-res-and-students
             v-if="!showFullAnswer"
             :showResponse="showResponse"
             :responseList="responseContentList"/>
-          <DashGroupStudents v-else/>
+          <DashGroupStudents />
         </div>
-        <dashboard-meterial
+        <!-- <dashboard-meterial
           v-if="showFullAnswer"
           :pptUrl="currentItemData.thumbnail_url"
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
-        />
+        /> -->
+        <dash-switch-header :showres="showres" :showResponse="showResponse" v-if="shouldShowPageAnswer"/>
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
@@ -90,6 +92,10 @@ export default {
       },
     },
     showResponse: {
+      type: Boolean,
+      default: false,
+    },
+    isLockPage: {
       type: Boolean,
       default: false,
     },
@@ -138,6 +144,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    changePage: {
+      type: Function,
+    },
   },
   data() {
     return {
@@ -149,8 +158,10 @@ export default {
     ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
       showFullAnswer: state => state.teacher.showDashFullResponse,
+      studentList: state => state.teacher.studentList || [],
     }),
-    hasPageAnswer() {
+    // 互动题型
+    shouldShowPageAnswer() {
       const itemData = this.slides[this.currentPageIndex]
       const type = itemData.items[0] ? itemData.items[0].type : null
       // if(!type) {
@@ -246,10 +257,15 @@ svg {
   overflow: hidden;
   display: flex;
   margin-top: 10px;
+  position: relative;
 }
 .dash-border{
   border: 1px solid #707070;
   background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+}
+.red-dash-border{
+  border: 2px solid red;
   border-radius: 10px;
 }
 .dash-second-left{
@@ -263,15 +279,15 @@ svg {
   box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
 }
 .dash-second-right{
-  width: 395px;
+  width: 300px;
   height: 100%;
   background-color: #fff;
   margin-left: 10px;
   box-sizing: border-box;
 }
 .dash-second-right.dash-students{
-  margin-left: 0;
-  width: 280px;
+  /* margin-left: 0;
+  width: 300px; */
 }
 .shouqi{
   width: 30px;

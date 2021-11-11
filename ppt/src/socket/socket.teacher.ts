@@ -34,15 +34,36 @@ export const setTeacherWxBaseParams = ({
 }
 
 let windowStudentWs: any = null
+let isJoined = false
+
+const BaseWsRequest = (action: string, message: string) => {
+  if(windowStudentWs) {
+    windowStudentWs.emit(action, message);
+  }
+}
+
+const TimerJoinRoom = () => {
+  setInterval(() => {
+    const {
+      classId,
+      token
+    } = BaseTeacherParams
+    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
+  }, 10000)
+}
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
   // console.log(classId, "create ws socket")
   const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
   socket.on('connect', () => {
-    // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
-    socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
-      // console.log("老师加入房间")
-    });
+    if(!isJoined) {
+      isJoined = true
+      // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
+      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
+        // console.log("老师加入房间")
+        TimerJoinRoom()
+      });
+    }
 
     // console.log('connect 状态 上线')
     onLineStatusChanged(true)
@@ -119,12 +140,6 @@ export const createSo = (room: string, token: string, classId: string, callback:
 
 }
 
-const BaseWsRequest = (action: string, message: string) => {
-  if(windowStudentWs) {
-    windowStudentWs.emit(action, message);
-  }
-}
-
 export const changeTips = (pageId: string, tip: string, id: number) => {
   BaseWsRequest(
     "update-tip",
@@ -137,4 +152,16 @@ export const changeAnswer = (pageId: string, correctanswer: number[]) => {
     "update-correct-answer",
     `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "correct_answer": ${JSON.stringify(correctanswer)}}`
     );
+}
+
+// dash 和 project 互相控制
+export const controlProject = (params = {}) => {
+  const {
+    classId,
+    token
+  } = BaseTeacherParams
+  BaseWsRequest(
+    "control",
+    `{"room":"${classId}", "type": "${SocketEventsEnum.ASYNC_DASH_PROJECT}", "token": "${token}","class_id":"${classId}","params": ${JSON.stringify(params)}}`
+  );
 }

@@ -64,46 +64,38 @@
         >
       </div>
 
-      <div class="with-outer">
+      <div
+        class="button_area"
+        v-if="!isClosed && current_model === 'Student-Paced'"
+        @click="closeStudentPaced()"
+      >
+        <svg
+          t="1620464177484"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="2600"
+          width="30"
+          height="30"
+        >
+          <path
+            d="M561.17013333 509.06026667L858.02666667 213.73973333c14.03733333-13.968 14.1088-36.60053333 0.1408-50.63786666-13.99893333-14.06826667-36.592-14.10773333-50.62933334-0.1408L510.6048 458.31466667 216.256 163.06986667c-13.9328-13.96693333-36.59733333-14.03733333-50.63466667-0.07146667-14.00426667 13.96586667-14.03733333 36.63146667-0.0704 50.6688l294.27733334 295.1744-296.71466667 295.14026667c-14.0384 13.968-14.1088 36.59733333-0.14293333 50.63786666a35.7216 35.7216 0 0 0 25.3856 10.56c9.13066667 0 18.26666667-3.4688 25.25013333-10.4192l296.78613333-295.2128L807.4304 857.48266667c6.9824 7.02186667 16.15253333 10.53013333 25.35253333 10.53013333a35.72906667 35.72906667 0 0 0 25.28213334-10.45973333c13.99893333-13.96586667 14.03733333-36.592 0.07146666-50.62933334L561.17013333 509.06026667z m0 0"
+            p-id="2601"
+            fill="#36425A"
+          />
+        </svg>
+
+        <strong class="button_text">Stop Student-Paced</strong>
+      </div>
+
+      <div class="with-outer" v-else>
         <i :class="`icon-circle ${!isClosed && 'green-icon'}`"></i>
         <strong>{{ isClosed ? "Closed" : current_model }}</strong>
       </div>
     </div>
-    <div
-      :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
-      style="margin-right: 20px"
-      @click="showRes()"
-      v-if="
-        currentItemData &&
-        currentItemData.items &&
-        currentItemData.items[0] &&
-        currentItemData.items[0].type != 'website' &&
-        !isClosed &&
-        !isDashboard
-      "
-    >
-      <div class="meterialimage">
-        <div class="fullbgimg res-show"></div>
-      </div>
-      <strong class="button_text"
-        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
-      >
-    </div>
-    <!--material-->
-    <div
-      :class="meterialSwitchVisiable ? 'button_area back_focus' : 'button_area'"
-      style="margin-right: 20px"
-      @click="changeMeterial"
-    >
-      <div class="meterialimage">
-        <div
-          :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"
-        ></div>
-      </div>
-      <strong class="button_text">{{
-        meterialSwitchVisiable ? "Material hiding" : "Display material"
-      }}</strong>
-    </div>
+
+
     <!--lock-->
     <div
       :class="
@@ -142,33 +134,44 @@
         >{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong
       >
     </div>
-    <!--student paced-->
-    <div
-      class="button_area"
-      v-if="!isClosed && current_model === 'Student-Paced'"
-      @click="closeStudentPaced()"
-    >
-      <svg
-        t="1620464177484"
-        class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="2600"
-        width="30"
-        height="30"
-      >
-        <path
-          d="M561.17013333 509.06026667L858.02666667 213.73973333c14.03733333-13.968 14.1088-36.60053333 0.1408-50.63786666-13.99893333-14.06826667-36.592-14.10773333-50.62933334-0.1408L510.6048 458.31466667 216.256 163.06986667c-13.9328-13.96693333-36.59733333-14.03733333-50.63466667-0.07146667-14.00426667 13.96586667-14.03733333 36.63146667-0.0704 50.6688l294.27733334 295.1744-296.71466667 295.14026667c-14.0384 13.968-14.1088 36.59733333-0.14293333 50.63786666a35.7216 35.7216 0 0 0 25.3856 10.56c9.13066667 0 18.26666667-3.4688 25.25013333-10.4192l296.78613333-295.2128L807.4304 857.48266667c6.9824 7.02186667 16.15253333 10.53013333 25.35253333 10.53013333a35.72906667 35.72906667 0 0 0 25.28213334-10.45973333c13.99893333-13.96586667 14.03733333-36.592 0.07146666-50.62933334L561.17013333 509.06026667z m0 0"
-          p-id="2601"
-          fill="#36425A"
-        />
-      </svg>
 
-      <strong class="button_text">Stop Student-Paced</strong>
+    <!-- <div
+      :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
+      style="margin-right: 20px"
+      @click="showRes()"
+      v-if="
+        currentItemData &&
+        currentItemData.items &&
+        currentItemData.items[0] &&
+        currentItemData.items[0].type != 'website' &&
+        !isClosed &&
+        !isDashboard
+      "
+    >
+      <div class="meterialimage">
+        <div class="fullbgimg res-show"></div>
+      </div>
+      <strong class="button_text"
+        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
+      >
+    </div> -->
+    <!--material-->
+    <div
+      :class="meterialVisiable ? 'button_area back_focus' : 'button_area'"
+      style="margin-right: 20px"
+      @click="changeMeterial"
+    >
+      <div class="meterialimage">
+        <div
+          :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"
+        ></div>
+      </div>
+      <strong class="button_text">{{
+        meterialVisiable ? "Material hiding" : "Display material"
+      }}</strong>
     </div>
 
-    <el-popover
+    <!-- <el-popover
       placement="top"
       width="400"
       trigger="hover"
@@ -198,11 +201,11 @@
         <circle cx="10" cy="16" r="2" fill="#36425A" />
         <circle cx="10" cy="24" r="2" fill="#36425A" />
       </svg>
-    </el-popover>
+    </el-popover> -->
     <!--end-->
-    <div class="end_button" @click="endLesson()" v-if="!isDashboard">
+    <!-- <div class="end_button" @click="endLesson()" v-if="!isDashboard">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -312,15 +315,6 @@ export default {
       default: false,
     },
   },
-  watch: {
-    meterialSwitchVisiable() {
-      // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialSwitchVisiable);
-    },
-  },
-  created() {
-    this.meterialSwitchVisiable = this.meterialVisiable;
-  },
   components: {
     dashboardMenu,
     UploadEnter,
@@ -328,12 +322,11 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      meterialSwitchVisiable: false,
     };
   },
   methods: {
     changeMeterial() {
-      this.meterialSwitchVisiable = !this.meterialSwitchVisiable;
+      this.changeShowMetrial(!this.meterialVisiable);
     },
     lastPage() {
       // console.log(this.currentPage);

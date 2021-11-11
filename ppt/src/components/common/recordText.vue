@@ -2,17 +2,21 @@
 <div class="edit-area">
   <div class="textarea-box">
     <textarea
+      ref="textareaRecord"
       class="textarea"
       v-model="commentValue"
       placeholder=""
+      :autofocus="true"
+      spellcheck="false"
+      @blur="sendMessage"
     ></textarea>
-    <div class="text-placeholder" v-show="showPlaceholder">
+    <!-- <div class="text-placeholder" v-show="showPlaceholder">
       Lonve feedback for this ppt
-    </div>
+    </div> -->
   </div>
-  <div class="footer-button" @click="sendMessage">
+  <!-- <div class="footer-button" @click="sendMessage">
     <div :class="`send-button ${!showPlaceholder && 'active'}`">Send</div>
-  </div>
+  </div> -->
 </div>
 </template>
 <script>
@@ -21,6 +25,14 @@ export default {
     onSend: {
       type: Function,
       default: () => null
+    },
+    cancel: {
+      type: Function,
+      default: () => null
+    },
+    defaultText: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -34,10 +46,17 @@ export default {
       sendDelay: null,
     }
   },
+  created() {
+    this.commentValue = this.defaultText
+  },
+  mounted() {
+    this.$refs.textareaRecord.focus()
+  },
   methods: {
     sendMessage() {
       if (!this.commentValue) {
-        this.$message.warning("Please input your comment");
+        // this.$message.warning("Please input your comment");
+        this.cancel()
         return;
       }
       this.onSend(this.commentValue, 'text')
@@ -64,18 +83,19 @@ export default {
 }
 .textarea-box{
   width: 100%;
-  height: 50px;
+  height: 30px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid #D8D8D8;
   opacity: 1;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  outline:none;
 }
 .textarea {
   background-color: transparent;
   width: 100%;
-  height: 50px;
+  height: 30px;
   padding: 5px;
   border: none;
   box-sizing: border-box;

@@ -56,6 +56,11 @@
 <script>
 import {mapState, mapActions} from 'vuex'
 export default {
+  props: {
+    changePage: {
+      type: Function
+    }
+  },
   computed: {
     ...mapState({
       studentAllSlides: state => state.student.studentAllSlides,
@@ -76,7 +81,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("student", ["setStudentPageIndex"]),
+    // ...mapActions("student", ["setStudentPageIndex"]),
     next() {
       // this.setStudentPageIndex(Math.min(this.currentPageIndex + 1, this.studentAllSlides.length - 1))
       this.moveSlow(this.$refs.innerSwiper.scrollLeft, this.$refs.innerSwiper.offsetWidth)
@@ -86,7 +91,7 @@ export default {
       this.moveSlow(this.$refs.innerSwiper.scrollLeft, -this.$refs.innerSwiper.offsetWidth)
     },
     changeToPage(index) {
-      this.setStudentPageIndex(index)
+      this.changePage(index + 1)
     },
     focus() {
       this.$nextTick(() => {
@@ -223,7 +228,7 @@ export default {
 }
 
 .image_parent_focus {
-  border: 1px solid #21A28B;
+  border: 3px solid #21A28B;
   outline: none !important;
 }
 .image_parent {

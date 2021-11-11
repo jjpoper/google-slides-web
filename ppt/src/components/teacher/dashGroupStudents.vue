@@ -1,7 +1,7 @@
 <template>
-  <div class="res-and-student">
+  <div class="res-and-student" >
     <div class="res-inner">
-      <div class="student-list-item select-header">
+      <div class="student-list-item select-header" v-if="allGroups.length > 0">
         <el-select v-model="currentGroupId" placeholder="All" @change="changeGroup" style="background: #fff">
           <el-option
             label="ALL"
@@ -18,10 +18,11 @@
       <ul class="res-list">
         <template  v-for="item in studentList" >
           <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
-            v-if="!currentGroupId || selectedGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id">
+            v-if="!currentGroupId || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
+            @click="selectUsers(item)">
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
-            <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
+            <div :class="`user-icon student-icon ${getSelected(item.user_id)}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
             <div class="user-name">{{item.name}}</div>
           </li>
         </template>
@@ -38,6 +39,7 @@ export default {
       studentList: state => state.teacher.studentList,
       allGroups: state => state.teacher.allGroups,
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+      currentGroupMembers: state => state.teacher.currentGroupMembers,
       allRemarks: state => state.remark.allRemarks,
       studentAllSlides: state => state.student.studentAllSlides,
       currentPageIndex: state => state.student.currentPageIndex,
@@ -54,10 +56,10 @@ export default {
         const currentUser = this.studentList[i]
         const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
         if(index === -1) {
-          noList.push(currentUser)
+          noList.push(currentUser.user_id)
         }
       }
-      // console.log(noList)
+      console.log(noList, 'nolist')
       return noList
     },
     currentComments() {
@@ -93,6 +95,7 @@ export default {
     currentPageIndex() {
       this.currentGroupId = ''
       this.changeSelectedGroup([])
+      this.changeGroupMembers([])
     }
   },
   props: {
@@ -106,11 +109,12 @@ export default {
   },
   data() {
     return {
-      currentGroupId: ''
+      currentGroupId: '',
+      selectedStudents: false, // 是否选中学生
     }
   },
   methods: {
-    ...mapActions("teacher", ["changeSelectedGroup"]),
+    ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
     changeTab(tab) {
       this.tab = tab
     },
@@ -119,14 +123,38 @@ export default {
       return getAnswerTimeStr(time * 1000);
     },
     changeGroup(id) {
+      this.selectedStudents = false
       if(!id) {
         this.changeSelectedGroup([])
+        this.changeGroupMembers([])
         return
       }
       const data = this.allGroups.filter(item => item.group_id == id)[0]
       console.log(data)
       const list = data.members.map(item => item.user_id)
+      console.log(list)
       this.changeSelectedGroup(list)
+      this.changeGroupMembers(list)
+    },
+    selectUsers(item) {
+      console.log(item)
+      this.selectedStudents = true
+      const {user_id} = item
+      const newList = this.selectedGroupMembers.concat([])
+      const index = newList.indexOf(user_id)
+      if(index > -1) {
+        newList.splice(index, 1)
+      } else {
+        newList.push(user_id)
+      }
+      this.changeSelectedGroup(newList)
+    },
+    getSelected(user_id) {
+      if(this.selectedStudents) {
+        const list = this.selectedGroupMembers
+        const isSelected = list.length > 0 && list.indexOf(user_id) > -1
+        return isSelected ? 'selected' : ''
+      }
     }
   }
 }
@@ -145,7 +173,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
-    background-color: #fff;
+    background-color: #ebe7e7;
     border: 1px solid rgba(216, 216, 216, 1);
     border-radius: 4px;
   }
@@ -163,12 +191,15 @@ export default {
     height: 52px;
     border-radius: 26px;
     margin-right: 11px;
-    background-color: red;
     line-height: 52px;
     text-align: center;
     font-size: 20px;
     font-family: Inter-Bold;
     color: #fff;
+    background-color: #afafaf;
+  }
+  .user-icon.selected{
+    background-color: red;
   }
   .student-icon{
     width: 44px;
@@ -200,12 +231,16 @@ export default {
     align-items: center;
     padding-left: 15px;
     box-sizing: border-box;
+    cursor: pointer;
   }
   .select-header{
     background-color: #fafafa;
   }
   .disable{
     background-color: rgba(247, 248, 255, 1);
+  }
+  .notSelected{
+    opacity: 0.3;
   }
   .ans-status{
     width: 21px;

@@ -3,7 +3,7 @@ import { MessageType } from 'element-ui/types/message'
 
 let loading: any = null
 
-export const showLoading = (text = '加载中……') => {
+export const showLoading = (text = 'loading……') => {
     loading = Loading.service({
         lock: true,
         text,

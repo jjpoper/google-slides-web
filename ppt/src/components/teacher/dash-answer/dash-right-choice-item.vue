@@ -1,6 +1,6 @@
 <template>
   <div class="remark-item-content" >
-    <div class="remark-file" style="flex-direction: column">
+    <div class="remark-file" style="flex-direction: column; justify-content: center">
       <p class="file-name"  v-for="item in answerList" :key="item">{{getText(item)}}</p>
     </div>
   </div>
@@ -16,17 +16,23 @@ export default {
   },
   data() {
     return {
-      answerList: [],
+      // answerList: [],
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"]
     }
   },
   created() {
-    this.answerList = JSON.parse(this.item.answer)
+   
   },
   computed: {
     ...mapGetters({
       currentPagePPTData: 'student/currentPagePPTData',
     }),
+    answerList() {
+      const answer = JSON.parse(this.item.answer)
+      const isArray = Object.prototype.toString.call(answer) === '[object Array]'
+      console.log(this.item, 'this.answerList')
+      return isArray ? answer : [answer]
+    }
   },
   methods: {
     getText(answerId) {

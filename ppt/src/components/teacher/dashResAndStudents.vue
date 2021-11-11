@@ -1,6 +1,6 @@
 <template>
   <div class="res-and-student">
-    <dash-switch-header />
+    <!-- <dash-switch-header /> -->
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
         <img src="../../assets/picture/student-answered.png" class="ans-status" v-if="answeredStudents.indexOf(item.user_id) > -1"/>
@@ -78,7 +78,7 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
-      list.reverse()
+      // list.reverse()
       return list;
     },
     answerList() {
@@ -91,8 +91,8 @@ export default {
           ...data
         }
       })
-      // console.log(list, 'righten',res, this.currentPageAnswerType)
-      return list;
+      console.log(list, 'righten')
+      return list.reverse();
     }
   },
   watch: {
@@ -134,6 +134,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
+    margin-top: 10px;
   }
   .res-list{
     flex: 1;
@@ -141,14 +142,14 @@ export default {
   }
   .res-list-item{
     width: 100%;
-    height: 280px;
+    /* height: 280px; */
     box-sizing: border-box;
     margin-bottom: 28px;
     padding: 0 28px;
   }
   .res-list-item-content{
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     background: #FFFFFF;
     border: 1px solid #F1F1F1;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);

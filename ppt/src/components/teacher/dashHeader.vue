@@ -1,22 +1,43 @@
 <template>
   <div class="header">
     <div class="left-area">
-      <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
+      <div class="dash-left" @click="handleBack"></div>
+      <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
+        <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
+      </el-tooltip>
       <p>课程标题：{{className}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">
           <div class="title">Settings</div>
           <div class="tab" @click="openProject">Open project in new window</div>
-          <div class="tab">Ipad/手机端控制</div>
-          <div class="tab" @click="endLesson">End This Session</div>
+          <div class="tab">Ipad/Phone Control</div>
+          <div class="tab" v-if="isClosed" @click="reopenClass">Reopen This Session</div>
+          <div class="tab" v-else @click="endLesson">End This Session</div>
         </div>
         <div class="more-icon" slot="reference"><i></i><i></i><i></i></div>
       </el-popover>
     </div>
-    <div class="invite-button" @click="share">
-      <img src="../../assets/picture/invite.png" class="invite"/>
-      <span>Invite</span>
+    <div class="right-btns">
+      <div class="invite-button" @click="share">
+        <img src="../../assets/picture/invite.png" class="invite"/>
+        <span>Invite</span>
+      </div>
+      <div
+        class="invite-button"
+        @click="showStudents"
+      >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
     </div>
+    <el-dialog
+      title="The class is still in progress, are you sure you want to leave?"
+      :visible.sync="showBackConfirm"
+      :append-to-body="true"
+    >
+      <!-- <span>The class is still in progress, are you sure you want to leave?</span> -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showBackConfirm = false">No</el-button>
+        <el-button type="primary" @click="backtToClass">Yes</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -36,15 +57,43 @@ export default {
       type: Boolean,
       default: false,
     },
+    isClosed: {
+      type: Boolean,
+      default: false,
+    },
     className: {
       type: String,
       default: false,
     },
+    showStudents: {
+      type: Function,
+    },
+    reopenClass: {
+      type: Function,
+    },
+    getStudentOnLineCount: {
+      type: Function,
+    },
+    studentList: {
+      type: Array,
+      default: () => []
+    },
+  },
+  data() {
+    return {
+      showBackConfirm: false
+    }
   },
   methods: {
     // openProject() {
     //   this
     // }
+    handleBack() {
+      this.showBackConfirm = true
+    },
+    backtToClass() {
+      window.history.back()
+    }
   }
 }
 </script>
@@ -64,6 +113,11 @@ export default {
   padding-left: 30px;
   padding-right: 100px;
 }
+.right-btns{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .invite-button{
   width: 120px;
   height: 40px;
@@ -78,6 +132,7 @@ export default {
   line-height: 24px;
   color: #FFFFFF;
   cursor: pointer;
+  margin-left: 10px;
 }
 .invite{
   width: 23px;
@@ -146,5 +201,14 @@ export default {
 }
 .tab:hover{
   background-color: rgba(228, 228, 228, 1);
+}
+.dash-left{
+  width: 50px;
+  height: 50px;
+  background-image: url(../../assets/picture/return.png);
+  background-repeat: no-repeat;
+  background-size: 50px 50px;
+  cursor: pointer;
+  margin-right: 20px;
 }
 </style>

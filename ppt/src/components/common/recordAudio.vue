@@ -1,6 +1,6 @@
 <template>
   <div class="record-area">
-    <div v-if="audioUrl">
+    <!-- <div v-if="audioUrl">
       <audio-player :url="audioUrl"/>
       <el-tooltip popper-class="no-border" placement="bottom-start" width="258" :value="true" effect="light" :manual="true">
         <div slot="content" style="width: 258px">
@@ -12,7 +12,7 @@
         </div>
         <div class="tips-area"></div>
       </el-tooltip>
-    </div>
+    </div> -->
     <div v-show="!endRecording">
       <div class="fixed-area" v-if="!audioUrl">
         <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
@@ -29,13 +29,12 @@
         </div>
       </div>
     </div>
-    <common-progress :progress="progress"/>
+    <common-progress :progress="progress" :cancel="cancelUp"/>
   </div>
 </template>
 <script>
-import {startRecordAudio, pauseRecordAudio, resumeRecordAudio, saveRecordAudio, endRecordAudio} from '@/utils/audio'
+import {startRecordAudio, saveRecordAudio, endRecordAudio, cancelUpAudio} from '@/utils/audio'
 import audioPlayer from './audioPlayer.vue'
-import { upFireBaseFile } from '@/utils/uploadFile'
 import CommonProgress from './commonProgress.vue'
 export default {
   components: { audioPlayer, CommonProgress },
@@ -52,6 +51,10 @@ export default {
       type: Function,
       default: () => null
     },
+    autoDone: {
+      type: Boolean,
+      default: false // 自动完成提交，不要二次确认
+    }
   },
   data() {
     return {
@@ -106,9 +109,13 @@ export default {
         this.endRecording = true
         saveRecordAudio(this.onProgressUpLoad).then((url) => {
           if(url) {
-            // 发送url信息
-            this.audioUrl = url
-            this.visible = true
+            if(this.autoDone) {
+              this.onSend(url)
+            } else {
+              // 发送url信息
+              this.audioUrl = url
+              this.sendRecord()
+            }
           }
         })
         this.clearCount()
@@ -126,6 +133,11 @@ export default {
     sendRecord(){
        this.onSend(this.audioUrl, 'audio')
     },
+    cancelUp() {
+      cancelUpAudio()
+      this.onProgressUpLoad(0)
+      this.cancel()
+    }
   }
 
 }
@@ -201,16 +213,16 @@ export default {
   box-sizing: border-box;
   background-color: rgba(43,51,63,0.7);
   width: 100%;
-  padding-left: 20px;
+  padding-left: 10px;
   display: flex;
   align-items: center;
 }
 .done{
-  width: 14px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   background-color: red;
-  margin-right: 30px;
+  margin-right: 20px;
 }
 .record-time{
   font-size: 10px;
@@ -220,31 +232,31 @@ export default {
 .animation-line>div:nth-of-type(1){
   width: 3px;
   height: 5px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .4s;/*动画延迟  */
 }
 .animation-line>div:nth-of-type(2){
   width: 3px;
   height:10px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .8s;
 }
 .animation-line>div:nth-of-type(3){
   width: 4px;
   height: 15px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .1s;
 }
 .animation-line>div:nth-of-type(4){
   width: 3px;
   height: 10px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .8s;
 }
 .animation-line>div:nth-of-type(5){
   width: 3px;
   height: 5px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .4s;
 }
 .animation-line>div{/* 动画统一属性 */

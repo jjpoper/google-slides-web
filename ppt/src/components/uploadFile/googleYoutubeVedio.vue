@@ -268,6 +268,9 @@ export default {
       if (!this.url || this.url.indexOf("youtube") < 0) {
         return;
       }
+      if(!this.videoUrl) {
+        this.refreshVideo()
+      }
 
       this.nextYoutube(this.videoUrl);
       this.url = "";

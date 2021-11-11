@@ -1,6 +1,13 @@
+import { showToast } from '@/utils/loading';
 import axios from 'axios';
 import PPT from '../utils/pptConfig'
-import { connect } from 'echarts/core';
+import { getTeacherStoreToken } from './store.teacher';
+
+axios.interceptors.response.use((res: any) => {
+  return res;
+}, error => {
+  showToast('service error', 'error')
+})
 
 export const getItem = ({
   slideid,
@@ -100,7 +107,7 @@ export const queryRefreshResult = async (taskId: string, _token: string) => {
 
 }
 
-//结束课程
+// 结束课程
 export const endClassRoomReq = async (_token: string, name: string, class_id: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/close_class`, {
     class_name: name,
@@ -153,8 +160,9 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
 }
 
 const filterHref = () => {
-  const url = location.href
-  return url.split("&token")[0]
+  // const url = location.href
+  // return url.split("&token")[0]
+  return location.origin + location.pathname
 }
 
 // 获取授权登录
@@ -193,6 +201,7 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
     },
     logout: false
   }
+  // debugger
   // let list = data.data.data.pages
   // // // console.log(data.data.data)
   // debugger
@@ -569,5 +578,15 @@ export const setRealClass = async (id: string, anonymous: number, real_id: numbe
     real_class_id: real_id
   })
   console.log(data.data);
+  return data.data.code;
+}
+
+// 改名/class/name_session
+export const renameClass = async (name: string, id: number) => {
+  const data = await axios.post(`${PPT.requestUrl}class/name_session`, {
+    token: getTeacherStoreToken(),
+    class_name: name,
+    class_id: id
+  })
   return data.data.code;
 }

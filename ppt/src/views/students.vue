@@ -111,9 +111,11 @@
     </div>
 
     <div class="top_btn">
-      <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
-      </div>
+      <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
+        <div class="online_status">
+          <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        </div>
+      </el-tooltip>
       <div
         class="deadline_info"
         v-if="showRemainTime()"
@@ -303,7 +305,8 @@ export default {
       showTip: false,
       tipText: "",
       websiteUrl: "",
-      showLoginDialog: false
+      showLoginDialog: false,
+      metrialStatusMap: {}
     };
   },
   computed: {
@@ -333,9 +336,11 @@ export default {
     },
     filterTips() {
       if (this.slides[this.currentPageIndex]) {
-        return this.slides[this.currentPageIndex].elements.filter(
+        const tips = this.slides[this.currentPageIndex].elements.filter(
           item => item.type === "tip"
         );
+        console.log(tips, 'tips')
+        return tips
       } else {
         return [];
       }
@@ -414,6 +419,7 @@ export default {
       // console.log("set elements");
       this.doAfterPageChange();
       this.changeTipByWatchSlides();
+      this.meterialVisiable = this.metrialStatusMap[this.currentPageIndex]
       // let elements = this.slides[this.currentPageIndex].elements;
       // if (elements && elements.length > 0) {
       //   this.websiteList = elements.filter((item) => itme.type == "website");
@@ -743,7 +749,7 @@ export default {
     },
     pageChange(page) {
       // console.log(page, "pageChange", this.currentPageIndex);
-      const nextPage = page - 1;
+      const nextPage = page;
       if (this.currentPageIndex != nextPage) {
         this.setStudentPageIndex(nextPage);
       } else {
@@ -876,7 +882,8 @@ export default {
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
-          const nextPageIndex = parseInt(d.params.page) + 1;
+          const nextPageIndex = parseInt(d.params.page);
+          console.log(this.currentPageIndex, nextPageIndex, '===new')
           if (this.currentPageIndex != nextPageIndex) {
             this.pageChange(nextPageIndex);
           }
@@ -935,7 +942,7 @@ export default {
         // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex(item => id === item.id);
+        const itemIndex = list.findIndex(item => id == item.id);
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d);
@@ -944,6 +951,7 @@ export default {
       } else if (d.mtype === SocketEventsEnum.UPDATE_TIP) {
         console.log(d);
         this.updateSlideItemTip(d);
+        EventBus.$emit("set-unread-tip");
       } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
         console.log(d);
         if (d.page_id === this.currentItemData.page_id) {
@@ -1030,12 +1038,12 @@ export default {
     },
     lastPage() {
       if (this.currentPageIndex > 0) {
-        this.pageChange(this.currentPageIndex);
+        this.pageChange(this.currentPageIndex - 1);
       }
     },
     nextPage() {
       if (this.currentPageIndex < this.slides.length - 1) {
-        this.pageChange(parseInt(this.currentPageIndex) + 2);
+        this.pageChange(parseInt(this.currentPageIndex) + 1);
       }
     },
     isShowRightAnswer() {
@@ -1122,6 +1130,7 @@ export default {
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;
+      this.metrialStatusMap[this.currentPageIndex] = status
     }
   }
 };
