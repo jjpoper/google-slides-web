@@ -193,6 +193,9 @@ export default {
     hindeTimeDialog: {
       type: Function,
     },
+    changeRoomName: {
+      type: Function,
+    },
     user_id: {
       type: String,
       default: "",
@@ -346,6 +349,9 @@ export default {
     changeName() {
       if(this.className !== this.classRoomInfo.class_name) {
         renameClass(this.className, this.classRoomInfo.class_id)
+        .then(() => {
+          this.changeRoomName(this.className)
+        })
       }
     }
   },

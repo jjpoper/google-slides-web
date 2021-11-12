@@ -9,8 +9,10 @@
               v-if="shouldShow(item)"
               :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
             >
-              <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                {{ getText(item) }}
+              <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
+                <div class="textinner">
+                  {{ getText(item) }}
+                </div>
                 <span class="text_static" v-if="flag_1 && textList.length > 1">
                   {{ index + 1 + " of " + textList.length }}
                 </span>
@@ -330,7 +332,7 @@ export default {
 }
 .text_static {
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   right: 7px;
 }
 .text_area {
@@ -343,10 +345,18 @@ export default {
   line-height: 24px;
   color: #000000;
   box-sizing: border-box;
-  padding:7px 7px 30px 7px;
+  padding:7px 7px 20px 7px;
   overflow: scroll;
+  word-break: break-all;
   position: relative;
   text-align: left;
+}
+.columText{
+  height: 100px;
+}
+.textinner{
+  overflow: scroll;
+  height: 100%;
 }
 .text_area.full-text-area{
    height: 100%;

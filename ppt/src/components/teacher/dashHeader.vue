@@ -1,11 +1,11 @@
 <template>
   <div class="header">
     <div class="left-area">
-      <div class="dash-left" @click="handleBack"></div>
+      <div v-if="current_model === 'Student-Paced'" class="dash-left" @click="handleBack"></div>
       <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
         <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       </el-tooltip>
-      <p>课程标题：{{className}}</p>
+      <p>课程标题：{{classRoomInfo.class_name}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">
           <div class="title">Settings</div>
@@ -20,7 +20,7 @@
     <div class="right-btns">
       <div class="invite-button" @click="share">
         <img src="../../assets/picture/invite.png" class="invite"/>
-        <span>Invite</span>
+        <span>{{classRoomInfo.class_id}}</span>
       </div>
       <div
         class="invite-button"
@@ -61,9 +61,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    className: {
-      type: String,
-      default: false,
+    classRoomInfo: {
+      type: Object,
+      default: () => {},
     },
     showStudents: {
       type: Function,
@@ -77,6 +77,10 @@ export default {
     studentList: {
       type: Array,
       default: () => []
+    },
+    current_model: {
+      type: String,
+      default: ''
     },
   },
   data() {

@@ -138,7 +138,7 @@
       v-if="isDashboard && classRoomInfo"
       :share="copyUrl"
       :onLine="onLine"
-      :className="classRoomInfo.class_name"
+      :classRoomInfo="classRoomInfo"
       :openProject="openProject"
       :endLesson="endLesson"
       :showStudents="showStudents"
@@ -146,6 +146,7 @@
       :getStudentOnLineCount="getStudentOnLineCount"
       :studentList="studentList"
       :reopenClass="_reopenClass"
+      :current_model="page_model"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -268,6 +269,7 @@
         :closeBtn="closeCopyDialog"
         :user_id="uid"
         :classRoomInfo="classRoomInfo"
+        :changeRoomName="changeRoomName"
       />
     </el-dialog>
 
@@ -1459,6 +1461,13 @@ type: "slide"*/
     closeCopyDialog() {
       this.showCopyLinkDialog = false;
       controlProject({"result": false, "controlType": 3})
+    },
+
+    changeRoomName(name) {
+      this.classRoomInfo = {
+        ...this.classRoomInfo,
+        class_name: name
+      }
     },
 
     getBtnString() {
