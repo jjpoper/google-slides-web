@@ -147,6 +147,7 @@
       :studentList="studentList"
       :reopenClass="_reopenClass"
       :current_model="page_model"
+      :turnModel="turnModel"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
