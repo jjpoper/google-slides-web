@@ -978,8 +978,7 @@ type: "slide"*/
         }
         // youtube视频同步
         if(controlType == 5) {
-          const {id, nextStatus} = result
-          EventBus.$emit('youtubePlayer', {id, nextStatus})
+          EventBus.$emit('youtubePlayer', result)
         }
       }
     },
