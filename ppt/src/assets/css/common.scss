@@ -88,10 +88,10 @@ html, button, input, select, textarea {
   padding: 0 !important;
 }
 .custom-dialog.el-dialog {
-  margin: 50px auto 0 !important;
-  .el-dialog__header {
-    display: none;
-  }
+  margin: 50px auto 0 !important; 
+}
+.el-dialog__header {
+  display: none;
 }
 .el-dialog{
   box-shadow: none !important

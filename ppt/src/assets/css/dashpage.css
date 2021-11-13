@@ -377,20 +377,6 @@ svg {
   height: 21px;
   margin-right: 14px;
 }
-.showResButoon{
-  width: 120px;
-  height: 30px;
-  border-radius: 4px;
-  background-color: rgba(21, 195, 154, 1);
-  font-size: 14px;
-  font-family: Inter-Bold;
-  line-height: 30px;
-  color: #FFFFFF;
-  cursor: pointer;
-  text-align: center;
-  position: relative;
-  margin: 0 auto 10px auto;
-}
 
 @media screen and (max-width: 768px) {
   .dashboardpage{

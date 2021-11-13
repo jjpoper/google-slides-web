@@ -6,6 +6,7 @@
 
 <style lang="scss">
 @import url(./assets/css/common.scss);
+@import url(./assets/css/modal.scss);
 </style>
 <script>
 import "./utils/pptConfig";
