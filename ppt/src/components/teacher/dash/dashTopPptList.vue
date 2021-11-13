@@ -1,12 +1,12 @@
 <template>
-  <div class="left" v-if="studentAllSlides" >
+  <div class="dashpptlist" v-if="studentAllSlides" >
     <div class="dash-left" @click="prev"></div>
     <div class="inner-swiper" ref="innerSwiper">
       <div v-for="(item, index) in studentAllSlides" :key="index"
             :ref="currentPageIndex === index ? 'activeRef': ''"
             :tabindex="currentPageIndex === index ? '0' : ''"
             @click="changeToPage(index)"
-            class="with-outer">
+            class="ppt-list-item-outer">
         <div v-bind:class="
             currentPageIndex == index
               ? 'ppt_content image_parent_focus'
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapState({
-      studentAllSlides: state => state.student.studentAllSlides,
+      studentAllSlides: state => state.student.studentAllSlides.concat(state.student.studentAllSlides),
       currentPageIndex: state => state.student.currentPageIndex,
     })
   },
@@ -131,114 +131,3 @@ export default {
   },
 }
 </script>
-<style scoped>
-.left {
-  height: 100px;
-  width: 100%;
-  /* padding: 30px 16.5px; */
-  box-sizing: border-box;
-  position: relative;
-  display: flex;
-  margin-top: 5px;
-  background-color: #fff;
-  padding: 0 50px;
-}
-.inner-swiper{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  overflow-x: scroll;
-  overflow-y: hidden;
-}
-.dash-left{
-  position: absolute;
-  left: 10px;
-  width: 30px;
-  height: 30px;
-  background-image: url(../../../assets/picture/dash-left.png);
-  background-repeat: no-repeat;
-  background-size: 30px 30px;
-  cursor: pointer;
-  top: 35px;
-}
-.dash-left.dash-right{
-  background-image: url(../../../assets/picture/dash-right.png);
-  right: 10px;
-  left: auto;
-}
-.left-footer{
-  position: absolute;
-  bottom: 22px;
-  width: 283px;
-  height: 32px;
-  box-sizing: border-box;
-  padding-left: 33.5px;
-  display: flex;
-}
-.left-footer .sort-footer{
-  width: 120px;
-  height: 32px;
-  background: #E4E4E4;
-  border-radius: 16px;
-  text-align: center;
-  line-height: 32px;
-}
-
-.left::-webkit-scrollbar {
-  display: none;
-}
-.with-outer{
-  width: 100px;
-  height: 70px;
-  position: relative;
-  box-sizing: border-box;
-  margin-right: 15px;
-  padding-top: 15px;
-  outline: none !important;
-}
-.ppt_content {
-  display: flex;
-  flex-direction: column;
-  width: 100px;
-  height: 67px;
-  padding: 10px;
-  overflow: hidden;
-  border-radius: 3px;
-  box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 1);
-  border: 1px solid rgba(188, 188, 188, 1);
-  position: relative;
-  cursor: pointer;
-}
-.index-tag{
-  height: 15px;
-  background: rgba(228, 228, 228, 1);
-  border-radius: 8px;
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  font-size: 12px;
-  font-family: Segoe UI;
-  font-weight: 400;
-  line-height: 15px;
-  color: #FFFFFF;
-  text-align: center;
-  font-style: normal;
-  padding: 0 8px;
-}
-
-.image_parent_focus {
-  border: 3px solid #21A28B;
-  outline: none !important;
-}
-.image_parent {
-  /* display: flex;
-  flex-direction: column; */
-  overflow: hidden;
-  /* width: 153px; */
-  height: 102px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-}
-</style>

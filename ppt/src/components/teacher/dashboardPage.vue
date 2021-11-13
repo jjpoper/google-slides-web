@@ -45,7 +45,7 @@
             v-if="!showFullAnswer"
             :showResponse="showResponse"
             :responseList="responseContentList"/>
-          <DashGroupStudents />
+          <DashGroupStudents v-else/>
         </div>
         <!-- <dashboard-meterial
           v-if="showFullAnswer"
@@ -190,120 +190,6 @@ export default {
 };
 </script>
 
-<style scoped>
-.dashboard {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background-color: rgba(247, 248, 255, 1);
-  flex-direction: column;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-.dashboardpage {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  background-color: rgba(247, 248, 255, 1);
-  position: relative;
-  flex-direction: column;
-  padding-bottom: 5px;
-}
-.student_flag {
-  background-color: rgba(74, 172, 213, 0.9);
-  width: 40px;
-  height: 40px;
-  border-top-right-radius: 5px;
-  margin-top: 90px;
-  cursor: pointer;
-  fill: white;
-}
-svg {
-  opacity: 0.35;
-}
-
-.student_name {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.student_count {
-  color: black;
-  opacity: 0.9;
-  font-size: 20px;
-  z-index: 999;
-}
-
-
-.divider {
-  height: auto;
-  min-height: 100%;
-  background-color: #e0e0e0;
-  width: 1px;
-  position: fixed;
-  top: 0px;
-  left: 250px;
-}
-.top {
-  background-color: #67c23a;
-  height: 6px;
-}
-
-.control_panel {
-  width: 100%;
-}
-.dash-second{
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  margin-top: 10px;
-  position: relative;
-}
-.dash-border{
-  border: 1px solid #707070;
-  background-color: rgba(255, 255, 255, 1);
-  border-radius: 10px;
-}
-.red-dash-border{
-  border: 2px solid red;
-  border-radius: 10px;
-}
-.dash-second-left{
-  background-color: #fff;
-  position: relative;
-  flex: 1;
-  overflow: hidden;
-  /* display: flex; */
-}
-.dash-second-left.dash-border{
-  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
-}
-.dash-second-right{
-  width: 300px;
-  height: 100%;
-  background-color: #fff;
-  margin-left: 10px;
-  box-sizing: border-box;
-}
-.dash-second-right.dash-students{
-  /* margin-left: 0;
-  width: 300px; */
-}
-.shouqi{
-  width: 30px;
-  height: 10px;
-  position: absolute;
-  top: 105px;
-  left: calc(50% - 5px);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  background-image: url(../../assets/picture/shouqi.png);
-  cursor: pointer;
-  z-index: 99;
-}
-.shouqi.zhankai{
-  top: 0;
-  background-image: url(../../assets/picture/zhankai.png);
-}
+<style>
+@import url(../../assets/css/dashpage.css);
 </style>
