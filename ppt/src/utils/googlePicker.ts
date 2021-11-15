@@ -2,21 +2,32 @@
 /* eslint-disable no-undef */
 import { getTeacherClientStoreToken, saveTeacherClientStoreToken } from "@/model/store.teacher"
 import { showLoading } from "./loading"
+import PPT, { isDev } from "./pptConfig"
+
+const googleDriveConfig = {
+  dev: {
+    clientId: '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com',
+    appId: '909953111628',
+    developerKey: 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
+  },
+  release: {
+    clientId: '337694010706-actv4k6bli7c4iknu6ak50gkqhk318ti.apps.googleusercontent.com',
+    appId: '337694010706',
+    developerKey: 'AIzaSyAiNrG4HKyIhApkQQDE_uGs-0w-xTHRCTU'
+  }
+}
 
 /* eslint-disable quote-props */
 class LoadPicker {
-  private clientId = '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com' // dev
-  // private clientId = '909953111628-pi3hq11ioecpr49ordr9am0c7va533dj.apps.googleusercontent.com' // test
-  // private clientId = '337694010706-actv4k6bli7c4iknu6ak50gkqhk318ti.apps.googleusercontent.com' // prod
-  // private appId = '909953111628'
-  private appId = '337694010706'
+  private LoadPickerConfig: any = isDev ? googleDriveConfig.dev : googleDriveConfig.release
+  private clientId = this.LoadPickerConfig.clientId
+  private appId = this.LoadPickerConfig.appId
   private scope = [
     'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/drive.file'
   ]
 
-  private developerKey = 'AIzaSyAiNrG4HKyIhApkQQDE_uGs-0w-xTHRCTU'
-  // private developerKey = 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI' // prod
+  private developerKey = this.LoadPickerConfig.developerKey
   private oauthToken = ''
   private pickerApiLoaded = false
   private classCallback: any = null
@@ -162,7 +173,7 @@ class LoadPicker {
 
     // var upload_directory = upload_url;
 
-    this.makeXMLHttpRequest(`https://dev.api.newzealand.actself.me/file/upload`, formData);
+    this.makeXMLHttpRequest(`${PPT.requestUrl}/file/upload`, formData);
   }
 
   // 创建http请求

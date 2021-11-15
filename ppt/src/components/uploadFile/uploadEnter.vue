@@ -21,16 +21,6 @@
           </div>
         </el-tooltip>
         <el-tooltip content="my computer" placement="right">
-          <!-- <el-upload
-            class="upload-demo"
-            action="https://dev.api.newzealand.actself.me/file/upload"
-            :on-success="onSuccess"
-            :show-file-list="false"
-            accept="image/*,video/*,audio/*"
-            list-type="picture"
-          >
-            
-          </el-upload> -->
           <div style="position: relative; cursor: pointer;">
             <el-dropdown-item
               icon="el-icon-folder-add"

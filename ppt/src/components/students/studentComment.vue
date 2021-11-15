@@ -166,7 +166,6 @@ export default {
     getUrl(page_id) {
       const item = this.slides.filter(item => item.page_id === page_id)[0];
       return item ? item.thumbnail_url : false;
-      return "https://dev.api.newzealand.actself.me/20210801094156/SLIDES_API539350515_0.png";
       // return item.thumbnail_url
     },
     getButtonVis(page_id) {
