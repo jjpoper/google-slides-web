@@ -34,7 +34,7 @@ export const getStudentStoreToken = (): string => {
 }
 
 export const saveStudentStoreToken = (token: string) => {
-  saveStore('student_token', token)
+  saveStore('student_token', Array.isArray(token) ? token[0] : token)
 }
 // 拼接url 参数
 const saveStudentStore = (key: string, value: any) => {

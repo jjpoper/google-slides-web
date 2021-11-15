@@ -7,72 +7,82 @@
       class="close-btn"
       @click="close()"
     />
-   <div class="content" v-if="tipsItemList && tipsItemList.length > 0">
-      <div class="ppt-list">
-        <div class="ppt-list-item" @click="changeIndex(index)" v-for="(item, index) in tipsItemList" :key="index">
-          <pptcontent :url="item.thumbnail_url"/>
-        </div>
-      </div>
-      <div class="ppt-content">
-        <div class="ppt-content-inner">
-          <pptcontent :url="tipsItemList[currentIndex].thumbnail_url"/>
-        </div>
-        <div class="footer">
-          {{tipsItemList[currentIndex].index}}/{{studentAllSlides.length}}
-        </div>
-      </div>
-      <div class="ppt-tips">
-        <!-- <div class="tips-title">Tips</div> -->
-        <div class="ppt-tips-item">
-          <div class="ppt-tips-item-content">
-            <div class="ppt-tips-item-top">
-              <img
-                src="../../assets/picture/smalltips.png"
-                width="24"
-                height="24"
-              />
-              <img
-                src="../../assets/picture/morshanchu.png"
-                width="11.25"
-                height="12"
-                class="moreshanchu"
-              />
-            </div>
-            <textarea v-model="tipsValue" @keypress="enter" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
-          </div>
-          <div class="ppt-tips-item-content right-answer-content"
-            v-if="tipsItemList[currentIndex].items[0] && 
-            tipsItemList[currentIndex].items[0].type === 'choice' && 
-            tipsItemList[currentIndex].items[0].data.showCorrectAnswer">
-            <div class="ppt-tips-item-top">
-              <div class="checktext">
-                <input type="checkbox" checked="true" disabled class="tipscheck"/>
-                正确答案
-              </div>
-              <img
-                src="../../assets/picture/morshanchu.png"
-                width="11.25"
-                height="12"
-                class="moreshanchu"
-              />
-            </div>
-            <div class="ppt-tips-item-checklist">
-              <!-- <el-checkbox-group v-model="rightAnswers" @change="handleCheckedChange">
-                <el-checkbox  >
-                  
-                </el-checkbox>
-              </el-checkbox-group> -->
-              <div v-for="(item, index) in tipsItemList[currentIndex].items[0].data.options" :key="index" class="checktext checkitem">
-                <input type="checkbox" v-model="rightAnswers" @change="handleCheckedChange" :value="item.id" class="tipscheck"/>
-                <p class="checktextbox">
-                  {{item.text}}
-                </p>
-              </div>
-            </div>
+     <div class="content" v-if="tipsItemList && tipsItemList.length > 0">
+        <div class="ppt-list">
+          <div class="ppt-list-item" @click="changeIndex(index)" v-for="(item, index) in tipsItemList" :key="index">
+            <pptcontent :url="item.thumbnail_url"/>
           </div>
         </div>
-      </div>
-   </div>
+        <div class="ppt-content">
+          <div class="ppt-content-inner">
+            <pptcontent :url="tipsItemList[currentIndex].thumbnail_url"/>
+          </div>
+          <div class="footer">
+            {{tipsItemList[currentIndex].index}}/{{studentAllSlides.length}}
+          </div>
+        </div>
+        <div class="ppt-tips">
+          <!-- <div class="tips-title">Tips</div> -->
+          <div class="ppt-tips-item">
+            <div class="ppt-tips-item-content">
+              <div class="ppt-tips-item-top">
+                <img
+                  src="../../assets/picture/smalltips.png"
+                  width="24"
+                  height="24"
+                />
+                <img
+                  src="../../assets/picture/morshanchu.png"
+                  width="11.25"
+                  height="12"
+                  class="moreshanchu"
+                  v-if="isTeacher"
+                />
+              </div>
+              <textarea v-if="isTeacher" v-model="tipsValue" @keypress="enter" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
+              <div v-else class="ppt-tips-item-text" >{{tipsValue}}</div>
+            </div>
+            <div class="ppt-tips-item-content right-answer-content"
+              v-if="isTeacher && tipsItemList[currentIndex].items[0] && 
+              tipsItemList[currentIndex].items[0].type === 'choice' && 
+              tipsItemList[currentIndex].items[0].data.showCorrectAnswer">
+              <div class="ppt-tips-item-top">
+                <div class="checktext">
+                  <input type="checkbox" checked="true" disabled class="tipscheck"/>
+                  正确答案
+                </div>
+                <img
+                  src="../../assets/picture/morshanchu.png"
+                  width="11.25"
+                  height="12"
+                  class="moreshanchu"
+                />
+              </div>
+              <div class="ppt-tips-item-checklist">
+                <!-- <el-checkbox-group v-model="rightAnswers" @change="handleCheckedChange">
+                  <el-checkbox  >
+                    
+                  </el-checkbox>
+                </el-checkbox-group> -->
+                <div v-for="(item, index) in tipsItemList[currentIndex].items[0].data.options" :key="index" class="checktext checkitem">
+                  <input type="checkbox" v-model="rightAnswers" @change="handleCheckedChange" :value="item.id" class="tipscheck"/>
+                  <p class="checktextbox">
+                    {{item.text}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div v-else>
+      <img
+        src="../../assets/picture/tipsempty.png"
+        width="600"
+        height="400"
+        class="tipsempty"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -84,6 +94,10 @@ export default {
   props: {
     close: {
       type: Function
+    },
+    isTeacher: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -108,9 +122,12 @@ export default {
       return this.tipsItemList[this.currentIndex]
     },
     currentTips() {
-      const {elements} = this.tipsItemList[this.currentIndex]
-      const tipItemIndex = elements.findIndex(ele => ele.type === 'tip')
-      return elements[tipItemIndex]
+      if(this.tipsItemList.length > 0) {
+        const {elements} = this.tipsItemList[this.currentIndex]
+        const tipItemIndex = elements.findIndex(ele => ele.type === 'tip')
+        return elements[tipItemIndex]
+      }
+      return null
     },
     ...mapState({
       studentAllSlides: state => state.student.studentAllSlides
@@ -118,7 +135,7 @@ export default {
   },
   watch: {
     currentTips() {
-      this.tipsValue = this.currentTips.tip
+      this.setTipText()
     },
     currentIndex() {
       this.setRightAnswers()
@@ -133,7 +150,7 @@ export default {
     }
   },
   mounted() {
-    this.tipsValue = this.currentTips.tip
+    this.setTipText()
     this.setRightAnswers()
   },
   methods: {
@@ -141,7 +158,15 @@ export default {
       "updateSlideItemTip",
       "updateSlideCorrectAnswer"
     ]),
+    setTipText() {
+      if(this.currentTips) {
+        this.tipsValue = this.currentTips.tip
+      } else {
+        this.tipsValue = ''
+      }
+    },
     setRightAnswers() {
+      if(this.tipsItemList.length <= 0) return
       const {type, data: {options}} = this.tipsItemList[this.currentIndex].items[0]
       if(type === 'choice') {
         this.rightAnswers = options.filter(item => item.isAnswer).map(item => item.id)
@@ -182,7 +207,7 @@ export default {
 <style scoped>
 .copy_page {
   width: 100%;
-  height: 100%;
+  /* max-height: 500px; */
   background: rgba(255, 255, 255, 1);
   opacity: 1;
   display: flex;
@@ -199,11 +224,11 @@ export default {
   cursor: pointer;
 }
 .content{
-  flex: 1;
+  /* flex: 1; */
   display: flex;
   box-sizing: border-box;
   padding: 0 15px 70px;
-  height: 100%;
+  height: 500px;
 }
 .ppt-list{
   flex: 1;
@@ -223,7 +248,7 @@ export default {
   flex: 3;
   box-sizing: border-box;
   padding: 0 10px;
-  height: 100%;
+  max-height: 100%;
   position: relative;
 }
 .ppt-content-inner{
@@ -373,5 +398,20 @@ export default {
   box-sizing: border-box;
   text-align: left;
   padding-left: 7px;
+}
+.tipsempty{
+  margin-bottom: 100px;
+}
+.student-tips{
+  display: flex;
+  background-image: url(../../assets/picture/smalltips.png);
+  background-size: 62px 66px;
+  background-repeat: no-repeat;
+  min-height: 66px;
+  min-width: 62px;
+  padding-left: 70px;
+  line-height: 66px;
+  align-self: center;
+  margin: 0 50px 50px;
 }
 </style>

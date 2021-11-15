@@ -13,7 +13,7 @@ export enum SocketEventsEnum {
   TEACHER_COMMENT = 'TEACHER_COMMENT', // 教师端发评论
   CONTROL = "teacher_control", // 教师端发送控制命令
   MODEL_CHANGE = 'Mode_Change',
-  SHOW_RESPONSE = 'show_response',
+  ASYNC_DASH_PROJECT = 'ASYNC_DASH_PROJECT', // 同步消息
   END_SESSION = 'end_session',
   CHANGE_SESSION_STATUS = 'change_session_status',
   LOCK_PAGE = 'lock_page',

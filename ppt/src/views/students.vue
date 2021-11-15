@@ -1,5 +1,8 @@
 <template>
-  <div class="page" v-if="slides && slides.length">
+  <div class="page">
+    <el-dialog :visible.sync="showLoginDialog" custom-class="custom-dialog">
+      <StudentLoginPage :joinRoom="loginRoom" :googleLogin="googleLogin" :class_id="class_id" />
+    </el-dialog>
     <class-room-closed
       v-if="classRoomInfo && classRoomInfo.status == 'close'"
       :class_id="classRoomInfo.class_id"
@@ -108,37 +111,33 @@
     </div>
 
     <div class="top_btn">
-      <div class="online_status">
-        <i
-          class="el-icon-s-opportunity"
-          :style="`color: ${onLine ? 'green' : 'red'}`"
-        />
-      </div>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain: {{ getDeadLineStr(countDownMin) }}
-      </div>
+      <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
+        <div class="online_status">
+          <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+        </div>
+      </el-tooltip>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain: {{ getDeadLineStr(countDownMin) }}</div>
       <el-tooltip content="mark up and send comment" placement="top">
         <div class="readchat comment"></div>
       </el-tooltip>
-      <div class="deadline_info" v-if="showRemainTime()">
-        Deadline time remain:{{ countDownMin }} mintues.
-      </div>
+      <div
+        class="deadline_info"
+        v-if="showRemainTime()"
+      >Deadline time remain:{{ countDownMin }} mintues.</div>
 
-      <div class="deadline_info" v-if="showCorrect">
-        You are unable to change your answer
-      </div>
+      <div class="deadline_info" v-if="showCorrect">You are unable to change your answer</div>
 
       <div style="flex: 1"></div>
 
-      <svg
-        t="1623813115939"
+      <img
+        src="../assets/icon/screen_all.png"
+        width="50"
+        height="50"
         class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="2481"
-        width="40"
-        height="40"
+        @click="showFullScreen(true)"
         v-if="
           !fullScreen &&
           !smallWindow &&
@@ -148,14 +147,7 @@
           currentItemData.items[0] &&
           currentItemData.items[0].type !== 'draw'
         "
-        @click="showFullScreen(true)"
-      >
-        <path
-          d="M629.557 391.972c17.329 17.32 47.028 17.32 66.815 0l168.302-165.814v133.637c0 19.806 14.85 34.647 34.637 34.647h24.743c19.806 0 34.657-12.372 34.657-29.692V119.733h-2.479l2.479-17.318c0-9.904-2.479-17.33-7.436-24.752-4.936-4.948-14.848-9.895-24.743-9.895h-17.327L664.211 65.29c-19.805 0-34.654 17.329-34.654 34.646v24.752c2.478 22.274 19.789 34.646 39.593 34.646h128.69L632.036 325.149c-22.283 17.319-22.283 47.026-2.478 66.823zM394.44 629.557c-17.31-17.327-47.009-17.327-66.815 0l-168.3 165.807V664.195c0-19.787-14.833-34.638-34.638-34.638h-24.76c-19.788 0-34.639 12.372-34.639 29.699v242.533h2.478l-2.478 17.327c0 9.894 2.478 17.31 7.416 24.744 4.956 4.956 14.868 9.894 24.761 9.894h17.328l244.993 2.478c19.823 0 34.655-17.328 34.655-34.638v-24.76c-2.478-22.266-19.788-34.638-39.593-34.638H226.16l168.283-165.824c17.327-17.327 17.327-47.027-0.001-66.815z m561.79 274.709v-242.55c0-19.787-17.329-29.68-34.639-29.68h-24.759c-19.788 0-34.639 17.31-34.639 34.638v131.168l-168.3-165.806c-17.309-17.329-47.01-17.329-66.816 0-17.326 17.31-17.326 47.009 0 66.814l168.284 165.806h-128.69c-19.787 0-37.116 12.388-39.594 34.654v24.745c0 19.805 17.33 34.654 34.64 34.654l240.071-2.478h17.329c9.893 0 17.31-2.478 24.743-9.894 4.955-4.956 7.415-14.85 7.415-24.744l4.955-17.327c-2.478 0 0 0 0 0zM228.636 159.335h128.69c19.806 0 37.116-12.373 39.593-34.646V99.936c0-19.797-17.309-34.646-34.654-34.646l-244.993 2.478H99.927c-9.876 0-17.31 2.478-24.743 9.895-4.939 4.956-7.416 14.849-7.416 24.752l2.477 17.318h-2.477v245.018c0 19.797 14.85 29.692 34.638 29.692h24.743c19.823 0 34.655-14.841 34.655-34.646v-133.64l168.283 165.815c17.345 17.32 47.045 17.32 66.832 0 17.33-17.327 17.33-47.026 0-66.823L228.636 159.335z m0 0"
-          p-id="2482"
-          fill="#1296db"
-        />
-      </svg>
+      />
     </div>
 
     <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
@@ -170,8 +162,7 @@
           currentItemData &&
           (!currentItemData.items ||
             currentItemData.items.length == 0 ||
-            currentItemData.items[0].type == 'draw' ||
-            currentItemData.items[0].type == 'website') &&
+            currentItemData.items[0].type == 'draw') &&
           tipText.length > 0 &&
           !showTip
         "
@@ -187,8 +178,7 @@
           currentItemData &&
           (!currentItemData.items ||
             currentItemData.items.length == 0 ||
-            currentItemData.items[0].type == 'draw' ||
-            currentItemData.items[0].type == 'website') &&
+            currentItemData.items[0].type == 'draw') &&
           tipText.length > 0 &&
           showTip
         "
@@ -196,19 +186,28 @@
       />
     </el-popover>
 
-    <img
-      src="../assets/web@2x.png"
-      width="75"
-      height="35"
-      class="web_site_icon"
-      v-if="
-        currentItemData &&
-        currentItemData.items &&
-        currentItemData.items.length > 0 &&
-        currentItemData.items[0].type == 'website'
-      "
-      @click="openWebsitePage"
-    />
+    <div class="web_site_icon">
+      <el-popover
+        placement="top"
+        width="200"
+        trigger="hover"
+        v-if="websiteList&&websiteList.length>0"
+      >
+        <div
+          v-for="(item, index) in websiteList"
+          :key="index"
+          class="website--content"
+          @click="openWebsitePage(item)"
+        >{{item.url}}</div>
+        <img
+          src="../assets/web@2x.png"
+          width="75"
+          height="35"
+          slot="reference"
+          style="margin-left: 20px"
+        />
+      </el-popover>
+    </div>
 
     <div id="diycolor_comment"></div>
   </div>
@@ -221,6 +220,8 @@ import {
   getUserProfile,
   queryClassStatus,
   getAVComment,
+  anmonymousLogin,
+  getAllGroupMember
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -230,7 +231,7 @@ import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
-  ClassRoomModelEnum,
+  ClassRoomModelEnum
 } from "../socket/socketEvents";
 import {
   saveStudentsCurrentPageAnswerList,
@@ -242,7 +243,7 @@ import {
   readStudentComment,
   getStudentStoreToken,
   saveStudentStoreToken,
-  initStudentStoreSlideId,
+  initStudentStoreSlideId
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -256,6 +257,7 @@ import TipsList from "@/components/common/tipsList.vue";
 import { mapActions, mapState } from "vuex";
 import tipShow from "@/components/students/tipShow.vue";
 import StudentsPptList from "@/components/students/studentsPptList.vue";
+import StudentLoginPage from "@/components/students/studentLoginPage.vue";
 
 export default {
   data() {
@@ -302,17 +304,31 @@ export default {
       firstJoined: true,
       showTip: false,
       tipText: "",
+      websiteUrl: "",
+      showLoginDialog: false,
+      metrialStatusMap: {}
     };
   },
   computed: {
     ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
-      studentAllSlides: state => state.student.studentAllSlides,
+      studentAllSlides: state => state.student.studentAllSlides
     }),
+    websiteList() {
+      let list = [];
+      if (this.slides[this.currentPageIndex]) {
+        let elements = this.slides[this.currentPageIndex].elements;
+        console.log("current page website urls::", elements);
+        if (elements && elements.length > 0) {
+          list = elements.filter(item => item.type == "website");
+        }
+      }
+      return list;
+    },
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {
         return this.slides[this.currentPageIndex].elements.filter(
-          (item) => item.type !== "tip" && item.position
+          item => item.type !== "tip" && item.position
         );
       } else {
         return [];
@@ -320,13 +336,15 @@ export default {
     },
     filterTips() {
       if (this.slides[this.currentPageIndex]) {
-        return this.slides[this.currentPageIndex].elements.filter(
-          (item) => item.type === "tip"
+        const tips = this.slides[this.currentPageIndex].elements.filter(
+          item => item.type === "tip"
         );
+        console.log(tips, 'tips')
+        return tips
       } else {
         return [];
       }
-    },
+    }
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
@@ -368,32 +386,50 @@ export default {
     TipsList,
     tipShow,
     StudentsPptList,
+    StudentLoginPage
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       const { id } = vm.$route.params;
       const { token, p } = to.query;
       vm.class_id = id;
+      vm.getGroups();
       const index = to.query.p ? to.query.p : 0;
+      const anonymous = to.query.anonymouse;
       vm.setStudentPageIndex(index);
       initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
         saveStudentStoreToken(token);
+        vm.initWithToken();
       } else {
-        vm.token = getStudentStoreToken();
+        if (!anonymous || anonymous == "false") {
+          vm.token = getStudentStoreToken();
+          vm.initWithToken();
+        } else {
+          //进行匿名登录
+          console.log("!token", anonymous);
+          vm.loginWithoutToken();
+        }
       }
-      vm.initWithToken();
     });
   },
   watch: {
     currentPageIndex() {
       // console.log("set elements");
       this.doAfterPageChange();
-      this.changeTipByWatchSlides()
+      this.changeTipByWatchSlides();
+      this.meterialVisiable = this.metrialStatusMap[this.currentPageIndex]
+      // let elements = this.slides[this.currentPageIndex].elements;
+      // if (elements && elements.length > 0) {
+      //   this.websiteList = elements.filter((item) => itme.type == "website");
+      //   console.log("current page website urls::", this.websiteList);
+      // } else {
+      //   this.websiteList = [];
+      // }
     },
     studentAllSlides() {
-      this.changeTipByWatchSlides()
+      this.changeTipByWatchSlides();
     }
   },
   methods: {
@@ -407,19 +443,57 @@ export default {
       "updateAllAnswerdList",
       "deleteOnAnswerById",
       "updateSlideItemTip",
-      "updateSlideCorrectAnswer"
+      "updateSlideCorrectAnswer",
+      "setAllGroups"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
       "setAllRemarkList",
-      "updateLatestRemarkId",
+      "updateLatestRemarkId"
     ]),
     changeTipShow() {
       this.showTip = !this.showTip;
       // console.log("change show !!" + this.showTip);
     },
+    getGroups() {
+      getAllGroupMember(this.class_id).then(list => {
+        console.log(this.class_id, list);
+        this.setAllGroups(list);
+      });
+    },
+    loginWithoutToken() {
+      this.showLoginDialog = true;
+
+      console.log("login without token!", this.showLoginDialog);
+    },
+    loginRoom(name, group_id) {
+      console.log(name, group_id);
+      if (!name || name.length < 1) {
+        this.$message.error("Please input your name");
+        return;
+      }
+
+      anmonymousLogin(name, group_id).then(res => {
+        console.log(res.token);
+        this.token = res.token;
+        this.initWithToken();
+        this.showLoginDialog = false;
+      });
+      // this.token = getStudentStoreToken();
+
+      //
+    },
+
+    googleLogin() {
+      this.token = getStudentStoreToken();
+      this.initWithToken();
+      this.showLoginDialog = false;
+    },
     changeTipByWatchSlides() {
-      if (this.studentAllSlides && this.studentAllSlides[this.currentPageIndex]) {
+      if (
+        this.studentAllSlides &&
+        this.studentAllSlides[this.currentPageIndex]
+      ) {
         this.setElements(this.studentAllSlides[this.currentPageIndex].elements);
       }
       if (
@@ -432,22 +506,22 @@ export default {
           i < this.studentAllSlides[this.currentPageIndex].elements.length;
           i++
         ) {
-          if (this.studentAllSlides[this.currentPageIndex].elements[i].type == "tip") {
+          if (
+            this.studentAllSlides[this.currentPageIndex].elements[i].type ==
+            "tip"
+          ) {
             this.tipText =
-              "tip: " + this.studentAllSlides[this.currentPageIndex].elements[i].tip;
+              "tip: " +
+              this.studentAllSlides[this.currentPageIndex].elements[i].tip;
           }
         }
       }
     },
-    openWebsitePage() {
-      console.log(this.currentItemData.items);
+    openWebsitePage(item) {
+      console.log("open", item.url);
       var strWindowFeatures =
         "width=1500,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=100";
-      window.open(
-        this.currentItemData.items[0].data.url,
-        "_blank",
-        strWindowFeatures
-      );
+      window.open(item.url, "_blank", strWindowFeatures);
     },
     loadDiyPainter() {
       this.$nextTick(() => {
@@ -462,7 +536,6 @@ export default {
     getWidthPercent(type) {
       // if (this.questionModalVisiable) return "30%";
       if (type === "draw") return "100%";
-      if (type === "website") return "0%";
       if (type === "comment" || type === "media") return "350px";
       if (this.smallWindow) {
         if (this.isShowQuestion) {
@@ -544,7 +617,7 @@ export default {
       return true;
     },
     goToLogin() {
-      getStudentLoginUrl().then((url) => {
+      getStudentLoginUrl().then(url => {
         // console.log(url);
         if (url) {
           location.href = url;
@@ -556,12 +629,12 @@ export default {
         const { page_id, items } = this.currentItemData;
         const type = items[0].type;
         if (type !== "comment") {
-          console.log(getStudentCurrentPageAnswerList(page_id, type))
+          console.log(getStudentCurrentPageAnswerList(page_id, type));
           return getStudentCurrentPageAnswerList(page_id, type);
         } else {
           // comment remark 特殊，数据不在answer内
           return this.$store.state.remark.allRemarks.filter(
-            (item) => item.page_id === page_id
+            item => item.page_id === page_id
           );
         }
       }
@@ -590,7 +663,7 @@ export default {
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id),
+        getAllPPTS(this.slide_id)
       ]).then(([allA, { pages: list }]) => {
         // console.log(list, "========");
         // vuex缓存答案
@@ -609,7 +682,7 @@ export default {
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
         key: "item_1_canvas",
-        content: base64Url,
+        content: base64Url
       });
       this.emitSo(
         "response",
@@ -640,7 +713,7 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
         key: index,
-        content: msg,
+        content: msg
       });
       this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
@@ -676,7 +749,7 @@ export default {
     },
     pageChange(page) {
       // console.log(page, "pageChange", this.currentPageIndex);
-      const nextPage = page - 1;
+      const nextPage = page;
       if (this.currentPageIndex != nextPage) {
         this.setStudentPageIndex(nextPage);
       } else {
@@ -693,7 +766,7 @@ export default {
       this.uid = email;
       this.setStudentUserInfo({
         name: user_name,
-        uid: email,
+        uid: email
       });
       saveStudentUserName(this.uname);
       this.beforejoinRoom();
@@ -703,20 +776,20 @@ export default {
     },
     beforejoinRoom() {
       queryClassStatus(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           this.classRoomInfo = res;
           // console.log(this.classRoomInfo);
           this.initRoomConfig(res);
           this.afterConnectRoom();
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
     },
     afterConnectRoom() {
       this.getAllSlides();
       getAVComment(this.class_id, this.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res);
           if (res.code == "ok") {
             let marks = [];
@@ -729,7 +802,7 @@ export default {
             this.setAllRemarkList(marks);
           }
         })
-        .catch((res) => {
+        .catch(res => {
           // console.log(res);
         });
     },
@@ -801,7 +874,7 @@ export default {
         classId: this.class_id,
         uid: this.uid,
         token: this.token,
-        uname: this.uname,
+        uname: this.uname
       });
     },
     msgListener(d) {
@@ -809,7 +882,11 @@ export default {
       // 收到切换页码命令
       if (d.mtype === SocketEventsEnum.GO_PAGE) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
-          this.pageChange(parseInt(d.params.page) + 1);
+          const nextPageIndex = parseInt(d.params.page);
+          console.log(this.currentPageIndex, nextPageIndex, '===new')
+          if (this.currentPageIndex != nextPageIndex) {
+            this.pageChange(nextPageIndex);
+          }
         } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
           // console.log(d.type, "===收到的消息类型", d.params.mode);
           this.currentModel =
@@ -834,7 +911,7 @@ export default {
             this.classRoomInfo.lock_page.push(page);
           } else {
             this.classRoomInfo.lock_page = this.classRoomInfo.lock_page.filter(
-              (item) => item != page
+              item => item != page
             );
           }
         } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
@@ -847,9 +924,7 @@ export default {
         // 获取发出的评论id，用于删除时候调用
         this.updateLatestRemarkId(d.id);
       } else if (d.mtype === SocketEventsEnum.STUDENT_ADD_MEDIA) {
-        const index = this.slides.findIndex(
-          (item) => d.page_id === item.page_id
-        );
+        const index = this.slides.findIndex(item => d.page_id === item.page_id);
         this.slides[index].elements.push({ id: d.id, ...d.data });
         // console.log(this.allAddedMediaList, "STUDENT_ADD_MEDIA");
       } else if (d.mtype === SocketEventsEnum.TEACHER_UPDATE_MEDIA) {
@@ -867,20 +942,21 @@ export default {
         // console.log("this.allAddedMediaList", "UPDATE_MEDIA_ELEMENT", d);
         const { id } = d;
         const list = this.slides[this.currentPageIndex].elements;
-        const itemIndex = list.findIndex((item) => id === item.id);
+        const itemIndex = list.findIndex(item => id == item.id);
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.ANSWER_QUESTION) {
         this.updateAllAnswerdList(d);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
       } else if (d.mtype === SocketEventsEnum.UPDATE_TIP) {
-        console.log(d)
+        console.log(d);
         this.updateSlideItemTip(d);
+        EventBus.$emit("set-unread-tip");
       } else if (d.mtype === SocketEventsEnum.UPDATE_RIGHT_ANSWERS) {
-        console.log(d)
-        if(d.page_id === this.currentItemData.page_id) {
+        console.log(d);
+        if (d.page_id === this.currentItemData.page_id) {
           // 修改当前页答案
-          EventBus.$emit('refresh-new-answer')
+          EventBus.$emit("refresh-new-answer");
         }
         this.updateSlideCorrectAnswer(d);
       }
@@ -889,13 +965,13 @@ export default {
     onGetTeacherComment(d) {
       const {
         item: { studentId },
-        comment_id,
+        comment_id
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
         addStudentComment({
           ...d.item,
-          id: comment_id,
+          id: comment_id
         });
         unreadStudentComment();
         this.unread = true;
@@ -962,12 +1038,12 @@ export default {
     },
     lastPage() {
       if (this.currentPageIndex > 0) {
-        this.pageChange(this.currentPageIndex);
+        this.pageChange(this.currentPageIndex - 1);
       }
     },
     nextPage() {
       if (this.currentPageIndex < this.slides.length - 1) {
-        this.pageChange(parseInt(this.currentPageIndex) + 2);
+        this.pageChange(parseInt(this.currentPageIndex) + 1);
       }
     },
     isShowRightAnswer() {
@@ -992,7 +1068,7 @@ export default {
       if (result && result.length > 0) {
         const { answer, locked } = result[0];
         let checkedValues = JSON.parse(answer);
-        this.showCorrect = (locked && locked !== "false") ? true : false;
+        this.showCorrect = locked && locked !== "false" ? true : false;
         if (this.showCorrect) {
           this.showCorrect = this.hasAnswer(data.items[0].data.options);
         }
@@ -1047,18 +1123,48 @@ export default {
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,
         key: 0,
-        content: link,
+        content: link
       });
       this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;
-    },
-  },
+      this.metrialStatusMap[this.currentPageIndex] = status
+    }
+  }
 };
 </script>
+
+<style lang="scss">
+.custom-dialog.el-dialog {
+  padding: 0;
+  width: 520px;
+  height: 600px;
+  background-color: #f00fff00;
+  border-radius: 8px;
+  .el-dialog__header {
+    display: none;
+  }
+  .el-dialog__body {
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+</style>
 <style scoped>
+.website--content {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+}
+.website--content:hover {
+  background-color: #15983c;
+  color: white;
+}
 #diycolor_comment {
   top: 0;
   left: 0;
@@ -1120,6 +1226,7 @@ export default {
   top: 10px;
   right: 10%;
   z-index: 9999;
+  display: flex;
 }
 .tip_area_popover {
   cursor: pointer;
@@ -1212,7 +1319,7 @@ export default {
   bottom: 0;
   background: #d9dfe4;
   color: #fff;
-  z-index: 9999;
+  z-index: 1999;
 }
 .sfooter div {
   margin: 0 20px;

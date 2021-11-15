@@ -15,6 +15,9 @@ html {
 ul,li{
   list-style: none;
 }
+*{
+  outline: none;
+}
 
 html, button, input, select, textarea {
     font-family: ProximaNovaSoft-Medium, sans-serif;
@@ -79,6 +82,38 @@ html, button, input, select, textarea {
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
+}
+.no-border{
+  border: 1px solid rgba(236, 236, 236, 1);
+}
+.no-padding{
+  margin-top: 50px !important;
+}
+.no-padding >.el-dialog__header{
+  display: none !important;
+}
+.no-padding >.el-dialog__body{
+  padding: 0 !important;
+}
+.custom-dialog.el-dialog {
+  margin: 50px auto 0 !important;
+  .el-dialog__header {
+    display: none;
+  }
+}
+.el-dialog{
+  box-shadow: none !important
+}
+.common-close-btn{
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  background-image: url(./assets/picture/close_icon.png);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
 }
 </style>
 <script>

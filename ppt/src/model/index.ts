@@ -1,6 +1,13 @@
+import { showToast } from '@/utils/loading';
 import axios from 'axios';
 import PPT from '../utils/pptConfig'
-import { connect } from 'echarts/core';
+import { getTeacherStoreToken } from './store.teacher';
+
+axios.interceptors.response.use((res: any) => {
+  return res;
+}, error => {
+  showToast('service error', 'error')
+})
 
 export const getItem = ({
   slideid,
@@ -13,6 +20,24 @@ export const getItem = ({
     item_id: itemid
   })
 }
+
+//匿名登录  /account/anonymous_sign_in
+export const anmonymousLogin = async (name: string, id: any) => {
+  if (id) {
+    const data = await axios.post(`${PPT.requestUrl}account/anonymous_sign_in?`, {
+      user_name: name,
+      group_id: id,
+    })
+    return data.data.data;
+  } else {
+    const data = await axios.post(`${PPT.requestUrl}account/anonymous_sign_in?`, {
+      user_name: name,
+    })
+    return data.data.data;
+  }
+
+}
+
 
 // 获取所有的ppt内容
 export const getAllPPTS = async (slideid: string) => {
@@ -56,6 +81,18 @@ export const queryClassStatus = async (classId: string, _token: string) => {
   return res;
 }
 
+export const queryClassStatusWithoutToken = async (classId: string) => {
+  // console.log(classId)
+  const data = await axios.post(`${PPT.requestUrl}slide/get_class`, {
+    class_id: classId,
+    //  token: _token,
+  })
+  let res = data.data.data;
+  return res;
+}
+
+
+
 //slide/get_task_result
 
 
@@ -70,7 +107,7 @@ export const queryRefreshResult = async (taskId: string, _token: string) => {
 
 }
 
-//结束课程
+// 结束课程
 export const endClassRoomReq = async (_token: string, name: string, class_id: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/close_class`, {
     class_name: name,
@@ -123,8 +160,9 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
 }
 
 const filterHref = () => {
-  const url = location.href
-  return url.split("&token")[0]
+  // const url = location.href
+  // return url.split("&token")[0]
+  return location.origin + location.pathname
 }
 
 // 获取授权登录
@@ -163,8 +201,10 @@ export const getUserProfile = async (token: string): Promise<Profile> => {
     },
     logout: false
   }
+  // debugger
   // let list = data.data.data.pages
   // // // console.log(data.data.data)
+  // debugger
   try {
     result = data.data.data
   } catch (e) {
@@ -239,7 +279,7 @@ export const getTeacherAllComments = async (classId: string, token: string) => {
   // // // // console.log(data.data.data)
   try {
     result = data.data.data.filter((item: any) => item.page_id)
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return result.reverse()
@@ -256,7 +296,7 @@ export const getStudentAllComments = async (classId: string, token: string) => {
   // // // // console.log(data.data.data)
   try {
     result = data.data.data.filter((item: any) => item.page_id)
-  } catch(e) {
+  } catch (e) {
     // // console.log(e)
   }
   return result.reverse()
@@ -440,4 +480,113 @@ export const updateElementItem = async (id: number, content: string, type: strin
   }
   return result;
 
+}
+
+// 添加分组
+export const addGroup = async (classId: string, name: string): Promise<string> => {
+  const data = await axios.post(`${PPT.requestUrl}group/add`, {
+    class_id: classId,
+    name
+  })
+  let id = ''
+  try {
+    id = data.data.data.id
+  } catch (e) {
+    // // console.log(e)
+  }
+  console.log(id, '=====')
+  return id;
+}
+
+export const deleteGroup = async (id: string): Promise<boolean> => {
+  const data = await axios.post(`${PPT.requestUrl}group/delete`, {
+    id
+  })
+  let code = ''
+  try {
+    code = data.data.code
+  } catch (e) {
+    // // console.log(e)
+  }
+  return code === 'ok';
+}
+
+export const updateGroupName = async (name: string, id: string, ): Promise<boolean> => {
+  const data = await axios.post(`${PPT.requestUrl}group/update`, {
+    id,
+    name
+  })
+  let code = ''
+  try {
+    code = data.data.code
+  } catch (e) {
+    // // console.log(e)
+  }
+  return code === 'ok';
+}
+
+export const updateGroupMember = async (id: string, uids: string[]): Promise<boolean> => {
+  const data = await axios.post(`${PPT.requestUrl}group/assign_members`, {
+    group_id: id,
+    members: uids
+  })
+  let code = ''
+  try {
+    code = data.data.code
+  } catch (e) {
+    // // console.log(e)
+  }
+  return code === 'ok';
+}
+
+export const getAllGroupMember = async (classId: string): Promise<any[]> => {
+  const data = await axios.post(`${PPT.requestUrl}group/get_all_group_and_members`, {
+    class_id: classId
+  })
+  let result = []
+  try {
+    result = data.data.data
+  } catch (e) {
+    // // console.log(e)
+  }
+  return result
+}
+
+
+
+export const addRealClass = async (mail: string, class_name: string) => {
+  const data = await axios.post(`${PPT.requestUrl}real_class/add`, {
+    user_id: mail,
+    name: class_name
+  })
+  return data.data;
+}
+
+
+export const getRealClass = async (mail: string) => {
+  const data = await axios.post(`${PPT.requestUrl}real_class/get_all`, {
+    user_id: mail
+  })
+  return data.data.data;
+}
+
+
+export const setRealClass = async (id: string, anonymous: number, real_id: number) => {
+  const data = await axios.post(`${PPT.requestUrl}class/set`, {
+    class_id: id,
+    can_anonymous_sign_in: anonymous,
+    real_class_id: real_id
+  })
+  console.log(data.data);
+  return data.data.code;
+}
+
+// 改名/class/name_session
+export const renameClass = async (name: string, id: number) => {
+  const data = await axios.post(`${PPT.requestUrl}class/name_session`, {
+    token: getTeacherStoreToken(),
+    class_name: name,
+    class_id: id
+  })
+  return data.data.code;
 }

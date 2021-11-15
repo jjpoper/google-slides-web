@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div v-if="tipText&&tipText.length>0" class="tipArea">
+    <div v-if="tipText&&tipText.length>0" class="tipArea" >
       <img
         v-if="!showTips"
         src="../../assets/icon/tip_close.png"
@@ -36,6 +36,7 @@
   display: flex;
   flex-direction: column;
   line-height: 20px;
+  margin: 20px
 }
 </style>
 

@@ -55,5 +55,9 @@ export const getAnswerTimeStr = (time: number) => {
 export const getJSONValue = (res: any) => {
   if(!res) return {}
   if(Object.prototype.toString.call(res) === "[object Object]") return res
-  return JSON.parse(res)
+  let data = {}
+  try {
+    data = JSON.parse(res)
+  } catch(e) {}
+  return data
 }

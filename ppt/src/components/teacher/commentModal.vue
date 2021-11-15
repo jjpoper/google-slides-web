@@ -90,13 +90,12 @@ import {
 } from "@/model/store.teacher";
 import { getTimeValue } from "@/utils/help";
 import base64image from "../base64image.vue";
-import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import TeacherRes from './comment/TeacherRes.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
 // import
 export default {
-  components: { base64image, RecordAudio, RecordVideo, TeacherRes, AudioPlayer },
+  components: { base64image, RecordVideo, TeacherRes, AudioPlayer },
   data() {
     return {
       commentValue: "",

@@ -23,6 +23,7 @@
     v-on:deactivated="deactivated"
     dragHandle=".dragitem"
     ref="vueDrag"
+    v-if="rect.id"
   >
     <el-popover
     placement="right"
@@ -59,8 +60,14 @@
           <audio-player :url="rect.url" class="full"/>
         </div>
         <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
-          <iframe
-          class="full" :width="rect.width" :height="rect.height" :src="getIframe(rect.url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <youtube :rect="rect"/>
+          <!-- <div class="mask"></div> -->
+        </div>
+        <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
+          <svg 
+            @click="clickWebsite(rect.url)" 
+            t="1633605041607" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4212" width="60" height="60">
+            <path d="M283.306667 464.213333c3.413333 6.826667 10.24 6.826667 13.653333 6.826667h3.413333c6.826667 0 13.653333-6.826667 13.653334-13.653333C337.92 368.64 419.84 307.2 512 307.2h440.32c10.24 0 17.066667-6.826667 17.066667-17.066667 0-3.413333 0-6.826667-3.413334-10.24C880.64 105.813333 706.56 0 512 0 365.226667 0 221.866667 64.853333 126.293333 177.493333c-6.826667 3.413333-6.826667 13.653333-3.413333 20.48l160.426667 266.24z" fill="rgba(21, 195, 154, 1)" p-id="4213"></path><path d="M1000.106667 351.573333c-3.413333-6.826667-10.24-10.24-17.066667-10.24h-310.613333c-6.826667 0-13.653333 3.413333-17.066667 10.24s0 13.653333 3.413333 17.066667C696.32 409.6 716.8 457.386667 716.8 512c0 47.786667-17.066667 95.573333-47.786667 133.12-3.413333 3.413333-3.413333 3.413333-3.413333 6.826667v3.413333l-170.666667 341.333333c-3.413333 3.413333 0 10.24 0 17.066667s10.24 6.826667 13.653334 10.24h3.413333c283.306667 0 512-228.693333 512-512 0-54.613333-10.24-105.813333-23.893333-160.426667z" fill="rgba(21, 195, 154, 1)" p-id="4214"></path><path d="M583.68 713.386667c-3.413333-6.826667-10.24-6.826667-17.066667-6.826667-92.16 23.893333-184.32-13.653333-232.106666-92.16 0-3.413333-3.413333-3.413333-3.413334-3.413333l-3.413333-3.413334L109.226667 238.933333c-3.413333-6.826667-6.826667-10.24-13.653334-10.24s-13.653333 3.413333-17.066666 10.24C27.306667 320.853333 0 416.426667 0 512c0 252.586667 180.906667 464.213333 433.493333 505.173333h3.413334c6.826667 0 13.653333-3.413333 13.653333-10.24l136.533333-276.48c3.413333-3.413333 3.413333-10.24-3.413333-17.066666z" fill="rgba(21, 195, 154, 1)" p-id="4215"></path><path d="M341.333333 512c0 95.573333 75.093333 170.666667 170.666667 170.666667s170.666667-75.093333 170.666667-170.666667-75.093333-170.666667-170.666667-170.666667-170.666667 75.093333-170.666667 170.666667z" fill="rgba(21, 195, 154, 1)" p-id="4216"></path></svg>
           <!-- <div class="mask"></div> -->
         </div>
       </div>
@@ -71,6 +78,7 @@
 import { ModalEventsNameEnum } from '@/socket/socketEvents';
 import VueDragResize from 'vue-drag-resize';
 import AudioPlayer from '../common/audioPlayer.vue';
+import Youtube from './youtube.vue';
 export default {
   props: {
     rect: {
@@ -106,16 +114,10 @@ export default {
   },
   components: {
     VueDragResize,
-    AudioPlayer
+    AudioPlayer,
+    Youtube
   },
   methods: {
-    getIframe(url){
-      const formatId = url.split('?v=')[1]
-      if(formatId) {
-        return `https://www.youtube.com/embed/${formatId}`
-      }
-      return url
-    },
     changeData(newRect, index) {
       if(this.teacher && window.isWindowActive) {
         this.update(newRect, index)
@@ -126,6 +128,9 @@ export default {
     },
     deactivated(name) {
       // // console.log('notUpdate ==== changePosition deactivated change', name)
+    },
+    clickWebsite(url) {
+      window.open(url)
     }
   }
 }

@@ -3,23 +3,41 @@
     <el-dropdown>
       <div class="">
         <i class="media-enter-icon"></i>
-        <strong class="el-dropdown-link"> Add Media </strong>
+        <strong class="el-dropdown-link"> Add Material </strong>
       </div>
       <el-dropdown-menu slot="dropdown" style="text-align: center">
+        <el-tooltip content="Record Audio" placement="right">
+          <div style="position: relative; cursor: pointer;">
+            <div class="remark-button-outer">
+              <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button" />
+            </div>
+          </div>
+        </el-tooltip>
+        <el-tooltip content="Record Video" placement="right">
+          <div style="position: relative; cursor: pointer;">
+            <div class="remark-button-outer">
+              <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
+            </div>
+          </div>
+        </el-tooltip>
         <el-tooltip content="my computer" placement="right">
-          <el-upload
+          <!-- <el-upload
             class="upload-demo"
-            action="https://api.app.classcipe.com/file/upload"
+            action="https://dev.api.newzealand.actself.me/file/upload"
             :on-success="onSuccess"
             :show-file-list="false"
             accept="image/*,video/*,audio/*"
             list-type="picture"
           >
+            
+          </el-upload> -->
+          <div style="position: relative; cursor: pointer;">
             <el-dropdown-item
               icon="el-icon-folder-add"
-              style="font-size: 30px; text-align: center; margin-bottom: 5px"
+              style="font-size: 30px; text-align: center; margin-bottom: 5px; margin-left: 5px"
             />
-          </el-upload>
+            <common-upload accept="image/*,video/*,audio/*" :onSuccess="onSuccess"/>
+          </div>
         </el-tooltip>
         <el-tooltip content="google drive" placement="right">
           <el-dropdown-item
@@ -87,6 +105,16 @@
             </svg>
           </el-dropdown-item>
         </el-tooltip>
+        <el-tooltip content="website" placement="right">
+          <el-dropdown-item
+            style="font-size: 30px; text-align: center; margin-bottom: 5px"
+          >
+            <svg 
+              @click="addwebsite" 
+              t="1633605041607" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4212" width="32" height="32">
+              <path d="M283.306667 464.213333c3.413333 6.826667 10.24 6.826667 13.653333 6.826667h3.413333c6.826667 0 13.653333-6.826667 13.653334-13.653333C337.92 368.64 419.84 307.2 512 307.2h440.32c10.24 0 17.066667-6.826667 17.066667-17.066667 0-3.413333 0-6.826667-3.413334-10.24C880.64 105.813333 706.56 0 512 0 365.226667 0 221.866667 64.853333 126.293333 177.493333c-6.826667 3.413333-6.826667 13.653333-3.413333 20.48l160.426667 266.24z" fill="#606266" p-id="4213"></path><path d="M1000.106667 351.573333c-3.413333-6.826667-10.24-10.24-17.066667-10.24h-310.613333c-6.826667 0-13.653333 3.413333-17.066667 10.24s0 13.653333 3.413333 17.066667C696.32 409.6 716.8 457.386667 716.8 512c0 47.786667-17.066667 95.573333-47.786667 133.12-3.413333 3.413333-3.413333 3.413333-3.413333 6.826667v3.413333l-170.666667 341.333333c-3.413333 3.413333 0 10.24 0 17.066667s10.24 6.826667 13.653334 10.24h3.413333c283.306667 0 512-228.693333 512-512 0-54.613333-10.24-105.813333-23.893333-160.426667z" fill="#606266" p-id="4214"></path><path d="M583.68 713.386667c-3.413333-6.826667-10.24-6.826667-17.066667-6.826667-92.16 23.893333-184.32-13.653333-232.106666-92.16 0-3.413333-3.413333-3.413333-3.413334-3.413333l-3.413333-3.413334L109.226667 238.933333c-3.413333-6.826667-6.826667-10.24-13.653334-10.24s-13.653333 3.413333-17.066666 10.24C27.306667 320.853333 0 416.426667 0 512c0 252.586667 180.906667 464.213333 433.493333 505.173333h3.413334c6.826667 0 13.653333-3.413333 13.653333-10.24l136.533333-276.48c3.413333-3.413333 3.413333-10.24-3.413333-17.066666z" fill="#606266" p-id="4215"></path><path d="M341.333333 512c0 95.573333 75.093333 170.666667 170.666667 170.666667s170.666667-75.093333 170.666667-170.666667-75.093333-170.666667-170.666667-170.666667-170.666667 75.093333-170.666667 170.666667z" fill="#606266" p-id="4216"></path></svg>
+          </el-dropdown-item>
+        </el-tooltip>
       </el-dropdown-menu>
     </el-dropdown>
     <el-dialog
@@ -105,47 +133,21 @@
         "
         :nextYoutube="nextYoutube"
       />
-      <!-- :url="youtubeurl":
-        :videoUrl="withKeyUrl"
-        :startTime="starttime"
-        :endTime="endtime" -->
-      <!-- <div class="youtubecontaier">
-        <el-button type="primary" @click="openYoutube">open youtube</el-button>
-        <el-input
-          v-model="youtubeurl"
-          placeholder="https://... Paste a youtube url here"
-        >
-          <el-button
-            slot="append"
-            icon="el-icon-refresh"
-            style="color: green"
-            @click="youtubePreview"
-          ></el-button>
-        </el-input>
-        <div v-if="showIframe" class="iframeyoutube">
-          <iframe
-            width="400"
-            height="300"
-            :src="withKeyUrl"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
-        <div class="time">
-          <el-input v-model="starttime" placeholder="start" type="number" />
-          <el-input
-            v-model="endtime"
-            placeholder="end"
-            type="number"
-            style="margin-left: 10px"
-          />
-        </div>
-        <el-button type="primary" @click="nextYoutube">next</el-button>
-      </div> -->
-
-      <!-- :append-to-body="true" -->
+    </el-dialog>
+    <el-dialog
+      title="website"
+      :visible.sync="showWebSite"
+      :append-to-body="true"
+    >
+      <metarial-web-site
+        style="
+          width: 100%;
+          height: 300px;
+          overflow: auto;
+          background-color: #fff;
+        "
+        :nextWebSite="nextWebSite"
+      />
     </el-dialog>
     <el-dialog
       title="Google image search"
@@ -159,61 +161,42 @@
         style="width: 100%; height: 600px; overflow: auto"
         :doneSelect="doneSelect"
       />
-      <!-- <div class="showImageSearchcontaier">
-        <div style="width: 50%">
-          <el-input placeholder="Google image search" v-model="imageName">
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="searchImage"
-            ></el-button>
-          </el-input>
-        </div>
-        <ul class="infinite-list" style="overflow: auto">
-          <li
-            @click="selectImage(index)"
-            v-for="(item, index) in imagesList"
-            :class="`infinite-list-item ${
-              index === imageSelectedIndex ? 'imageSelected' : ''
-            }`"
-            :key="index"
-          >
-            <div
-              class="innerImage"
-              :style="`background-image:url('${item.link}')`"
-            ></div>
-          </li>
-        </ul>
-        <el-button-group style="margin-top: 10px">
-          <el-button
-            type="primary"
-            :disabled="imageSelectedIndex === -1"
-            @click="doneSelect"
-            >select</el-button
-          >
-          <el-button
-            type="info"
-            style="margin-left: 10px"
-            @click="closeImageSearch"
-            >cancel</el-button
-          >
-        </el-button-group>
-      </div> -->
     </el-dialog>
+    <div style="position: absolute">
+      <record-video
+        v-if="recordType === ModalEventsTypeEnum.VIDEO"
+        :onSend="onSendVideo"
+        :cancel="cancelRecord"
+      />
+      <record-audio
+        v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
+        :onSend="onSendAudio"
+        :cancel="cancelRecord"
+        :autoDone="true"
+      />
+    </div>
   </div>
 </template>
 <script>
-import { ModalEventsNameEnum } from "@/socket/socketEvents";
+import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
 import GooglePicker from "@/utils/googlePicker";
 import { hideLoading, showLoading, showToast } from "@/utils/loading";
 import { getOnlineImage } from "@/model";
 import googleImageSearch from "./googleImageSearch.vue";
 import GoogleYoutubeVedio from "./googleYoutubeVedio.vue";
 import {videoTypes, audioTypes} from '@/utils/constants'
+import MetarialWebSite from './metarialWebSite.vue';
+import CommonUpload from '../common/commonUpload.vue';
+import RecordAudio from '../common/recordAudio.vue';
+import RecordVideo from '../common/recordVideo.vue';
 export default {
   components: {
     googleImageSearch,
     GoogleYoutubeVedio,
+    MetarialWebSite,
+    CommonUpload,
+    RecordAudio,
+    RecordVideo
   },
   data() {
     return {
@@ -229,27 +212,38 @@ export default {
       starttime: 0,
       endtime: 0,
       distroyOnClose: true,
+      showWebSite: false,
+      recordType: null,
+      ModalEventsTypeEnum
     };
   },
   mounted() {},
   methods: {
-    onSuccess(response, file, fileList) {
+    onSuccess(file, result) {
       console.log(file.name);
-      const fileNameList = file.name.split(".")
-      const name = fileNameList[fileNameList.length - 1];
+      let name = file.type.split('/')[1]
+      // if (!name) {
+      //   showToast('upload error')
+      //   return false
+      // }
+      name = name.toLocaleLowerCase();
       let type = "image";
       if (videoTypes.indexOf(name) > -1) {
         type = "video";
       } else if(audioTypes.indexOf(name) > -1) {
         type = 'audio'
       }
+
       EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
         type,
-        url: response.data,
+        url: result,
       });
     },
     addyoutube() {
       this.showYoutube = true;
+    },
+    addwebsite() {
+      this.showWebSite = true
     },
     openYoutube() {
       window.open("https://www.youtube.com");
@@ -280,6 +274,15 @@ export default {
           url: videoUrl,
         });
         this.showYoutube = false;
+      }
+    },
+    nextWebSite(url) {
+      if(url) {
+        EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+          type: "website",
+          url,
+        });
+        this.showWebSite = false;
       }
     },
     closeYoutubeDialog() {
@@ -359,6 +362,30 @@ export default {
     addGoogleImage() {
       this.showImageSearch = true;
     },
+    audio() {
+      this.recordType = ModalEventsTypeEnum.AUDIO;
+    },
+    video() {
+      this.recordType = ModalEventsTypeEnum.VIDEO;
+    },
+    cancelRecord() {
+      this.recordType = null
+    },
+    onSendAudio(url) {
+      console.log(url)
+      EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+        type: "audio",
+        url,
+      });
+      this.recordType = null
+    },
+    onSendVideo(url) {
+      EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
+        type: "video",
+        url,
+      });
+      this.recordType = null
+    },
   },
 };
 </script>
@@ -426,5 +453,9 @@ export default {
   flex-direction: row;
   width: 200px;
   align-items: center;
+}
+.remark-button{
+  width: 32px;
+  height: 32px;
 }
 </style>

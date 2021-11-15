@@ -1,5 +1,6 @@
 <template>
   <div class="panel">
+    <student-tips-modal />
     <div v-if="currentModel == 'Student-Paced'" class="arrow_opts">
       <button class="control-bar__button">
         <div class="control-bar__icon" @click="lastPage()">
@@ -44,7 +45,7 @@
       </div>
     </div>
 
-    <div class="aligncenter">
+    <div class="aligncenter" v-if="currentModel == 'Student-Paced'">
       <div
         class="button_area"
         @click="changeMeterial"
@@ -71,7 +72,9 @@
 <script>
 import { ClassRoomModelEnum } from "../../socket/socketEvents";
 import {mapState} from 'vuex'
+import StudentTipsModal from './studentTipsModal.vue';
 export default {
+  components: { StudentTipsModal },
   computed: {
     ...mapState({
       answerdPage: state => state.student.answerdPage,
@@ -136,7 +139,7 @@ export default {
   data() {
     return {
       questionVisiable: false,
-      meterialSwitchVisiable: false
+      meterialSwitchVisiable: false,
     };
   },
   methods: {
@@ -309,5 +312,32 @@ export default {
 }
 .me-hide{
   background-image:url(../../assets/picture/m-hide.png)
+}
+.button_area {
+  margin-top: 5px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #36425A;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 3px 15px;
+}
+
+.button_grey {
+  background-color: #cfcfcf;
+}
+.back_focus {
+  background-color: #fff;
+  border-radius: 8px;
+}
+.button_text {
+  line-height: 20px;
+  font-size: 14px;
+}
+.dash-tip{
+  background-image: url(../../assets/picture/dash-tip.png);
 }
 </style>

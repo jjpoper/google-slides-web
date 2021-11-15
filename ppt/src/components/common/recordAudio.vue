@@ -1,45 +1,59 @@
 <template>
-  <!-- <div>
-    <div class="audio-list">
-      <svg t="1623073048132" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3817" width="32" height="32"><path d="M526.336 644.096c123.904 0 223.744-97.28 223.744-221.184V238.08c0-123.904-99.84-221.184-223.744-221.184s-223.744 97.28-223.744 221.184v184.832c0 123.904 97.28 221.184 223.744 221.184z m350.208-267.264c0-22.016-19.456-41.472-44.032-41.472s-41.472 19.456-41.472 41.472c0 4.608 0 9.728 2.56 12.288v31.744c0 143.36-119.296 262.656-267.776 262.656-145.92 0-267.776-119.296-267.776-262.656V384c0-2.56 2.56-4.608 2.56-9.728 0-22.016-19.456-41.472-41.472-41.472-24.576 0-41.472 19.456-41.472 41.472V435.2c0 177.664 133.632 318.464 304.128 343.04v82.944H365.568c-24.576 0-44.032 19.456-44.032 44.032s19.456 41.472 44.032 41.472h316.416c26.624 0 41.472-16.896 41.472-41.472 0-22.016-16.896-44.032-41.472-44.032h-116.736V778.24c175.104-19.456 311.296-165.376 311.296-343.04V376.832z" p-id="3818"
-      :fill="color"></path></svg>
-      <p>{{getTime(timeValue)}} / 00 : 02 : 00</p>
-      <audio id="record-audio"  width="1" height="1" src="opacity: 0"/>
-    </div>
-    <el-row justify="center" type="flex">
-      <el-tooltip content="start" placement="top" v-if="endRecording">
-        <el-button type="primary" icon="el-icon-video-play" @click="startRecord" circle></el-button>
-      </el-tooltip>
-      <el-button v-if="!endRecording" type="primary" @click="done">done</el-button>
-    </el-row>
-  </div> -->
   <div class="record-area">
-    <div>
-
-    </div>
-    <div class="fixed-area">
-      <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
-      <div class="audio-line animation-line">
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
-        <div class="audio-play"></div>
+    <!-- <div v-if="audioUrl">
+      <audio-player :url="audioUrl"/>
+      <el-tooltip popper-class="no-border" placement="bottom-start" width="258" :value="true" effect="light" :manual="true">
+        <div slot="content" style="width: 258px">
+          <p class="record-tip-text">放弃或提交录制完成的音频？</p>
+          <div class="record-button-group">
+            <div class="cancel" @click="cancel">放弃</div>
+            <div class="cancel primary" @click="sendRecord">提交</div>
+          </div>
+        </div>
+        <div class="tips-area"></div>
+      </el-tooltip>
+    </div> -->
+    <div v-show="!endRecording">
+      <div class="fixed-area" v-if="!audioUrl">
+        <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
+        <div class="audio-line animation-line">
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+          <div class="audio-play"></div>
+        </div>
+        <div class="record-footer">
+          <i class="done" @click="done"></i>
+          <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
+        </div>
       </div>
-      <div class="record-footer">
-        <i class="done" @click="done"></i>
-        <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
-      </div>
     </div>
+    <common-progress :progress="progress" :cancel="cancelUp"/>
   </div>
 </template>
 <script>
-import {startRecordAudio, pauseRecordAudio, resumeRecordAudio, saveRecordAudio, endRecordAudio} from '@/utils/audio'
+import {startRecordAudio, saveRecordAudio, endRecordAudio, cancelUpAudio} from '@/utils/audio'
+import audioPlayer from './audioPlayer.vue'
+import CommonProgress from './commonProgress.vue'
 export default {
+  components: { audioPlayer, CommonProgress },
   props: {
     onSend: {
       type: Function,
       default: () => null
+    },
+    cancel: {
+      type: Function,
+      default: () => null
+    },
+    onRecordDone: {
+      type: Function,
+      default: () => null
+    },
+    autoDone: {
+      type: Boolean,
+      default: false // 自动完成提交，不要二次确认
     }
   },
   data() {
@@ -47,7 +61,10 @@ export default {
       endRecording: false,
       timeValue: 0,
       color: '#999',
-      maxTime: 120 // 秒
+      maxTime: 120, // 秒
+      audioUrl: '',
+      visible: false,
+      progress: 0
     }
   },
   mounted() {
@@ -88,15 +105,24 @@ export default {
     },
     done() {
       if(!this.endRecording) {
+        this.onRecordDone()
         this.endRecording = true
-        saveRecordAudio().then((d) => {
-          if(d.data) {
-            // 发送url信息
-            this.onSend(d.data, 'audio')
+        saveRecordAudio(this.onProgressUpLoad).then((url) => {
+          if(url) {
+            if(this.autoDone) {
+              this.onSend(url)
+            } else {
+              // 发送url信息
+              this.audioUrl = url
+              this.sendRecord()
+            }
           }
         })
         this.clearCount()
       }
+    },
+    onProgressUpLoad(progress) {
+      this.progress = progress
     },
     startRecord() {
       this.timeValue = 0
@@ -104,6 +130,14 @@ export default {
       this.endRecording = false
       this.count()
     },
+    sendRecord(){
+       this.onSend(this.audioUrl, 'audio')
+    },
+    cancelUp() {
+      cancelUpAudio()
+      this.onProgressUpLoad(0)
+      this.cancel()
+    }
   }
 
 }
@@ -114,6 +148,50 @@ export default {
   height: 60px;
   width: 100%;
   position: relative;
+}
+.tips-area{
+  width: 5px;
+  height: 5px;
+  background: transparent;
+  display: inline-block;
+  float: left;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+.record-button-group{
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.record-tip-text{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #474747;
+}
+.cancel{
+  width: 60px;
+  height: 24px;
+  background: #D0D2DF;
+  opacity: 1;
+  border-radius: 25px;
+  font-size: 12px;
+  font-family: FZCuYuan-M03S;
+  font-weight: 400;
+  line-height: 24px;
+  color: #FFFFFF;
+  cursor: pointer;
+  text-align: center;
+}
+.cancel:hover{
+  background-color: rgba(21, 195, 154, 1);
+}
+.cancel.primary{
+  /* background-color: rgba(21, 195, 154, 1); */
+  margin-left: 12px;
 }
 .fixed-area{
   height: 60px;
@@ -135,16 +213,16 @@ export default {
   box-sizing: border-box;
   background-color: rgba(43,51,63,0.7);
   width: 100%;
-  padding-left: 20px;
+  padding-left: 10px;
   display: flex;
   align-items: center;
 }
 .done{
-  width: 14px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  background-color: #fff;
-  margin-right: 30px;
+  background-color: red;
+  margin-right: 20px;
 }
 .record-time{
   font-size: 10px;
@@ -154,31 +232,31 @@ export default {
 .animation-line>div:nth-of-type(1){
   width: 3px;
   height: 5px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .4s;/*动画延迟  */
 }
 .animation-line>div:nth-of-type(2){
   width: 3px;
   height:10px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .8s;
 }
 .animation-line>div:nth-of-type(3){
   width: 4px;
   height: 15px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .1s;
 }
 .animation-line>div:nth-of-type(4){
   width: 3px;
   height: 10px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .8s;
 }
 .animation-line>div:nth-of-type(5){
   width: 3px;
   height: 5px;
-  background-color: #333;
+  background-color: red;
   animation-delay: .4s;
 }
 .animation-line>div{/* 动画统一属性 */

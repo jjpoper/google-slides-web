@@ -26,8 +26,8 @@ export const getTeacherStoreToken = (): string => {
   return getStore('teacher_token')
 }
 
-export const saveTeacherStoreToken = (token: string) => {
-  saveStore('teacher_token', token)
+export const saveTeacherStoreToken = (token: any) => {
+  saveStore('teacher_token', Array.isArray(token) ? token[0] : token)
 }
 
 // 拼接url 参数
@@ -93,7 +93,7 @@ export const addTeacherComment = (data: ANY) => {
 // 获取学生端当前page的回答列表信息
 export const getCurrentPageAnswerList = (pageId: string, type: string) => {
   // @ts-ignore
-  return getTeacherCurrentPageAnswerList(pageId, type)
+  return getTeacherCurrentPageAnswerList(pageId, type).reverse()
 }
 
 interface SavaParams {

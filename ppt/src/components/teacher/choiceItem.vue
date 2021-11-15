@@ -1,210 +1,52 @@
 <template>
-  <div class="page_choice">
-    <div class="flag_area">
-      <svg
-        t="1619507788646"
-        v-bind:class="currentModel == 0 ? 'icon icon_focus' : 'icon'"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="2036"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        @click="setModel(0)"
-      >
-        <path
-          d="M157.538462 866.461538h787.692307v78.769231H78.769231V78.769231h78.769231v787.692307z m78.76923-374.153846h78.769231v315.076923h-78.769231V492.307692z m177.23077-118.153846h78.76923v433.230769h-78.76923V374.153846z m177.230769 118.153846h78.769231v315.076923h-78.769231V492.307692z m177.230769-157.538461h78.769231v472.615384h-78.769231V334.769231z m-470.468923 13.075692l-43.697231-65.536L452.923077 149.582769l173.784615 115.849846 154.505846-137.334153 52.322462 58.88-199.936 177.723076L452.923077 244.263385l-155.392 103.581538z"
-          p-id="2037"
-        />
-      </svg>
-      <svg
-        t="1619507881682"
-        v-bind:class="currentModel == 1 ? 'icon icon_focus' : 'icon'"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="2980"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        @click="setModel(1)"
-      >
-        <path
-          d="M64 163.7c0 22.6 18.3 40.9 40.9 40.9 22.6 0 40.9-18.3 40.9-40.9 0-22.6-18.3-40.9-40.9-40.9-22.6 0-40.9 18.3-40.9 40.9zM64 512c0 22.6 18.3 40.9 40.9 40.9 22.6 0 40.9-18.3 40.9-40.9 0-22.6-18.3-40.9-40.9-40.9-22.6 0-40.9 18.3-40.9 40.9zM64 860.3c0 22.6 18.3 40.9 40.9 40.9 22.6 0 40.9-18.3 40.9-40.9 0-22.6-18.3-40.9-40.9-40.9-22.6 0.1-40.9 18.3-40.9 40.9zM935 189.2H289.9c-13.7 0-25-11.3-25-25v-1.1c0-13.7 11.3-25 25-25H935c13.8 0 25 11.3 25 25v1.1c0 13.8-11.2 25-25 25zM935 537.5H289.9c-13.7 0-25-11.2-25-25v-1.1c0-13.8 11.3-25 25-25H935c13.8 0 25 11.2 25 25v1.1c0 13.8-11.2 25-25 25zM935 885.9H289.9c-13.7 0-25-11.2-25-25v-1.1c0-13.8 11.3-25 25-25H935c13.8 0 25 11.3 25 25v1.1c0 13.7-11.2 25-25 25z"
-          p-id="2981"
-        />
-      </svg>
-    </div>
-
-    <span class="flag_text">{{ currentModel == 0 ? "Statistics" : "Personal" }}</span>
-
-    <div v-if="currentModel == 0" class="statistics">
-      <!-- <el-tooltip
-        placement="bottom"
-        :disabled="!flag_1 || getAnswerCount(item.id) == 0"
-        v-for="item in options"
-        :key="item.id"
-      >
-        <div slot="content">{{ getUserNames(item.id) }}</div>
-        <div class="static_item">
-          <span class="span_content">{{
-            optFlags[item.id] + ": " + item.text
-          }}</span>
-          <span>{{ getAnswerCount(item.id) }}</span>
-        </div>
-      </el-tooltip>-->
-      <v-chart
-        style="height: 500px"
-        :option="bar"
-        :init-options="initOptions"
-        ref="bar"
-        theme="ovilia-green"
-        autoresize
-      />
-    </div>
-
-    <div v-else class="personal">
-      <div v-for="(item, index) in answerList" :key="index">
-        <div v-if="shouldShow(item)">
-          <!-- <template v-if="isMulti">
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+    <common-switch-tab :currentTab="currentTab" :changeTab="changeTab" hasStatics/>
+    <div class="text-scroll">
+      <div class="text-answer-list" v-if="currentTab !== 3">
+        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
+          <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
             <div
-              :class="item.star ? 'parent_1 star_bg' : 'parent_1'"
-              v-for="ans in JSON.parse(item.answer)"
-              :key="ans"
+              v-if="shouldShow(item)"
+              :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
             >
-              <div class="text_content">
-                {{ optFlags[ans] + ": " + getAnswer(ans).text }}
-              </div>
-              <student-response-opt-bar
-                v-if="flag_1"
-                :data="{
-                  pageId: data.page_id,
-                  itemId: ans,
-                  studentId: item.user_id,
-                  title: getConent(ans),
-                  isStar: item.star,
-                  isShowRes: item.show,
-                  name: getUname(item.user_id),
-                }"
-              />
-            </div>
-          </template>-->
-          <template>
-            <div :class="item.star ? 'parent_1 star_bg' : 'parent_1'">
-              <div class="text_content">
+              <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
                 <p v-for="ans_text in getAnswer(item)" :key="ans_text">{{ ans_text }}</p>
+                <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                  {{ index + 1 + " of " + selectedAnswerList.length }}
+                </span>
               </div>
-              <student-response-opt-bar
-                v-if="flag_1"
-                :data="{
-                  pageId: data.page_id,
-                  itemId: item.answer,
-                  studentId: item.user_id,
-                  title: getConent(item),
-                  isStar: item.star,
-                  isShowRes: item.show,
-                  name: getUname(item.user_id),
-                  answertime: item.updated_at
-                }"
-              />
+              <div class="text-footer" v-if="flag_1">
+                <student-response-opt-bar
+                  v-if="flag_1"
+                  :data="{
+                    pageId: data.page_id,
+                    itemId: item.answer,
+                    studentId: item.user_id,
+                    title: getConent(item),
+                    isStar: item.star,
+                    isShowRes: item.show,
+                    name: getUname(item.user_id),
+                    answertime: item.updated_at
+                  }"
+                />
+              </div>
             </div>
-          </template>
+          </div>
         </div>
       </div>
-    </div>
+      <div v-else>
+        <v-chart
+          style="height: 500px"
+          :option="bar"
+          :init-options="initOptions"
+          ref="bar"
+          theme="ovilia-green"
+          autoresize
+        />
+      </div>
+    </div>    
   </div>
 </template>
-<style scoped>
-.page_choice {
-  display: flex;
-  width: 100%;
-  height: auto;
-  padding-left: 20px;
-  flex-direction: column;
-}
-.span_content {
-  flex: 1;
-  display: flex;
-  line-height: 30px;
-}
-.flag_area {
-  display: flex;
-  height: 50px;
-  width: 80%;
-  align-items: center;
-}
-.flag_text {
-  display: flex;
-  line-height: 20px;
-  height: 20px;
-}
-.icon {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
-  cursor: pointer;
-  fill: #aaaaaa;
-}
-/* 有星标时的bg */
-.star_bg {
-  border: 3px solid #f7d567;
-  background-color: #f8f1d3;
-}
-
-.icon_focus {
-  fill: #404040;
-}
-
-.statistics {
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-  margin-top: 10px;
-}
-.static_item {
-  width: 90%;
-  border: 3px solid #cfcfcf;
-  border-radius: 8px;
-  height: 50px;
-  background-color: white;
-  color: cadetblue;
-  margin-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-}
-.personal {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.parent_1 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 350px;
-  flex-wrap: wrap;
-  height: 250px;
-  border-radius: 8px;
-  margin-right: 20px;
-  border: 1px solid #cfcfcf;
-}
-.text_content {
-  width: 80%;
-  height: 70%;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  margin-left: 20px;
-  margin-right: 20px;
-  background-color: white;
-  color: cadetblue;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-</style>
 
 <script>
 import {
@@ -214,8 +56,10 @@ import {
 import ECharts from "vue-echarts";
 import commentIcon from "./commentIcon.vue";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
+import {mapState} from 'vuex'
+import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
-  components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts },
+  components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab },
   props: {
     data: {
       type: Object,
@@ -243,10 +87,21 @@ export default {
       isMulti: false,
       initOptions: {
         renderer: "canvas"
-      }
+      },
+      currentTab: 1
     };
   },
   computed: {
+    ...mapState({
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+    }),
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.answerList
+      let list = this.answerList.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     bar() {
       const names = this.options.map(item => {
         return this.optFlags[item.id] + ": " + item.text;
@@ -275,7 +130,7 @@ export default {
               position: "inside",
               formatter: v => {
                 const val = v.data;
-                const len = this.answerList.length;
+                const len = this.selectedAnswerList.length;
                 if (len > 0 && val > 0) {
                   const per = ((val * 100) / len).toFixed(2);
                   return `${val}（${per}/%）`;
@@ -315,9 +170,12 @@ export default {
     });
   },
   methods: {
+    changeTab(i) {
+      this.currentTab = i
+    },
     counts(id) {
-      if (this.answerList && this.answerList.length > 0) {
-        const filterData = this.answerList.filter(item => item.answer == id);
+      if (this.selectedAnswerList && this.selectedAnswerList.length > 0) {
+        const filterData = this.selectedAnswerList.filter(item => item.answer == id);
         return filterData.length;
       } else {
         return 0;
@@ -334,13 +192,13 @@ export default {
     getAnswerCount(value) {
       let count = 0;
       const { isMulti } = this;
-      for (let i = 0; i < this.answerList.length; i++) {
-        const { answer } = this.answerList[i];
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        const { answer } = this.selectedAnswerList[i];
         if (
           (!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||
           (!isMulti && value == parseInt(answer))
         ) {
-          if (this.answerList[i].show || this.flag_1) {
+          if (this.selectedAnswerList[i].show || this.flag_1) {
             count++;
           }
         }
@@ -380,17 +238,17 @@ export default {
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
       if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示
-      for (let i = 0; i < this.answerList.length; i++) {
-        if (this.answerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        if (this.selectedAnswerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
       }
       return true;
     },
 
     getUserNames(index) {
       let names = "";
-      for (let i = 0; i < this.answerList.length; i++) {
-        if (index == parseInt(this.answerList[i].answer)) {
-          names += this.getUname(this.answerList[i].user_id) + ",";
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        if (index == parseInt(this.selectedAnswerList[i].answer)) {
+          names += this.getUname(this.selectedAnswerList[i].user_id) + ",";
         }
       }
       if (names) {
@@ -402,3 +260,165 @@ export default {
   }
 };
 </script>
+
+
+<style scoped>
+.text-answer-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #fff;
+}
+.text-scroll{
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  overflow: scroll;
+  position: relative;
+  padding-bottom: 100px;
+}
+.text-answer-list{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.colume5{
+  /* -webkit-column-count:  5;
+  -moz-column-count:  5;
+  column-count:  5;
+  -webkit-column-gap:  5px;
+  -moz-column-gap:  5px;
+  column-gap:  5px; */
+  width: 20%;
+  padding: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.colume1{
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+/* 有星标时的bg */
+.star_bg {
+  border: 3px solid #f7d567;
+  background-color: #f8f1d3;
+}
+.text-item-outer1{
+  /* height: 290px; */
+  width: 100%;
+  position: relative;
+}
+.text-item-outer5{
+  width: 100%;
+  padding-bottom: 85%;
+  position: relative;
+}
+.text-item-outer1.full-text-area{
+  /* height: 148px; */
+}
+.text-item-outer5.full-text-area{
+  padding-bottom: 45%;
+}
+.text-list-item {
+  width: 100%;
+  /* height: 100%; */
+  border-radius: 8px;
+  margin-right: 10px;
+  border: 1px solid #F1F1F1;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 10px;
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+.text_static {
+  position: absolute;
+  bottom: 10px;
+  right: 7px;
+}
+.text_area {
+  width: 100%;
+  /* height: 59%; */
+  background: rgba(228,228,228,0.3);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  box-sizing: border-box;
+  padding:7px 7px 30px 7px;
+  overflow: scroll;
+  position: relative;
+  text-align: left;
+}
+.text_area.full-text-area{
+   height: 100%;
+}
+.text-footer{
+  width: 100%;
+  height: 41%;
+}
+.on-as-outer{
+  width: 50%;
+  min-height: 100px;
+  background: #FFFFFF;
+  border: 1px solid #F7F8FF;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  opacity: 1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  padding: 18px 14px;
+  position: relative;
+  margin: 10px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.no-as-title{
+  height: 24px;
+  font-size: 18px;
+  font-family: Segoe UI;
+  font-weight: bold;
+  line-height: 24px;
+  color: #36425A;
+  padding-left: 28px;
+  display: inline-block;
+  text-align: left;
+  position: relative;
+}
+.no-as-title >i{
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: #FF1A0E;
+  display: inline-block;
+  top: 3px;
+  left: 0;
+  position: absolute;
+}
+.on-as-list{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font-size: 18px;
+  font-family: Segoe UI;
+  font-weight: bold;
+  line-height: 24px;
+  color: #BCBCBC;
+  margin-top: 17px;
+}
+.on-as-list-item{
+  margin-right: 20px;
+}
+</style>

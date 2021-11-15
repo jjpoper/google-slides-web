@@ -35,6 +35,24 @@ export const setStudentWxBaseParams = ({
 }
 
 let windowStudentWs: any = null
+let isJoined = false
+
+const BaseWsRequest = (action: string, message: string) => {
+  if(windowStudentWs) {
+    windowStudentWs.emit(action, message);
+  }
+}
+
+// 定时join，避免消息收不到
+const TimerJoinRoom = () => {
+  setInterval(() => {
+    const {
+      classId,
+      token
+    } = BaseStudentParams
+    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+  }, 10000)
+}
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
@@ -44,14 +62,18 @@ export const createSo = (room: string, token: string, classId: string, callback:
 
   socket.on('connect', () => {
     onLineStatusChanged(true)
-    // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
-    socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`, () => {
-      // console.log("学生加入房间");
-      if(joinCallback) {
-        // @ts-ignore
-        joinCallback()
-      }
-    });
+    if(!isJoined) {
+      isJoined = true
+      // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
+      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`, () => {
+        // console.log("学生加入房间");
+        if(joinCallback) {
+          // @ts-ignore
+          joinCallback()
+        }
+        TimerJoinRoom()
+      });
+    }
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
     //   // console.log("学生提交答案。");
@@ -110,11 +132,6 @@ export const createSo = (room: string, token: string, classId: string, callback:
   return socket
 }
 
-const BaseWsRequest = (action: string, message: string) => {
-  if(windowStudentWs) {
-    windowStudentWs.emit(action, message);
-  }
-}
 
 // 新增 remark 反馈数据
 export const askToAddNewRemarkItem = (data: any) => {

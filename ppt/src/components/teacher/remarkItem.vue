@@ -1,29 +1,17 @@
 <template>
-  <div class="text-answer-container" v-if="marks && marks.length > 0">
-    <div class="text-answer-tab">
-      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
-      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <button :class="`button-static ${currentTab === 3 && 'active'}`" @click="changeTab(3)"></button>
-      <el-select v-model="sortValue" placeholder="Sort" v-show="currentTab !== 3">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-    </div>
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+    <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
     <template v-if="currentTab !== 3">
       <div class="text-scroll">
         <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in marks" :key="index">
+          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
             <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
               <div
                 v-if="shouldShow(item)"
                 :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
               >
-                <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                  <div :class="`remark-item-content ${item.type === 'text' && 'content-text-scroll'}`">
+                <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
+                  <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
                     <video
                       v-if="item.type === 'video'"
                       controlslist="nodownload"
@@ -33,12 +21,12 @@
                       preload="none"
                     />
                     <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
-                    <p class="remark-text" v-else-if="item.type === 'text'">
+                    <p class="textinner" v-else-if="item.type === 'text'">
                       {{item.link}}
                     </p>
                   </div>
-                  <span class="text_static" v-if="flag_1 && marks.length > 1">
-                    {{ index + 1 + " of " + marks.length }}
+                  <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                    {{ index + 1 + " of " + selectedAnswerList.length }}
                   </span>
                 </div>
                 <div class="text-footer" v-if="flag_1">
@@ -85,13 +73,12 @@
 </template>
 
 <script>
-import { getStundentUidAndName } from "@/model/store.teacher";
-import { getCurrentPageAnswerList } from "@/model/store.teacher";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
+import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
   computed: {
     // 未答题学生
@@ -110,7 +97,15 @@ export default {
       allRemarks: state => state.remark.allRemarks,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.marks
+      let list = this.marks.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     marks() {
       let list = []
       if(this.studentAllSlides.length > 0 && this.allRemarks.length > 0) {
@@ -129,7 +124,7 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].thumbnail_url
     }
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer},
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, CommonSwitchTab},
   props: {
     data: {
       type: Object,
@@ -199,6 +194,7 @@ export default {
     },
     resortList(list) {
       let newList = JSON.parse(JSON.stringify(list))
+      return newList.reverse()
       try {
         if(this.sortValue === 1) {
           newList = newList.sort((prev, next) => {
@@ -262,46 +258,13 @@ export default {
   position: relative;
   background-color: #fff;
 }
-.text-answer-tab{
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-}
-.text-answer-tab button{
-  width: 32px;
-  height: 32px;
-  margin-right: 22px;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 32px 32px;
-  cursor: pointer;
-  border: none;
-}
-.button-colum{
-  background-image: url(../../assets/picture/colum.png);
-}
-.button-colum.active{
-  background-image: url(../../assets/picture/colum-s.png);
-}
-.button-row{
-  background-image: url(../../assets/picture/row.png);
-}
-.button-row.active{
-  background-image: url(../../assets/picture/row-s.png);
-}
-.button-static{
-  background-image: url(../../assets/picture/static.png);
-}
-.button-static.active{
-  background-image: url(../../assets/picture/static-s.png);
-}
 .text-scroll{
   width: 100%;
   height: 100%;
   flex-direction: column;
   overflow: scroll;
   position: relative;
+  padding-bottom: 100px;
 }
 .text-answer-list{
   width: 100%;
@@ -333,7 +296,7 @@ export default {
   background-color: #f8f1d3;
 }
 .text-item-outer1{
-  height: 290px;
+  /* height: 290px; */
   width: 100%;
   position: relative;
 }
@@ -343,14 +306,14 @@ export default {
   position: relative;
 }
 .text-item-outer1.full-text-area{
-  height: 148px;
+  /* height: 148px; */
 }
 .text-item-outer5.full-text-area{
   padding-bottom: 45%;
 }
 .text-list-item {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   border-radius: 8px;
   margin-right: 10px;
   border: 1px solid #F1F1F1;
@@ -358,19 +321,19 @@ export default {
   background-color: #fff;
   box-sizing: border-box;
   padding: 10px;
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   overflow: hidden;
 }
 .text_static {
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   right: 7px;
 }
 .text_area {
   width: 100%;
-  height: 59%;
+  /* height: 59%; */
   background: rgba(228,228,228,0.3);
   border-radius: 6px;
   font-size: 14px;
@@ -378,13 +341,18 @@ export default {
   line-height: 24px;
   color: #000000;
   box-sizing: border-box;
-  padding:7px;
+  padding:7px 7px 20px 7px;
   overflow: scroll;
+  word-break: break-all;
   position: relative;
   text-align: left;
 }
-.text_area.full-text-area{
-   height: 100%;
+.columText{
+  height: 100px;
+}
+.textinner{
+  overflow: scroll;
+  height: 100%;
 }
 .text-footer{
   width: 100%;
@@ -446,7 +414,7 @@ export default {
 video{
   width: 100%; height: 100%; object-fit: cover
 }
-.remark-item-content{
+.remark-item-content1{
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -456,7 +424,7 @@ video{
   justify-content: center;
   align-items: center;
 }
-.remark-item-content.content-text-scroll{
+.remark-item-content1.content-text-scroll{
   overflow-y: scroll;
   justify-content: flex-start;
   align-items: flex-start;

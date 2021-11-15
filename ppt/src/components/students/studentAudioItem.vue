@@ -1,30 +1,24 @@
 <template>
   <div class="remark-container">
     <div class="remark-control">
-      <el-tooltip content="Audio Comment1" placement="top">
+      <el-tooltip content="Record an Aduio" placement="top">
         <div class="remark-button-outer">
           <img @click="audio" src="../../assets/picture/voice-button.png" class="remark-button" />
         </div>
       </el-tooltip>
-      <el-tooltip content="Video Comment" placement="top">
+      <el-tooltip content="Record an Video" placement="top">
         <div class="remark-button-outer">
           <img @click="video" src="../../assets/picture/video.png" class="remark-button" />
         </div>
       </el-tooltip>
-      <el-tooltip content="Text Comment" placement="top">
-        <el-upload
-          class="remark-button-outer"
-          action="https://api.app.classcipe.com/file/upload"
-          :on-success="onUpload"
-          :show-file-list="false"
-          accept=".doc, .docx, .pdf, application/pdf,audio/*,video/*"
-          list-type="picture"
-        >
+      <el-tooltip content="Upload Material" placement="top">
+        <div class="remark-button-outer">
           <img src="../../assets/picture/add.png" class="remark-button" />
-        </el-upload>
+          <common-upload :onSuccess="pushToUploadPool" :onlyGetFile="true"/>
+        </div>
       </el-tooltip>
     </div>
-    <tipShow style="margin:20px" />
+    <!-- <tipShow /> -->
     <ul class="remark-list">
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">
@@ -38,12 +32,32 @@
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
-          <record-video v-if="recordType === ModalEventsTypeEnum.VIDEO" :onSend="sendCommentCb" />
+          <record-video
+            v-if="recordType === ModalEventsTypeEnum.VIDEO"
+            :onSend="sendCommentCb"
+            :cancel="cancelRecord"
+          />
           <record-audio
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
+            :cancel="cancelRecord"
+            :onRecordDone="focusIndex"
           />
         </div>
+      </li>
+      <li
+        class="remark-list-item" v-for="item in uploadPool" :key="item.id">
+        <uploading-progress :onSuccess="onProgressDone" :item="item">
+          <div class="item-header">
+            <div class="user-info">
+              <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
+              <div>
+                <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
+              </div>
+            </div>
+            <div @click.stop="cancelUpLoad(item.id)" class="delete-button"></div>
+          </div>
+        </uploading-progress>
       </li>
       <li
         class="remark-list-item" 
@@ -77,10 +91,13 @@
           />
           <div class="remark-file" v-else-if="item.content.mediaType === 'file'">
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
-            <div>
+            <div style="flex: 1">
               <p class="file-name">{{item.content.fileName}}</p>
-              <a :href="item.content.link" download class="download-text">Download</a>
+              <a :href="item.content.link" target="blank" download class="download-text">Download</a>
             </div>
+          </div>
+          <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
+            <base64image :url="item.content.link" />
           </div>
         </div>
       </li>
@@ -93,22 +110,24 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { deleteMedia, sendAudioOrVideoAnswer } from "@/socket/socket.student";
 import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
-import RecordText from "../common/recordText.vue";
-import { showToast } from "@/utils/loading";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
 import tipShow from "./tipShow.vue";
-import {videoTypes, audioTypes} from '@/utils/constants'
+import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
+import base64image from '../base64image.vue';
+import CommonUpload from '../common/commonUpload.vue';
+import UploadingProgress from '../common/uploadingProgress.vue';
 export default {
   components: {
     RecordVideo,
     RecordAudio,
-    RecordText,
     AudioPlayer,
-    tipShow
+    tipShow,
+    base64image,
+    CommonUpload,
+    UploadingProgress
   },
-  computed: {
-    ...mapState({
+  computed: { ...mapState({
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
       userInfo: state => state.student.studentUserInfo
@@ -134,7 +153,8 @@ export default {
   data() {
     return {
       ModalEventsTypeEnum,
-      recordType: null
+      recordType: null,
+      uploadPool: [], // {id: date.now, file}
     };
   },
   methods: {
@@ -157,18 +177,30 @@ export default {
     cancelRecord() {
       this.recordType = null;
     },
-    onUpload(response, file, fileList) {
-      this.focusIndex()
-      // console.log(response.data, file.name, fileList);
-      const fileNameList = file.name.split(".")
-      const name = fileNameList[fileNameList.length - 1];
-      let type = 'file'
-      if (videoTypes.indexOf(name) > -1) {
-        type = "video";
-      } else if(audioTypes.indexOf(name) > -1) {
-        type = 'audio'
+    onProgressDone(item, result){
+      this.cancelUpLoad(item.id)
+      this.onUpload(item.file, result)
+    },
+    onUpload(file, result) {
+      const nameList = file.type.split('/')
+      let name = nameList[1]
+      let type = 'image'
+      if(name) {
+        name = name.toLocaleLowerCase();
+        console.log(file.type, name)
+        type = 'image'
+        if (videoTypes.indexOf(name) > -1) {
+          type = "video";
+        } else if(audioTypes.indexOf(name) > -1) {
+          type = 'audio'
+        } else if(fileTypes.indexOf(name) > -1) {
+          type = 'file'
+        }
+      } else {
+        type = 'file'
       }
-      this.sendCommentCb(response.data, type, file.name);
+      
+      this.sendCommentCb(result, type, file.name);
     },
     sendCommentCb(link, mediaType = "", fileName) {
       this.cancelRecord();
@@ -180,8 +212,9 @@ export default {
       });
       // 已答
       this.updateAnswerdPage(this.currentPageIndex);
+      this.focusIndex()
       // 追加问答内容
-      // data: "{\"type\": \"audio\", \"content\": \"https://api.app.classcipe.com/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
+      // data: "{\"type\": \"audio\", \"content\": \"https://dev.api.newzealand.actself.me/upload/7567b679ed141e55.mp3\", \"item_id\": \"0\", \"page_id\": \"SLIDES_API1051876605_49\", \"user_id\": \"k.liu2369@gmail.com\", \"user_name\": \"刘凯\"}"
       // this.updateAllAnswerdList({
       //   data: JSON.stringify({
       //     content: {
@@ -211,6 +244,17 @@ export default {
           this.$refs.activeRef[0].focus();
         }
       });
+    },
+    pushToUploadPool(file) {
+      console.log(file)
+      this.uploadPool.push({
+        file,
+        id: Date.now()
+      })
+    },
+    cancelUpLoad(id) {
+      const index = this.uploadPool.findIndex(item => item.id == id)
+      this.uploadPool.splice(index, 1)
     }
   }
 };
@@ -248,6 +292,7 @@ export default {
   height: 60px;
   box-sizing: border-box;
   padding: 10px;
+  position: relative;
 }
 .remark-button-outer.active {
   background: rgba(21, 195, 154, 0.1);
@@ -296,6 +341,8 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+  min-height: 130px;
 }
 .remark-list-item.record-item {
   height: auto;
@@ -308,7 +355,7 @@ export default {
 }
 .item-header {
   width: 310px;
-  height: 60px;
+  height: 40px;
   background: #15c39a;
   opacity: 1;
   border-radius: 6px 6px 0px 0px;
@@ -355,7 +402,7 @@ export default {
   word-break: break-all;
 }
 .remark-file {
-  height: 60px;
+  min-height: 60px;
   display: flex;
   align-items: center;
 }

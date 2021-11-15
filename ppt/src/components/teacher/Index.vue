@@ -116,7 +116,6 @@
 
 <script>
 import textItem from "./textItem";
-import radioItem from "./radioItem";
 import choiceItem from "./choiceItem";
 import draw from "./draw";
 import AudioItem from "./AudioItem";
@@ -138,7 +137,6 @@ export default {
   },
   components: {
     textItem,
-    radioItem,
     choiceItem,
     draw,
     AudioItem,

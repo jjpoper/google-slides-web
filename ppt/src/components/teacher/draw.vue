@@ -1,21 +1,10 @@
 <template>
-  <div class="text-answer-container" v-if="answerList && answerList.length > 0">
-    <div class="text-answer-tab">
-      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
-      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <el-select v-model="sortValue" placeholder="Sort">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-    </div>
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+    <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
     <template v-if="currentTab !== 3">
       <div class="text-scroll">
         <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
+          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
             <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
               <div
                 v-if="shouldShow(item)"
@@ -30,8 +19,8 @@
                       </Base64image>
                     </Base64image>
                   </div>
-                  <span class="text_static" v-if="flag_1 && answerList.length > 1">
-                    {{ index + 1 + " of " + answerList.length }}
+                  <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                    {{ index + 1 + " of " + selectedAnswerList.length }}
                   </span>
                 </div>
                 <div class="text-footer" v-if="flag_1">
@@ -52,7 +41,7 @@
             </div>
           </div>
         </div>
-        <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+        <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
           <div class="no-as-title">
             <i></i> No Response
           </div>
@@ -61,7 +50,7 @@
               {{item.user_id}}
             </p>
           </div>
-        </div>
+        </div> -->
       </div>    
     </template>
   </div>
@@ -71,6 +60,7 @@
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState, mapGetters } from 'vuex'
 import Base64image from '../base64image.vue';
+import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
   computed: {
     // 未答题学生
@@ -85,10 +75,18 @@ export default {
       }
       return noList
     },
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.answerList
+      let list = this.answerList.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
+    },
     ...mapState({
       studentList: state => state.teacher.studentList,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     ...mapGetters({
       currentPageAnswerList: 'student/currentPageAnswerList'
@@ -115,7 +113,7 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].thumbnail_url
     }
   },
-  components: { StudentResponseOptBar, Base64image },
+  components: { StudentResponseOptBar, Base64image, CommonSwitchTab },
   props: {
     data: {
       type: Object,
@@ -176,6 +174,8 @@ export default {
     },
     resortList(list) {
       let newList = JSON.parse(JSON.stringify(list))
+
+      return newList.reverse()
       try {
         if(this.sortValue === 1) {
           newList = newList.sort((prev, next) => {
@@ -246,46 +246,13 @@ export default {
   position: relative;
   background-color: #fff;
 }
-.text-answer-tab{
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-}
-.text-answer-tab button{
-  width: 32px;
-  height: 32px;
-  margin-right: 22px;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 32px 32px;
-  cursor: pointer;
-  border: none;
-}
-.button-colum{
-  background-image: url(../../assets/picture/colum.png);
-}
-.button-colum.active{
-  background-image: url(../../assets/picture/colum-s.png);
-}
-.button-row{
-  background-image: url(../../assets/picture/row.png);
-}
-.button-row.active{
-  background-image: url(../../assets/picture/row-s.png);
-}
-.button-static{
-  background-image: url(../../assets/picture/static.png);
-}
-.button-static.active{
-  background-image: url(../../assets/picture/static-s.png);
-}
 .text-scroll{
   width: 100%;
   height: 100%;
   flex-direction: column;
   overflow: scroll;
   position: relative;
+  padding-bottom: 100px;
 }
 .text-answer-list{
   width: 100%;

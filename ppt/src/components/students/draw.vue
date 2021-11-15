@@ -1,5 +1,5 @@
 <template>
-  <div id="canvasouter" >
+  <div id="canvasouter">
     <div style="position: relative">
       <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
 
@@ -7,7 +7,6 @@
     </div>
 
     <!-- 颜色，多边形图形，直线，画笔，荧光笔，text box, 橡皮，朝左undo朝右恢复（参考classdojo), 清除键。 -->
-    <!-- <colorPanel style="width:100%;height:50px"></colorPanel> -->
 
     <div class="footer--contenter">
       <div class="canvasfooter">
@@ -286,44 +285,20 @@
           <div class="eraser" @click="drawMark" slot="reference">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="26"
-              height="26"
-              viewBox="0 0 26 26"
+              width="26.454"
+              height="24.667"
+              viewBox="0 0 26.454 24.667"
             >
-              <g id="画笔" transform="translate(-724 -883)">
-                <g
-                  id="组_1163"
-                  data-name="组 1163"
-                  transform="translate(715.353 875.508)"
-                >
-                  <path
-                    id="路径_607"
-                    data-name="路径 607"
-                    :fill="currentTab == 5 ? color : 'rgb(171, 178, 218)'"
-                    stroke="#36425a"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    :stroke-width="
-                      currentTab == 5 && color == '#FFFFFF' ? 1 : 0
-                    "
-                    d="M340.278,25.122a1.022,1.022,0,0,1,.211,1.369,1.022,1.022,0,0,1-1.369-.211l-3.054-2.949a1.022,1.022,0,0,1-.211-1.369,1.022,1.022,0,0,1,1.369.211ZM350.809,9.746a1.666,1.666,0,0,0-1.9.105c-.948.737-7.793,7.372-10.742,10.426-.316.527-.632.843,1.158,2.633,1.474,1.474,2.212,1.369,2.949.737,1.264-1.264,6.53-8.636,8.531-11.479.316-.421.948-1.79,0-2.422Z"
-                    transform="translate(-318.479 0)"
-                  />
-                  <path
-                    id="路径_608"
-                    data-name="路径 608"
-                    :fill="currentTab == 5 ? color : 'rgb(171, 178, 218)'"
-                    stroke="#36425a"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    :stroke-width="
-                      currentTab == 5 && color == '#FFFFFF' ? 1 : 0
-                    "
-                    d="M16.217,607.573s-2.949,1.58-3.159,4.213a5.78,5.78,0,0,1-3.37,4.634c-.843.211,11.9.737,10.953-4.739Z"
-                    transform="translate(0 -584.241)"
-                  />
-                </g>
-              </g>
+              <path
+                id="画笔"
+                :fill="currentTab == 5 ? color : 'rgb(171, 178, 218)'"
+                stroke="#36425a"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                :stroke-width="currentTab == 5 && color == '#FFFFFF' ? 1 : 0"
+                d="M18.749,34.734l7.323,7.323a1.29,1.29,0,0,1,0,1.831L16,53.958l-2.768.915L11.4,56.7a1.29,1.29,0,0,1-1.831,0L4.059,51.189a1.29,1.29,0,0,1,0-1.831L5.89,47.528,6.8,44.782l10.07-10.07a1.29,1.29,0,0,1,1.831,0Zm.915,4.577L11.426,47.55l1.809,1.831,8.283-8.217-1.831-1.853Zm-16,14.194,3.662,3.662L5.515,59,0,57.167l3.662-3.662Z"
+                transform="translate(0 -34.331)"
+              />
             </svg>
           </div>
         </el-popover>
@@ -388,14 +363,14 @@
                   <path
                     id="路径_606"
                     data-name="路径 606"
-                    :fill="currentTab == 3 ? '#ef4e4e' : 'rgb(255, 255, 255)'"
+                    fill="rgb(255, 255, 255)"
                     d="M-10033.332-6461.843l-4.425,3.772,5.368,5.948h4.643l1.958-1.813Z"
                     transform="translate(10817 7357)"
                   />
                   <path
                     id="路径_604"
                     data-name="路径 604"
-                    :fill="currentTab == 3 ? '#36425a' : 'rgb(171, 178, 218)'"
+                    :fill="currentTab == 3 ? 'red' : 'rgb(171, 178, 218)'"
                     d="M95.317,109.056l-7.122-6.72a2.524,2.524,0,0,0-3.556.087L73.3,114.338a2.521,2.521,0,0,0,0,3.529l4.083,4.085a3.78,3.78,0,0,0,2.672,1.109H93.665a1.26,1.26,0,1,0,0-2.521h-6.3l7.98-7.84.077-.077,0,0A2.523,2.523,0,0,0,95.317,109.056ZM84.5,119.771a2.512,2.512,0,0,1-1.766.718H80.063a1.257,1.257,0,0,1-.895-.365l-4.083-4.083,2.936-3.013,6.63,6.643-.151.1Z"
                     transform="translate(705.425 783.354)"
                   />
@@ -523,8 +498,32 @@
               </div>
             </div>
           </div>
-          <div class="eraser" slot="reference">
+          <!-- :class="currentOnColorFlag ? '' : 'cls-1-color-flag-gray'" -->
+          <div
+            class="eraser"
+            slot="reference"
+            @mouseenter="mouseOnColorFlag(true)"
+            @mouseleave="mouseOnColorFlag(false)"
+          >
             <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="25.842"
+              height="27.234"
+              viewBox="0 0 27.842 29.234"
+              :style="`fill:${color};stroke-linecap: round;stroke-linejoin: round;cursor: pointer;stroke: ${
+                color == '#FFFFFF' ? '#36425a' : '#FFFFFF00'
+              };`"
+            >
+              <path
+                id="颜料填充白色"
+                d="M78.564,50.663a.4.4,0,0,0-.674,0c-.707,1.161-2.278,3.864-2.278,4.981a2.615,2.615,0,0,0,5.23,0C80.842,54.527,79.271,51.821,78.564,50.663ZM77.6,45.427,66.553,34.378a.9.9,0,0,1-.211-.211l-3.884-3.884a.879.879,0,0,0-1.243,1.243L64.689,35,54.258,45.427a.878.878,0,0,0,0,1.243L65.307,57.719a.878.878,0,0,0,1.243,0L77.6,46.67A.877.877,0,0,0,77.6,45.427ZM65.929,36.242l9.806,9.806H56.123l9.806-9.806Z"
+                transform="translate(-53.5 -29.525)"
+              />
+            </svg>
+
+            <!-- <svg
+
+
               xmlns="http://www.w3.org/2000/svg"
               width="26"
               height="26"
@@ -547,7 +546,7 @@
                   transform="translate(-9315.083 -6241)"
                 />
               </g>
-            </svg>
+            </svg> -->
           </div>
         </el-popover>
 
@@ -608,7 +607,6 @@
                   d="M101.74,26.251a6.312,6.312,0,0,1-2.965-7.38,5.277,5.277,0,0,1,4.127-3.78,12.979,12.979,0,0,1,2.965-.35c.35,0,.466.059.466.466v3.9c.291-.059.35-.231.466-.35,2.209-2.206,4.362-4.359,6.511-6.567.116-.116.406-.291.116-.581-2.325-2.325-4.708-4.652-7.092-7.036V7.593c0,.466-.059.64-.64.64a14.523,14.523,0,0,0-5.408,1.106,8.093,8.093,0,0,0-5.058,7.617A9.293,9.293,0,0,0,101.1,26.2c.059,0,.116.059.231.059.294.113.409.172.409,0Zm0,0"
                   transform="translate(-91.55 -2.568)"
                 />
-                <!-- <rect id="矩形_172" data-name="矩形 172" class="cls-2" width="26" height="26" /> -->
               </svg>
             </div>
           </el-tooltip>
@@ -709,15 +707,17 @@ export default {
       ],
       showColor: true,
       observer: null,
-      recordOldValue: { // 记录下旧的宽高数据，避免重复触发回调函数
-        width: '0',
-        height: '0'
-      }
+      currentOnColorFlag: false,
+      recordOldValue: {
+        // 记录下旧的宽高数据，避免重复触发回调函数
+        width: "0",
+        height: "0",
+      },
     };
   },
   created() {},
   mounted() {
-    this.initCanvasData()
+    this.initCanvasData();
     const _this = this;
     window.onbeforeunload = function (event) {
       event = event || window.event;
@@ -732,12 +732,15 @@ export default {
     //   let key = window.event.key;
     //   _this.draw.drawTextDirect(window.event);
     // };
-    this.resetSize()
+    this.resetSize();
   },
-  beforeDestroyed () {
-  },
+  beforeDestroyed() {},
   destroyed() {},
   methods: {
+    mouseOnColorFlag(flag) {
+      console.log("mouseOnColorFlag", flag);
+      this.currentOnColorFlag = flag;
+    },
     initCanvasData() {
       let outer = document.getElementById("canvasouter");
       // console.log(outer.clientWidth, outer.clientHeight)
@@ -766,33 +769,34 @@ export default {
     },
     resetSize() {
       let el = document.getElementById("canvasouter");
-      let iframe = document.createElement('iframe');
+      //  let iframe = document.createElement("iframe");
       let styleJson = {
-          opacity: 0,
-          'z-index': '-1111',
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: '100%',
-        };
-      let styleText = '';
+        opacity: 0,
+        "z-index": "-1111",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+      };
+      let styleText = "";
       for (let key in styleJson) {
-        styleText += (key + ':' + styleJson[key] + ';');
+        styleText += key + ":" + styleJson[key] + ";";
       }
-      iframe.style.cssText = styleText;
-      el.appendChild(iframe)
-      iframe.contentWindow.addEventListener('resize', () => {
-        // this.initCanvasData()
-        let outer = document.getElementById("canvasouter");
-          // console.log(outer.clientWidth, outer.clientHeight)
-          // outer.style.width = document.documentElement.clientWidth - 40 + "px";
-          // outer.style.height = document.documentElement.clientHeight - 40 + "px";
-          this.draw.resetSize(
-            outer.clientWidth,
-            outer.clientHeight
-          );
-      }, false)
+      //    iframe.style.cssText = styleText;
+      //   el.appendChild(iframe);
+      // iframe.contentWindow.addEventListener(
+      //   "resize",
+      //   () => {
+      //     // this.initCanvasData()
+      //     let outer = document.getElementById("canvasouter");
+      //     // console.log(outer.clientWidth, outer.clientHeight)
+      //     // outer.style.width = document.documentElement.clientWidth - 40 + "px";
+      //     // outer.style.height = document.documentElement.clientHeight - 40 + "px";
+      //     this.draw.resetSize(outer.clientWidth, outer.clientHeight);
+      //   },
+      //   false
+      // );
     },
     doKeyDown(e) {
       // console.log(e);
@@ -959,9 +963,32 @@ export default {
   left: 0;
   top: 0;
 }
-
 .color_flag {
   fill: rgb(171, 178, 218);
+}
+
+.cls-1-color-flag-gray {
+  fill: rgb(171, 178, 218);
+  /* stroke: #36425a; */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+
+/* .cls-1-color-flag-gray:hover {
+  fill: white;
+  stroke: #36425a;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+} */
+
+.cls-1-color-flag-white {
+  fill: white;
+  stroke: #36425a;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
 }
 
 .color-1-svg {
@@ -1002,9 +1029,11 @@ export default {
 .footer--contenter {
   width: 80%;
   height: 100px;
-  position: fixed;
-  bottom: 50px;
+  /* margin-top: 95%; */
+  z-index: 999;
   left: 10%;
+  bottom: 50px;
+  position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1040,6 +1069,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 #keyword-box {
   margin: 10px 0;

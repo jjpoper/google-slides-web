@@ -1,43 +1,37 @@
 <template>
   <div class="res-and-student">
-    <div class="switch-header">
-      <div class="switch-content">
-        <div :class="`switch-button ${tab === 1 && 'active'}`" @click="changeTab(1)">
-          Student
-        </div>
-        <div v-show="currentPageAnswerType !== 'none'" :class="`switch-button ${tab === 2 && 'active'}`" @click="changeTab(2)">
-          Response
-        </div>
-      </div>
-    </div>
+    <!-- <dash-switch-header /> -->
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
-        <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
-        <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
+        <img src="../../assets/picture/student-answered.png" class="ans-status" v-if="answeredStudents.indexOf(item.user_id) > -1"/>
+        <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-else/>
         <div class="user-icon student-icon">{{item.name ? item.name.substr(0, 1) : ''}}</div>
         <div class="user-name">{{item.name}}</div>
       </li>
     </ul>
     <ul class="res-list" v-if="tab === 2">
-      <div @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div>
-      <li class="res-list-item" v-for="item in answerList" :key="item.id">
-        <div class="res-list-item-content">
-          <div class="user-info">
-            <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
-            <div>
-              <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
-              <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+      <!-- <div  class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div> -->
+      <template v-if="answerList.length > 0">
+        <li class="res-list-item" v-for="item in answerList" :key="item.id">
+          <div class="res-list-item-content">
+            <div class="user-info">
+              <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
+              <div>
+                <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
+                <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+              </div>
+            </div>
+            <div class="ans-detail">
+              <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
+              <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
+              <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
+              <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
+              <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
             </div>
           </div>
-          <div class="ans-detail">
-            <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
-            <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
-            <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
-            <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
-            <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
-          </div>
-        </div>
-      </li>
+        </li>
+      </template>
+      <loading-view v-else/>
     </ul>
   </div>
 </template>
@@ -49,8 +43,10 @@ import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
 import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
 import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
 import DashRightTextItem from './dash-answer/dash-right-text-item.vue'
+import DashSwitchHeader from './dash/dashSwitchHeader.vue'
+import LoadingView from './loadingView.vue'
 export default {
-  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem },
+  components: { dashRightRemarkItem, DashRightCommentItem, DashRightChoiceItem, DashRightDrawItem, DashRightTextItem, DashSwitchHeader, LoadingView },
   computed: {
     ...mapState({
       studentList: state => state.teacher.studentList,
@@ -62,18 +58,18 @@ export default {
       currentPageId: 'student/currentPageId',
       currentPageAnswerType: 'student/currentPageAnswerType',
     }),
-    // 未答题学生
-    noAnswerStudents() {
-      let noList = []
+    // 已答题学生
+    answeredStudents() {
+      let anList = []
       for(let i = 0; i < this.studentList.length; i++) {
         const currentUser = this.studentList[i]
         const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
-        if(index === -1) {
-          noList.push(currentUser)
+        if(index > -1) {
+          anList.push(currentUser)
         }
       }
       // console.log(noList)
-      return noList
+      return anList
     },
     currentComments() {
       let list = []
@@ -82,7 +78,8 @@ export default {
           item => item.page_id === this.currentPageId
         );
       }
-      list.reverse()
+      // list.reverse()
+      console.log(list)
       return list;
     },
     answerList() {
@@ -90,21 +87,21 @@ export default {
       let list = res.map(item => {
         const data = item.content ? {} : getJSONValue(item.data)
         return {
+          ...data,
           ...item,
           id: item.id || item.response_id,
-          ...data
         }
       })
-      // console.log(list, 'righten',res, this.currentPageAnswerType)
-      return list;
+      console.log(list, 'righten')
+      return list.reverse();
     }
   },
   watch: {
     currentPageAnswerType() {
       if(this.currentPageAnswerType === 'none') {
-        this.changeTab(1)
+        // this.changeTab(1)
       }
-    }
+    },
   },
   props: {
     showResponse: {
@@ -116,8 +113,8 @@ export default {
     },
   },
   data() {
-    return{
-      tab: 1
+    return {
+      tab: 2
     }
   },
   methods: {
@@ -137,37 +134,8 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-  .switch-header{
-    width: 100%;
-    margin: 20px 0;
-    padding: 0 57px;
-    height: 50px;
-    box-sizing: border-box;
-  }
-  .switch-content{
-    width: 100%;
-    height: 50px;
-    border-radius: 30px;
-    background-color: rgba(247, 248, 255, 1);
-    display: flex;
-    justify-items: center;
-    align-items: center;
-    font-size: 18px;
-    font-family: Inter-Bold;
-    line-height: 24px;
-    color: #11142D;
-  }
-  .switch-button{
-    flex: 1;
-    text-align: center;
-    line-height: 50px;
-    cursor: pointer;
-  }
-  .switch-button.active{
-    background-color: rgba(21, 195, 154, 1);
-    border-radius: 30px;
-    color: #fff;
+    position: relative;
+    margin-top: 10px;
   }
   .res-list{
     flex: 1;
@@ -175,14 +143,14 @@ export default {
   }
   .res-list-item{
     width: 100%;
-    height: 280px;
+    /* height: 280px; */
     box-sizing: border-box;
     margin-bottom: 28px;
     padding: 0 28px;
   }
   .res-list-item-content{
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     background: #FFFFFF;
     border: 1px solid #F1F1F1;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);

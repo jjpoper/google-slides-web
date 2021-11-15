@@ -1,20 +1,9 @@
 <template>
-  <div class="text-answer-container" v-if="answerList && answerList.length > 0">
-    <div class="text-answer-tab">
-      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
-      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
-      <el-select v-model="sortValue" placeholder="Sort">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-    </div>
+  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+    <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
     <div class="text-scroll">
       <div class="text-answer-list">
-        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in answerList" :key="index">
+        <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
           <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${flag_1 ? 'dash-outer' : 'full-text-area'}`"
             >
             <div
@@ -37,14 +26,17 @@
                     v-else-if="item.content.mediaType === 'file'"
                   >
                     <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
-                    <div class="file-name">
+                    <div class="file-name" style="flex: 1">
                       <p class="file-name">{{item.content.fileName}}</p>
-                      <a :href="item.content.link" download class="download-text">Download</a>
+                      <a :href="item.content.link" target="blank" download class="download-text">Download</a>
                     </div>
                   </div>
+                  <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
+                    <Base64image :url="item.content.link" />
+                  </div>
                 </div>
-                <span class="text_static" v-if="flag_1 && answerList.length > 1">
-                  {{ index + 1 + " of " + answerList.length }}
+                <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                  {{ index + 1 + " of " + selectedAnswerList.length }}
                 </span>
               </div>
               <div class="text-footer" v-if="flag_1">
@@ -65,7 +57,7 @@
           </div>
         </div>
       </div>
-      <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
+      <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
         <div class="no-as-title">
           <i></i> No Response
         </div>
@@ -74,7 +66,7 @@
             {{item.user_id}}
           </p>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -85,22 +77,32 @@ import { mapState, mapGetters } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
+import Base64image from '../base64image.vue';
+import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
   computed: {
     // 未答题学生
-    noAnswerStudents() {
-      let noList = []
-      for(let i = 0; i < this.studentList.length; i++) {
-        const currentUser = this.studentList[i]
-        const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
-        if(index === -1) {
-          noList.push(currentUser)
-        }
-      }
-      return noList
+    // noAnswerStudents() {
+    //   let noList = []
+    //   for(let i = 0; i < this.studentList.length; i++) {
+    //     const currentUser = this.studentList[i]
+    //     const index = this.answerList.findIndex(item => item.user_id === currentUser.user_id)
+    //     if(index === -1) {
+    //       noList.push(currentUser)
+    //     }
+    //   }
+    //   return noList
+    // },
+    selectedAnswerList() {
+      if(this.selectedGroupMembers.length === 0) return this.answerList
+      let list = this.answerList.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+      return list
     },
     ...mapState({
-      studentList: state => state.teacher.studentList
+      studentList: state => state.teacher.studentList,
+      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     ...mapGetters({
       currentPageAnswerList: 'student/currentPageAnswerList',
@@ -109,10 +111,15 @@ export default {
     answerList() {
       let list = this.currentPageAnswerList.map(item => {
         const content = item.content || JSON.parse(item.data).content
+        let data = {}
+        try {
+          data = JSON.parse(item.data)
+        } catch(e) {}
         return {
           ...item,
           id: item.id || item.response_id,
-          content
+          content,
+          ...data
         }
       })
       list = this.resortList(list)
@@ -120,7 +127,7 @@ export default {
       return list;
     },
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab },
   props: {
     data: {
       type: Object,
@@ -181,6 +188,7 @@ export default {
     },
     resortList(list) {
       let newList = JSON.parse(JSON.stringify(list))
+      return newList.reverse()
       try {
         if(this.sortValue === 1) {
           newList = newList.sort((prev, next) => {
@@ -251,46 +259,13 @@ export default {
   position: relative;
   background-color: #fff;
 }
-.text-answer-tab{
-  width: 100%;
-  height: 40px;
-  display: flex;
-  align-items: center;
-}
-.text-answer-tab button{
-  width: 32px;
-  height: 32px;
-  margin-right: 22px;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 32px 32px;
-  cursor: pointer;
-  border: none;
-}
-.button-colum{
-  background-image: url(../../assets/picture/colum.png);
-}
-.button-colum.active{
-  background-image: url(../../assets/picture/colum-s.png);
-}
-.button-row{
-  background-image: url(../../assets/picture/row.png);
-}
-.button-row.active{
-  background-image: url(../../assets/picture/row-s.png);
-}
-.button-static{
-  background-image: url(../../assets/picture/static.png);
-}
-.button-static.active{
-  background-image: url(../../assets/picture/static-s.png);
-}
 .text-scroll{
   width: 100%;
   height: 100%;
   flex-direction: column;
   overflow: scroll;
   position: relative;
+  padding-bottom: 100px;
 }
 .text-answer-list{
   width: 100%;
@@ -328,7 +303,7 @@ export default {
   margin: 0 auto;
 }
 .text-item-outer1.dash-outer{
-  width: 80%;
+  /* width: 80%; */
 }
 .text-item-outer5{
   width: 100%;
@@ -336,7 +311,7 @@ export default {
   position: relative;
 }
 .text-item-outer1.full-text-area{
-  height: 148px;
+  /* height: 148px; */
 }
 .text-item-outer5.full-text-area{
   padding-bottom: 45%;
@@ -469,7 +444,7 @@ video{
   top: 0
 }
 .remark-file{
-  height: 60px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   overflow: hidden;

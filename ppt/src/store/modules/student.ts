@@ -22,9 +22,9 @@ const getters = {
             currentPageIndex,
             allAnswerList
         } = currentState
-        const {items, page_id} = studentAllSlides[currentPageIndex]
-        if(items.length === 0) return []
-        const {type} = items[0]
+        const { items, page_id } = studentAllSlides[currentPageIndex]
+        if (items.length === 0) return []
+        const { type } = items[0]
         const answers = allAnswerList.filter((item: any) => item.page_id === page_id && item.type === type)
         return answers
     },
@@ -48,7 +48,8 @@ const getters = {
             currentPageIndex,
         } = currentState
         const itemData = studentAllSlides[currentPageIndex]
-        return itemData.items[0] ? itemData.items[0].type : 'none'
+        const type = itemData.items[0] ? itemData.items[0].type : null
+        return type || 'none'
     },
 }
 
@@ -84,6 +85,10 @@ const actions = {
     updateSlideCorrectAnswer({ commit }: any, data: any) {
         commit('updateSlideCorrectAnswer', JSON.parse(JSON.stringify(data)))
     },
+
+    setAllGroups({ commit }: any, list: any) {
+        commit('setAllGroups', JSON.parse(JSON.stringify(list)))
+    },
 }
 
 // mutations
@@ -101,9 +106,12 @@ const mutations = {
         nextState.studentUserInfo = Object.assign(nextState.studentUserInfo, userInfo)
     },
     updateAnswerdPage(nextState: any, pageIndex: number) {
-        const {answerdPage} = nextState
+        const { answerdPage } = nextState
         answerdPage[pageIndex] = true
         nextState.answerdPage = JSON.parse(JSON.stringify(answerdPage))
+    },
+    setAllGroups(nextState: any, list: any) {
+        nextState.allGroups = list
     },
     updateAllAnswerdList(nextState: any, data: any) {
         const {
@@ -111,7 +119,7 @@ const mutations = {
             studentAllSlides,
             currentPageIndex,
         } = nextState
-        if(data.type === 'media') {
+        if (data.type === 'media') {
             nextState.allAnswerList.push(data)
         } else {
             // const { item_id: itemId, student_user_id: sid, type } = data
@@ -136,17 +144,17 @@ const mutations = {
     },
     deleteOnAnswerById(nextState: any, id: any) {
         const index = nextState.allAnswerList.findIndex((item: any) => (item.id === id || item.response_id === id))
-        if(index > -1) {
+        if (index > -1) {
             nextState.allAnswerList.splice(index, 1)
         }
     },
     updateSlideItemTip(nextState: any, data: any) {
         // {"page_id":"abc", "tip": "new tip"}
         const studentAllSlides = JSON.parse(JSON.stringify(nextState.studentAllSlides))
-        const {page_id, tip} = data
+        const { page_id, tip } = data
         // const index = allAnswerList.find
-        for(let i = 0; i < studentAllSlides.length; i++) {
-            if(studentAllSlides[i].page_id === page_id) {
+        for (let i = 0; i < studentAllSlides.length; i++) {
+            if (studentAllSlides[i].page_id === page_id) {
                 const index = studentAllSlides[i].elements.findIndex((item: any) => item.type === 'tip')
                 studentAllSlides[i].elements[index].tip = tip
                 break
@@ -157,13 +165,13 @@ const mutations = {
     updateSlideCorrectAnswer(nextState: any, data: any) {
         // {"page_id": "abc", "correct_answer": [0, 2]}
         const studentAllSlides = JSON.parse(JSON.stringify(nextState.studentAllSlides))
-        const {page_id, correct_answer} = data
+        const { page_id, correct_answer } = data
         // const index = allAnswerList.find
-        for(let i = 0; i < studentAllSlides.length; i++) {
-            if(studentAllSlides[i].page_id === page_id) {
+        for (let i = 0; i < studentAllSlides.length; i++) {
+            if (studentAllSlides[i].page_id === page_id) {
                 const item = studentAllSlides[i].items[0]
-                for(let j = 0; j < item.data.options.length; j++) {
-                    if(correct_answer.indexOf(item.data.options[j].id) > -1) {
+                for (let j = 0; j < item.data.options.length; j++) {
+                    if (correct_answer.indexOf(item.data.options[j].id) > -1) {
                         item.data.options[j].isAnswer = true
                     } else {
                         item.data.options[j].isAnswer = false

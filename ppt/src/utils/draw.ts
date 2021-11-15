@@ -26,6 +26,11 @@ window.drawPool = []
 window.textPool = []
 window.textOptsPool = []
 
+/**
+ * 
+ * 当前存在的bug：1.第一次删除的内容无法恢复。2.删除后的内容在写入text的时候会被恢复
+ */
+
 export default class Draw {
   private el: any
   private strokeColor = "#02a3ee";
@@ -210,14 +215,7 @@ export default class Draw {
     } else {
       this.saveImageData()
     }
-    if (this.currentIndex == -1) {
-      window.drawPool = [];
-      const base64Url = this.canvas.toDataURL("image/png");
-      window.drawPool.splice(++this.currentIndex, 0, base64Url);
 
-      window.textOptsPool = [];
-      window.textOptsPool.splice(this.currentIndex, 0, this.copyWindowTextPool());
-    }
 
   }
   copyWindowTextPool() {
@@ -237,10 +235,12 @@ export default class Draw {
     if (this.drawType != "text") {
       this.currentMouseOnEditableDeiv = false;
       if (this.currentSelectEditableDiv) {
+
         if (!this.currentSelectEditableDiv.innerText || this.currentSelectEditableDiv.innerText.length < 1) {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          this.currentSelectEditableDiv.style.zIndex = "0";
           this.currentSelectEditableDiv.setAttribute("contenteditable", false);
           var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
           if (deleteImage)
@@ -282,6 +282,14 @@ export default class Draw {
       this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.cxt.drawImage(img, 0, 0);
       this.saveImageData()
+      if (this.currentIndex == -1) {
+        window.drawPool = [];
+        const base64Url = this.canvas.toDataURL("image/png");
+        window.drawPool.splice(++this.currentIndex, 0, base64Url);
+
+        window.textOptsPool = [];
+        window.textOptsPool.splice(this.currentIndex, 0, this.copyWindowTextPool());
+      }
       if (this.isEarse) {
         this.cxt.globalCompositeOperation = "destination-out";
       }
@@ -297,6 +305,7 @@ export default class Draw {
       if (this.currentSelectEditableDiv) {
         this.currentSelectEditableDiv.setAttribute("contenteditable", false);
         this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+        this.currentSelectEditableDiv.style.zIndex = "0";
         var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
         if (deleteImage) {
           // console.log('hide delete');
@@ -347,6 +356,7 @@ export default class Draw {
           this.deleteEditableDiv(this.currentSelectEditableDiv.id);
         } else {
           this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          this.currentSelectEditableDiv.style.zIndex = "0";
           this.currentSelectEditableDiv.focus();
           this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
           var deleteImage = document.getElementById(this.currentSelectEditableDiv.id + "_close_btn");
@@ -395,7 +405,7 @@ export default class Draw {
     closeImg.id = textItem.self_id + "_close_btn";
     closeImg.style.position = 'fixed';
     closeImg.style.cursor = "pointer";
-    closeImg.setAttribute('src', "https://api.app.classcipe.com/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
+    closeImg.setAttribute('src', "https://dev.api.newzealand.actself.me/upload/5e6fc987f77738c5.png");//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
     closeImg.style.left = `${textItem.left - 20}px`;
     closeImg.style.top = `${textItem.top + 10}px`;
     closeImg.width = 20;
@@ -446,6 +456,7 @@ export default class Draw {
           editableDiv.setAttribute("contenteditable", "true");
         } else {
           _this.currentSelectEditableDiv.style.border = "2px solid #00000000";
+          _this.currentSelectEditableDiv.style.zIndex = "0";
           _this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
           var deleteImage = document.getElementById(_this.currentSelectEditableDiv.id + "_close_btn");
           if (deleteImage)
@@ -458,6 +469,7 @@ export default class Draw {
       let e = ev || event;
       _this.currentSelectEditableDiv = editableDiv;
       editableDiv.style.border = "2px solid #c2d4fd";
+      editableDiv.style.zIndex = `${999}`
       _this.currentSelectEditableLeft = e.clientX;
       _this.currentSelectEditableTop = e.clientY;
       //  _this.currentSelectEditableDiv.setAttribute("contenteditable", "true");
@@ -468,6 +480,7 @@ export default class Draw {
       if (deleteImage) {
         // console.log("show delete Image")
         deleteImage.style.display = "block";
+        deleteImage.style.zIndex = "999";
       }
 
 
@@ -478,7 +491,7 @@ export default class Draw {
           return;
         }
         //   // console.log('onmousemove', editableDiv.id);
-        var e = ev || event;
+        let e = ev || event;
         let left = parseInt(editableDiv.style.left) ? parseInt(editableDiv.style.left) : 0;
         let top = parseInt(editableDiv.style.top);
 
@@ -490,12 +503,11 @@ export default class Draw {
         _this.currentSelectEditableLeft = e.clientX;
         _this.currentSelectEditableTop = e.clientY;
 
-        var deleteImage = document.getElementById(editableDiv.id + "_close_btn");
+        let deleteImage = document.getElementById(editableDiv.id + "_close_btn");
         if (deleteImage) {
           deleteImage.style.left = `${left - 10}px`;
           deleteImage.style.top = `${top - 10}px`;
         }
-
 
       };
       editableDiv.onmouseup = function (ev) {
@@ -525,6 +537,8 @@ export default class Draw {
       // console.log('onmouseleave', editableDiv.id);
       editableDiv.style.cursor = 'default';
       _this.currentMouseOnEditableDeiv = false;
+      editableDiv.onmousemove = null;
+      editableDiv.onmouseup = null;
       //   editableDiv.setAttribute("contenteditable", "false");
     }
 
@@ -828,10 +842,11 @@ export default class Draw {
   }
 
   drawEnd() {
-    // console.log('========= drawEnd', this.canTextarea);
+    console.log('========= drawEnd', this.drawType);
     this.canvas.onmousemove = null;
     if (this.currentSelectEditableDiv) {
       this.currentSelectEditableDiv.setAttribute("contenteditable", "false");
+      this.currentSelectEditableDiv.style.zIndex = "0";
     }
 
     //检查鼠标是否有移动，如果有移动说明绘制过了，则进行添加操作，否则不要添加
@@ -876,20 +891,29 @@ export default class Draw {
   }
 
   clearCanvas() {
+    console.log('delete!!');
     // btn.onclick = () => {
     //     this.cxt.clearRect(0, 0, 500, 500)
     //     // ws.send('clear')
     // }
-    this.addHistory();
+    // this.addHistory();
+
+
+
     this.cxt.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
     this.cxtText.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
     this.hindChildren();
     window.textPool = [];
 
+    // this.drawEnd();
+    const base64Url = this.canvas.toDataURL("image/png");
+    this.drawTextOnCanvas();
+    const imageUrl = this.canvasText.toDataURL("image/png");
+    this.callBackData(base64Url, imageUrl);
 
-    this.drawEnd();
+    window.drawPool.splice(++this.currentIndex, 0, base64Url);
+    window.textOptsPool.splice(this.currentIndex, 0, this.copyWindowTextPool());
+
     this.polygonStartPoint.beginY = -1;
     this.polygonStartPoint.beginX = -1;
   }
@@ -995,6 +1019,7 @@ export default class Draw {
           editableDiv.style.fontFamily = copyItem.fontFamily;
           editableDiv.style.background = "#00000000";
           editableDiv.style.border = "2px solid #00000000";
+          editableDiv.style.zIndex = "0";
           editableDiv.style.color = copyItem.color;
           editableDiv.style.fontSize = Math.max(18, copyItem.fontSize) + "px";
           editableDiv.style.lineHeight = Math.max(18, copyItem.fontSize) + "px";

@@ -4,21 +4,19 @@
   <div :class="`panel ${isDashboard ? 'dash-control' : ''}`">
     <template v-if="!isDashboard">
       <button class="control-bar__button">
-        <div class="control-bar__icon left" @click="lastPage()">
-        </div>
+        <div class="control-bar__icon left" @click="lastPage()"></div>
       </button>
-      <div>
-      {{currentPage}}/{{totalPage}}
-      </div>
+      <div>{{ currentPage }}/{{ totalPage }}</div>
       <button class="control-bar__button">
-        <div class="control-bar__icon right" @click="nextPage()">
-        </div>
+        <div class="control-bar__icon right" @click="nextPage()"></div>
       </button>
     </template>
 
     <template v-if="isDashboard">
       <div
-        :class="dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'"
+        :class="
+          dashTipsModalVisiable ? 'button_area back_focus' : 'button_area'
+        "
         style="margin-right: 20px"
       >
         <div class="meterialimage" @click="showDashTips">
@@ -56,50 +54,64 @@
     </div> -->
 
     <div :class="isClosed ? 'info_area' : 'info_area'">
-      <div class="with-outer" v-if="!isDashboard" >
+      <div class="with-outer" v-if="!isDashboard">
         <i :class="`icon-circle ${current_response === 0 && 'red-icon'}`"></i>
         <strong
-        >{{ current_response == 0 ? "No" : current_response }} Response</strong>
+          >{{
+            current_response == 0 ? "No" : current_response
+          }}
+          Response</strong
+        >
       </div>
 
-      <div class="with-outer">
+      <div
+        class="button_area"
+        v-if="!isClosed && current_model === 'Student-Paced'"
+        @click="closeStudentPaced()"
+      >
+        <svg
+          t="1620464177484"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="2600"
+          width="30"
+          height="30"
+        >
+          <path
+            d="M561.17013333 509.06026667L858.02666667 213.73973333c14.03733333-13.968 14.1088-36.60053333 0.1408-50.63786666-13.99893333-14.06826667-36.592-14.10773333-50.62933334-0.1408L510.6048 458.31466667 216.256 163.06986667c-13.9328-13.96693333-36.59733333-14.03733333-50.63466667-0.07146667-14.00426667 13.96586667-14.03733333 36.63146667-0.0704 50.6688l294.27733334 295.1744-296.71466667 295.14026667c-14.0384 13.968-14.1088 36.59733333-0.14293333 50.63786666a35.7216 35.7216 0 0 0 25.3856 10.56c9.13066667 0 18.26666667-3.4688 25.25013333-10.4192l296.78613333-295.2128L807.4304 857.48266667c6.9824 7.02186667 16.15253333 10.53013333 25.35253333 10.53013333a35.72906667 35.72906667 0 0 0 25.28213334-10.45973333c13.99893333-13.96586667 14.03733333-36.592 0.07146666-50.62933334L561.17013333 509.06026667z m0 0"
+            p-id="2601"
+            fill="#36425A"
+          />
+        </svg>
+
+        <strong class="button_text">Stop Student-Paced</strong>
+      </div>
+
+      <div class="with-outer" v-else>
         <i :class="`icon-circle ${!isClosed && 'green-icon'}`"></i>
         <strong>{{ isClosed ? "Closed" : current_model }}</strong>
       </div>
     </div>
+
+
+    <!--lock-->
     <div
-      :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
-      style="margin-right: 20px"
-      @click="showRes()"
+      :class="
+        isLoked()
+          ? 'button_area back_focus'
+          : isLokeEnable()
+          ? 'button_area'
+          : 'button_area button_grey'
+      "
       v-if="
         currentItemData &&
         currentItemData.items &&
         currentItemData.items[0] &&
-        currentItemData.items[0].type != 'website' &&
         !isClosed &&
-        !isDashboard
+        current_model != 'Student-Paced'
       "
-    >
-      <div class="meterialimage">
-        <div class="fullbgimg res-show"></div>
-      </div>
-      <strong class="button_text">{{ isResponseShow ? "Hide " : "Show " }} Response</strong>
-    </div>
-    <!--material-->
-    <div
-      :class="meterialSwitchVisiable ? 'button_area back_focus' : 'button_area'"
-      style="margin-right: 20px"
-      @click="changeMeterial"
-    >
-      <div class="meterialimage">
-        <div :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"></div>
-      </div>
-      <strong class="button_text">{{meterialSwitchVisiable ? 'Material hiding' : 'Display material'}}</strong>
-    </div>
-    <!--lock-->
-    <div
-      :class="isLoked() ? 'button_area back_focus' : (isLokeEnable()?'button_area':'button_area button_grey')"
-      v-if="!isClosed && current_model != 'Student-Paced'"
       @click="dolockPage()"
     >
       <svg
@@ -118,40 +130,52 @@
           fill="#36425A"
         />
       </svg>
-      <strong class="button_text">{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong>
-    </div>
-    <!--student paced-->
-    <div
-      class="button_area"
-      v-if="!isClosed && current_model === 'Student-Paced'"
-      @click="closeStudentPaced()"
-    >
-      <svg
-        t="1620464177484"
-        class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="2600"
-        width="30"
-        height="30"
+      <strong class="button_text"
+        >{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong
       >
-        <path
-          d="M561.17013333 509.06026667L858.02666667 213.73973333c14.03733333-13.968 14.1088-36.60053333 0.1408-50.63786666-13.99893333-14.06826667-36.592-14.10773333-50.62933334-0.1408L510.6048 458.31466667 216.256 163.06986667c-13.9328-13.96693333-36.59733333-14.03733333-50.63466667-0.07146667-14.00426667 13.96586667-14.03733333 36.63146667-0.0704 50.6688l294.27733334 295.1744-296.71466667 295.14026667c-14.0384 13.968-14.1088 36.59733333-0.14293333 50.63786666a35.7216 35.7216 0 0 0 25.3856 10.56c9.13066667 0 18.26666667-3.4688 25.25013333-10.4192l296.78613333-295.2128L807.4304 857.48266667c6.9824 7.02186667 16.15253333 10.53013333 25.35253333 10.53013333a35.72906667 35.72906667 0 0 0 25.28213334-10.45973333c13.99893333-13.96586667 14.03733333-36.592 0.07146666-50.62933334L561.17013333 509.06026667z m0 0"
-          p-id="2601"
-          fill="#36425A"
-        />
-      </svg>
-
-      <strong class="button_text">Stop Student-Paced</strong>
     </div>
 
-    <el-popover
+    <!-- <div
+      :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
+      style="margin-right: 20px"
+      @click="showRes()"
+      v-if="
+        currentItemData &&
+        currentItemData.items &&
+        currentItemData.items[0] &&
+        currentItemData.items[0].type != 'website' &&
+        !isClosed &&
+        !isDashboard
+      "
+    >
+      <div class="meterialimage">
+        <div class="fullbgimg res-show"></div>
+      </div>
+      <strong class="button_text"
+        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
+      >
+    </div> -->
+    <!--material-->
+    <div
+      :class="meterialVisiable ? 'button_area back_focus' : 'button_area'"
+      style="margin-right: 20px"
+      @click="changeMeterial"
+    >
+      <div class="meterialimage">
+        <div
+          :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"
+        ></div>
+      </div>
+      <strong class="button_text">{{
+        meterialVisiable ? "Material hiding" : "Display material"
+      }}</strong>
+    </div>
+
+    <!-- <el-popover
       placement="top"
       width="400"
       trigger="hover"
       class="dropdown-icon"
-      style="display: none"
     >
       <dashboardMenu
         v-if="classRoomInfo"
@@ -177,7 +201,7 @@
         <circle cx="10" cy="16" r="2" fill="#36425A" />
         <circle cx="10" cy="24" r="2" fill="#36425A" />
       </svg>
-    </el-popover>
+    </el-popover> -->
     <!--end-->
     <!-- <div class="end_button" @click="endLesson()" v-if="!isDashboard">
       <strong>{{ isClosed ? "EXIT" : "END" }}</strong>
@@ -189,16 +213,16 @@
 <script>
 import { ClassRoomModelEnum, ModalEventsNameEnum } from "@/socket/socketEvents";
 import dashboardMenu from "./teacherDashboardMenu";
-import UploadEnter from '@/components/uploadFile/uploadEnter.vue'
+import UploadEnter from "@/components/uploadFile/uploadEnter.vue";
 export default {
   props: {
     currentPage: {
       type: Number,
-      default: 1
+      default: 1,
     },
     slide_id: {
       type: String,
-      default: ""
+      default: "",
     },
     // reopenClass: {
     //   type: Function,
@@ -207,108 +231,102 @@ export default {
       type: Object,
       default: () => {
         return {};
-      }
+      },
     },
     totalPage: {
       type: Number,
-      default: 3
+      default: 3,
     },
     isClosed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     current_model: {
       type: String,
-      default: "Insturctor-Paced"
+      default: "Insturctor-Paced",
     },
 
     current_response: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     // open: {
     //   type: Function,
     // },
     turnModel: {
-      type: Function
+      type: Function,
     },
     isDashboard: {
       type: Boolean,
-      default: false
+      default: false,
     },
     dashTipsModalVisiable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     changePage: {
-      type: Function
+      type: Function,
     },
     showDashTips: {
-      type: Function
+      type: Function,
     },
     turnOff: {
-      type: Function
+      type: Function,
     },
     // open: {
     //   type: Function,
     // },
     showResponse: {
-      type: Function
+      type: Function,
     },
     isResponseShow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // openProject: {
     //   type: Function,
     // },
     endLesson: {
-      type: Function
+      type: Function,
     },
     lockPage: {
-      type: Function
+      type: Function,
     },
     slides: {
       type: Array,
-      default: []
+      default: [],
     },
     currentItemData: {
       type: Object,
       default: () => {
         return {};
-      }
+      },
+    },
+
+    addprompt: {
+      type: Function,
     },
     changeShowMetrial: {
       type: Function,
     },
     meterialVisiable: {
       type: Boolean,
-      default: false
+      default: false,
     },
-  },
-  watch: {
-    meterialSwitchVisiable() {
-      // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialSwitchVisiable)
-    }
-  },
-  created() {
-    this.meterialSwitchVisiable = this.meterialVisiable
   },
   components: {
     dashboardMenu,
-    UploadEnter
+    UploadEnter,
   },
   data() {
     return {
       dialogVisible: false,
-      meterialSwitchVisiable: false
     };
   },
   methods: {
     changeMeterial() {
-      this.meterialSwitchVisiable = !this.meterialSwitchVisiable
+      this.changeShowMetrial(!this.meterialVisiable);
     },
     lastPage() {
       // console.log(this.currentPage);
@@ -382,14 +400,14 @@ export default {
       if (this.isLokeEnable()) {
         this.lockPage();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 strong {
-  color: #36425A;
+  color: #36425a;
   font-size: 14px;
 }
 .panel {
@@ -397,11 +415,11 @@ strong {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #D9DFE4;
+  background-color: #d9dfe4;
   box-sizing: border-box;
   padding-left: 21px;
 }
-.dash-control{
+.dash-control {
   padding-right: 50px;
 }
 .svg_right {
@@ -434,16 +452,16 @@ strong {
   background-position: 0 0;
   background-repeat: no-repeat;
 }
-.control-bar__icon.left{
+.control-bar__icon.left {
   background-image: url(../../assets/picture/arrow-r.png);
 }
-.control-bar__icon.right{
+.control-bar__icon.right {
   background-image: url(../../assets/picture/arrow-l.png);
 }
-.dash-tip{
+.dash-tip {
   background-image: url(../../assets/picture/dash-tip.png);
 }
-.more-pop{
+.more-pop {
   background-image: url(../../assets/picture/more-pop.png);
 }
 
@@ -460,7 +478,7 @@ strong {
   position: relative;
   display: none;
   font-size: 13px;
-  color: #36425A;
+  color: #36425a;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -469,7 +487,7 @@ strong {
   transition: all 0.25s ease;
 }
 .icon {
-  fill: #36425A;
+  fill: #36425a;
   cursor: pointer;
 }
 .icon:hover {
@@ -479,7 +497,7 @@ strong {
   margin-left: 20px;
 }
 .pageIndex {
-  color: #36425A;
+  color: #36425a;
   font-size: 20px;
   height: 50px;
   display: flex;
@@ -504,7 +522,7 @@ strong {
   line-height: 40px;
   overflow: hidden;
   margin-right: 20px;
-  color: #36425A;
+  color: #36425a;
   cursor: pointer;
   font-size: 14px;
 }
@@ -526,7 +544,7 @@ strong {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #36425A;
+  color: #36425a;
   overflow: hidden;
   cursor: pointer;
   padding: 3px 15px;
@@ -557,35 +575,35 @@ strong {
   margin-top: 5px;
   border-radius: 4px;
 }
-.meterialimage{
+.meterialimage {
   width: 30px;
   height: 30px;
   position: relative;
 }
-.me-show{
-  background-image:url(../../assets/picture/m-show.png)
+.me-show {
+  background-image: url(../../assets/picture/m-show.png);
 }
-.me-hide{
-  background-image:url(../../assets/picture/m-hide.png)
+.me-hide {
+  background-image: url(../../assets/picture/m-hide.png);
 }
-.res-show{
-background-image:url(../../assets/picture/hide-res.png)
+.res-show {
+  background-image: url(../../assets/picture/hide-res.png);
 }
-.icon-circle{
+.icon-circle {
   width: 10px;
   height: 10px;
   border-radius: 5px;
   display: inline-block;
   margin-right: 3px;
-  background-color: #36425A;
+  background-color: #36425a;
 }
-.icon-circle.red-icon{
-  background-color: #FF1A0E;
+.icon-circle.red-icon {
+  background-color: #ff1a0e;
 }
-.icon-circle.green-icon{
+.icon-circle.green-icon {
   background-color: rgba(21, 195, 154, 1);
 }
-.with-outer{
+.with-outer {
   padding: 3px 13px;
   border-radius: 16px;
   background-color: rgba(54, 66, 90, 0.1);
