@@ -1,7 +1,7 @@
 <template>
   <div >
     <div class="stundent-ppt-list" @mouseleave="hideList" v-show="showPPTList">
-      <dash-top-ppt-list :changePage="changePage"/>
+      <dash-top-ppt-list :changePage="changeSPage"/>
     </div>
     <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="showList"></div>
   </div>
@@ -26,6 +26,9 @@ export default {
     },
     hideList() {
        this.showPPTList = false
+    },
+    changeSPage(index){
+      this.changePage(index-1)
     }
   }
 }
