@@ -26,7 +26,7 @@
         :delQuestion="delQuestion"
       />-->
 
-      <students-ppt-list v-if="currentModel == 'Student-Paced'" />
+      <students-ppt-list v-if="currentModel == 'Student-Paced'" :changePage="pageChange"/>
       <div class="student-main" v-show="!questionModalVisiable">
         <div
           v-if="
