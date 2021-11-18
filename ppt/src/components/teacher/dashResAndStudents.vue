@@ -79,6 +79,7 @@ export default {
         );
       }
       // list.reverse()
+      console.log(list)
       return list;
     },
     answerList() {
@@ -86,9 +87,9 @@ export default {
       let list = res.map(item => {
         const data = item.content ? {} : getJSONValue(item.data)
         return {
+          ...data,
           ...item,
           id: item.id || item.response_id,
-          ...data
         }
       })
       console.log(list, 'righten')

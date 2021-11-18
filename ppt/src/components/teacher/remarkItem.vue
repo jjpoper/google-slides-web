@@ -10,8 +10,8 @@
                 v-if="shouldShow(item)"
                 :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
               >
-                <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                  <div :class="`remark-item-content ${item.type === 'text' && 'content-text-scroll'}`">
+                <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
+                  <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
                     <video
                       v-if="item.type === 'video'"
                       controlslist="nodownload"
@@ -21,7 +21,7 @@
                       preload="none"
                     />
                     <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
-                    <p class="remark-text" v-else-if="item.type === 'text'">
+                    <p class="textinner" v-else-if="item.type === 'text'">
                       {{item.link}}
                     </p>
                   </div>
@@ -328,7 +328,7 @@ export default {
 }
 .text_static {
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   right: 7px;
 }
 .text_area {
@@ -341,13 +341,18 @@ export default {
   line-height: 24px;
   color: #000000;
   box-sizing: border-box;
-  padding:7px;
+  padding:7px 7px 20px 7px;
   overflow: scroll;
+  word-break: break-all;
   position: relative;
   text-align: left;
 }
-.text_area.full-text-area{
-   height: 100%;
+.columText{
+  height: 100px;
+}
+.textinner{
+  overflow: scroll;
+  height: 100%;
 }
 .text-footer{
   width: 100%;
@@ -409,7 +414,7 @@ export default {
 video{
   width: 100%; height: 100%; object-fit: cover
 }
-.remark-item-content{
+.remark-item-content1{
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -419,7 +424,7 @@ video{
   justify-content: center;
   align-items: center;
 }
-.remark-item-content.content-text-scroll{
+.remark-item-content1.content-text-scroll{
   overflow-y: scroll;
   justify-content: flex-start;
   align-items: flex-start;
