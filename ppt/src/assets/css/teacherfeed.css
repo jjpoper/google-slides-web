@@ -12,12 +12,12 @@
   z-index: 99999999;
 }
 .tfcommentModal {
-  width: 1000px;
+  width: 96%;
   height: 822px;
   position: relative;
   top: 50%;
-  left: 50%;
-  margin-left: -500px;
+  left: 2%;
+  /* margin-left: -500px; */
   margin-top: -411px;
   background-color: #fff;
   display: flex;
