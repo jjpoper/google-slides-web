@@ -214,6 +214,7 @@ export default {
   overflow: hidden;
   position: absolute;
   top: 0;
+  z-index: 1001;
 }
 .meidaitem{
   width:300px; height: 200px;
