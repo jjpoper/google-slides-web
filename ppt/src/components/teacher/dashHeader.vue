@@ -8,7 +8,6 @@
       <p>课程标题：{{classRoomInfo.class_name}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">
-          <div class="title">Settings</div>
           <div class="tab" @click="openProject">Open project in new window</div>
           <div class="tab" @click="turnModel">{{isStundentPaced ? 'Stop' : 'Turn on'}} Student-Paced</div>
           <div class="tab">Ipad/Phone Control</div>
