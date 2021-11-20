@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapState({
-      studentAllSlides: state => state.student.studentAllSlides.concat(state.student.studentAllSlides),
+      studentAllSlides: state => state.student.studentAllSlides,
       currentPageIndex: state => state.student.currentPageIndex,
     })
   },
