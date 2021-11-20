@@ -290,7 +290,7 @@ export default {
 }
 .text-item-outer5{
   width: 100%;
-  padding-bottom: 85%;
+  /* padding-bottom: 85%; */
   position: relative;
 }
 .text-item-outer1.full-text-area{

@@ -215,7 +215,7 @@ export default {
   border-radius: 8px;
   position: relative;
   overflow: hidden;
-  padding-top: 110px;
+  padding-top: 50px;
 }
 .close-btn{
   position: absolute;
