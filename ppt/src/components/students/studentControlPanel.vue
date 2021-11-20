@@ -51,9 +51,9 @@
         @click="changeMeterial"
       >
         <div class="meterialimage">
-          <div :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"></div>
+          <div :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"></div>
         </div>
-        <strong class="button_text">{{meterialSwitchVisiable ? 'Material hiding' : 'Display material'}}</strong>
+        <strong class="button_text">{{meterialVisiable ? 'Material hiding' : 'Display material'}}</strong>
       </div>
     </div>
     <div class="readchatouter">
@@ -129,22 +129,19 @@ export default {
     changeShowMetrial: {
       type: Function,
     },
-  },
-  watch: {
-    meterialSwitchVisiable() {
-      // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialSwitchVisiable)
-    }
+    meterialVisiable: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       questionVisiable: false,
-      meterialSwitchVisiable: false,
     };
   },
   methods: {
     changeMeterial() {
-      this.meterialSwitchVisiable = !this.meterialSwitchVisiable
+      this.changeShowMetrial(!this.meterialVisiable)
     },
   }
 };

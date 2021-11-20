@@ -43,6 +43,7 @@
             :url="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
+            :isStudentPaced="isStudentPaced"
           />
         </div>
         <div
@@ -61,6 +62,7 @@
               :url="currentItemData.thumbnail_url"
               :filterAddedMediaList="filterAddedMediaList"
               :meterialVisiable="meterialVisiable"
+              :isStudentPaced="isStudentPaced"
             />
           </div>
         </div>
@@ -105,6 +107,7 @@
             :screenWidth="currentScreenWidth"
             :smallWindow="smallWindow"
             :changeShowMetrial="changeShowMetrial"
+            :meterialVisiable="meterialVisiable"
           />
         </div>
       </div>
@@ -344,6 +347,9 @@ export default {
       } else {
         return [];
       }
+    },
+    isStudentPaced() {
+      return this.currentModel == ClassRoomModelEnum.STUDENT_MODEL
     }
   },
   mounted() {

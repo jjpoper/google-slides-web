@@ -5,7 +5,7 @@
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
     </div>
-    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
+    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData && (teacher || isStudentPaced)">
         <template v-if="leftSortList && leftSortList.length">
           <element-drag v-for="rect in leftSortList" :key="rect.id"
               :index="rect.sortIndex" :rect="rect" :update="update" :deleteMedia="deleteMedia"
@@ -36,6 +36,10 @@ export default {
       default: '',
     },
     teacher: {
+      type: Boolean,
+      default: false,
+    },
+    isStudentPaced: {
       type: Boolean,
       default: false,
     },
@@ -140,6 +144,7 @@ export default {
           sortIndex: i,
           ...item
         }
+        // top  left 都是0，在左边从上往下排布
         if(params.top === 0 && params.left === 0) {
           listItem.top = leftList.length * 60 + 60
           // listItem.left = leftList.length * 30
@@ -153,6 +158,7 @@ export default {
       this.hasData = leftList.length > 0 || rectList.length > 0
       this.rectMediaList = rectList
       this.leftSortList = leftList
+      console.log(this.meterialVisiable, this.defaultShowMeterial, this.hasData)
     },
     getIframe(url){
       const formatId = url.split('?v=')[1]
@@ -204,6 +210,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flow-root;
+  position: relative;
 }
 .medialist{
   display: flex;
