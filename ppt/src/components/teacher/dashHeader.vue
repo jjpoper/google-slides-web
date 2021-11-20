@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="left-area">
-      <div v-if="isStundentPaced" class="dash-header-left" @click="handleBack"></div>
+      <div class="dash-header-left" @click="handleBack"></div>
       <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
         <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       </el-tooltip>
@@ -86,6 +86,9 @@ export default {
     turnModel: {
       type: Function,
     },
+    confirmModeChange: {
+      type: Function,
+    },
   },
   data() {
     return {
@@ -98,14 +101,18 @@ export default {
     }
   },
   methods: {
-    // openProject() {
-    //   this
-    // }
     handleBack() {
       this.showBackConfirm = true
     },
     backtToClass() {
-      window.history.back()
+      if(!this.isStundentPaced) {
+        this.confirmModeChange()
+      }
+      // window.history.back()
+      setTimeout(() => {
+        let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
+        window.location.href = url;
+      }, 500 )
     }
   }
 }

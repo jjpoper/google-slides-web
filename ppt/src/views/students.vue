@@ -1144,7 +1144,6 @@ export default {
   background-color: #f00fff00;
   border-radius: 8px;
   .el-dialog__header {
-    display: none;
   }
   .el-dialog__body {
     padding: 0;

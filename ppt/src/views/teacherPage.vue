@@ -148,6 +148,7 @@
       :reopenClass="_reopenClass"
       :current_model="page_model"
       :turnModel="turnModel"
+      :confirmModeChange="confirmModeChange"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">

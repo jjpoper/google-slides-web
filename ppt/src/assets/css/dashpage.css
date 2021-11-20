@@ -327,7 +327,6 @@ svg {
 .user-info {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 }
 .user-icon {
   width: 52px;

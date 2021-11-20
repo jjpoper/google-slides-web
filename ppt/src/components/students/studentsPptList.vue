@@ -33,6 +33,9 @@ export default {
   }
 }
 </script>
+<style>
+@import url(../../assets/css/dashpage.css);
+</style>
 <style scoped>
 .stundent-ppt-list{
   position: fixed;
