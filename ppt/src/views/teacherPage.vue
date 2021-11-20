@@ -1665,7 +1665,15 @@ type: "slide"*/
     },
     openProject() {
       const url = `${location.origin}/t/${this.class_id}?p=${this.currentPageIndex}`;
-      window.open(url);
+      var windowObjectReference;
+      const strWindowFeatures =
+        "width=800,height=600,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+
+      windowObjectReference = window.open(
+        url,
+        "_blank",
+        strWindowFeatures
+      );
     },
     open(model) {
       if (model == 0) {
