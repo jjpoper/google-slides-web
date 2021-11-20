@@ -1380,6 +1380,9 @@ type: "slide"*/
           this.responsePercentage[i] = 0;
         }
         this.isFocus[this.currentPageIndex] = true;
+        this.$nextTick(() => {
+          this.copyUrl()
+        })
       });
     },
     getItemData() {
