@@ -77,7 +77,7 @@
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  padding: 0 9px;
+  /* padding: 0 9px; */
 }
 .emoji_area {
   height: 52px;

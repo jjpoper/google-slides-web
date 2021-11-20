@@ -1,19 +1,8 @@
 <template>
   <div class="res-and-student" >
     <div class="res-inner">
-      <div class="student-list-item select-header" v-if="allGroups.length > 0">
-        <el-select v-model="currentGroupId" placeholder="All" @change="changeGroup" style="background: #fff">
-          <el-option
-            label="ALL"
-            value="">
-          </el-option>
-          <el-option
-            v-for="item in allGroups"
-            :key="item.group_id"
-            :label="item.group_name"
-            :value="item.group_id">
-          </el-option>
-        </el-select>
+      <div class="dash-pad-hidden">
+        <dash-groups-select />
       </div>
       <ul class="res-list">
         <template  v-for="item in studentList" >
@@ -33,11 +22,15 @@
 <script>
 import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters, mapActions } from 'vuex'
+import dashGroupsSelect from './dashGroupsSelect.vue'
 export default {
+  components: { dashGroupsSelect },
   computed: {
     ...mapState({
       studentList: state => state.teacher.studentList,
-      allGroups: state => state.teacher.allGroups,
+      allGroups: state => {
+        return state.teacher.allGroups.filter(item => item.members && item.members.length > 0)
+      },
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
       currentGroupMembers: state => state.teacher.currentGroupMembers,
       allRemarks: state => state.remark.allRemarks,
@@ -98,15 +91,6 @@ export default {
       this.changeGroupMembers([])
     }
   },
-  props: {
-    showResponse: {
-      type: Boolean,
-      default: false,
-    },
-    showres: {
-      type: Function
-    },
-  },
   data() {
     return {
       currentGroupId: '',
@@ -115,13 +99,6 @@ export default {
   },
   methods: {
     ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
-    changeTab(tab) {
-      this.tab = tab
-    },
-    getTimeStr(time) {
-      if(!time) return ''
-      return getAnswerTimeStr(time * 1000);
-    },
     changeGroup(id) {
       this.selectedStudents = false
       if(!id) {
@@ -160,13 +137,7 @@ export default {
 }
 </script>
 <style scoped>
-  .res-and-student{
-    width: 100%;
-    height: 100%;
-    position: relative;
-    padding: 20px 20px 20px 0;
-    box-sizing: border-box;
-  }
+  
   .res-inner{
     width: 100%;
     height: 100%;
@@ -223,18 +194,6 @@ export default {
     flex: 1;
     background-color: rgba(228, 228, 228, 1);
     border-radius: 6px;
-  }
-  .student-list-item{
-    width: 100%;
-    height: 57px;
-    display: flex;
-    align-items: center;
-    padding-left: 15px;
-    box-sizing: border-box;
-    cursor: pointer;
-  }
-  .select-header{
-    background-color: #fafafa;
   }
   .disable{
     background-color: rgba(247, 248, 255, 1);

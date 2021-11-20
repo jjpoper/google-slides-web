@@ -38,22 +38,31 @@
             :meterialVisiable="meterialVisiable"
           />
         </div>
-        <div v-if="shouldShowPageAnswer"
-          v-show="!showFullAnswer || studentList.length > 0"
-          :class="`dash-second-right ${showFullAnswer && 'dash-students'}`">
-          <dash-res-and-students
+        <template v-if="shouldShowPageAnswer">
+          <div
             v-if="!showFullAnswer"
-            :showResponse="showResponse"
-            :responseList="responseContentList"/>
-          <DashGroupStudents v-else/>
-        </div>
+            class="dash-second-right">
+            <dash-res-and-students
+              :showResponse="showResponse"
+              :responseList="responseContentList"/>
+          </div>
+          <div :class="`dash-second-right dash-students dash-pad-students ${padTab === 2 && 'dash-pad-hidden' }`"
+            v-else-if="studentList.length > 0">
+            <DashGroupStudents />
+          </div>
+        </template>
         <!-- <dashboard-meterial
           v-if="showFullAnswer"
           :pptUrl="currentItemData.thumbnail_url"
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
         /> -->
-        <dash-switch-header :showres="showres" :showResponse="showResponse" v-if="shouldShowPageAnswer"/>
+        <dash-switch-header
+          :showres="showres"
+          :showResponse="showResponse"
+          :padTab="padTab"
+          :changePadTab="changePadTab"
+          v-if="shouldShowPageAnswer"/>
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
       <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
@@ -152,6 +161,7 @@ export default {
     return {
       height: window.winHeight,
       showPPTList: true,
+      padTab: 2
     };
   },
   computed: {
@@ -186,6 +196,9 @@ export default {
     togglePPTList() {
       this.showPPTList = !this.showPPTList
     },
+    changePadTab(index) {
+      this.padTab = index
+    }
   },
 };
 </script>
