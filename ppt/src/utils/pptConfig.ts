@@ -9,7 +9,8 @@ const PPT: PPT = {
   wsUrl: ''
 }
 const env = (PPT.localUrl.indexOf('dev') > -1 || PPT.localUrl.indexOf('localhost') > -1) && PPT.localUrl.indexOf('pro') === -1 ? 'dev' : ''
-PPT.requestUrl = env === 'dev' ? 'https://dev.api.newzealand.actself.me/' : 'https://api.newzealand.actself.me/'
-PPT.wsUrl = env === 'dev' ? 'wss://dev.ws.newzealand.actself.me' : 'wss://ws.newzealand.actself.me'
+export const isDev = env === 'dev'
+PPT.requestUrl = isDev ? 'https://dev.api.newzealand.actself.me/' : 'https://api.app.classcipe.com/'
+PPT.wsUrl = isDev ? 'wss://dev.ws.newzealand.actself.me' : 'wss://ws.app.classcipe.com'
 
 export default PPT

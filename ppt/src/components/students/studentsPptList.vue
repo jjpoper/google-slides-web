@@ -1,7 +1,7 @@
 <template>
   <div >
     <div class="stundent-ppt-list" @mouseleave="hideList" v-show="showPPTList">
-      <dash-top-ppt-list />
+      <dash-top-ppt-list :changePage="changeSPage"/>
     </div>
     <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="showList"></div>
   </div>
@@ -9,6 +9,11 @@
 <script>
 import dashTopPptList from '../teacher/dash/dashTopPptList.vue'
 export default {
+  props: {
+    changePage: {
+      type: Function
+    }
+  },
   components: { dashTopPptList },
   data() {
     return {
@@ -21,6 +26,9 @@ export default {
     },
     hideList() {
        this.showPPTList = false
+    },
+    changeSPage(index){
+      this.changePage(index-1)
     }
   }
 }

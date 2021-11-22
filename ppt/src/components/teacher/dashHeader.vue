@@ -1,15 +1,15 @@
 <template>
   <div class="header">
     <div class="left-area">
-      <div v-if="current_model === 'Student-Paced'" class="dash-left" @click="handleBack"></div>
+      <div v-if="isStundentPaced" class="dash-header-left" @click="handleBack"></div>
       <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
         <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       </el-tooltip>
       <p>课程标题：{{classRoomInfo.class_name}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">
-          <div class="title">Settings</div>
           <div class="tab" @click="openProject">Open project in new window</div>
+          <div class="tab" @click="turnModel">{{isStundentPaced ? 'Stop' : 'Turn on'}} Student-Paced</div>
           <div class="tab">Ipad/Phone Control</div>
           <div class="tab" v-if="isClosed" @click="reopenClass">Reopen This Session</div>
           <div class="tab" v-else @click="endLesson">End This Session</div>
@@ -82,10 +82,18 @@ export default {
       type: String,
       default: ''
     },
+    turnModel: {
+      type: Function,
+    },
   },
   data() {
     return {
       showBackConfirm: false
+    }
+  },
+  computed: {
+    isStundentPaced() {
+      return this.current_model === 'Student-Paced'
     }
   },
   methods: {
