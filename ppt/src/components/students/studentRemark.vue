@@ -92,7 +92,7 @@
             :src="item.link"
             width="280"
             height="150"
-            preload="none"
+            preload="auto"
           />
           <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
           <div @click.stop v-else-if="item.type === 'text'">

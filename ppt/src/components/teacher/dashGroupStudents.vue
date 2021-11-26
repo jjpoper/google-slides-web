@@ -148,10 +148,6 @@ export default {
     border: 1px solid rgba(216, 216, 216, 1);
     border-radius: 4px;
   }
-  .res-list{
-    flex: 1;
-    overflow-y: scroll;
-  }
   .user-info {
     display: flex;
     align-items: center;

@@ -85,7 +85,7 @@
             :src="item.content.link"
             width="280"
             height="150"
-            preload="none"
+            preload="auto"
           />
           <audio-player
             v-else-if="item.content &&  item.content.mediaType === 'audio'"
@@ -185,7 +185,13 @@ export default {
     },
     onUpload(file, result) {
       const nameList = file.type.split('/')
-      let name = nameList[1]
+      const fileNameList = file.name.split(".")
+      let name = ''
+      try {
+        name = fileNameList[fileNameList.length - 1] || nameList[1]
+      } catch(e) {
+
+      }
       let type = 'image'
       if(name) {
         name = name.toLocaleLowerCase();

@@ -21,7 +21,7 @@ const closePictureInPicture = () => {
   dom.exitPictureInPicture()
 }
 
-export const startRecordVideo = (domVideo: any) => {
+export const startRecordVideo = (domVideo: any, callback: any = () => null) => {
   domVideoElement = domVideo
   domVideoElement.muted = true
   domVideoElement.volume = 0
@@ -44,6 +44,7 @@ export const startRecordVideo = (domVideo: any) => {
     mediaRecorder.startRecording();
 
     mediaRecorder.camera = camera;
+    callback && callback()
   }).catch(onMediaError);
 }
 

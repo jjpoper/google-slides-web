@@ -211,7 +211,12 @@ export default {
   methods: {
     onSuccess(file, result) {
       console.log(file.name);
-      let name = file.type.split('/')[1]
+      const nameList = file.type.split('/')
+      const fileNameList = file.name.split(".")
+      let name = ''
+      try {
+        name = fileNameList[fileNameList.length - 1] || nameList[1]
+      } catch(e) {}
       // if (!name) {
       //   showToast('upload error')
       //   return false
