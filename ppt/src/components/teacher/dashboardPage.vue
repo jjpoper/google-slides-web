@@ -170,17 +170,9 @@ export default {
       showFullAnswer: state => state.teacher.showDashFullResponse,
       studentList: state => state.teacher.studentList || [],
     }),
-    // 互动题型
-    shouldShowPageAnswer() {
-      const itemData = this.slides[this.currentPageIndex]
-      const type = itemData.items[0] ? itemData.items[0].type : null
-      // if(!type) {
-      //    console.log(this.currentPageAnswerType, '====')
-      //   this.setDashFullPageResponse(false)
-      // }
-      console.log(type)
-      return type && type !== null && type !== 'website'
-    }
+    ...mapGetters({
+      shouldShowPageAnswer: 'student/shouldShowPageAnswer'
+    })
   },
   created() {},
   mounted() {

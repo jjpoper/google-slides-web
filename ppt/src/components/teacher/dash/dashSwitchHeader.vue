@@ -1,6 +1,6 @@
 <template>
   <div :class="`switch-header ${showFullAnswer ? '' : 'small'}`">
-    <div v-if="showFullAnswer" @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div>
+    <!-- <div v-if="showFullAnswer" @click="showres" class="showResButoon">{{showResponse ? 'Hide' : 'Show'}} Response</div> -->
     <el-tooltip :content="`${showFullAnswer ? 'Show Less' : 'Show More'}`" placement="top">
       <div
         :class="`full-answer-button ${showFullAnswer && 'active'}`"

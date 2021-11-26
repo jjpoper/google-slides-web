@@ -72,6 +72,20 @@ const getters = {
         }
         return list
     },
+    // 互动题型
+    shouldShowPageAnswer: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        const itemData = studentAllSlides[currentPageIndex]
+        const type = itemData.items[0] ? itemData.items[0].type : null
+        // if(!type) {
+        //    console.log(this.currentPageAnswerType, '====')
+        //   this.setDashFullPageResponse(false)
+        // }
+        return type && type !== null && type !== 'website'
+      }
 }
 
 // actions
