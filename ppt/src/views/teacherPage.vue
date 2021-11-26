@@ -321,7 +321,8 @@ import {
 import {
   initTeacherData,
   getTeacherCurrentPageAnswerList,
-  addTeacherData
+  addTeacherData,
+  deletTeacherData
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
@@ -1211,6 +1212,7 @@ type: "slide"*/
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
+        deletTeacherData(d.response_id)
         this.getResponeCount();
       } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
