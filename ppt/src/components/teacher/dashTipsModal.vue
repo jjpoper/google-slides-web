@@ -31,6 +31,7 @@
                   width="24"
                   height="24"
                 />
+                <div class="tipsSaveButton" @click="enter">OK</div>
                 <img
                   src="../../assets/picture/morshanchu.png"
                   width="11.25"
@@ -39,7 +40,7 @@
                   v-if="isTeacher"
                 />
               </div>
-              <textarea v-if="isTeacher" v-model="tipsValue" @keypress="enter" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
+              <textarea v-if="isTeacher" v-model="tipsValue" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
               <div v-else class="ppt-tips-item-text" >{{tipsValue}}</div>
             </div>
             <div class="ppt-tips-item-content right-answer-content"
@@ -183,13 +184,15 @@ export default {
       })
     },
     enter(event) {
-      if(event.keyCode === 13) {
-        event.cancelBubble = true;
-        event.preventDefault();
-        event.stopPropagation();
-        changeTips(this.currentItemData.page_id, this.tipsValue, this.currentTips.id)
+      // if(event.keyCode === 13) {
+      //   event.cancelBubble = true;
+      //   event.preventDefault();
+      //   event.stopPropagation();
+      //   changeTips(this.currentItemData.page_id, this.tipsValue, this.currentTips.id)
+      //   this.updateSlideItemTip({"page_id": this.currentItemData.page_id, "tip": this.tipsValue})
+      // }
+      changeTips(this.currentItemData.page_id, this.tipsValue, this.currentTips.id)
         this.updateSlideItemTip({"page_id": this.currentItemData.page_id, "tip": this.tipsValue})
-      }
       // this.clearDelay();
       // this.sendDelay = setTimeout(() => {
       //   this.send(index);
@@ -413,5 +416,14 @@ export default {
   line-height: 66px;
   align-self: center;
   margin: 0 50px 50px;
+}
+.tipsSaveButton{
+  border-radius: 10px;
+  width: 40px;
+  height: 20px;
+  background: #16c39a;
+  color: #fff;
+  line-height: 20px;
+  cursor: pointer;
 }
 </style>

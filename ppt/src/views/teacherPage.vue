@@ -1343,6 +1343,9 @@ type: "slide"*/
       //   this.getAllSlides();
       //   hideLoading();
       // }
+      hideLoading();
+      this.getAllSlides();
+      return
       queryRefreshResult(code, token)
         .then(res => {
           if (res.data.status === "processing") {
