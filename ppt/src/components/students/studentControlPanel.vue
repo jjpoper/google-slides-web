@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
     <student-tips-modal />
-    <div v-if="currentModel == 'Student-Paced'" class="arrow_opts">
+    <div v-if="isStudentPaced" class="arrow_opts">
       <button class="control-bar__button">
         <div class="control-bar__icon" @click="lastPage()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82">
@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <div class="aligncenter" v-if="currentModel == 'Student-Paced'">
+    <div class="aligncenter" v-if="isStudentPaced">
       <div
         class="button_area"
         @click="changeMeterial"
@@ -56,13 +56,13 @@
         <strong class="button_text">{{meterialVisiable ? 'Material hiding' : 'Display material'}}</strong>
       </div>
     </div>
-    <div class="readchatouter">
+    <div class="readchatouter" v-if="currentFeedList && currentFeedList.length > 0">
       <img
         src="../../assets/picture/liaotian_icon.png"
         class="readchat"
         @click="showStudentModal"
       />
-      <i :class="`${unread && 'unread'}`"></i>
+      <i :class="`${isUnread && 'unread'}`"></i>
     </div> 
     <div class="question_area" v-if="smallWindow" @click="changeShowOrAnswer()">
       {{ isShowQuestion ? "Answer " : "Show " }}Question
@@ -71,7 +71,7 @@
 </template>
 <script>
 import { ClassRoomModelEnum } from "../../socket/socketEvents";
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import StudentTipsModal from './studentTipsModal.vue';
 export default {
   components: { StudentTipsModal },
@@ -79,10 +79,26 @@ export default {
     ...mapState({
       answerdPage: state => state.student.answerdPage,
       currentPageIndex: state => state.student.currentPageIndex,
+      studentFeedBackComments: state => state.student.studentFeedBackComments,
+      unreadStudentCommentIds: state => state.student.unreadStudentCommentIds,
+    }),
+    ...mapGetters({
+      currentPageId: 'student/currentPageId',
+      currentFeedList: 'student/currentFeedList',
     }),
     currentAnswerd() {
       // console.log(this.answerdPage[this.currentPageIndex])
       return this.answerdPage[this.currentPageIndex]
+    },
+    isUnread() {
+      let status = false
+      for(let i = 0; i < this.currentFeedList.length; i++) {
+        const {id} = this.currentFeedList[i]
+        if(this.unreadStudentCommentIds.indexOf(id) > -1) {
+          status = true
+          break
+        }
+      }
     }
   },
   props: {
@@ -96,13 +112,9 @@ export default {
     nextPage: {
       type: Function,
     },
-    currentModel: {
-      type: String,
-      default: ClassRoomModelEnum.TEACHER_MODEL,
-    },
-    unread: {
+    isStudentPaced: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showStudentModal: {
       type: Function,

@@ -98,8 +98,7 @@
             :lastPage="lastPage"
             :nextPage="nextPage"
             :totalPage="slides.length"
-            :currentModel="currentModel"
-            :unread="unread"
+            :isStudentPaced="isStudentPaced"
             :showStudentModal="showStudentModal"
             :isShowQuestion="isShowQuestion"
             :changeShowOrAnswer="changeShowOrAnswer"
@@ -240,7 +239,6 @@ import {
   saveStudentsCurrentPageAnswerList,
   getStudentCurrentPageAnswerList,
   saveStudentUserName,
-  addStudentComment,
   unreadStudentComment,
   getStudentCommentUnReadStatus,
   readStudentComment,
@@ -349,7 +347,9 @@ export default {
       }
     },
     isStudentPaced() {
-      return this.currentModel == ClassRoomModelEnum.STUDENT_MODEL
+      const isStundentPaced = this.currentModel == ClassRoomModelEnum.STUDENT_MODEL
+      this.updateIsStudentPaced(isStundentPaced)
+      return isStundentPaced
     }
   },
   mounted() {
@@ -450,7 +450,10 @@ export default {
       "deleteOnAnswerById",
       "updateSlideItemTip",
       "updateSlideCorrectAnswer",
-      "setAllGroups"
+      "setAllGroups",
+      "addStudentComment",
+      "updateIsStudentPaced",
+      "setStudentFeedBackComment"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -664,8 +667,10 @@ export default {
     },
     getAllSlides() {
       // console.log("list", "========");
-      initStudentCommentData(this.class_id, this.token).then(() => {
+      initStudentCommentData(this.class_id, this.token).then((list) => {
         this.studentCommentLoaded = true;
+        console.log(list, 'setStudentFeedBackComment')
+        this.setStudentFeedBackComment(list)
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
@@ -975,12 +980,10 @@ export default {
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
-        addStudentComment({
+        this.addStudentComment({
           ...d.item,
           id: comment_id
         });
-        unreadStudentComment();
-        this.unread = true;
       }
     },
     showStudentModal() {
