@@ -31,7 +31,7 @@
                   width="24"
                   height="24"
                 />
-                <div class="tipsSaveButton" @click="enter">OK</div>
+                <div v-if="isTeacher" class="tipsSaveButton" @click="enter">OK</div>
                 <img
                   src="../../assets/picture/morshanchu.png"
                   width="11.25"
