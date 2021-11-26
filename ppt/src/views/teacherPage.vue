@@ -982,6 +982,11 @@ type: "slide"*/
         if(controlType == 5) {
           EventBus.$emit('youtubePlayer', result)
         }
+
+        // dash 和 project 答案tab同步
+        if(controlType == 6) {
+          EventBus.$emit('responseTabChange', result)
+        }
       }
     },
     msgListener(d) {

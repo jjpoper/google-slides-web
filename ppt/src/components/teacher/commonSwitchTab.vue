@@ -1,18 +1,19 @@
 <template>
   <div class="text-answer-tab">
     <el-tooltip content="List View" placement="top">
-      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeTab(1)"></button>
+      <button :class="`button-row ${currentTab === 1 && 'active'}`" @click="changeNextTab(1)"></button>
     </el-tooltip>
     <el-tooltip content="Grid View" placement="top">
-      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeTab(2)"></button>
+      <button :class="`button-colum ${currentTab === 2 && 'active'}`" @click="changeNextTab(2)"></button>
     </el-tooltip>
     <el-tooltip content="Overlaid View" v-if="hasStatics" placement="top">
-      <button  :class="`button-statics ${currentTab === 3 && 'active'}`" @click="changeTab(3)"></button>
+      <button  :class="`button-statics ${currentTab === 3 && 'active'}`" @click="changeNextTab(3)"></button>
     </el-tooltip>
   </div>
 </template>
 
 <script>
+import { controlProject } from '@/socket/socket.teacher'
 export default {
   props: {
     currentTab: {
@@ -26,6 +27,23 @@ export default {
     hasStatics: {
       type: Boolean,
       default: false
+    }
+  },
+  mounted() {
+    EventBus.$on('responseTabChange', this.listenterChangeTab)
+  },
+  beforeDestroy() {
+    EventBus.$off('responseTabChange', this.listenterChangeTab)
+  },
+  methods: {
+    changeNextTab(tab) {
+      controlProject({"result": {"tab": tab}, "controlType": 6})
+      this.changeTab(tab)
+    },
+    listenterChangeTab(result) {
+      if(this.currentTab !== result.tab) {
+        this.changeTab(result.tab)
+      }
     }
   }
 }
