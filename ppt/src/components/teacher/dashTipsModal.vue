@@ -31,7 +31,14 @@
                   width="24"
                   height="24"
                 />
-                <div v-if="isTeacher" class="tipsSaveButton" @click="enter">OK</div>
+                <div v-if="isTeacher && contenteditable" class="tipsSaveButton" @click="enter">OK</div>
+                <img
+                  src="../../assets/picture/bianji.png"
+                  width="20"
+                  height="20"
+                  style="cursor: pointer;"
+                  v-if="isTeacher && !contenteditable" @click="editTips"
+                />
                 <img
                   src="../../assets/picture/morshanchu.png"
                   width="11.25"
@@ -40,7 +47,10 @@
                   v-if="isTeacher"
                 />
               </div>
-              <textarea v-if="isTeacher" v-model="tipsValue" class="ppt-tips-item-text" ref="pptTipstext" @click="editTips" />
+              <div  v-if="isTeacher"  style="position: relative">
+                <textarea v-model="tipsValue" :disabled="!contenteditable" class="ppt-tips-item-text" ref="pptTipstext" />
+                
+              </div>
               <div v-else class="ppt-tips-item-text" >{{tipsValue}}</div>
             </div>
             <div class="ppt-tips-item-content right-answer-content"
@@ -49,7 +59,7 @@
               tipsItemList[currentIndex].items[0].data.showCorrectAnswer">
               <div class="ppt-tips-item-top">
                 <div class="checktext">
-                  <input type="checkbox" checked="true" disabled class="tipscheck"/>
+                  <input type="checkbox" checked="true" class="tipscheck"/>
                   正确答案
                 </div>
                 <img
@@ -147,7 +157,8 @@ export default {
       currentIndex: 0,
       contenteditable: false,
       tipsValue: '',
-      rightAnswers: []
+      rightAnswers: [],
+      isEditing: false
     }
   },
   mounted() {
@@ -191,8 +202,9 @@ export default {
       //   changeTips(this.currentItemData.page_id, this.tipsValue, this.currentTips.id)
       //   this.updateSlideItemTip({"page_id": this.currentItemData.page_id, "tip": this.tipsValue})
       // }
+      this.contenteditable = false
       changeTips(this.currentItemData.page_id, this.tipsValue, this.currentTips.id)
-        this.updateSlideItemTip({"page_id": this.currentItemData.page_id, "tip": this.tipsValue})
+      this.updateSlideItemTip({"page_id": this.currentItemData.page_id, "tip": this.tipsValue})
       // this.clearDelay();
       // this.sendDelay = setTimeout(() => {
       //   this.send(index);
