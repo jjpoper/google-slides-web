@@ -1,6 +1,6 @@
 <template>
   <div >
-    <div class="stundent-ppt-list" @mouseleave="hideList" v-show="showPPTList">
+    <div class="stundent-ppt-list" @mouseleave="hideList" >
       <dash-top-ppt-list :changePage="changeSPage"/>
     </div>
     <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="showList"></div>
