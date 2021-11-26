@@ -5,8 +5,10 @@ import RecordRTC from 'recordrtc'
 import { hideLoading, showLoading, showToast } from './loading';
 import { upFireBaseFile } from './uploadFile';
 
-function onMediaError() {
-  // // console.error('media error', e);
+function onMediaError(e: any) {
+  if(e.toString().indexOf('Permission')) {
+    showToast('Unable to capture your camera. Please check', 'error');
+  }
 }
 const mediaConstraints = {
   audio: true,
@@ -21,7 +23,7 @@ const closePictureInPicture = () => {
   dom.exitPictureInPicture()
 }
 
-export const startRecordVideo = (domVideo: any, callback: any = () => null) => {
+export const startRecordVideo = (domVideo: any, callback: any = () => null, fail: any = () => null) => {
   domVideoElement = domVideo
   domVideoElement.muted = true
   domVideoElement.volume = 0
@@ -45,7 +47,10 @@ export const startRecordVideo = (domVideo: any, callback: any = () => null) => {
 
     mediaRecorder.camera = camera;
     callback && callback()
-  }).catch(onMediaError);
+  }).catch((e) => {
+    onMediaError(e)
+    fail && fail()
+  });
 }
 
 export const pauseRecordVideo = () => {

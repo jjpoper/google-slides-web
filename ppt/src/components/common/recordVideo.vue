@@ -38,8 +38,8 @@ export default {
   },
   data() {
     return {
-      isRecording: true,
-      endRecording: false,
+      isRecording: false,
+      endRecording: true,
       timeValue: 0,
       progress: 0,
       maxTime: 120 // 秒
@@ -49,7 +49,7 @@ export default {
     this.startRecord()
   },
   beforeDestroy() {
-    if(!this.endRecording) {
+    if(!this.endRecording && this.isRecording) {
       endRecord()
     }
   },
@@ -102,16 +102,21 @@ export default {
       this.progress = progress
     },
     startRecord() {
-      startRecordVideo(document.getElementById("record-video"), this.count)
+      startRecordVideo(document.getElementById("record-video"), this.countToRecord, this.fail)
+    },
+    countToRecord() {
       this.isRecording = true
       this.endRecording = false
       this.timeValue = 0
-      
+      this.count()
     },
     cancelUp() {
       cancelUpVideo()
       this.onProgressUpLoad(0)
       console.log('onProgressUpLoad')
+      this.cancel()
+    },
+    fail() {
       this.cancel()
     }
   }
