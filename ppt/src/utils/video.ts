@@ -84,6 +84,7 @@ export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promi
       domVideoElement.src = domVideoElement.srcObject = null;
       const blobData = mediaRecorder.getBlob()
       domVideoElement.src = URL.createObjectURL(blobData);
+      domVideoElement.play()
       // // console.log(URL.createObjectURL(blobData))
       const now = Date.now()
       let file = new window.File([blobData], `${now.toString()}.webm`, {type: "video/webm", lastModified: Date.now()})

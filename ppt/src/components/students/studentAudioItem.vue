@@ -31,17 +31,19 @@
           </div>
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
-        <div class="remark-item-content">
+        <div class="remark-item-content remark-item-content-record">
           <record-video
             v-if="recordType === ModalEventsTypeEnum.VIDEO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
+            :isAniInFixed="false"
           />
           <record-audio
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
             :onRecordDone="focusIndex"
+            :isAniInFixed="false"
           />
         </div>
       </li>
@@ -404,6 +406,9 @@ export default {
   margin-bottom: 15px;
   flex: 1;
   word-break: break-all;
+}
+.remark-item-content.remark-item-content-record{
+  margin-bottom: 0;
 }
 .remark-file {
   min-height: 60px;

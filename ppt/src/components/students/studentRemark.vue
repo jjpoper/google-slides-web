@@ -47,12 +47,14 @@
             v-if="currentInputType === ModalEventsTypeEnum.VIDEO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
+            :isAniInFixed="false"
           />
           <record-audio
             v-else-if="currentInputType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
             :onRecordDone="onRecordDone"
+            :isAniInFixed="false"
           />
           <record-text
             v-else-if="currentInputType === ModalEventsTypeEnum.TEXT"

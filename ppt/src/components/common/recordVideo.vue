@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div :style="`height: ${isAniInFixed ? '206px' : '165px'}`">
+    <video v-if="!isAniInFixed" id="record-video" width="280" height="150" ref="videoRef" style="background: #000"/>
     <div class="record-area" v-show="!endRecording">
-      <div class="fixed-area">
-        <video id="record-video" width="280" height="150" ref="videoRef"/>
+      <div class="fixed-area" :style="`height: ${isAniInFixed ? '206px' : '56px'}`">
+        <video v-if="isAniInFixed" id="record-video" width="280" height="150" ref="videoRef"/>
         <!-- <div style="width: 280px; height: 150px"></div> -->
         <div class="record-footer">
           <el-tooltip content="start" placement="top" v-if="endRecording">
@@ -29,6 +30,10 @@ export default {
     cancel: {
       type: Function,
       default: () => null
+    },
+    isAniInFixed: {
+      type: Boolean,
+      default: true
     },
   },
   data() {

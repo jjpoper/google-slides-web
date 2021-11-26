@@ -13,10 +13,17 @@
         <div class="tips-area"></div>
       </el-tooltip>
     </div> -->
+    <div v-if="!isAniInFixed" class="float-line audio-line animation-line">
+      <div class="audio-play"></div>
+      <div class="audio-play"></div>
+      <div class="audio-play"></div>
+      <div class="audio-play"></div>
+      <div class="audio-play"></div>
+    </div>
     <div v-show="!endRecording">
       <div class="fixed-area" v-if="!audioUrl">
         <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
-        <div class="audio-line animation-line">
+        <div v-if="isAniInFixed" class="audio-line animation-line">
           <div class="audio-play"></div>
           <div class="audio-play"></div>
           <div class="audio-play"></div>
@@ -54,7 +61,11 @@ export default {
     autoDone: {
       type: Boolean,
       default: false // 自动完成提交，不要二次确认
-    }
+    },
+    isAniInFixed: {
+      type: Boolean,
+      default: true
+    },
   },
   data() {
     return {
@@ -227,6 +238,10 @@ export default {
 .record-time{
   font-size: 10px;
   color: #fff;
+}
+
+.float-line{
+  margin-top: 15px;
 }
 
 .animation-line>div:nth-of-type(1){
