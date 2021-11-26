@@ -32,7 +32,7 @@
     <!-- <tipShow /> -->
     <ul class="remark-list" ref="remarklist">
       <!--输入区域item-->
-      <li v-if="!disable && currentRemarkOptions" class="remark-list-item record-item active-item">
+      <li v-if="isEditing" class="remark-list-item record-item active-item">
         <div class="item-header">
           <div class="user-info">
             <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
@@ -63,7 +63,7 @@
       </li>
       <li
         v-for="(item, index) in marks"
-        :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'}`"
+        :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'} ${(isEditing || (currentRemarkIndex >= 0 && currentRemarkIndex !== index)) ? 'remark-list-item-gray' : ''}`"
         :key="item.id"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
         :tabindex="currentRemarkIndex === index ? '0' : ''"
@@ -150,6 +150,9 @@ export default {
     },
     currentPageId() {
       return this.studentAllSlides[this.currentPageIndex].page_id;
+    },
+    isEditing() {
+      return !this.disable && this.currentRemarkOptions
     }
   },
   watch: {
@@ -396,6 +399,9 @@ export default {
 .remark-list-item.active-item {
   /* box-shadow: 0px 3px 6px #15c39a; */
   border: 2px solid red
+}
+.remark-list-item.remark-list-item-gray{
+  opacity: 0.4;
 }
 .item-header {
   width: 310px;
