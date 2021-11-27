@@ -148,6 +148,7 @@
     </div>
     <!--material-->
     <div
+      v-if="current_model !== 'Student-Paced'"
       :class="`${meterialVisiable ? 'button_area back_focus' : 'button_area'} ${showFullAnswer ? 'buttondisable' : ''}`"
       style="margin-right: 20px"
       @click="changeMeterial"

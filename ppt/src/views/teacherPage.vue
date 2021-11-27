@@ -512,6 +512,13 @@ type: "slide"*/
         return [];
       }
     },
+    isStudentPacedMode() {
+      const isStudentMode = this.page_model === 'Student-Paced'
+      if(isStudentMode) {
+        this.changeShowMetrial(false)
+      }
+      return isStudentMode
+    }
   },
   watch: {
     studentList() {

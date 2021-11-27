@@ -392,6 +392,10 @@ svg {
 }
 .text-item-outer5{
   height: 180px !important;
+  display: flex;
+}
+.text-list-item{
+  flex: 1
 }
 .text_static{
   bottom: 0 !important;
