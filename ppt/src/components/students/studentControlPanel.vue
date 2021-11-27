@@ -56,11 +56,11 @@
         <strong class="button_text">{{meterialVisiable ? 'Material hiding' : 'Display material'}}</strong>
       </div>
     </div>
-    <div class="readchatouter" v-if="currentFeedList && currentFeedList.length > 0">
+    <div class="readchatouter" 
+        @click="showStudentModal" v-if="currentFeedList && currentFeedList.length > 0">
       <img
         src="../../assets/picture/liaotian_icon.png"
         class="readchat"
-        @click="showStudentModal"
       />
       <i :class="`${isUnread && 'unread'}`"></i>
     </div> 
@@ -99,6 +99,7 @@ export default {
           break
         }
       }
+      return status
     }
   },
   props: {
@@ -280,14 +281,14 @@ export default {
   height: 24px;
 }
 .unread{
-  width: 12px;
-  height: 12px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   top: -4px;
   right: -4px;
   background-color: #FF1A0E;
   border: 2px solid #fff;
-  border-radius: 6px;
+  border-radius: 10px;
   box-sizing: border-box;
 }
 .aligncenter{
