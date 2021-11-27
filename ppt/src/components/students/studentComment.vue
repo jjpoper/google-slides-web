@@ -4,26 +4,26 @@
       <p>Student Feedback</p>
       <i @click="hidecomment"></i>
     </div>
-    <template v-for="(item, index) in currentFeedList">
+    <template v-for="(item, index) in commentList">
       <div class="feeditem" v-if="item.title" :key="index.toString()">
         <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
         <div :class="`readed ${item.id && unreadStudentCommentIds.indexOf(item.id) > -1 ? 'unreadborder' : ''}`">
           <div class="feedinner">
             <div class="rightcontent">
               <div v-show="!slidesVisiable[index]">
-                <div class="right-answer" v-if="item.title.indexOf('data:image/') > -1">
+                <div class="right-answer" v-if="getIndexOf(item.title, 'data:image/') > -1">
                   <div class="pptimage">
                     <base64image :url="item.title" />
                   </div>
                 </div>
-                <div class="right-answer" v-else-if="item.title.indexOf('.mp3') > -1">
+                <div class="right-answer" v-else-if="getIndexOf(item.title, '.mp3') > -1">
                   <div class="pptimage">
                     <div style="width:80%;">
                       <audio-player :url="item.title" />
                     </div>
                   </div>
                 </div>
-                <div class="right-answer" v-else-if="item.title.indexOf('.webm') > -1">
+                <div class="right-answer" v-else-if="getIndexOf(item.title, '.webm') > -1">
                   <div class="pptimage">
                     <video
                       controlslist="nodownload"
@@ -34,8 +34,11 @@
                     />
                   </div>
                 </div>
-                <div class="right-answer" v-else-if="item.title.indexOf('[') > -1">
+                <div class="right-answer" v-else-if="getIndexOf(item.title, '[') > -1">
                   <p v-for="(text,index) in JSON.parse(item.title)" :key="index">{{text}}</p>
+                </div>
+                <div class="right-answer" v-else-if="getIndexOf(item.title) === 'file' ">
+                  {{item.title.fileName}}
                 </div>
                 <div class="right-answer" v-else>{{item.title}}</div>
               </div>
@@ -168,7 +171,7 @@ export default {
       // const list = getStudentCommentList();
       // this.unreadIdList = getUnreadStudentCommentIds();
       // console.log(list)
-      this.commentList = this.currentFeedList;
+      this.commentList = this.currentFeedList.reverse();
       console.log(this.commentList, '=commentList')
       // console.log(list, this.unreadIdList);
     },
@@ -197,6 +200,14 @@ export default {
       if (id) {
         this.delUnreadCommentId(id);
         // this.unreadIdList = getUnreadStudentCommentIds();
+      }
+    },
+    getIndexOf(titleValue, indexKey) {
+      const typeName = Object.prototype.toString.call(titleValue)
+      if(typeName === '[object String]') {
+        return titleValue.indexOf(indexKey)
+      } else if(typeName === '[object Object]' && titleValue.fileName) {
+        return 'file'
       }
     }
   }

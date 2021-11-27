@@ -1,5 +1,5 @@
 <template>
-  <div class="res-and-student">
+  <div class="res-and-list">
     <!-- <dash-switch-header /> -->
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
