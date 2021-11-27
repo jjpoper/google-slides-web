@@ -18,7 +18,7 @@
               <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
               <div>
                 <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
-                <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+                <p class="user-name user-time">{{getTimeStr(item.updated_at || item.time)}}</p>
               </div>
             </div>
             <div class="ans-detail">
