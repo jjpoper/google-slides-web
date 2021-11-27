@@ -43,10 +43,11 @@ export const startRecordVideo = (domVideo: any, callback: any = () => null, fail
       sampleRate: 22050,
       mimeType: 'video/webm',
     });
-    mediaRecorder.startRecording();
-
     mediaRecorder.camera = camera;
-    callback && callback()
+    setTimeout(() => {
+      mediaRecorder.startRecording();
+      callback && callback()
+    }, 2000)
   }).catch((e) => {
     onMediaError(e)
     fail && fail()
