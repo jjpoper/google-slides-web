@@ -188,7 +188,7 @@
       />
     </el-popover>
 
-    <div class="web_site_icon">
+    <!-- <div class="web_site_icon">
       <el-popover
         placement="top"
         width="200"
@@ -209,7 +209,7 @@
           style="margin-left: 20px"
         />
       </el-popover>
-    </div>
+    </div> -->
 
     <div id="diycolor_comment"></div>
   </div>

@@ -239,24 +239,6 @@ export default {
   height: 100%;
   position: relative;
 }
-.dragselector{
-  /* position: absolute;
-  top: -60px; */
-  /* left: 50%; */
-  /* height: 50px; */
-  /* transform: translateX(-50%); */
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #777;
-  padding: 0 10px;
-  box-sizing: border-box;
-  border-radius: 5px;
-  z-index: 999; */
-  display: flex;
-  width: 100%;
-  justify-content: center;
-}
 .cursor{
   cursor: pointer;
 }

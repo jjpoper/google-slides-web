@@ -406,6 +406,10 @@ svg {
   box-sizing: border-box;
   position: relative;
 }
+.drag-popover >.el-popover{
+  max-width: 60px;
+  min-width: 0
+}
 
 @media screen and (max-width: 768px) {
   .dashboardpage{
