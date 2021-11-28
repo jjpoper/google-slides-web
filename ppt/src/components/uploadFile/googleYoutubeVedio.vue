@@ -2,7 +2,6 @@
   <div class="page" id="app">
     <div class="open-google" @click="openYoutube">
       open youtube
-
       <svg
         xmlns="http://www.w3.org/2000/svg"
         style="margin-left: 10px"
@@ -79,7 +78,6 @@
     <div class="time--set">
       <div class="time">
         Starting time(s):
-
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -97,16 +95,12 @@
         </svg>
 
         <div class="time-number-div">
-          <el-input
-            class="el-input--inner"
-            v-model="startTime"
-            @input="setStartTime"
-          ></el-input>
+          <el-input class="el-input--inner" v-model="startTime" @input="setStartTime"></el-input>
 
           <!-- <div class="time-btn-div">
                         <i class="el-icon-caret-top time-btn-flag" @click="numberUp(0)"></i>
                         <i class="el-icon-caret-bottom time-btn-flag" @click="numberDown(0)"></i>
-                    </div> -->
+          </div>-->
         </div>
         /{{ endTime }}
       </div>
@@ -123,7 +117,7 @@
                     </div>
 
                 </div>
-            </div> -->
+      </div>-->
     </div>
 
     <div class="btn" @click="insert">next</div>
@@ -141,8 +135,8 @@
 export default {
   props: {
     nextYoutube: {
-      type: Function,
-    },
+      type: Function
+    }
     // url: {
     //   type: String,
     //   default: "",
@@ -172,6 +166,7 @@ export default {
       endTime: 0,
       url: "",
       videoUrl: "",
+      ytPalyer: null
     };
   },
 
@@ -189,13 +184,13 @@ export default {
         _this.ytPalyer = new YT.Player("player", {
           events: {
             onReady: _this.onYTReady,
-            onStateChange: _this.onYTStateChange,
-          },
+            onStateChange: _this.onYTStateChange
+          }
         });
         //getDuration
         console.log(_this.ytPalyer, "onYouTubeIframeAPIReady");
       };
-    },
+    }
   },
   mounted() {},
   methods: {
@@ -217,16 +212,16 @@ export default {
     setStartTime() {
       let _this = this;
       clearTimeout(this.timerDown);
-      this.timerDown = setTimeout(function () {
+      this.timerDown = setTimeout(function() {
         _this.refreshVideo();
       }, 500);
     },
 
     //显示提示
-    slideAlert: function (msg, _type) {
+    slideAlert: function(msg, _type) {
       this.$message({
         message: msg,
-        type: _type,
+        type: _type
       });
     },
     openYoutube() {
@@ -268,8 +263,8 @@ export default {
       if (!this.url || this.url.indexOf("youtube") < 0) {
         return;
       }
-      if(!this.videoUrl) {
-        this.refreshVideo()
+      if (!this.videoUrl) {
+        this.refreshVideo();
       }
 
       this.nextYoutube(this.videoUrl);
@@ -277,8 +272,8 @@ export default {
       this.startTime = 0;
       this.endTime = 0;
       this.videoUrl = "";
-    },
-  },
+    }
+  }
 };
 </script>
 
