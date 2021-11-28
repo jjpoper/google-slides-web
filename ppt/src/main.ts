@@ -2,7 +2,6 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router/index';
 import './elementUse'
-import './assets/css/teacher.css'
 import { Message } from 'element-ui'
 import { use } from 'echarts/core'
 import {

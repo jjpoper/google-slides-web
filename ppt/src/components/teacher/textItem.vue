@@ -277,12 +277,6 @@ export default {
   flex-wrap: wrap;
 }
 .colume5{
-  /* -webkit-column-count:  5;
-  -moz-column-count:  5;
-  column-count:  5;
-  -webkit-column-gap:  5px;
-  -moz-column-gap:  5px;
-  column-gap:  5px; */
   width: 20%;
   padding: 5px;
   box-sizing: border-box;
@@ -306,7 +300,7 @@ export default {
 }
 .text-item-outer5{
   width: 100%;
-  padding-bottom: 85%;
+  /* padding-bottom: 85%; */
   position: relative;
 }
 .text-item-outer1.full-text-area{

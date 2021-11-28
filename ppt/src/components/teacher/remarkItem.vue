@@ -18,7 +18,7 @@
                       controls=""
                       :src="item.link"
                       style="width: auto"
-                      preload="none"
+                      preload="auto"
                     />
                     <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
                     <p class="textinner" v-else-if="item.type === 'text'">
@@ -302,7 +302,7 @@ export default {
 }
 .text-item-outer5{
   width: 100%;
-  padding-bottom: 85%;
+  /* padding-bottom: 85%; */
   position: relative;
 }
 .text-item-outer1.full-text-area{

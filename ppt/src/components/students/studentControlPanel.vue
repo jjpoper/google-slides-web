@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
     <student-tips-modal />
-    <div v-if="currentModel == 'Student-Paced'" class="arrow_opts">
+    <div v-if="isStudentPaced" class="arrow_opts">
       <button class="control-bar__button">
         <div class="control-bar__icon" @click="lastPage()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.12 60.82">
@@ -45,24 +45,24 @@
       </div>
     </div>
 
-    <div class="aligncenter" v-if="currentModel == 'Student-Paced'">
+    <div class="aligncenter" v-if="isStudentPaced">
       <div
         class="button_area"
         @click="changeMeterial"
       >
         <div class="meterialimage">
-          <div :class="`fullbgimg ${meterialSwitchVisiable ? 'me-show' : 'me-hide'}`"></div>
+          <div :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"></div>
         </div>
-        <strong class="button_text">{{meterialSwitchVisiable ? 'Material hiding' : 'Display material'}}</strong>
+        <strong class="button_text">{{meterialVisiable ? 'Material hiding' : 'Display material'}}</strong>
       </div>
     </div>
-    <div class="readchatouter">
+    <div class="readchatouter" 
+        @click="showStudentModal" v-if="currentFeedList && currentFeedList.length > 0">
       <img
         src="../../assets/picture/liaotian_icon.png"
         class="readchat"
-        @click="showStudentModal"
       />
-      <i :class="`${unread && 'unread'}`"></i>
+      <i :class="`${isUnread && 'unread'}`"></i>
     </div> 
     <div class="question_area" v-if="smallWindow" @click="changeShowOrAnswer()">
       {{ isShowQuestion ? "Answer " : "Show " }}Question
@@ -71,7 +71,7 @@
 </template>
 <script>
 import { ClassRoomModelEnum } from "../../socket/socketEvents";
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import StudentTipsModal from './studentTipsModal.vue';
 export default {
   components: { StudentTipsModal },
@@ -79,10 +79,27 @@ export default {
     ...mapState({
       answerdPage: state => state.student.answerdPage,
       currentPageIndex: state => state.student.currentPageIndex,
+      studentFeedBackComments: state => state.student.studentFeedBackComments,
+      unreadStudentCommentIds: state => state.student.unreadStudentCommentIds,
+    }),
+    ...mapGetters({
+      currentPageId: 'student/currentPageId',
+      currentFeedList: 'student/currentFeedList',
     }),
     currentAnswerd() {
       // console.log(this.answerdPage[this.currentPageIndex])
       return this.answerdPage[this.currentPageIndex]
+    },
+    isUnread() {
+      let status = false
+      for(let i = 0; i < this.currentFeedList.length; i++) {
+        const {id} = this.currentFeedList[i]
+        if(this.unreadStudentCommentIds.indexOf(id) > -1) {
+          status = true
+          break
+        }
+      }
+      return status
     }
   },
   props: {
@@ -96,13 +113,9 @@ export default {
     nextPage: {
       type: Function,
     },
-    currentModel: {
-      type: String,
-      default: ClassRoomModelEnum.TEACHER_MODEL,
-    },
-    unread: {
+    isStudentPaced: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showStudentModal: {
       type: Function,
@@ -129,22 +142,19 @@ export default {
     changeShowMetrial: {
       type: Function,
     },
-  },
-  watch: {
-    meterialSwitchVisiable() {
-      // EventBus.$emit(ModalEventsNameEnum.MEDIA_MODAL_VISIBLE, this.meterialVisiable)
-      this.changeShowMetrial(this.meterialSwitchVisiable)
-    }
+    meterialVisiable: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       questionVisiable: false,
-      meterialSwitchVisiable: false,
     };
   },
   methods: {
     changeMeterial() {
-      this.meterialSwitchVisiable = !this.meterialSwitchVisiable
+      this.changeShowMetrial(!this.meterialVisiable)
     },
   }
 };
@@ -271,14 +281,14 @@ export default {
   height: 24px;
 }
 .unread{
-  width: 12px;
-  height: 12px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   top: -4px;
   right: -4px;
   background-color: #FF1A0E;
   border: 2px solid #fff;
-  border-radius: 6px;
+  border-radius: 10px;
   box-sizing: border-box;
 }
 .aligncenter{

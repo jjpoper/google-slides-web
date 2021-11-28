@@ -1,0 +1,379 @@
+.tfshadow{
+  box-shadow: 0px 1px 3px 3px rgb(0 0 0 / 16%);
+  border-radius: 8px;
+}
+.tffixModal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 99999999;
+}
+.tfcommentModal {
+  width: 96%;
+  height: 822px;
+  position: relative;
+  top: 50%;
+  left: 2%;
+  /* margin-left: -500px; */
+  margin-top: -411px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+}
+@media screen and (max-width: 1599px) and (min-width: 768px) {
+  .tfcommentModal {
+    transform: scale(0.85);
+  }
+}
+.tfheader {
+  height: 95px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 34px;
+  padding-right: 24px;
+  border-bottom:1px solid #D8D8D8;
+  box-sizing: border-box;
+}
+.tftitle{
+  font-size: 20px;
+  font-family: Inter-Bold;
+  color: #000000;
+  opacity: 1;
+}
+.tfclose {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.tfmbox {
+  height: 729px;
+  width: 100%;
+  text-align: left;
+  padding: 22px 55px 22px 32px;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.tftextarea-box{
+  width: 360px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #D8D8D8;
+  opacity: 1;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tftextarea {
+  background-color: transparent;
+  width: 360px;
+  height: 120px;
+  padding: 5px;
+  border: none;
+  box-sizing: border-box;
+  outline: none;
+  resize: none
+}
+.tfleft{
+  padding: 3px;
+}
+.tfright {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  overflow-y: scroll;
+  padding: 3px;
+  box-sizing: border-box;
+  position: relative;
+}
+.tfrightmtitle {
+  width: 100%;
+  min-height: 70px;
+  overflow: hidden;
+  background-color: #f2f2f2;
+  border: 1px solid #999;
+  box-sizing: border-box;
+  padding: 10px;
+  word-wrap: break-word;
+  position: relative;
+}
+.tfrightcomment {
+  min-height: 70px;
+  background-color: #fff;
+  width: 100%;
+  border: 1px solid #999;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+.tfnocontrols::-webkit-media-controls{ 
+  display:none !important;
+}
+video{
+  width: 100%; height: 100%; object-fit: cover
+}
+.tfedit-area{
+  height: 220px;
+  width: 402px;
+  box-sizing: border-box;
+  padding: 20px;
+}
+.tftext-placeholder{
+  position: absolute;
+  top: 50%;
+  height: 22px;
+  transform: translateY(-11px);
+  left: 20px;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #828282;
+  padding-right: 30px;
+  text-align: right;
+  background-image: url(../picture/pencial.png);
+  background-size: 22px 22px;
+  background-position: bottom 0 right 0;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.tffooter-button{
+  margin-top: 19px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+}
+.tffooter-button-more{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #15C39A;
+  box-shadow: 0px 6px 10px 0px rgb(21 195 154 / 30%);
+  border-radius: 30px;
+  width: 402px;
+  height: 60px;
+  cursor: pointer;
+}
+.tfsend-button{
+  width: 180px;
+  height: 40px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  background-color: #F6F7F7;
+  border: 1px solid #E5E5E5;
+  line-height: 40px;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  color: #000000;
+  padding-left: 27px;
+  background-image: url(../picture/send-disable.png);
+  background-size: 22px 18.33px;
+  background-position: bottom 9px right 20px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.tfsend-button.tfactive{
+  background: #15C39A;
+  color: #FFFFFF;
+  background-image: url(../picture/send.png);
+  background-size: 22px 18.33px;
+  background-position: bottom 9px right 20px;
+  background-repeat: no-repeat;
+}
+.tffeed-item{
+  width: 360px;
+  height: 100px;
+  background: rgba(228,228,228, 0.2);
+  border-radius: 8px;
+  margin-top: 17px;
+  box-sizing: border-box;
+  position: relative;
+  overflow-y: scroll;
+}
+.tffeed-text{
+  padding: 15px 22px;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  text-align: justify;
+}
+.tffeed-media{
+  padding: 5px;
+  height: 180px;
+  background: rgba(228,228,228, 0.2);
+}
+.tffeed-media-audio{
+  height: 62px;
+}
+.tfempty{
+  width: 400px;
+  height: 630px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.tfempty-img{
+  width: 285px;
+  height: 190px;
+  margin-bottom: 21px;
+}
+.tfempty-tip{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  margin-top: 20px;
+}
+.tfmore-feed{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #FFFFFF;
+}
+.tfmore-icon{
+  width: 22px;
+  height: 18.tf33px;
+  margin-left: 10px;
+}
+.tfleft-answer {
+  width: 402px;
+  background-color: #fff;
+  padding: 16px 21px 30px 16px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  /* border: 1px solid #999; */
+}
+.tfanswer-media {
+  width: 360px;
+  height: 180px;
+  border-radius: 10px;
+  background-color: rgba(228,228,228, 0.3);
+  position: relative;
+  /* padding: 2px; */
+}
+.tfinner-media{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tfanswer-text{
+  flex: 1;
+  max-height: 180px;
+  min-height: 50px;
+  display: flex;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  overflow-y: scroll;
+}
+.tfuser{
+  width: 100%;
+  height: 52px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+}
+.tfusericon{
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  background-color: #15C39A;
+  text-align: center;
+  line-height: 52px;
+  font-size: 28px;
+  font-family: Inter-Bold;
+  margin-right: 10px;
+}
+.tfinfo{
+  height: 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.tfuname{
+  font-size: 18px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #15C39A;
+  opacity: 1;
+}
+.tfutime{
+  font-size: 14px;
+  font-family: Inter-Bold;
+  line-height: 24px;
+  color: #000000;
+  opacity: 1;
+}
+.tfnocontrols::-webkit-media-controls{ 
+  display:none !important;
+}
+video{
+  width: 100%; height: 100%; object-fit: cover
+}
+
+@media screen and (max-width: 768px) {
+  .tfcommentModal {
+    width: 96%;
+    height: 502px;
+    margin-top: -251px;
+    left: 2%;
+    margin-left: 0;
+  }
+  .tfheader{
+    height: 60px;
+  }
+  .tfmbox{
+    height: 442px;
+    padding: 10px;
+  }
+  .tfleft{
+    width: 40%;
+  }
+  .tfleft-answer{
+    width: 100%;
+    padding: 5px 10px;
+  }
+  .tfempty{
+    width: 300px;
+    height: 414px;
+  }
+  .tfuser{
+    width: 100%;
+    height: 32px;
+    display: flex;
+    flex-direction: row;
+    margin-top: 5px;
+  }
+  .tfusericon{
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 16px;
+  }
+  .tfinfo{
+    height: 32px;
+  }
+  .tfuname, .tfutime{
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .tfedit-area, .tftextarea-box, .tftextarea, .tffooter-button-more{
+    width: 100%;
+  }
+  .tfright{
+    margin-left: 20px;
+  }
+}

@@ -242,6 +242,7 @@ export default {
       this.nextPosition = {offsetX: 0, offsetY: 0}
     },
     pickColor(item, index, background){
+      window.remarkInputStatus = true
       console.log(item.id, background)
       if(item.id) {
         // update

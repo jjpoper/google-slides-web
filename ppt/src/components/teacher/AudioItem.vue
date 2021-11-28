@@ -17,8 +17,7 @@
                     controlslist="nodownload"
                     controls=""
                     :src="item.content.link"
-                    style="width: auto"
-                    preload="none"
+                    preload="auto"
                   />
                   <audio-player v-else-if="item.content.mediaType === 'audio'" :url="item.content.link"/>
                   <div
@@ -31,7 +30,7 @@
                       <a :href="item.content.link" target="blank" download class="download-text">Download</a>
                     </div>
                   </div>
-                  <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
+                  <div style="width: 100%; height: 100%; position: relative" v-else-if="item.content.mediaType === 'image'">
                     <Base64image :url="item.content.link" />
                   </div>
                 </div>
@@ -302,12 +301,18 @@ export default {
   position: relative;
   margin: 0 auto;
 }
+.text-item-outer1 video{
+  width: 268px;
+}
+.text-item-outer5 video{
+  width: 100%
+}
 .text-item-outer1.dash-outer{
   /* width: 80%; */
 }
 .text-item-outer5{
   width: 100%;
-  padding-bottom: 85%;
+  /* padding-bottom: 85%; */
   position: relative;
 }
 .text-item-outer1.full-text-area{

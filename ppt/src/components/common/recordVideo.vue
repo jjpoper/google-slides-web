@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div :style="`height: ${isAniInFixed ? '206px' : '165px'}`">
+    <video v-if="!isAniInFixed" id="record-video" width="280" height="150" ref="videoRef" style="background: #000"/>
     <div class="record-area" v-show="!endRecording">
-      <div class="fixed-area">
-        <video id="record-video" width="280" height="150" ref="videoRef"/>
+      <div class="fixed-area" :style="`height: ${isAniInFixed ? '206px' : '56px'}`">
+        <video v-if="isAniInFixed" id="record-video" width="280" height="150" ref="videoRef"/>
         <!-- <div style="width: 280px; height: 150px"></div> -->
         <div class="record-footer">
           <el-tooltip content="start" placement="top" v-if="endRecording">
@@ -30,11 +31,15 @@ export default {
       type: Function,
       default: () => null
     },
+    isAniInFixed: {
+      type: Boolean,
+      default: true
+    },
   },
   data() {
     return {
-      isRecording: true,
-      endRecording: false,
+      isRecording: false,
+      endRecording: true,
       timeValue: 0,
       progress: 0,
       maxTime: 120 // 秒
@@ -44,7 +49,7 @@ export default {
     this.startRecord()
   },
   beforeDestroy() {
-    if(!this.endRecording) {
+    if(!this.endRecording && this.isRecording) {
       endRecord()
     }
   },
@@ -97,7 +102,9 @@ export default {
       this.progress = progress
     },
     startRecord() {
-      startRecordVideo(document.getElementById("record-video"))
+      startRecordVideo(document.getElementById("record-video"), this.countToRecord, this.fail)
+    },
+    countToRecord() {
       this.isRecording = true
       this.endRecording = false
       this.timeValue = 0
@@ -107,6 +114,9 @@ export default {
       cancelUpVideo()
       this.onProgressUpLoad(0)
       console.log('onProgressUpLoad')
+      this.cancel()
+    },
+    fail() {
       this.cancel()
     }
   }

@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { getTeacherClassAnswers } from './index'
 
 type ItemType = "text" | "draw" | "choice" | 'number' | 'audio' | 'video'
@@ -52,6 +53,13 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
     teacherData.push(data)
   }
   return teacherData
+}
+
+export const deletTeacherData = (id: any) => {
+  const index = teacherData.findIndex((item: any) => (item.response_id == id || item.id == id))
+  if(index > -1) {
+    teacherData.splice(index, 1)
+  }
 }
 
 // 获取老师端数据量

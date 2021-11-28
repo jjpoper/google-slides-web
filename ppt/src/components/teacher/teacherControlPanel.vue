@@ -103,12 +103,10 @@
           ? 'button_area back_focus'
           : isLokeEnable()
           ? 'button_area'
-          : 'button_area button_grey'
+          : 'button_area buttondisable'
       "
       v-if="
-        currentItemData &&
-        currentItemData.items &&
-        currentItemData.items[0] &&
+        shouldShowPageAnswer &&
         !isClosed &&
         current_model != 'Student-Paced'
       "
@@ -135,18 +133,11 @@
       >
     </div>
 
-    <!-- <div
-      :class="isResponseShow ? 'button_area back_focus' : 'button_area'"
+    <div
+      :class="`${isResponseShow ? 'button_area back_focus' : 'button_area'} ${showFullAnswer ? '' : 'buttondisable'}`"
       style="margin-right: 20px"
       @click="showRes()"
-      v-if="
-        currentItemData &&
-        currentItemData.items &&
-        currentItemData.items[0] &&
-        currentItemData.items[0].type != 'website' &&
-        !isClosed &&
-        !isDashboard
-      "
+      v-if="!isClosed && isDashboard && shouldShowPageAnswer"
     >
       <div class="meterialimage">
         <div class="fullbgimg res-show"></div>
@@ -154,10 +145,11 @@
       <strong class="button_text"
         >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
       >
-    </div> -->
+    </div>
     <!--material-->
     <div
-      :class="meterialVisiable ? 'button_area back_focus' : 'button_area'"
+      v-if="current_model !== 'Student-Paced'"
+      :class="`${meterialVisiable ? 'button_area back_focus' : 'button_area'} ${showFullAnswer ? 'buttondisable' : ''}`"
       style="margin-right: 20px"
       @click="changeMeterial"
     >
@@ -214,6 +206,7 @@
 import { ClassRoomModelEnum, ModalEventsNameEnum } from "@/socket/socketEvents";
 import dashboardMenu from "./teacherDashboardMenu";
 import UploadEnter from "@/components/uploadFile/uploadEnter.vue";
+import {mapState, mapGetters, mapActions} from 'vuex'
 export default {
   props: {
     currentPage: {
@@ -277,9 +270,6 @@ export default {
     // open: {
     //   type: Function,
     // },
-    showResponse: {
-      type: Function,
-    },
     isResponseShow: {
       type: Boolean,
       default: false,
@@ -303,7 +293,9 @@ export default {
         return {};
       },
     },
-
+    showresAction: {
+      type: Function,
+    },
     addprompt: {
       type: Function,
     },
@@ -315,6 +307,14 @@ export default {
       default: false,
     },
   },
+  computed: {
+    ...mapState({
+      showFullAnswer: state => state.teacher.showDashFullResponse,
+    }),
+    ...mapGetters({
+      shouldShowPageAnswer: 'student/shouldShowPageAnswer'
+    })
+  },
   components: {
     dashboardMenu,
     UploadEnter,
@@ -325,8 +325,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions("teacher", [
+      "setDashFullPageResponse",
+    ]),
     changeMeterial() {
-      this.changeShowMetrial(!this.meterialVisiable);
+      if(!this.showFullAnswer) {
+        this.changeShowMetrial(!this.meterialVisiable);
+      }
     },
     lastPage() {
       // console.log(this.currentPage);
@@ -393,8 +398,9 @@ export default {
       this.turnOff();
     },
     showRes() {
-      this.showResponse();
-      //    this.isResponseShow = !this.isResponseShow;
+      if(this.showFullAnswer) {
+        this.showresAction()
+      }
     },
     dolockPage() {
       if (this.isLokeEnable()) {
@@ -554,7 +560,7 @@ strong {
   background-color: #cfcfcf;
 }
 .back_focus {
-  background-color: #fff;
+  background-color: red;
   border-radius: 8px;
 }
 .button_text {
@@ -608,5 +614,8 @@ strong {
   border-radius: 16px;
   background-color: rgba(54, 66, 90, 0.1);
   margin-right: 20px;
+}
+.buttondisable{
+  opacity: 0.4;
 }
 </style>

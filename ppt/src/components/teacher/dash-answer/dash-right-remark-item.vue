@@ -7,7 +7,8 @@
       :src="item.content.link"
       width="280"
       height="150"
-      preload="none"
+      preload="auto"
+      style="height: 150px"
     />
     <audio-player
       v-else-if="item.content &&  item.content.mediaType === 'audio'"
@@ -20,12 +21,16 @@
         <a :href="item.content.link" download class="download-text">Download</a>
       </div>
     </div>
+    <div class="remark-img" v-else-if="item.content.mediaType === 'image'">
+      <base64image :url="item.content.link"/>
+    </div>
   </div>
 </template>
 <script>
 import audioPlayer from '@/components/common/audioPlayer.vue';
+import base64image from '@/components/base64image.vue';
 export default {
-  components: { audioPlayer },
+  components: { audioPlayer, base64image },
   props: {
     item: {
       type: Object,

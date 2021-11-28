@@ -5,7 +5,7 @@
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
     </div>
-    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData">
+    <div class="medialist" v-if="(meterialVisiable || defaultShowMeterial) && hasData && (teacher || isStudentPaced)">
         <template v-if="leftSortList && leftSortList.length">
           <element-drag v-for="rect in leftSortList" :key="rect.id"
               :index="rect.sortIndex" :rect="rect" :update="update" :deleteMedia="deleteMedia"
@@ -36,6 +36,10 @@ export default {
       default: '',
     },
     teacher: {
+      type: Boolean,
+      default: false,
+    },
+    isStudentPaced: {
       type: Boolean,
       default: false,
     },
@@ -140,6 +144,7 @@ export default {
           sortIndex: i,
           ...item
         }
+        // top  left 都是0，在左边从上往下排布
         if(params.top === 0 && params.left === 0) {
           listItem.top = leftList.length * 60 + 60
           // listItem.left = leftList.length * 30
@@ -153,6 +158,7 @@ export default {
       this.hasData = leftList.length > 0 || rectList.length > 0
       this.rectMediaList = rectList
       this.leftSortList = leftList
+      console.log(this.meterialVisiable, this.defaultShowMeterial, this.hasData)
     },
     getIframe(url){
       const formatId = url.split('?v=')[1]
@@ -204,6 +210,7 @@ export default {
   width: 100%;
   height: 100%;
   display: flow-root;
+  position: relative;
 }
 .medialist{
   display: flex;
@@ -214,6 +221,7 @@ export default {
   overflow: hidden;
   position: absolute;
   top: 0;
+  z-index: 1001;
 }
 .meidaitem{
   width:300px; height: 200px;
@@ -230,24 +238,6 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-}
-.dragselector{
-  /* position: absolute;
-  top: -60px; */
-  /* left: 50%; */
-  /* height: 50px; */
-  /* transform: translateX(-50%); */
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #777;
-  padding: 0 10px;
-  box-sizing: border-box;
-  border-radius: 5px;
-  z-index: 999; */
-  display: flex;
-  width: 100%;
-  justify-content: center;
 }
 .cursor{
   cursor: pointer;

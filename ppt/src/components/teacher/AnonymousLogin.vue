@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="modal-body">
     <img src="../../assets/picture/invate_icon.png" width="316" height="178" />
     <div class="login_right">
       <div @click="closeBtn" class="common-close-btn"></div>
@@ -152,12 +152,7 @@
 
       <div class="link--area">
         <div
-          style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-          "
+          class="link-button"
           @click="onCopyLink(canAnonymous)"
         >
           <img
@@ -357,161 +352,5 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.link--text {
-  height: 27px;
-  font-size: 16px;
-  margin-top: 5px;
-  font-family: Inter-Bold;
-  line-height: 24px;
-  color: #989da1;
-  opacity: 1;
-}
-.create--confirm {
-  width: 80px;
-  display: flex;
-  justify-content: center;
-  cursor: pointer;
-  height: 40px;
-  align-items: center;
-  border-radius: 6px;
-}
-.create--confirm:hover {
-  color: white;
-  background-color: #15c39a;
-}
-.create--room {
-  width: 300px;
-  height: 40px;
-  cursor: pointer;
-  background-color: #f8f8f8;
-  display: flex;
-  align-items: center;
-  border-radius: 6px;
-}
-/* .create--room:hover {
-  color: white;
-  background-color: #15c39a;
-} */
-.link--area {
-  width: 390px;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 100px;
-}
-.white--flag {
-  height: 22px;
-  width: 22px;
-  background-color: white;
-  border-radius: 11px;
-}
-.anonymous--switch {
-  width: 60px;
-  height: 30px;
-  background-color: #15c39a;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-.anonymous {
-  font-size: 16px;
-  font-family: Inter-Bold;
-  line-height: 24px;
-  color: #989da1;
-  opacity: 1;
-}
-.opt--item {
-  display: flex;
-  align-items: center;
-  height: 50px;
-  margin-top: 10px;
-}
-.opt--value {
-  height: 40px;
-  width: 300px;
-  flex: 1;
-  border: 1px solid #d8d8d8;
-  border-radius: 6px;
-}
-.room--item {
-  height: 40px;
-  align-items: center;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 15px;
-  cursor: pointer;
-}
-.room--area {
-  display: flex;
-  flex-direction: column;
-}
-.opt--text {
-  height: 21px;
-  font-size: 19px;
-  font-family: Arial;
-  font-weight: 400;
-  line-height: 22px;
-  color: #000000;
-  opacity: 1;
-  width: 100px;
-}
-.page {
-  width: 937px;
-  height: 700px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background-color: white;
-  border-radius: 16px;
-}
-.login_right {
-  height: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.title_1 {
-  height: 30px;
-  font-size: 24px;
-  font-family: Trebuchet MS;
-  font-weight: 400;
-  line-height: 30px;
-  color: #070707;
-  opacity: 1;
-  margin-left: 90px;
-}
-.title_2 {
-  height: 22px;
-  font-size: 16px;
-  font-family: Arial;
-  font-weight: 400;
-  line-height: 23px;
-  color: #070707;
-  opacity: 1;
-  margin-left: 90px;
-}
-.close {
-  position: fixed;
-  right: 60px;
-  height: 40px;
-}
-.class_number {
-  height: 71px;
-  font-size: 50px;
-  font-family: FZCuYuan-M03S;
-  font-weight: 400;
-  line-height: 24px;
-  color: #15c39a;
-  margin-top: 20px;
-  margin-left: 120px;
-  margin-bottom: 20px;
-  opacity: 1;
-}
-</style>
 
 

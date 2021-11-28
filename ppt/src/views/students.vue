@@ -43,6 +43,7 @@
             :url="currentItemData.thumbnail_url"
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
+            :isStudentPaced="isStudentPaced"
           />
         </div>
         <div
@@ -61,6 +62,7 @@
               :url="currentItemData.thumbnail_url"
               :filterAddedMediaList="filterAddedMediaList"
               :meterialVisiable="meterialVisiable"
+              :isStudentPaced="isStudentPaced"
             />
           </div>
         </div>
@@ -96,8 +98,7 @@
             :lastPage="lastPage"
             :nextPage="nextPage"
             :totalPage="slides.length"
-            :currentModel="currentModel"
-            :unread="unread"
+            :isStudentPaced="isStudentPaced"
             :showStudentModal="showStudentModal"
             :isShowQuestion="isShowQuestion"
             :changeShowOrAnswer="changeShowOrAnswer"
@@ -105,6 +106,7 @@
             :screenWidth="currentScreenWidth"
             :smallWindow="smallWindow"
             :changeShowMetrial="changeShowMetrial"
+            :meterialVisiable="meterialVisiable"
           />
         </div>
       </div>
@@ -186,7 +188,7 @@
       />
     </el-popover>
 
-    <div class="web_site_icon">
+    <!-- <div class="web_site_icon">
       <el-popover
         placement="top"
         width="200"
@@ -207,7 +209,7 @@
           style="margin-left: 20px"
         />
       </el-popover>
-    </div>
+    </div> -->
 
     <div id="diycolor_comment"></div>
   </div>
@@ -237,7 +239,6 @@ import {
   saveStudentsCurrentPageAnswerList,
   getStudentCurrentPageAnswerList,
   saveStudentUserName,
-  addStudentComment,
   unreadStudentComment,
   getStudentCommentUnReadStatus,
   readStudentComment,
@@ -344,6 +345,11 @@ export default {
       } else {
         return [];
       }
+    },
+    isStudentPaced() {
+      const isStundentPaced = this.currentModel == ClassRoomModelEnum.STUDENT_MODEL
+      this.updateIsStudentPaced(isStundentPaced)
+      return isStundentPaced
     }
   },
   mounted() {
@@ -444,7 +450,10 @@ export default {
       "deleteOnAnswerById",
       "updateSlideItemTip",
       "updateSlideCorrectAnswer",
-      "setAllGroups"
+      "setAllGroups",
+      "addStudentComment",
+      "updateIsStudentPaced",
+      "setStudentFeedBackComment"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -658,8 +667,10 @@ export default {
     },
     getAllSlides() {
       // console.log("list", "========");
-      initStudentCommentData(this.class_id, this.token).then(() => {
+      initStudentCommentData(this.class_id, this.token).then((list) => {
         this.studentCommentLoaded = true;
+        console.log(list, 'setStudentFeedBackComment')
+        this.setStudentFeedBackComment(list)
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
@@ -969,12 +980,10 @@ export default {
       } = d;
       if (studentId === this.uid) {
         // 对比一下uid
-        addStudentComment({
+        this.addStudentComment({
           ...d.item,
           id: comment_id
         });
-        unreadStudentComment();
-        this.unread = true;
       }
     },
     showStudentModal() {
@@ -1144,7 +1153,6 @@ export default {
   background-color: #f00fff00;
   border-radius: 8px;
   .el-dialog__header {
-    display: none;
   }
   .el-dialog__body {
     padding: 0;

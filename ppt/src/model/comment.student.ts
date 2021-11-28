@@ -26,7 +26,13 @@ let studentAllCommentList: StudentCommentItem[] = []
 export const initStudentCommentData = async (classId: string, token: string) => {
   const list = await getStudentAllComments(classId, token)
   studentAllCommentList = list
-  return list
+  const mapData = studentAllCommentList.map((item) => {
+    return {
+      ...item,
+      ...JSON.parse(item.data)
+    }
+  })
+  return mapData
 }
 
 // 老师端新增数据

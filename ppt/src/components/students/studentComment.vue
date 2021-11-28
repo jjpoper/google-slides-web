@@ -4,27 +4,26 @@
       <p>Student Feedback</p>
       <i @click="hidecomment"></i>
     </div>
-    <!-- <tipShow /> -->
     <template v-for="(item, index) in commentList">
       <div class="feeditem" v-if="item.title" :key="index.toString()">
         <p class="itemtile">slide {{getIndex(item.pageId)}}</p>
-        <div :class="`readed ${item.id && unreadIdList.indexOf(item.id) > -1 ? 'unreadborder' : ''}`">
+        <div :class="`readed ${item.id && unreadStudentCommentIds.indexOf(item.id) > -1 ? 'unreadborder' : ''}`">
           <div class="feedinner">
             <div class="rightcontent">
               <div v-show="!slidesVisiable[index]">
-                <div class="right-answer" v-if="item.title.indexOf('data:image/') > -1">
+                <div class="right-answer" v-if="getIndexOf(item.title, 'data:image/') > -1">
                   <div class="pptimage">
                     <base64image :url="item.title" />
                   </div>
                 </div>
-                <div class="right-answer" v-else-if="item.title.indexOf('.mp3') > -1">
+                <div class="right-answer" v-else-if="getIndexOf(item.title, '.mp3') > -1">
                   <div class="pptimage">
                     <div style="width:80%;">
                       <audio-player :url="item.title" />
                     </div>
                   </div>
                 </div>
-                <div class="right-answer" v-else-if="item.title.indexOf('.webm') > -1">
+                <div class="right-answer" v-else-if="getIndexOf(item.title, '.webm') > -1">
                   <div class="pptimage">
                     <video
                       controlslist="nodownload"
@@ -35,8 +34,11 @@
                     />
                   </div>
                 </div>
-                <div class="right-answer" v-else-if="item.title.indexOf('[') > -1">
+                <div class="right-answer" v-else-if="getIndexOf(item.title, '[') > -1">
                   <p v-for="(text,index) in JSON.parse(item.title)" :key="index">{{text}}</p>
+                </div>
+                <div class="right-answer" v-else-if="getIndexOf(item.title) === 'file' ">
+                  {{item.title.fileName}}
                 </div>
                 <div class="right-answer" v-else>{{item.title}}</div>
               </div>
@@ -78,7 +80,7 @@
             </div>
           </div>
           <div
-            v-if="item.id && unreadIdList.indexOf(item.id) > -1"
+            v-if="item.id && unreadStudentCommentIds.indexOf(item.id) > -1"
             class="unread"
             @click="enterRead(item.id)"
           ></div>
@@ -89,18 +91,24 @@
 </template>
 <script>
 import { ModalEventsNameEnum } from "@/socket/socketEvents";
-import {
-  getStudentCommentList,
-  getUnreadStudentCommentIds,
-  removeUnreadStudentCommentId
-} from "@/model/store.student";
+// import {
+//   getStudentCommentList,
+//   getUnreadStudentCommentIds,
+//   removeUnreadStudentCommentId
+// } from "@/model/store.student";
+import {mapState, mapGetters, mapActions} from 'vuex'
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
 import AudioPlayer from "../common/audioPlayer.vue";
-import tipShow from "./tipShow.vue";
 export default {
-  components: {
-    tipShow
+  computed: {
+    ...mapState({
+      unreadStudentCommentIds: state => state.student.unreadStudentCommentIds,
+    }),
+    ...mapGetters({
+      currentPageId: 'student/currentPageId',
+      currentFeedList: 'student/currentFeedList',
+    }),
   },
   props: {
     currentIndex: {
@@ -118,10 +126,14 @@ export default {
       default: () => null
     }
   },
+  watch: {
+    currentFeedList() {
+      console.log(this.currentFeedList, 'currentFeedList')
+    }
+  },
   data() {
     return {
       modalVisibale: false,
-      commentList: [],
       webHeight: window.winHeight - 50,
       slidesVisiable: [],
       unreadIdList: []
@@ -144,19 +156,23 @@ export default {
     });
   },
   methods: {
+    ...mapActions("student", [
+      "delUnreadCommentId",
+    ]),
     showStudentModal() {
       this.refreshList();
       this.modalVisibale = true;
     },
     hideStudentModal() {
       this.modalVisibale = false;
-      this.commentList = [];
+      // this.commentList = [];
     },
     refreshList() {
-      const list = getStudentCommentList();
-      this.unreadIdList = getUnreadStudentCommentIds();
-      console.log(list)
-      this.commentList = list;
+      // const list = getStudentCommentList();
+      // this.unreadIdList = getUnreadStudentCommentIds();
+      // console.log(list)
+      this.commentList = this.currentFeedList.reverse();
+      console.log(this.commentList, '=commentList')
       // console.log(list, this.unreadIdList);
     },
     getIndex(page_id) {
@@ -182,8 +198,16 @@ export default {
     },
     enterRead(id) {
       if (id) {
-        removeUnreadStudentCommentId(id);
-        this.unreadIdList = getUnreadStudentCommentIds();
+        this.delUnreadCommentId(id);
+        // this.unreadIdList = getUnreadStudentCommentIds();
+      }
+    },
+    getIndexOf(titleValue, indexKey) {
+      const typeName = Object.prototype.toString.call(titleValue)
+      if(typeName === '[object String]') {
+        return titleValue.indexOf(indexKey)
+      } else if(typeName === '[object Object]' && titleValue.fileName) {
+        return 'file'
       }
     }
   }
@@ -240,7 +264,7 @@ export default {
 }
 .feedinner {
   width: 489px;
-  background: #ffffff;
+  background: #e5e5e5;
   opacity: 1;
   position: relative;
   box-sizing: border-box;
@@ -257,7 +281,7 @@ export default {
   position: relative;
 }
 .readed.unreadborder {
-  border-color: rgba(21, 195, 154, 0.2);
+  border-color: red;
   /* border-width: 6px; */
 }
 .unread {
@@ -269,7 +293,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  border: 6px solid rgba(21, 195, 154, 0.2);
+  border: 6px solid red;
   cursor: pointer;
 }
 .border-line {
@@ -334,8 +358,9 @@ export default {
   padding: 10px;
   word-wrap: break-word;
   line-height: 20px;
-  margin-top: 42px;
-  padding: 0 21px 21px 21px;
+  /* margin-top: 42px; */
+  padding: 42px 21px 21px 21px;
+  background-color: #fff;
 }
 .puserinfo {
   width: 100%;

@@ -1,0 +1,121 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
+}
+ul,li{
+  list-style: none;
+}
+*{
+  outline: none;
+}
+
+html, button, input, select, textarea {
+    font-family: ProximaNovaSoft-Medium, sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    color: #7a9494;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  height: 100%;
+  overflow: auto;
+  background-color: #F4F4F4;
+}
+
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+
+/*显示文字*/
+.metrial .el-switch__label {
+  color: #fff
+}
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.transformmask{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+.fullbgimg{
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  position: absolute;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+.transparent-content{
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.no-border{
+  border: 1px solid rgba(236, 236, 236, 1);
+}
+.no-padding{
+  margin-top: 50px !important;
+}
+.no-padding >.el-dialog__header{
+  display: none !important;
+}
+.no-padding >.el-dialog__body{
+  padding: 0 !important;
+}
+.custom-dialog.el-dialog {
+  margin: 50px auto 0 !important; 
+}
+.el-dialog__header {
+}
+.el-dialog{
+  box-shadow: none !important
+}
+.common-close-btn{
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  background-image: url(../picture/close_icon.png);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+}
+.el-aside {
+  background-color: #D3DCE6;
+  color: #333;
+  text-align: center;
+  line-height: 200px;
+}
+
+.el-main {
+  background-color: #E9EEF3;
+  color: #333;
+  text-align: center;
+  line-height: 160px;
+}

@@ -390,13 +390,14 @@ export default {
   color: rgba(21, 195, 154, 1)
 }
 .content{
-  width: 90%;
+  width: 100%;
   position: relative;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding: 20px 0;
+  padding: 20px;
+  box-sizing: border-box;
 }
 .scroll-content{
   max-height: 350px;

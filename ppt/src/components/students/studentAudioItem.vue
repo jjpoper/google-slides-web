@@ -31,17 +31,19 @@
           </div>
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
-        <div class="remark-item-content">
+        <div class="remark-item-content remark-item-content-record">
           <record-video
             v-if="recordType === ModalEventsTypeEnum.VIDEO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
+            :isAniInFixed="false"
           />
           <record-audio
             v-else-if="recordType === ModalEventsTypeEnum.AUDIO"
             :onSend="sendCommentCb"
             :cancel="cancelRecord"
             :onRecordDone="focusIndex"
+            :isAniInFixed="false"
           />
         </div>
       </li>
@@ -60,7 +62,7 @@
         </uploading-progress>
       </li>
       <li
-        class="remark-list-item" 
+        :class="`remark-list-item ${(recordType || uploadPool.length > 0) ? 'remark-list-item-gray' : ''}`" 
         v-for="(item, index) in answerList" :key="item.id"
         :tabindex="index === 0 ? '0' : ''"
         :ref="index === 0 ? 'activeRef': ''"
@@ -83,7 +85,7 @@
             :src="item.content.link"
             width="280"
             height="150"
-            preload="none"
+            preload="auto"
           />
           <audio-player
             v-else-if="item.content &&  item.content.mediaType === 'audio'"
@@ -183,7 +185,13 @@ export default {
     },
     onUpload(file, result) {
       const nameList = file.type.split('/')
-      let name = nameList[1]
+      const fileNameList = file.name.split(".")
+      let name = ''
+      try {
+        name = fileNameList[fileNameList.length - 1] || nameList[1]
+      } catch(e) {
+
+      }
       let type = 'image'
       if(name) {
         name = name.toLocaleLowerCase();
@@ -353,6 +361,9 @@ export default {
 .remark-list-item.active-item {
   box-shadow: 0px 3px 6px #15c39a;
 }
+.remark-list-item.remark-list-item-gray{
+  opacity: 0.4;
+}
 .item-header {
   width: 310px;
   height: 40px;
@@ -379,6 +390,7 @@ export default {
   text-align: center;
   font-size: 20px;
   font-family: Inter-Bold;
+  color: #333;
 }
 .user-name {
   font-size: 14px;
@@ -400,6 +412,9 @@ export default {
   margin-bottom: 15px;
   flex: 1;
   word-break: break-all;
+}
+.remark-item-content.remark-item-content-record{
+  margin-bottom: 0;
 }
 .remark-file {
   min-height: 60px;
@@ -448,5 +463,6 @@ video {
   font-family: Inter-Bold;
   line-height: 24px;
   color: #000000;
+  text-align: left;
 }
 </style>

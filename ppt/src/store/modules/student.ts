@@ -11,6 +11,9 @@ const state = () => ({
     },
     answerdPage: {}, // 已回答page
     allAnswerList: [], // 全部回答数据
+    studentFeedBackComments: [], // 老师端评论
+    unreadStudentCommentIds: [], // 未读评论
+    isStudentPaced: false
 })
 
 // getters
@@ -51,6 +54,38 @@ const getters = {
         const type = itemData.items[0] ? itemData.items[0].type : null
         return type || 'none'
     },
+    currentFeedList: (currentState: any) => {
+        const {
+            studentFeedBackComments,
+            studentAllSlides,
+            currentPageIndex,
+            isStudentPaced
+        } = currentState
+        let list = []
+        if(studentAllSlides && studentAllSlides.length > 0) {
+            const currentPageId = studentAllSlides[currentPageIndex].page_id
+            if(isStudentPaced) {
+                list = studentFeedBackComments
+            } else {
+                list = studentFeedBackComments.filter((item: any) => item.pageId === currentPageId)
+            }
+        }
+        return list
+    },
+    // 互动题型
+    shouldShowPageAnswer: (currentState: any) => {
+        const {
+            studentAllSlides,
+            currentPageIndex,
+        } = currentState
+        const itemData = studentAllSlides[currentPageIndex]
+        const type = itemData.items[0] ? itemData.items[0].type : null
+        // if(!type) {
+        //    console.log(this.currentPageAnswerType, '====')
+        //   this.setDashFullPageResponse(false)
+        // }
+        return type && type !== null && type !== 'website'
+      }
 }
 
 // actions
@@ -88,6 +123,22 @@ const actions = {
 
     setAllGroups({ commit }: any, list: any) {
         commit('setAllGroups', JSON.parse(JSON.stringify(list)))
+    },
+
+    setStudentFeedBackComment({ commit }: any, list: any) {
+        commit('setStudentFeedBackComment', JSON.parse(JSON.stringify(list)))
+    },
+
+    addStudentComment({ commit }: any, data: any) {
+        commit('addStudentComment', JSON.parse(JSON.stringify(data)))
+    },
+
+    delUnreadCommentId({ commit }: any, id: any) {
+        commit('delUnreadCommentId', id)
+    },
+
+    updateIsStudentPaced({ commit }: any, status: boolean) {
+        commit('updateIsStudentPaced', status)
     },
 }
 
@@ -182,6 +233,29 @@ const mutations = {
         }
         nextState.studentAllSlides = studentAllSlides
     },
+    setStudentFeedBackComment(nextState: any, list: any[]) {
+        nextState.studentFeedBackComments = list
+    },
+    addStudentComment(nextState: any, data: any) {
+        // const {
+        //     studentComment,
+        //     unreadStudentCommentIds
+        // } = nextState
+        nextState.studentFeedBackComments.push(data)
+        nextState.unreadStudentCommentIds.push(data.id)
+    },
+    delUnreadCommentId(nextState: any, id: any) {
+        const {
+            unreadStudentCommentIds
+        } = nextState
+        const index = unreadStudentCommentIds.indexOf(id)
+        if(index > -1) {
+            nextState.unreadStudentCommentIds.splice(index, 1)
+        }
+    },
+    updateIsStudentPaced(nextState: any, status: boolean) {
+        nextState.isStudentPaced = status
+    }
 }
 
 export default {

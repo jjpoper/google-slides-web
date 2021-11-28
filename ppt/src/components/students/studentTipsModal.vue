@@ -154,9 +154,9 @@ export default {
   border-radius: 8px;
 }
 .unread{
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
   position: absolute;
   top: 0;
   right: 0;

@@ -8,7 +8,8 @@
       placeholder=""
       :autofocus="true"
       spellcheck="false"
-      @blur="sendMessage"
+      @blur="onInputText"
+      @change="changeInput"
     ></textarea>
     <!-- <div class="text-placeholder" v-show="showPlaceholder">
       Lonve feedback for this ppt
@@ -50,9 +51,13 @@ export default {
     this.commentValue = this.defaultText
   },
   mounted() {
-    this.$refs.textareaRecord.focus()
+    this.focusInput()
   },
   methods: {
+    focusInput() {
+      this.$refs.textareaRecord.focus()
+      window.remarkInputStatus = false
+    },
     sendMessage() {
       if (!this.commentValue) {
         // this.$message.warning("Please input your comment");
@@ -70,9 +75,17 @@ export default {
     onInputText() {
       this.clearDelay();
       this.sendDelay = setTimeout(() => {
-        this.sendMessage();
-      }, 200);
+        // 换颜色时候不进行提交
+        if(window.remarkInputStatus) {
+          this.focusInput()
+        } else {
+          this.sendMessage();
+        }
+      }, 500);
     },
+    changeInput() {
+      window.remarkInputStatus = false
+    }
   }
 }
 </script>

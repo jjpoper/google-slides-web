@@ -50,9 +50,9 @@
           :turnModel="turnModel"
           :open="open"
           :addprompt="addprompt"
-          :showResponse="showres"
           :current_response="currentAnswerCount"
           :isResponseShow="showResponse"
+          :showresAction="showres"
           :slide_id="slide_id"
           :endLesson="endLesson"
           :turnOff="turnModel"
@@ -148,6 +148,7 @@
       :reopenClass="_reopenClass"
       :current_model="page_model"
       :turnModel="turnModel"
+      :confirmModeChange="confirmModeChange"
     />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
@@ -320,7 +321,8 @@ import {
 import {
   initTeacherData,
   getTeacherCurrentPageAnswerList,
-  addTeacherData
+  addTeacherData,
+  deletTeacherData
 } from "@/model/data.teacher";
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
@@ -510,6 +512,13 @@ type: "slide"*/
         return [];
       }
     },
+    isStudentPacedMode() {
+      const isStudentMode = this.page_model === 'Student-Paced'
+      if(isStudentMode) {
+        this.changeShowMetrial(false)
+      }
+      return isStudentMode
+    }
   },
   watch: {
     studentList() {
@@ -981,6 +990,11 @@ type: "slide"*/
         if(controlType == 5) {
           EventBus.$emit('youtubePlayer', result)
         }
+
+        // dash 和 project 答案tab同步
+        if(controlType == 6) {
+          EventBus.$emit('responseTabChange', result)
+        }
       }
     },
     msgListener(d) {
@@ -1205,6 +1219,7 @@ type: "slide"*/
         this.slides[this.currentPageIndex].elements.splice(itemIndex, 1);
       } else if (d.mtype === SocketEventsEnum.DELETE_QUESTION) {
         this.deleteOnAnswerById(d.response_id);
+        deletTeacherData(d.response_id)
         this.getResponeCount();
       } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
         if (!this.classRoomInfo) return;
@@ -1342,6 +1357,9 @@ type: "slide"*/
       //   this.getAllSlides();
       //   hideLoading();
       // }
+      hideLoading();
+      this.getAllSlides();
+      return
       queryRefreshResult(code, token)
         .then(res => {
           if (res.data.status === "processing") {
@@ -1379,6 +1397,9 @@ type: "slide"*/
           this.responsePercentage[i] = 0;
         }
         this.isFocus[this.currentPageIndex] = true;
+        this.$nextTick(() => {
+          this.copyUrl()
+        })
       });
     },
     getItemData() {
@@ -1662,14 +1683,14 @@ type: "slide"*/
     openProject() {
       const url = `${location.origin}/t/${this.class_id}?p=${this.currentPageIndex}`;
       var windowObjectReference;
-      const strWindowFeatures =
-        "width=800,height=600,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
-
+      var strWindowFeatures =
+        "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
       windowObjectReference = window.open(
-        url,
+        "about:blank",
         "_blank",
         strWindowFeatures
       );
+      windowObjectReference.location = url;
     },
     open(model) {
       if (model == 0) {
@@ -1897,125 +1918,6 @@ type: "slide"*/
 </script>
 
 <style lang="scss">
-.custom-dialog.el-dialog {
-  // padding: 0;
-  // width: 937px;
-  // height: 770px;
-  background-color: #f00fff00;
-  border: 0px solid #00000000;
-  // border-radius: 8px;
-  .el-dialog__header {
-    display: none;
-  }
-  .el-dialog__body {
-    padding: 0;
-  }
-}
-</style>
-
-<style scoped>
-.page {
-  width: 100%;
-  height: 100%;
-  padding-top: 50px;
-  padding-bottom: 60px;
-  box-sizing: border-box;
-}
-.student_note_page {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  left: 0%;
-  top: 0%;
-  z-index: 9999;
-}
-.content {
-  width: 100%;
-  height: 100%;
-  background-color: #f4f4f4;
-}
-.control {
-  width: 100%;
-  height: 60px;
-  position: fixed;
-  bottom: 0%;
-  left: 0%;
-  background-color: #000000af;
-  z-index: 999;
-}
-.top_btn {
-  position: fixed;
-  padding: 0 20px;
-  height: 50px;
-  top: 0;
-  align-items: center;
-  z-index: 999;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-}
-.share_room {
-  width: 100px;
-  height: 30px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  color: white;
-  border-radius: 5px;
-  padding-top: 13px;
-  cursor: pointer;
-  margin-right: 20px;
-  font-size: 14px;
-}
-.online_status {
-  width: 50px;
-  height: 43px;
-  font-size: 30px;
-  line-height: 43px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-  margin-right: 20px;
-}
-
-.number_info {
-  width: 150px;
-  height: 30px;
-  background-color: #409eff;
-  color: white;
-  font-size: 14px;
-  border-radius: 5px;
-  text-align: center;
-  padding-top: 13px;
-  cursor: pointer;
-  margin-right: 20px;
-}
-
-.dialog_page {
-  display: flex;
-  flex-direction: column;
-}
-
-.opts {
-  display: flex;
-  flex-direction: row-reverse;
-  padding-top: 20px;
-}
-.leave_btn {
-  color: #ffffff;
-}
-.confirm_btn {
-  color: #000000;
-  margin-right: 20px;
-}
-.pptContent {
-  height: 100%;
-  width: 100%;
-  background-color: #f4f4f4;
-  overflow: hidden;
-}
-.readchat {
-  display: flex;
-}
+@import url(../assets/css/teacher.scss);
 </style>
     

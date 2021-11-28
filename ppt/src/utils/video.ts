@@ -5,8 +5,10 @@ import RecordRTC from 'recordrtc'
 import { hideLoading, showLoading, showToast } from './loading';
 import { upFireBaseFile } from './uploadFile';
 
-function onMediaError() {
-  // // console.error('media error', e);
+function onMediaError(e: any) {
+  if(e.toString().indexOf('Permission')) {
+    showToast('Unable to capture your camera. Please check', 'error');
+  }
 }
 const mediaConstraints = {
   audio: true,
@@ -21,7 +23,7 @@ const closePictureInPicture = () => {
   dom.exitPictureInPicture()
 }
 
-export const startRecordVideo = (domVideo: any) => {
+export const startRecordVideo = (domVideo: any, callback: any = () => null, fail: any = () => null) => {
   domVideoElement = domVideo
   domVideoElement.muted = true
   domVideoElement.volume = 0
@@ -41,10 +43,15 @@ export const startRecordVideo = (domVideo: any) => {
       sampleRate: 22050,
       mimeType: 'video/webm',
     });
-    mediaRecorder.startRecording();
-
     mediaRecorder.camera = camera;
-  }).catch(onMediaError);
+    setTimeout(() => {
+      mediaRecorder.startRecording();
+      callback && callback()
+    }, 2000)
+  }).catch((e) => {
+    onMediaError(e)
+    fail && fail()
+  });
 }
 
 export const pauseRecordVideo = () => {
@@ -84,6 +91,7 @@ export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promi
       domVideoElement.src = domVideoElement.srcObject = null;
       const blobData = mediaRecorder.getBlob()
       domVideoElement.src = URL.createObjectURL(blobData);
+      domVideoElement.play()
       // // console.log(URL.createObjectURL(blobData))
       const now = Date.now()
       let file = new window.File([blobData], `${now.toString()}.webm`, {type: "video/webm", lastModified: Date.now()})

@@ -1,5 +1,5 @@
 <template>
-  <div class="res-and-student">
+  <div class="res-and-list">
     <!-- <dash-switch-header /> -->
     <ul class="res-list" v-if="tab === 1">
       <li class="student-list-item" v-for="item in studentList" :key="item.user_id">
@@ -18,7 +18,7 @@
               <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div>
               <div>
                 <p class="user-name" v-if="item.user_name">{{item.user_name}}</p>
-                <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
+                <p class="user-name user-time">{{getTimeStr(item.updated_at || item.time)}}</p>
               </div>
             </div>
             <div class="ans-detail">
@@ -128,103 +128,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-  .res-and-student{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    margin-top: 10px;
-  }
-  .res-list{
-    flex: 1;
-    overflow-y: scroll;
-  }
-  .res-list-item{
-    width: 100%;
-    /* height: 280px; */
-    box-sizing: border-box;
-    margin-bottom: 28px;
-    padding: 0 28px;
-  }
-  .res-list-item-content{
-    width: 100%;
-    /* height: 100%; */
-    background: #FFFFFF;
-    border: 1px solid #F1F1F1;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);
-    opacity: 1;
-    box-sizing: border-box;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-  }
-  .user-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .user-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 26px;
-    margin-right: 11px;
-    background-color: red;
-    line-height: 52px;
-    text-align: center;
-    font-size: 20px;
-    font-family: Inter-Bold;
-    color: #fff;
-  }
-  .student-icon{
-    width: 44px;
-    height: 44px;
-    border-radius: 22px;
-    line-height: 44px;
-  }
-  .user-name {
-    font-size: 16px;
-    font-family: Inter-Bold;
-    line-height: 24px;
-    color: rgba(0, 0, 0, 1);
-    opacity: 1;
-    text-align: left;
-  }
-  .user-time {
-    font-size: 10px;
-    line-height: 14px;
-  }
-  .ans-detail{
-    flex: 1;
-    background-color: rgba(228, 228, 228, 1);
-    border-radius: 6px;
-  }
-  .student-list-item{
-    width: 100%;
-    height: 77px;
-    display: flex;
-    align-items: center;
-    padding-left: 50px;
-    box-sizing: border-box;
-  }
-  .ans-status{
-    width: 21px;
-    height: 21px;
-    margin-right: 14px;
-  }
-  .showResButoon{
-    width: 120px;
-    height: 30px;
-    border-radius: 4px;
-    background-color: rgba(21, 195, 154, 1);
-    font-size: 14px;
-    font-family: Inter-Bold;
-    line-height: 30px;
-    color: #FFFFFF;
-    cursor: pointer;
-    text-align: center;
-    position: relative;
-    margin: 0 auto 10px auto;
-  }
-</style>
