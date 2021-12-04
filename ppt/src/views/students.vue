@@ -244,7 +244,9 @@ import {
   readStudentComment,
   getStudentStoreToken,
   saveStudentStoreToken,
-  initStudentStoreSlideId
+  initStudentStoreSlideId,
+  saveStudentLocalStoreToken,
+  getStudentLocalStoreToken,
 } from "@/model/store.student";
 import { MessageBox } from "element-ui";
 import StudentComment from "@/components/students/studentComment.vue";
@@ -471,8 +473,14 @@ export default {
       });
     },
     loginWithoutToken() {
-      this.showLoginDialog = true;
-
+      const localToken = getStudentLocalStoreToken()
+      if(localToken) {
+        this.token = localToken
+        this.initWithToken()
+      } else {
+        this.showLoginDialog = true;
+      }
+      
       console.log("login without token!", this.showLoginDialog);
     },
     loginRoom(name, group_id) {
@@ -481,16 +489,18 @@ export default {
         this.$message.error("Please input your name");
         return;
       }
+      this.doAnmonymousLogin({name, group_id})
+    },
 
+    doAnmonymousLogin({name, group_id}) {
       anmonymousLogin(name, group_id).then(res => {
         console.log(res.token);
         this.token = res.token;
+        // 缓存匿名登录信息
+        saveStudentLocalStoreToken(res.token)
         this.initWithToken();
         this.showLoginDialog = false;
       });
-      // this.token = getStudentStoreToken();
-
-      //
     },
 
     googleLogin() {

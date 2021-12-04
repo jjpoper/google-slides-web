@@ -28,14 +28,6 @@ let unreadList: number[] = []
 //     }
 //   ]
 // }
-
-export const getStudentStoreToken = (): string => {
-  return getStore('student_token')
-}
-
-export const saveStudentStoreToken = (token: string) => {
-  saveStore('student_token', Array.isArray(token) ? token[0] : token)
-}
 // 拼接url 参数
 const saveStudentStore = (key: string, value: any) => {
   const uniqueKey = `${slideId}_s_${studentId}_${key}`
@@ -45,6 +37,23 @@ const saveStudentStore = (key: string, value: any) => {
 const getStudentStore = (key: string): any => {
   const uniqueKey = `${slideId}_s_${studentId}_${key}`
   return getStore(uniqueKey)
+}
+
+// 匿名登录缓存
+export const getStudentLocalStoreToken = (): string => {
+  return getStudentStore('l_token')
+}
+
+export const saveStudentLocalStoreToken = (value: string) => {
+  saveStudentStore('l_token', value)
+}
+
+export const getStudentStoreToken = (): string => {
+  return getStore('student_token')
+}
+
+export const saveStudentStoreToken = (token: string) => {
+  saveStore('student_token', Array.isArray(token) ? token[0] : token)
 }
 
 export const getStudentUid = (): string => {

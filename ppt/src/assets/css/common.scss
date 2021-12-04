@@ -89,6 +89,7 @@ html, button, input, select, textarea {
 }
 .custom-dialog.el-dialog {
   margin: 50px auto 0 !important; 
+  max-width: 900px;
 }
 .el-dialog__header {
 }
