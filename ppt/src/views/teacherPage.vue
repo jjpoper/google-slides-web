@@ -84,8 +84,8 @@
         <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
       <div style="display: flex">
-        <div class="share_room" @click="copyUrl()">Share Class</div>
-        <div style="margin-right: 20px; cursor: pointer" @click="shareScreen">
+        <div class="share_room" @click="copyUrl()">{{classRoomInfo.class_id}}</div>
+        <div v-if="false" style="margin-right: 20px; cursor: pointer" @click="shareScreen">
           <svg
             t="1634352581902"
             class="icon"
