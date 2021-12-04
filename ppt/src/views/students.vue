@@ -51,8 +51,8 @@
           v-if="
             currentItemData &&
             currentItemData.thumbnail_url &&
-            (!currentItemData.items[0] ||
-              currentItemData.items[0].type !== 'draw')
+            ((!currentItemData.items[0] ||
+              currentItemData.items[0].type !== 'draw') || meterialVisiable)
           "
         >
           <div class="st-ppt-outer">
@@ -69,7 +69,7 @@
         <div
           class="student-right"
           :style="`width: ${getWidthPercent(currentItemData.items[0].type)}`"
-          v-if="currentItemData && currentItemData.items[0]"
+          v-if="currentItemData && currentItemData.items[0] && !(meterialVisiable && currentItemData.items[0].type === 'draw' )"
         >
           <StudentsIndexItem
             :data="currentItemData"
