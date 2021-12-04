@@ -173,7 +173,7 @@ class LoadPicker {
 
     // var upload_directory = upload_url;
 
-    this.makeXMLHttpRequest(`${PPT.requestUrl}/file/upload`, formData);
+    this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
   }
 
   // 创建http请求

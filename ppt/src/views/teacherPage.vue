@@ -1011,6 +1011,7 @@ type: "slide"*/
           student.page_id = d.page_id;
           let findFlag = false;
           if (d.join_in.role == "student") {
+            console.log(d, 'join_in')
             for (let i = 0; i < this.studentList.length; i++) {
               if (this.studentList[i].user_id == student.user_id) {
                 this.studentList[i].count++;
@@ -1632,7 +1633,8 @@ type: "slide"*/
               hideLoading();
               // let url =
               //   "https://docs.google.com/presentation/d/" + _this.slide_id;
-              let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
+              // let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
+              let url = 'https://my.classcipe.com/teacher/main/created-by-me'
               window.location.href = url;
 
             }, 2000);
