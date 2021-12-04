@@ -27,7 +27,7 @@
                 @blur="blur"
               ></textarea>
               <div class="tftext-placeholder" v-show="showPlaceholder">
-                Lonve feedback for this response……
+                Leave feedback for this response……
               </div>
             </div>
             <div class="tffooter-button" @click="sendMessage">

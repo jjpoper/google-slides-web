@@ -27,7 +27,7 @@
             <div class="ppt-tips-item-content">
               <div class="ppt-tips-item-top">
                 <img
-                  src="../../assets/picture/smalltips.png"
+                  src="../../assets/picture/dash-tip.png"
                   width="24"
                   height="24"
                 />
@@ -39,13 +39,13 @@
                   style="cursor: pointer;"
                   v-if="isTeacher && !contenteditable" @click="editTips"
                 />
-                <img
+                <!-- <img
                   src="../../assets/picture/morshanchu.png"
                   width="11.25"
                   height="12"
                   class="moreshanchu"
                   v-if="isTeacher"
-                />
+                /> -->
               </div>
               <div  v-if="isTeacher"  style="position: relative">
                 <textarea v-model="tipsValue" :disabled="!contenteditable" class="ppt-tips-item-text" ref="pptTipstext" />
@@ -343,15 +343,14 @@ export default {
 .footer{
   position: absolute;
   height: 32px;
-  background: #E4E4E4;
-  opacity: 0.4;
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 16px;
   padding: 0 22px;
   font-size: 14px;
   font-family: Segoe UI;
   font-weight: 400;
   line-height: 32px;
-  color: #808191;
+  color: #fff;
   left: 10px;
   bottom: -42px;
 }

@@ -1520,7 +1520,7 @@ type: "slide"*/
       copy(this.getStudentUrl(anonymous));
       if (this.copyLinkStr && this.copyLinkStr.length > 0) {
       } else {
-        showToast("copy link success");
+        showToast("Link copied successfully");
         this.copyLinkStr = this.getStudentUrl();
       }
 

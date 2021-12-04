@@ -1,6 +1,5 @@
 <template>
   <div class="panel">
-    <student-tips-modal />
     <div v-if="isStudentPaced" class="arrow_opts">
       <button class="control-bar__button">
         <div class="control-bar__icon" @click="lastPage()">
@@ -35,6 +34,7 @@
           </svg>
         </div>
       </button>
+      <student-tips-modal />
     </div>
 
     <div class="info_area">

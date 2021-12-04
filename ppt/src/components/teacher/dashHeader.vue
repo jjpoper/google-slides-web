@@ -8,11 +8,11 @@
       <p>课程标题：{{classRoomInfo.class_name}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">
-          <div class="tab" @click="openProject">Open project in new window</div>
-          <div class="tab" @click="turnModel">{{isStundentPaced ? 'Stop' : 'Turn on'}} Student-Paced</div>
-          <div class="tab">Ipad/Phone Control</div>
-          <div class="tab" v-if="isClosed" @click="reopenClass">Reopen This Session</div>
-          <div class="tab" v-else @click="endLesson">End This Session</div>
+          <div class="tab" @click="openProject">Present in new window</div>
+          <div class="tab" @click="turnModel">{{isStundentPaced ? 'Stop' : 'Turn on'}} student-paced</div>
+          <div class="tab">Ipad/Phone control</div>
+          <div class="tab" v-if="isClosed" @click="reopenClass">Reopen this session</div>
+          <div class="tab" v-else @click="endLesson">End this session</div>
         </div>
         <div class="more-icon" slot="reference"><i></i><i></i><i></i></div>
       </el-popover>
@@ -28,7 +28,7 @@
       >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div>
     </div>
     <el-dialog
-      title="The class is still in progress, are you sure you want to leave?"
+      title="Class is still in progress, are you sure you want to leave?"
       :visible.sync="showBackConfirm"
       :append-to-body="true"
     >

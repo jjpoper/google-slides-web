@@ -4,7 +4,7 @@
       <el-input
         type="textarea"
         :autosize="{ minRows: 3 }"
-        placeholder="Please input somthing"
+        placeholder="Please input answer(s)"
         v-model="item.content"
         @input="onInputText(index)"
         @focus="onFocusIndex(index)"
@@ -27,7 +27,7 @@
       @change="changeLocked('text')"
       active-text="show answer"
     />
-    <el-button type="text" @click="addInput()" :disabled="addDisable || showCorrect">+Add Another One</el-button>
+    <el-button type="text" @click="addInput()" :disabled="addDisable || showCorrect">+Add another option</el-button>
   </div>
 </template>
 <style>
