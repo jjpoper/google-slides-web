@@ -439,7 +439,8 @@ type: "slide"*/
       showNewPromptDialog: false,
       inputDialog: false,
       sendControlDelay: null,
-      metrialStatusMap: {}
+      metrialStatusMap: {},
+      showResponseMap: {}
     };
   },
   mounted() {
@@ -527,6 +528,7 @@ type: "slide"*/
     currentPageIndex() {
       this.sendPageChangeToStudents();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
+      this.checkResponseStatus()
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -1577,9 +1579,14 @@ type: "slide"*/
         }
       }
     },
-
+    checkResponseStatus() {
+      this.showResponse = this.showResponseMap[this.currentPageId] || false
+    },
     showres() {
       this.showResponse = !this.showResponse;
+      this.showResponseMap[this.currentPageId] = this.showResponse
+    },
+    sendResponseControl() {
       controlProject({"result": this.showResponse, "controlType": 1})
     },
     leavePage() {
