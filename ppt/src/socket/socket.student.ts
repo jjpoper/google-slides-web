@@ -45,13 +45,13 @@ const BaseWsRequest = (action: string, message: string) => {
 
 // 定时join，避免消息收不到
 const TimerJoinRoom = () => {
-  setInterval(() => {
-    const {
-      classId,
-      token
-    } = BaseStudentParams
-    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
-  }, 10000)
+  // setInterval(() => {
+  //   const {
+  //     classId,
+  //     token
+  //   } = BaseStudentParams
+  //   BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+  // }, 10000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
