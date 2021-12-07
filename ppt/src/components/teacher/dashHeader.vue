@@ -18,7 +18,7 @@
       </el-popover>
     </div>
     <div class="right-btns">
-      <div class="invite-button" @click="share">
+      <div class="invite-button" @click="share" v-if="classRoomInfo">
         <img src="../../assets/picture/invite.png" class="invite"/>
         <span>{{classRoomInfo.class_id}}</span>
       </div>

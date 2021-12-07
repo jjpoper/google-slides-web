@@ -46,11 +46,11 @@ const BaseWsRequest = (action: string, message: string) => {
 // 定时join，避免消息收不到
 const TimerJoinRoom = () => {
   // setInterval(() => {
-  //   const {
-  //     classId,
-  //     token
-  //   } = BaseStudentParams
-  //   BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+    const {
+      classId,
+      token
+    } = BaseStudentParams
+    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
   // }, 10000)
 }
 
@@ -61,6 +61,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
   BaseStudentParams.token = token
 
   socket.on('connect', () => {
+    // console.log('connect 状态 新链接')
     onLineStatusChanged(true)
     if(!isJoined) {
       isJoined = true
@@ -73,6 +74,8 @@ export const createSo = (room: string, token: string, classId: string, callback:
         }
         TimerJoinRoom()
       });
+    } else {
+      TimerJoinRoom()
     }
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
