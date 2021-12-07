@@ -29,7 +29,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install
+        run: |
+          cd ppt
+          yarn install
 
       - name: Build-dev
         if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
