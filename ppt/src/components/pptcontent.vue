@@ -1,5 +1,5 @@
 <template>
-  <div v-if="url" class="ppt">
+  <div v-if="url" id="pptContainer" class="ppt">
     <div v-if="teacher" class="teacherppt" :style="`width: ${width}px; height: ${height}px; background-image:url(${url})`">
     </div>
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
@@ -92,7 +92,8 @@ export default {
     this.filterList()
   },
   mounted() {
-    this.width = document.documentElement.clientWidth - this.widthOffset;
+    // this.width = document.documentElement.clientWidth - this.widthOffset;
+    this.width = document.getElementById('pptContainer').offsetWidth
     this.height = document.documentElement.clientHeight - 110;
     this.parentHeight = this.height - 76
     // if(!this.defaultShowMeterial) {

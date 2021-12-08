@@ -34,7 +34,7 @@
             <div v-for="(item, index) in filterStudentsList" :key=" item.user_id" :class="`th ${index % 2 !== 0 && 'gray'}`">
               <div class="tr tname">{{item.name}}</div>
               <div class="tr tname">{{item.state }}</div>
-              <div class="tr tname">{{item.user_id}}</div>
+              <div class="tr tname">{{item.user_id.indexOf("@") > -1 ? item.user_id : ''}}</div>
               <div class="tr tname">{{getGroupName(item.user_id).group_name}}</div>
               <div class="tr tname"></div>
             </div>

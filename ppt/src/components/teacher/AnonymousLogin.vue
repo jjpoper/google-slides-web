@@ -5,11 +5,11 @@
       <div @click="closeBtn" class="common-close-btn"></div>
 
       <span class="title_1">Invite students to study</span>
-      <span class="title_2">Join at join.classcipe.com</span>
+      <span class="title_2">Join at classcipe.com</span>
       <div class="class_number">{{ getPass }}</div>
 
       <div class="opt--item" style="margin-top: 20px">
-        <span class="opt--text">Classname</span>
+        <span class="opt--text">Session name</span>
         <div class="room--area">
           <el-input
               placeholder="create new class"
@@ -26,7 +26,7 @@
       </div>
 
       <div class="opt--item" style="margin-top: 20px">
-        <span class="opt--text">Option</span>
+        <span class="opt--text">Choose class</span>
         <el-popover placement="bottom" width="300" v-model="visible">
           <div class="room--area">
             <div
@@ -80,7 +80,7 @@
       </div>
 
       <div class="opt--item" v-if="time_type == 2">
-        <span class="opt--text"></span>
+        <span class="opt--text">Allocated time</span>
         <el-select
           v-model="time_down"
           placeholder="--Select--"
@@ -119,11 +119,9 @@
       </div>
 
       <div class="opt--item">
-        <span class="opt--text"></span>
-        <div style="display: flex; width: 315px; align-items: center">
-          <div style="flex: 1"></div>
+        <div style="display: flex; width: 435px; align-items: center">
           <div class="anonymous" style="margin-right: 10px">
-            Anonymous logins
+            Students must complete their work within allocated time
           </div>
           <div
             class="anonymous--switch"
@@ -148,6 +146,10 @@
             ></div>
           </div>
         </div>
+      </div>
+
+      <div class="anonymous" style="width: 315px; text-align: right;margin-left: 130px">
+        Anonymous logins
       </div>
 
       <div class="link--area">
@@ -223,7 +225,7 @@ export default {
         },
         {
           value: 2,
-          label: "Count down mode",
+          label: "Countdown mode",
         },
       ],
       time_down: "",

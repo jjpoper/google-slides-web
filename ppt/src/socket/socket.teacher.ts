@@ -43,19 +43,20 @@ const BaseWsRequest = (action: string, message: string) => {
 }
 
 const TimerJoinRoom = () => {
-  setInterval(() => {
+  // setInterval(() => {
     const {
       classId,
       token
     } = BaseTeacherParams
     BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
-  }, 10000)
+  // }, 10000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
   // console.log(classId, "create ws socket")
   const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
   socket.on('connect', () => {
+    // console.log('connect 状态 新链接')
     if(!isJoined) {
       isJoined = true
       // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
@@ -63,6 +64,8 @@ export const createSo = (room: string, token: string, classId: string, callback:
         // console.log("老师加入房间")
         TimerJoinRoom()
       });
+    } else {
+      TimerJoinRoom()
     }
 
     // console.log('connect 状态 上线')

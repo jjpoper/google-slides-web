@@ -109,13 +109,13 @@ export default {
 }
 .student-tips{
   display: flex;
-  background-image: url(../../assets/picture/smalltips.png);
-  background-size: 62px 66px;
+  background-image: url(../../assets/picture/dash-tip.png);
+  background-size: contain;
   background-repeat: no-repeat;
-  min-height: 66px;
+  min-height: 62px;
   min-width: 62px;
   padding-left: 70px;
-  line-height: 66px;
+  line-height: 62px;
   align-self: center;
   margin: 0 50px 50px;
 }

@@ -84,8 +84,8 @@
         <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
       </div>
       <div style="display: flex">
-        <div class="share_room" @click="copyUrl()">Share Class</div>
-        <div style="margin-right: 20px; cursor: pointer" @click="shareScreen">
+        <div class="share_room" v-if="classRoomInfo" @click="copyUrl()">{{classRoomInfo.class_id}}</div>
+        <div v-if="false" style="margin-right: 20px; cursor: pointer" @click="shareScreen">
           <svg
             t="1634352581902"
             class="icon"
@@ -439,7 +439,8 @@ type: "slide"*/
       showNewPromptDialog: false,
       inputDialog: false,
       sendControlDelay: null,
-      metrialStatusMap: {}
+      metrialStatusMap: {},
+      showResponseMap: {}
     };
   },
   mounted() {
@@ -527,6 +528,7 @@ type: "slide"*/
     currentPageIndex() {
       this.sendPageChangeToStudents();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
+      this.checkResponseStatus()
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -1011,6 +1013,7 @@ type: "slide"*/
           student.page_id = d.page_id;
           let findFlag = false;
           if (d.join_in.role == "student") {
+            console.log(d, 'join_in')
             for (let i = 0; i < this.studentList.length; i++) {
               if (this.studentList[i].user_id == student.user_id) {
                 this.studentList[i].count++;
@@ -1357,9 +1360,9 @@ type: "slide"*/
       //   this.getAllSlides();
       //   hideLoading();
       // }
-      hideLoading();
-      this.getAllSlides();
-      return
+      // hideLoading();
+      // this.getAllSlides();
+      // return
       queryRefreshResult(code, token)
         .then(res => {
           if (res.data.status === "processing") {
@@ -1517,7 +1520,7 @@ type: "slide"*/
       copy(this.getStudentUrl(anonymous));
       if (this.copyLinkStr && this.copyLinkStr.length > 0) {
       } else {
-        showToast("copy link success");
+        showToast("Link copied successfully");
         this.copyLinkStr = this.getStudentUrl();
       }
 
@@ -1576,9 +1579,14 @@ type: "slide"*/
         }
       }
     },
-
+    checkResponseStatus() {
+      this.showResponse = this.showResponseMap[this.currentPageId] || false
+    },
     showres() {
       this.showResponse = !this.showResponse;
+      this.showResponseMap[this.currentPageId] = this.showResponse
+    },
+    sendResponseControl() {
       controlProject({"result": this.showResponse, "controlType": 1})
     },
     leavePage() {
@@ -1632,7 +1640,8 @@ type: "slide"*/
               hideLoading();
               // let url =
               //   "https://docs.google.com/presentation/d/" + _this.slide_id;
-              let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
+              // let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
+              let url = 'https://my.classcipe.com/teacher/main/created-by-me'
               window.location.href = url;
 
             }, 2000);

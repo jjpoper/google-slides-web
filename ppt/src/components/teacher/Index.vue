@@ -21,7 +21,7 @@
       <span></span>
       <span></span>
       <span></span>
-    </div>Waiting For Responses
+    </div>Waiting For Response(s)
   </div>
 </template>
 

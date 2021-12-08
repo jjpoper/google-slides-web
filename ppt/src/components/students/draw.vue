@@ -1,5 +1,6 @@
 <template>
-  <div id="canvasouter">
+<div class="st-ppt-outer">
+  <div id="canvasouter" class="ppt-out-line">
     <div style="position: relative">
       <canvas id="canvas" :style="`background-image:url(${url})`"></canvas>
 
@@ -647,6 +648,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -1131,5 +1133,16 @@ export default {
   height: 50px;
   align-items: center;
   cursor: pointer;
+}
+.st-ppt-outer {
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+.ppt-out-line {
+  border: 1px solid #707070;
+  box-shadow: 0px 10px 12px rgba(126, 126, 126, 0.16);
+  box-sizing: border-box;
 }
 </style>

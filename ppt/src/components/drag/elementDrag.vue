@@ -4,7 +4,7 @@
     :h="rect.height"
     :x="rect.left"
     :y="rect.top"
-    :parentW="parentWidth"
+    :parentW="parentW"
     :parentH="parentHeight"
     :axis="rect.axis"
     :isActive="false"
@@ -21,6 +21,7 @@
     v-on:resizestop="changeData($event, index)"
     v-on:activated="positiveChange('activated')"
     v-on:deactivated="deactivated"
+    v-on:resizing="onResize"
     dragHandle=".dragitem"
     ref="vueDrag"
     v-if="rect.id"
@@ -72,6 +73,7 @@
            -->
           <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
         </div>
+        <div class="transformmask" v-show="isResizing"></div>
       </div>
     </el-popover>
   </VueDragResize>
@@ -114,13 +116,37 @@ export default {
       default: false
     }
   },
+  computed: {
+    parentW() {
+      let width = 500
+      try {
+        if(this.parentWidth) {
+          if(this.rect.source !== 'add-on' && this.teacher) {
+            width = this.parentWidth - 100
+          }
+          width = this.parentWidth - 60
+        }
+      } catch(e){}
+      return width
+    }
+  },
   components: {
     VueDragResize,
     AudioPlayer,
     Youtube
   },
+  data() {
+    return {
+      isResizing: false // 在放大缩小期间，挡住元素，避免youtube里面的iframe拦截了鼠标事件
+    }
+  },
   methods: {
+    onResize() {
+      this.isResizing = true
+      console.log('1onResize')
+    },
     changeData(newRect, index) {
+      this.isResizing = false
       if(this.teacher && window.isWindowActive) {
         this.update(newRect, index)
       }

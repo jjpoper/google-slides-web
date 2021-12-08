@@ -24,7 +24,7 @@
 
       <div class="with-outer">
         <i :class="`icon-circle ${!isClosed && 'green-icon'}`"></i>
-        <strong>{{ isClosed ? "Closed" : current_model }}</strong>
+        <strong>{{ isClosed ? "Closed" : current_model === 'Insturctor-Paced' ? 'Teacher-paced' : current_model }}</strong>
       </div>
     </div>
     <!-- <div

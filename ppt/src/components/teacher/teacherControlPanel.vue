@@ -91,7 +91,7 @@
 
       <div class="with-outer" v-else>
         <i :class="`icon-circle ${!isClosed && 'green-icon'}`"></i>
-        <strong>{{ isClosed ? "Closed" : current_model }}</strong>
+        <strong>{{ isClosed ? "Closed" : current_model === 'Insturctor-Paced' ? 'Teacher-Paced' :  current_model}}</strong>
       </div>
     </div>
 
@@ -129,7 +129,7 @@
         />
       </svg>
       <strong class="button_text"
-        >{{ isLoked() ? "UnLock " : "Lock " }} Screens</strong
+        >{{ isLoked() ? "Unlock " : "Lock " }} Screens</strong
       >
     </div>
 
@@ -143,7 +143,7 @@
         <div class="fullbgimg res-show"></div>
       </div>
       <strong class="button_text"
-        >{{ isResponseShow ? "Hide " : "Show " }} Response</strong
+        >{{ isResponseShow ? "Hide " : "Show " }} Response(s)</strong
       >
     </div>
     <!--material-->
@@ -159,7 +159,7 @@
         ></div>
       </div>
       <strong class="button_text">{{
-        meterialVisiable ? "Material hiding" : "Display material"
+        meterialVisiable ? "Material Hiding" : "Display Material(s)"
       }}</strong>
     </div>
 
