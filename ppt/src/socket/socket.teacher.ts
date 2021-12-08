@@ -42,7 +42,7 @@ const BaseWsRequest = (action: string, message: string) => {
   }
 }
 
-const TimerJoinRoom = () => {
+const rJoinRoom = () => {
   // setInterval(() => {
     const {
       classId,
@@ -50,6 +50,16 @@ const TimerJoinRoom = () => {
     } = BaseTeacherParams
     BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
   // }, 10000)
+}
+
+const sendHeartBreak = () => {
+  setInterval(() => {
+    const {
+      classId,
+      token
+    } = BaseTeacherParams
+    BaseWsRequest('onHeartBeat', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
+  }, 10000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
@@ -62,10 +72,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
       // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
       socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
         // console.log("老师加入房间")
-        TimerJoinRoom()
+        sendHeartBreak()
       });
     } else {
-      TimerJoinRoom()
+      rJoinRoom()
     }
 
     // console.log('connect 状态 上线')

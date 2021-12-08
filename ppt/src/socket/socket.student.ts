@@ -44,7 +44,7 @@ const BaseWsRequest = (action: string, message: string) => {
 }
 
 // 定时join，避免消息收不到
-const TimerJoinRoom = () => {
+const rJoinRoom = () => {
   // setInterval(() => {
     const {
       classId,
@@ -52,6 +52,15 @@ const TimerJoinRoom = () => {
     } = BaseStudentParams
     BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
   // }, 10000)
+}
+const sendHeartBreak = () => {
+  setInterval(() => {
+    const {
+      classId,
+      token
+    } = BaseStudentParams
+    BaseWsRequest('onHeartBeat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+  }, 3000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
@@ -72,10 +81,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
           // @ts-ignore
           joinCallback()
         }
-        TimerJoinRoom()
+        sendHeartBreak()
       });
     } else {
-      TimerJoinRoom()
+      rJoinRoom()
     }
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
@@ -134,7 +143,6 @@ export const createSo = (room: string, token: string, classId: string, callback:
   windowStudentWs = socket
   return socket
 }
-
 
 // 新增 remark 反馈数据
 export const askToAddNewRemarkItem = (data: any) => {
