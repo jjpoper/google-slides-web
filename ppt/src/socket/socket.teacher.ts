@@ -58,8 +58,8 @@ const sendHeartBreak = () => {
       classId,
       token
     } = BaseTeacherParams
-    BaseWsRequest('onHeartBeat', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
-  }, 10000)
+    BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
+  }, 3000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {

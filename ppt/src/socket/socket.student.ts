@@ -59,7 +59,7 @@ const sendHeartBreak = () => {
       classId,
       token
     } = BaseStudentParams
-    BaseWsRequest('onHeartBeat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+    BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
   }, 3000)
 }
 
