@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable max-len */
 /* eslint-disable no-// console */
 /* eslint-disable prefer-template */
@@ -36,6 +37,7 @@ export const setStudentWxBaseParams = ({
 
 let windowStudentWs: any = null
 let isJoined = false
+let heartOK = true
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -55,12 +57,16 @@ const rJoinRoom = () => {
 }
 const sendHeartBreak = () => {
   setInterval(() => {
+    if(!heartOK) {
+      rJoinRoom()
+    }
+    heartOK = false
     const {
       classId,
       token
     } = BaseStudentParams
     BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
-  }, 3000)
+  }, 5000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
@@ -139,6 +145,15 @@ export const createSo = (room: string, token: string, classId: string, callback:
   });
   socket.on('update-correct-answer', (data: any) => {
     callback({ mtype: SocketEventsEnum.UPDATE_RIGHT_ANSWERS, ...JSON.parse(data) })
+  });
+  socket.on('msg', (data: string) => {
+    try {
+      const isSuccess = JSON.parse(data).message === 'success'
+      if(isSuccess) {
+        heartOK = true
+      }
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
   windowStudentWs = socket
   return socket

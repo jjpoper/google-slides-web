@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable prefer-template */
 /* eslint-disable no-// console */
 import PPT from '../utils/pptConfig'
@@ -35,6 +36,7 @@ export const setTeacherWxBaseParams = ({
 
 let windowStudentWs: any = null
 let isJoined = false
+let heartOK = true
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -54,12 +56,16 @@ const rJoinRoom = () => {
 
 const sendHeartBreak = () => {
   setInterval(() => {
+    if(!heartOK) {
+      rJoinRoom()
+    }
+    heartOK = false
     const {
       classId,
       token
     } = BaseTeacherParams
     BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
-  }, 3000)
+  }, 5000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
@@ -146,6 +152,15 @@ export const createSo = (room: string, token: string, classId: string, callback:
   socket.on('delete-response', (data: any) => {
     // console.log("删除答案" + data);
     callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
+  });
+  socket.on('msg', (data: string) => {
+    try {
+      const isSuccess = JSON.parse(data).message === 'success'
+      if(isSuccess) {
+        heartOK = true
+      }
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
 
   windowStudentWs = socket
