@@ -119,6 +119,7 @@ svg {
   transform: rotate(0);
 }
 .shouqi.ppt-shouqi.zhankai{
+  top: -7px;
   transform: rotate(180deg);
 }
 
