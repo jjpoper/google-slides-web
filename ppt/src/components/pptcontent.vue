@@ -158,8 +158,15 @@ export default {
       }
       this.hasData = leftList.length > 0 || rectList.length > 0
       this.rectMediaList = rectList
-      this.leftSortList = leftList
-      console.log(this.meterialVisiable, this.defaultShowMeterial, this.hasData)
+      this.leftSortList = leftList.reverse()
+      // .map((item, index) => {
+      //   return {
+      //     ...item,
+      //     top: index * 60 + 60,
+      //     left: 0
+      //   }
+      // })
+      console.log(this.filterAddedMediaList, this.meterialVisiable, this.defaultShowMeterial, this.hasData, this.rectMediaList, this.leftSortList)
     },
     getIframe(url){
       const formatId = url.split('?v=')[1]

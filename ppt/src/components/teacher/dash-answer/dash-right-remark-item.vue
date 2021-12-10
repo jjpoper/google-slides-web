@@ -1,6 +1,6 @@
 <template>
   <div class="remark-item-content">
-    <video
+    <VideoPlayer
       v-if="item.content && item.content.mediaType === 'video'"
       controlslist="nodownload"
       controls

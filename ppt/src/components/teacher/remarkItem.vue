@@ -12,7 +12,7 @@
               >
                 <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
                   <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
-                    <video
+                    <VideoPlayer
                       v-if="item.type === 'video'"
                       controlslist="nodownload"
                       controls=""

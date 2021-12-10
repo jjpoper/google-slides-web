@@ -25,7 +25,7 @@
                 </div>
                 <div class="right-answer" v-else-if="getIndexOf(item.title, '.webm') > -1">
                   <div class="pptimage">
-                    <video
+                    <VideoPlayer
                       controlslist="nodownload"
                       controls
                       preload="meta"
@@ -63,7 +63,7 @@
                 class="rightcommentmediadetail"
                 v-if="item.commentType === 'video' || item.commentType === 'audio'"
               >
-                <video
+                <VideoPlayer
                   v-if="item.commentType === 'video'"
                   preload="meta"
                   controlslist="nodownload"

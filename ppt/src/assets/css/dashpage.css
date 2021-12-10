@@ -25,9 +25,7 @@
   cursor: pointer;
   fill: white;
 }
-svg {
-  opacity: 0.35;
-}
+
 
 .student_name {
   display: flex;

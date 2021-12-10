@@ -50,7 +50,7 @@
           viewBox="0 0 26 26.001"
           fill="#15c39a"
           slot="suffix"
-          style="margin-top: 10px; cursor: pointer"
+          :style="`margin-top: 10px; cursor: pointer; opacity: ${url ? 1 : 0.2}`"
           @click="refreshVideo"
         >
           <path
@@ -231,6 +231,7 @@ export default {
       //    this.refreshVideo();
     },
     refreshVideo() {
+      if(!this.url) return
       this.showVideo = true;
       //https://youtu.be/hCVHjyjh3WI   https://www.youtube.com/watch?v=hCVHjyjh3WI&t=2187s˝
       this.getTime(this.url.split("?v=")[1].split("&")[0]);

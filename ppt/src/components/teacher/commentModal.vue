@@ -42,7 +42,7 @@
             :userData="commentData"
             :key="index.toString()">
             <div class="tffeed-item feed-media" v-if="item.commentType === 'video'">
-              <video preload="meta" controls="false" :src="item.title" style="width:100%;" />
+              <VideoPlayer preload="meta" controls="false" :src="item.title" style="width:100%;" />
             </div>
             <div class="tffeed-item feed-media feed-media-audio" v-else-if="item.commentType === 'audio'">
               <audio-player :url="item.title"/>
