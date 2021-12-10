@@ -690,8 +690,8 @@ export default {
       fontFamilies: [
         "Microsoft YaHei",
         "Arial",
-        "Kirang Haerang",
-        "Dancing Script",
+        // "Kirang Haerang",
+        // "Dancing Script",
       ],
       colors: [
         "#FF8D87",
@@ -935,9 +935,9 @@ export default {
 <style scoped>
 @import url("../../assets/css/color.css");
 
-@import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
 
-@import url("https://fonts.googleapis.com/css2?family=Kirang+Haerang&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kirang+Haerang&display=swap"); */
 </style>
 <style scoped>
 #diycolor {
