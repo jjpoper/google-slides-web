@@ -4,7 +4,6 @@
     controls=""
     :src="src"
     preload="auto"
-    disablePictureInPicture
   />
 </template>
 <script>
