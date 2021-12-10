@@ -406,7 +406,7 @@ export default class Draw {
     closeImg.id = textItem.self_id + "_close_btn";
     closeImg.style.position = 'fixed';
     closeImg.style.cursor = "pointer";
-    closeImg.setAttribute('src', `${PPT.requestUrl}upload/5e6fc987f77738c5.png`);//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
+    closeImg.setAttribute('src', 'https://firebasestorage.googleapis.com/v0/b/classcipe-dev.appspot.com/o/imageResource%2Ferror.png?alt=media&token=7fc0cf0b-bcc4-4a56-849d-f3c09ca9116d');//src\assets\picture\closecom.png//C:\Users\Administrator\Desktop\google-slides-web\ppt\src\assets\picture\closecom.png
     closeImg.style.left = `${textItem.left - 20}px`;
     closeImg.style.top = `${textItem.top + 10}px`;
     closeImg.width = 20;

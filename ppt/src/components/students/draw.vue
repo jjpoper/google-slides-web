@@ -934,6 +934,9 @@ export default {
 </script>
 <style scoped>
 @import url("../../assets/css/color.css");
+svg{
+  opacity: 1;
+}
 
 /* @import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
 
@@ -1008,6 +1011,7 @@ export default {
 
 .cls-1-delete {
   fill: rgb(171, 178, 218);
+  /* fill: rgb(0, 0, 0); */
 }
 .cls-1-delete:hover {
   fill: #36425a;
