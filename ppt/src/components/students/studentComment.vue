@@ -25,7 +25,7 @@
                 </div>
                 <div class="right-answer" v-else-if="getIndexOf(item.title, '.webm') > -1">
                   <div class="pptimage">
-                    <video
+                    <VideoPlayer
                       controlslist="nodownload"
                       controls
                       preload="meta"
@@ -37,8 +37,8 @@
                 <div class="right-answer" v-else-if="getIndexOf(item.title, '[') > -1">
                   <p v-for="(text,index) in JSON.parse(item.title)" :key="index">{{text}}</p>
                 </div>
-                <div class="right-answer" v-else-if="getIndexOf(item.title) === 'file' ">
-                  {{item.title.fileName}}
+                <div class="right-answer" v-else-if="getIndexOf(item.title) === 'file'">
+                  <dash-right-remark-item :item='{content: item.title}' />
                 </div>
                 <div class="right-answer" v-else>{{item.title}}</div>
               </div>
@@ -63,7 +63,7 @@
                 class="rightcommentmediadetail"
                 v-if="item.commentType === 'video' || item.commentType === 'audio'"
               >
-                <video
+                <VideoPlayer
                   v-if="item.commentType === 'video'"
                   preload="meta"
                   controlslist="nodownload"
@@ -100,7 +100,11 @@ import {mapState, mapGetters, mapActions} from 'vuex'
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
 import AudioPlayer from "../common/audioPlayer.vue";
+import DashRightRemarkItem from '../teacher/dash-answer/dash-right-remark-item.vue';
 export default {
+  components: {
+    DashRightRemarkItem
+  },
   computed: {
     ...mapState({
       unreadStudentCommentIds: state => state.student.unreadStudentCommentIds,
@@ -139,7 +143,7 @@ export default {
       unreadIdList: []
     };
   },
-  components: { base64image, AudioPlayer },
+  components: { base64image, AudioPlayer, DashRightRemarkItem },
   mounted() {
     // this.showStudentModal()
     EventBus.$on(ModalEventsNameEnum.SHOW_STUDENT_MODAL, status => {
@@ -206,9 +210,12 @@ export default {
       const typeName = Object.prototype.toString.call(titleValue)
       if(typeName === '[object String]') {
         return titleValue.indexOf(indexKey)
-      } else if(typeName === '[object Object]' && titleValue.fileName) {
+      } else if(typeName === '[object Object]') {
         return 'file'
       }
+    },
+    checkType(title) {
+      return (typeof (title)).toLocaleUpperCase()
     }
   }
 };

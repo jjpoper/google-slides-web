@@ -65,7 +65,7 @@
           v-if="shouldShowPageAnswer"/>
       </div>
       <tips-list v-if="overviewModalVisiable" :filterTips="filterTips"/>
-      <div :class="`shouqi ${!showPPTList && 'zhankai'}`" @click="togglePPTList"></div>
+      <div :class="`shouqi ${!showPPTList && 'zhankai'} ppt-shouqi`" @click="togglePPTList"></div>
     </div>
   </div>
 </template>

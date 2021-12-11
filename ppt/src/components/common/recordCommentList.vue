@@ -12,7 +12,7 @@
           <p v-if="item.user_name">{{ item.user_name }}</p>
           <p>{{ getTimeStr(item.time) }}</p>
           <!-- <p>{{item.value}}</p> -->
-          <video
+          <VideoPlayer
             v-if="item.type === 'video'"
             controlslist="nodownload"
             controls=""

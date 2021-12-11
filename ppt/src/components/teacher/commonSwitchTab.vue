@@ -39,10 +39,19 @@ export default {
     changeNextTab(tab) {
       controlProject({"result": {"tab": tab}, "controlType": 6})
       this.changeTab(tab)
+      this.closePicture()
     },
     listenterChangeTab(result) {
       if(this.currentTab !== result.tab) {
         this.changeTab(result.tab)
+      }
+      this.closePicture()
+    },
+    closePicture() {
+      if(document.pictureInPictureElement) {
+        try {
+          document.exitPictureInPicture()
+        } catch(e) {}
       }
     }
   }

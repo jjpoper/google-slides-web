@@ -208,7 +208,7 @@ export default {
     },
     showComment(type) {
       const { pageId, itemId, studentId, title, name, answertime } = this.data;
-      // console.log(answertime)
+      console.log(title, 'title 1')
       EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
         pageId,
         itemId,

@@ -42,7 +42,7 @@
             :userData="commentData"
             :key="index.toString()">
             <div class="tffeed-item feed-media" v-if="item.commentType === 'video'">
-              <video preload="meta" controls="false" :src="item.title" style="width:100%;" />
+              <VideoPlayer preload="meta" controls="false" :src="item.title" style="width:100%;" />
             </div>
             <div class="tffeed-item feed-media feed-media-audio" v-else-if="item.commentType === 'audio'">
               <audio-player :url="item.title"/>
@@ -110,6 +110,7 @@ export default {
       ModalEventsNameEnum.TEACHER_COMMENT_MODAL,
       ({ pageId, itemId, title, studentId, type, name, answertime }) => {
         // 通知展示当前pageid，当前itemid的评论框
+        console.log(title, 'title')
         this.showModal({ pageId, itemId, title, studentId, type, name, answertime });
       }
     );
@@ -131,6 +132,7 @@ export default {
         sname: name,
         answertime
       };
+      console.log('title', 'modal')
       this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
       this.modalVisiable = true;
     },

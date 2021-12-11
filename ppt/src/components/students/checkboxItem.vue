@@ -67,6 +67,10 @@
   border-radius: 10px;
   line-height: 50px;
   position: relative;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 50px;
 }
 .textArea {
   display: flex;

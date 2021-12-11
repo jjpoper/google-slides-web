@@ -12,7 +12,7 @@
         class="upload-file"
         @click="showUnUpload"/>   -->
     </div>
-    <common-progress :progress="progress" :cancel="cancel" :showCancel="true"/>
+    <common-progress :progress="progress" :cancel="cancel" :appendBody="true"/>
   </div>
 </template>
 <script>
@@ -62,6 +62,7 @@ export default {
       )
     },
     onProgressUpLoad(progress) {
+      console.log(progress)
       this.progress = progress
     },
     cancel() {

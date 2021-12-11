@@ -68,17 +68,17 @@
         :ref="index === 0 ? 'activeRef': ''"
       >
         <div class="item-header">
-          <div class="user-info">
+          <!-- <div class="user-info">
             <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
             <div>
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
               <p class="user-name user-time">{{getTimeStr(item.updated_at)}}</p>
             </div>
-          </div>
+          </div> -->
           <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
-          <video
+          <VideoPlayer
             v-if="item.content && item.content.mediaType === 'video'"
             controlslist="nodownload"
             controls

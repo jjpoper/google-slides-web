@@ -25,9 +25,7 @@
   cursor: pointer;
   fill: white;
 }
-svg {
-  opacity: 0.35;
-}
+
 
 .student_name {
   display: flex;
@@ -110,6 +108,17 @@ svg {
 .shouqi.zhankai{
   top: -7px;
   transform: rotate(-90deg);
+}
+.shouqi.ppt-shouqi{
+  top: 104px;
+  width: 100px;
+  height: 30px;
+  background-image: url(../../assets/picture/shouqi.png);
+  transform: rotate(0);
+}
+.shouqi.ppt-shouqi.zhankai{
+  top: -7px;
+  transform: rotate(180deg);
 }
 
 .dashpptlist {
