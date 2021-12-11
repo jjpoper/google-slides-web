@@ -17,7 +17,6 @@
                       controlslist="nodownload"
                       controls=""
                       :src="item.link"
-                      style="width: auto"
                       preload="auto"
                     />
                     <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
@@ -428,6 +427,9 @@ video{
   overflow-y: scroll;
   justify-content: flex-start;
   align-items: flex-start;
+}
+.remark-item-content1 video{
+  width: 268px;
 }
 .teacherppt-outer{
   width: 100%;
