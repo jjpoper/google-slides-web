@@ -34,7 +34,7 @@
                       pageId: data.page_id,
                       itemId: item.item_id,
                       studentId: item.user_id,
-                      title: item.content,
+                      title: item.type === 'text' ? item.link : {link: item.link, mediaType: item.type},
                       isStar: item.star,
                       isShowRes: item.show,
                       name: item.user_name,

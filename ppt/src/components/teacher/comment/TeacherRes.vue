@@ -53,7 +53,7 @@ export default {
     }
   },
   created() {
-    console.log(this.item)
+    console.log(this.item.title)
   },
   components: { base64image, AudioPlayer, DashRightRemarkItem},
   methods: {
@@ -76,7 +76,7 @@ export default {
       return ''
     },
     checkType(title) {
-      return (typeof (title)).toLocaleUpperCase()
+      return (typeof (title)).toLocaleLowerCase()
     }
   }
 };

@@ -110,6 +110,7 @@ export default {
       ModalEventsNameEnum.TEACHER_COMMENT_MODAL,
       ({ pageId, itemId, title, studentId, type, name, answertime }) => {
         // 通知展示当前pageid，当前itemid的评论框
+        console.log(title, 'title')
         this.showModal({ pageId, itemId, title, studentId, type, name, answertime });
       }
     );
@@ -131,6 +132,7 @@ export default {
         sname: name,
         answertime
       };
+      console.log('title', 'modal')
       this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
       this.modalVisiable = true;
     },
