@@ -213,11 +213,11 @@ export default {
   vertical-align: middle;
   width: 0.9em;
   height: auto;
-  fill: #ffffff;
+  fill: #000000;
 }
 
 .control-bar__icon:hover {
-  fill: #c0c0c0;
+  fill: #000000;
 }
 
 .control-bar__button--large {
@@ -248,7 +248,7 @@ export default {
   margin-left: 20px;
 }
 .pageIndex {
-  color: white;
+  color: #000;
   font-size: 20px;
   height: 100%;
   display: flex;

@@ -211,14 +211,6 @@ export default {
   top: 5px ;
   right: 35px
 }
-.audio-line{
-  background-color: #9fd6ba;
-  width: 100%;
-  height: 29px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .record-footer{
   height: 30px;
   box-sizing: border-box;
@@ -242,60 +234,5 @@ export default {
 
 .float-line{
   margin-top: 15px;
-}
-
-.animation-line>div:nth-of-type(1){
-  width: 3px;
-  height: 5px;
-  background-color: red;
-  animation-delay: .4s;/*动画延迟  */
-}
-.animation-line>div:nth-of-type(2){
-  width: 3px;
-  height:10px;
-  background-color: red;
-  animation-delay: .8s;
-}
-.animation-line>div:nth-of-type(3){
-  width: 4px;
-  height: 15px;
-  background-color: red;
-  animation-delay: .1s;
-}
-.animation-line>div:nth-of-type(4){
-  width: 3px;
-  height: 10px;
-  background-color: red;
-  animation-delay: .8s;
-}
-.animation-line>div:nth-of-type(5){
-  width: 3px;
-  height: 5px;
-  background-color: red;
-  animation-delay: .4s;
-}
-.animation-line>div{/* 动画统一属性 */
-  margin:0 2px;
-  border-radius: 7px;
-  transform: all .5s;
-  animation-duration: .7s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-play-state: running;
-  animation-fill-mode:both;
-}
-.audio-play{
-  animation-name: playing;/*单独类名方便统一控制动画 */
-
-}
-@keyframes playing{/* 规则 */
-  from{
-     transform: scale(0);
-  }
-  to{
-     transform: scale(1);
-
-  }
 }
 </style>

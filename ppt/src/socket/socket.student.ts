@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable max-len */
 /* eslint-disable no-// console */
 /* eslint-disable prefer-template */
@@ -36,6 +37,7 @@ export const setStudentWxBaseParams = ({
 
 let windowStudentWs: any = null
 let isJoined = false
+let heartOK = true
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -44,7 +46,7 @@ const BaseWsRequest = (action: string, message: string) => {
 }
 
 // 定时join，避免消息收不到
-const TimerJoinRoom = () => {
+const rJoinRoom = () => {
   // setInterval(() => {
     const {
       classId,
@@ -52,6 +54,19 @@ const TimerJoinRoom = () => {
     } = BaseStudentParams
     BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
   // }, 10000)
+}
+const sendHeartBreak = () => {
+  setInterval(() => {
+    if(!heartOK) {
+      rJoinRoom()
+    }
+    heartOK = false
+    const {
+      classId,
+      token
+    } = BaseStudentParams
+    BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+  }, 5000)
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
@@ -72,10 +87,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
           // @ts-ignore
           joinCallback()
         }
-        TimerJoinRoom()
+        sendHeartBreak()
       });
     } else {
-      TimerJoinRoom()
+      rJoinRoom()
     }
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
@@ -131,10 +146,18 @@ export const createSo = (room: string, token: string, classId: string, callback:
   socket.on('update-correct-answer', (data: any) => {
     callback({ mtype: SocketEventsEnum.UPDATE_RIGHT_ANSWERS, ...JSON.parse(data) })
   });
+  socket.on('msg', (data: string) => {
+    try {
+      const isSuccess = JSON.parse(data).message === 'success'
+      if(isSuccess) {
+        heartOK = true
+      }
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
   windowStudentWs = socket
   return socket
 }
-
 
 // 新增 remark 反馈数据
 export const askToAddNewRemarkItem = (data: any) => {

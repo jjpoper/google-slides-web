@@ -297,7 +297,7 @@
         padding: 25px;
       "
     >
-      <video ref="screen-share" width="200" height="200" autoplay />
+      <VideoPlayer ref="screen-share" width="200" height="200" autoplay />
     </div>
   </div>
 </template>

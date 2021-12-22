@@ -32,6 +32,22 @@ export default {
     showCancel: {
       type: Boolean,
       default: true
+    },
+    appendBody: {
+      type: Boolean,
+      default: false
+    }
+  },
+  mounted() {
+    if(this.appendBody) {
+      this.$nextTick(() => {
+        const body = document.querySelector("body");
+        if (body.append) {
+          body.append(this.$el);
+        } else {
+          body.appendChild(this.$el);
+        }
+      });
     }
   }
 }

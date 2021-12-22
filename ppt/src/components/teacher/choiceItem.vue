@@ -54,12 +54,11 @@ import {
   getStundentUidAndName
 } from "@/model/store.teacher";
 import ECharts from "vue-echarts";
-import commentIcon from "./commentIcon.vue";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import {mapState} from 'vuex'
 import CommonSwitchTab from './commonSwitchTab.vue';
 export default {
-  components: { commentIcon, StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab },
+  components: { StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab },
   props: {
     data: {
       type: Object,

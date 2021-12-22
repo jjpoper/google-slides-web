@@ -690,8 +690,8 @@ export default {
       fontFamilies: [
         "Microsoft YaHei",
         "Arial",
-        "Kirang Haerang",
-        "Dancing Script",
+        // "Kirang Haerang",
+        // "Dancing Script",
       ],
       colors: [
         "#FF8D87",
@@ -934,10 +934,13 @@ export default {
 </script>
 <style scoped>
 @import url("../../assets/css/color.css");
+svg{
+  opacity: 1;
+}
 
-@import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
 
-@import url("https://fonts.googleapis.com/css2?family=Kirang+Haerang&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kirang+Haerang&display=swap"); */
 </style>
 <style scoped>
 #diycolor {
@@ -1008,6 +1011,7 @@ export default {
 
 .cls-1-delete {
   fill: rgb(171, 178, 218);
+  /* fill: rgb(0, 0, 0); */
 }
 .cls-1-delete:hover {
   fill: #36425a;

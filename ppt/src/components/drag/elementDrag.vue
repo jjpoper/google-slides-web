@@ -54,7 +54,7 @@
           <img :src="rect.url" class="full"/>
         </div>
         <div v-if="rect.type === 'video'" class="meidaitem teacherppt full" >
-          <video :src="rect.url" class="full"
+          <VideoPlayer :src="rect.url" class="full"
             controlslist="nodownload"
             controls/>
         </div>
@@ -201,6 +201,7 @@ export default {
   height: 100%;
   position: relative;
   line-height: 0;
+  overflow: hidden;
 }
 .dragselector{
   /* position: absolute;

@@ -17,15 +17,15 @@
           <span :key="item.id" v-if="item.isAnswer">{{item.text}}</span>
         </template>
       </div>
-      <el-switch
-        v-if="hasAnswer()"
-        v-model="showCorrect"
-        :disabled="showCorrect"
-        active-color="#13ce66"
-        inactive-color="#999"
-        @change="changeLocked"
-        active-text="show answer"
-      />
+      <div class="item" style="background: transparent">
+        <el-switch
+          :disabled="showCorrect"
+          active-color="#13ce66"
+          inactive-color="#999"
+          @change="changeLocked"
+          active-text="show answer"
+        />
+      </div>
       <div class="refresh-line" v-show="showRefreshAnswer">
         <span>正确答案有更新！</span>
         <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
@@ -45,6 +45,10 @@
   border-radius: 10px;
   line-height: 50px;
   position: relative;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 50px;
 }
 .tag {
   color: red;

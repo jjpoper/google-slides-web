@@ -18,13 +18,13 @@
 </style>
 
 <script>
-import numberIndex from "./numberIndex";
-import textItem from "./textItem";
-import choice from "./choice";
-import website from "./website";
-import draw from "./draw";
-import studentAudioItem from "./studentAudioItem";
-import studentRemark from "./studentRemark";
+const draw = () => import("./draw");
+const numberIndex = () => import("./numberIndex");
+const textItem = () => import("./textItem");
+const choice = () => import("./choice");
+const website = () => import("./website");
+const studentAudioItem = () => import("./studentAudioItem");
+const studentRemark = () => import("./studentRemark");
 export default {
   props: {
     type: {

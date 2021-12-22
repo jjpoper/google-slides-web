@@ -12,12 +12,11 @@
               >
                 <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
                   <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
-                    <video
+                    <VideoPlayer
                       v-if="item.type === 'video'"
                       controlslist="nodownload"
                       controls=""
                       :src="item.link"
-                      style="width: auto"
                       preload="auto"
                     />
                     <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
@@ -35,7 +34,7 @@
                       pageId: data.page_id,
                       itemId: item.item_id,
                       studentId: item.user_id,
-                      title: item.content,
+                      title: item.type === 'text' ? item.link : {link: item.link, mediaType: item.type},
                       isStar: item.star,
                       isShowRes: item.show,
                       name: item.user_name,
@@ -428,6 +427,9 @@ video{
   overflow-y: scroll;
   justify-content: flex-start;
   align-items: flex-start;
+}
+.remark-item-content1 video{
+  width: 268px;
 }
 .teacherppt-outer{
   width: 100%;

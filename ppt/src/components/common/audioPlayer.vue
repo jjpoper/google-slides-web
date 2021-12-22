@@ -1,6 +1,6 @@
 <template>
-  <div class="di main-wrap" v-if="url">
-    <!-- 这里设置了ref属性后，在vue组件中，就可以用this.$refs.audio来访问该dom元素 -->
+  <!-- 这里设置了ref属性后，在vue组件中，就可以用this.$refs.audio来访问该dom元素 -->
+  <!-- <div class="di main-wrap" v-if="url">
     <audio ref="audio"
       class="dn" 
       :src="url"
@@ -26,6 +26,37 @@
         <span class="audio-time">{{audio.currentTime | formatSecond}}</span>
         /
         <span class="audio-time">{{ audio.maxTime | formatSecond}}</span>
+      </div>
+    </div>
+  </div> -->
+  <div class="di main-wrap" v-if="url">
+    <audio ref="audio"
+      class="dn" 
+      :src="url"
+      preload="auto"
+      @play="onPlay" 
+      @error="onError"
+      @waiting="onWaiting"
+      @pause="onPause" 
+      @timeupdate="onTimeupdate" 
+      @canplay="audioCanplay"
+      @loadedmetadata="loadedmetadata"
+    />
+    <div>
+      <div :class="`audio-line animation-line ${audio.playing ? '' : 'paused'}`">
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+        <div class="audio-play"></div>
+      </div>
+      <div class="play-button">
+        <div class="class-audio-control" v-if="audio.maxTime !== 0">
+        <button @click="startPlayOrPause" :class="`audio-button audio-button-${audio.playing ? 'pause' : 'play'}`"></button>
+        <span class="audio-time">{{audio.currentTime | formatSecond}}</span>
+        /
+        <span class="audio-time">{{ audio.maxTime | formatSecond}}</span>
+      </div>
       </div>
     </div>
   </div>
@@ -214,8 +245,9 @@
     background-color: rgba(21, 195, 154, 1) !important;
   }
   .class-audio-control{
+    margin-top: 5px;
     height: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    /* background: rgba(0, 0, 0, 0.5); */
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -248,5 +280,11 @@
   }
   .audio-time{
     margin: 0 5px;
+  }
+  /* 新的样式 */
+  .play-button{
+    width: 100%;
+    height: 30px;
+    background-color: rgba(43,51,63,.7);
   }
 </style>

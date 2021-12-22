@@ -1,6 +1,6 @@
 <template>
   <div class="tfleft-answer tfshadow" v-if="item.title">
-    <div class="tfanswerdetail">
+    <div class="tfanswerdetail" v-if="checkType(item.title) === 'string'">
       <div class="tfanswer-media flex-center" v-if="item.title.indexOf('data:image/') > -1">
         <div class="inner-media" >
           <base64image :url="item.title" />
@@ -10,13 +10,11 @@
         <div class="tfinner-media" >
           <audio-player :url="item.title"/>
         </div>
-        <!-- <div class="transformmask"></div> -->
       </div>
       <div class="tfanswer-media flex-center"  v-else-if="item.title.indexOf('.webm') > -1">
         <div class="tfinner-media">
-          <video  preload="meta" controls="false" :src="item.title" style="width:100%;" />
+          <VideoPlayer  preload="meta" controls="false" :src="item.title" style="width:100%;" />
         </div>
-        <!-- <div class="transformmask"></div> -->
       </div>
       <div class="tfanswer-text" v-else-if="item.title.indexOf('[') > -1">
         <div v-for="(text, index) in getAnswer(item.title)" :key="index">{{ text }}</div>
@@ -24,6 +22,9 @@
       <div class="tfanswer-text" v-else>
         {{item.title}}
       </div>
+    </div>
+    <div v-else>
+      <dash-right-remark-item :item='{content: item.title}' />
     </div>
     <div class="tfuser">
       <div class="tfusericon">{{userData.sname.split("")[0]}}</div>
@@ -39,6 +40,7 @@
 import { getTimeValue } from '@/utils/help';
 import base64image from "../../base64image.vue";
 import AudioPlayer from '@/components/common/audioPlayer.vue';
+import DashRightRemarkItem from '../dash-answer/dash-right-remark-item.vue';
 export default {
   props: {
     item: {
@@ -50,7 +52,10 @@ export default {
       default: () => {}
     }
   },
-  components: { base64image, AudioPlayer},
+  created() {
+    console.log(this.item.title)
+  },
+  components: { base64image, AudioPlayer, DashRightRemarkItem},
   methods: {
     getAnswer(answer) {
       // console.log(JSON.parse(answer));
@@ -69,6 +74,9 @@ export default {
         return `${date}/${month}/${year} ${hours}:${minutes}:${seconds}`
       }
       return ''
+    },
+    checkType(title) {
+      return (typeof (title)).toLocaleLowerCase()
     }
   }
 };

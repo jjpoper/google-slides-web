@@ -15,10 +15,12 @@ import {
   BarChart
 } from 'echarts/charts'
 import VueDragResize from 'vue-drag-resize'
+import videoPlayer from './components/common/videoPlayer.vue'
 import store from './store'
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent])
 Vue.component('vue-drag-resize', VueDragResize)
+Vue.component('VideoPlayer', videoPlayer)
 
 // 挂载到$message上
 Vue.prototype.$message = Message

@@ -34,12 +34,12 @@
       <!--输入区域item-->
       <li v-if="isEditing" class="remark-list-item record-item active-item">
         <div class="item-header">
-          <div class="user-info">
+          <!-- <div class="user-info">
             <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
             <div>
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
             </div>
-          </div>
+          </div> -->
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
@@ -85,7 +85,7 @@
           <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
-          <video
+          <VideoPlayer
             v-if="item.type === 'video'"
             controlslist="nodownload"
             controls
