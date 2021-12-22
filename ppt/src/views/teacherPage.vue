@@ -742,7 +742,7 @@ type: "slide"*/
           //发送一个ws消息通知其他端，更新状态
           if (sendWSMsg) {
             this.emitSo(
-              `{"room":"${this.class_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}", 
+              `{"room":"${this.class_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}",
               "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
             );
           }
@@ -1228,7 +1228,7 @@ type: "slide"*/
         if (!this.classRoomInfo) return;
         this.classRoomInfo.status = d.params.status;
         this.$forceUpdate();
-      } 
+      }
 
       // 回答问题
       const { room, page_id } = d;
@@ -1309,7 +1309,7 @@ type: "slide"*/
     pageChange(value, notSend) {
       // console.log(value, "pageChage!!!" + this.isDashboard);
       // if (this.isDashboard) {
-        
+
       // }
       console.log('setStudentPageIndex pageChange')
       this.giveFocus(value - 1, notSend);
@@ -1383,7 +1383,7 @@ type: "slide"*/
       initTeacherCommentData(this.class_id, this.token);
       Promise.all([
         initTeacherData(this.class_id, this.token),
-        getAllPPTS(this.slide_id)
+        getAllPPTS(this.slide_id,this.class_id)
       ]).then(([allA, { pages: list, elements = [] }]) => {
         // console.log(list);
         // vuex缓存答案
@@ -1791,7 +1791,7 @@ type: "slide"*/
         this.currentItemData.flag = this.isDashboard;
         this.getResponeCount();
       }
-      
+
       if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
         this.sendPageControl()
       }
@@ -1929,4 +1929,3 @@ type: "slide"*/
 <style lang="scss">
 @import url(../assets/css/teacher.scss);
 </style>
-    
