@@ -3,6 +3,7 @@ import Vuex, { createLogger } from 'vuex'
 import teacher from './modules/teacher'
 import student from './modules/student'
 import remark from './modules/remark'
+import metarial from './modules/metarial'
 
 Vue.use(Vuex)
 
@@ -12,7 +13,8 @@ export default new Vuex.Store({
   modules: {
     teacher,
     student,
-    remark
+    remark,
+    metarial
   },
   strict: debug,
   plugins: debug ? [createLogger()] : []

@@ -570,6 +570,9 @@ type: "slide"*/
       "updateOneRemarkItem",
       "deleteOneRemarkItem"
     ]),
+    ...mapActions("metarial", [
+      "setSelectedMetarialId"
+    ]),
     addprompt() {
       console.log("新增prompt!!");
       this.showNewPromptDialog = true;
@@ -996,6 +999,12 @@ type: "slide"*/
         // dash 和 project 答案tab同步
         if(controlType == 6) {
           EventBus.$emit('responseTabChange', result)
+        }
+
+        // dash 和 project 查看metarial同步
+        if(controlType == 7) {
+          // EventBus.$emit('responseTabChange', result)
+          this.setSelectedMetarialId(result)
         }
       }
     },

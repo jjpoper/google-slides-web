@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentItemData && currentItemData.thumbnail_url">
+  <div style="width: 100%; height: 100%;"  v-if="currentItemData && currentItemData.thumbnail_url">
     <pptcontent
       v-if="!showResponse"
       :url="currentItemData.thumbnail_url"
@@ -20,10 +20,6 @@
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
 
 <script>
 import pptcontent from "../pptcontent.vue";
