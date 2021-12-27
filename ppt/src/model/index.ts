@@ -59,10 +59,11 @@ export const getAllPPTS = async (slideid: string, classId: string) => {
 }
 
 // 请求后台进行ppt刷新
-export const requestRefreshPPT = async (slideid: string, _token: string) => {
+export const requestRefreshPPT = async (slideid: string, _token: string, classid: string) => {
   const data = await axios.post(`${PPT.requestUrl}slide/download`, {
     slide_id: slideid,
     token: _token,
+    class_id: classid
   })
   let res = data.data;
   return res;

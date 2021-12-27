@@ -871,7 +871,7 @@ type: "slide"*/
     },
     afterConnectRoom() {
       this.joinRoom();
-      requestRefreshPPT(this.slide_id, this.token)
+      requestRefreshPPT(this.slide_id, this.token,this.class_id)
         .then(res => {
           // // console.log(res);
           if (res.data.task_id) {
