@@ -40,6 +40,6 @@ export default {
   top:0;
   bottom: 0;
   z-index: 9;
-  background-color: #e0e0e0;
+  /* background-color: #e0e0e0; */
 }
 </style>

@@ -480,7 +480,7 @@ export default {
       } else {
         this.showLoginDialog = true;
       }
-      
+
       console.log("login without token!", this.showLoginDialog);
     },
     loginRoom(name, group_id) {
@@ -684,7 +684,7 @@ export default {
       });
       Promise.all([
         initStudentData(this.class_id, this.token),
-        getAllPPTS(this.slide_id)
+        getAllPPTS(this.slide_id,this.class_id)
       ]).then(([allA, { pages: list }]) => {
         // console.log(list, "========");
         // vuex缓存答案

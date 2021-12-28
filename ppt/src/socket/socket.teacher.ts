@@ -182,8 +182,12 @@ export const changeAnswer = (pageId: string, correctanswer: number[]) => {
     );
 }
 
+interface ControlP {
+  controlType: number
+}
+
 // dash 和 project 互相控制
-export const controlProject = (params = {}) => {
+export const controlProject = (params: ControlP & any = {}) => {
   const {
     classId,
     token

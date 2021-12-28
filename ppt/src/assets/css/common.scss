@@ -179,14 +179,16 @@ html, button, input, select, textarea {
 }
 .audio-play{
   animation-name: playing;/*单独类名方便统一控制动画 */
-
 }
 @keyframes playing{/* 规则 */
   from{
-     transform: scale(0);
+     transform: scale(1);
   }
   to{
-     transform: scale(1);
+     transform: scale(0);
 
   }
+}
+.cursor{
+  cursor: pointer;
 }

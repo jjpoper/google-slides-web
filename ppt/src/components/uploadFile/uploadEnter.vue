@@ -95,13 +95,13 @@
             </svg>
           </el-dropdown-item>
         </el-tooltip>
-        <el-tooltip content="website" placement="right">
+        <!-- <el-tooltip content="website" placement="right">
           <el-dropdown-item
             style="font-size: 30px; text-align: center; margin-bottom: 5px"
           >
             <img @click="addwebsite"  src="../../assets/picture/websiteicon.png" style="width: 32px; height: 32px"/>
           </el-dropdown-item>
-        </el-tooltip>
+        </el-tooltip> -->
       </el-dropdown-menu>
     </el-dropdown>
     <el-dialog
