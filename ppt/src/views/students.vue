@@ -319,13 +319,13 @@ export default {
     }),
     websiteList() {
       let list = [];
-      if (this.slides[this.currentPageIndex]) {
-        let elements = this.slides[this.currentPageIndex].elements;
-        console.log("current page website urls::", elements);
-        if (elements && elements.length > 0) {
-          list = elements.filter(item => item.type == "website");
-        }
-      }
+      // if (this.slides[this.currentPageIndex]) {
+      //   let elements = this.slides[this.currentPageIndex].elements;
+      //   console.log("current page website urls::", elements);
+      //   if (elements && elements.length > 0) {
+      //     list = elements.filter(item => item.type == "website");
+      //   }
+      // }
       return list;
     },
     filterAddedMediaList() {
