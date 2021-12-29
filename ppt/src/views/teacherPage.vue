@@ -1700,15 +1700,16 @@ type: "slide"*/
     },
     openProject() {
       const url = `${location.origin}/t/${this.class_id}?p=${this.currentPageIndex}`;
-      var windowObjectReference;
-      var strWindowFeatures =
-        "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
-      windowObjectReference = window.open(
-        "about:blank",
-        "_blank",
-        strWindowFeatures
-      );
-      windowObjectReference.location = url;
+      // var windowObjectReference;
+      // var strWindowFeatures =
+      //   "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+      // windowObjectReference = window.open(
+      //   "about:blank",
+      //   "_blank",
+      //   strWindowFeatures
+      // );
+      // windowObjectReference.location = url;
+      window.open(url, '_blank')
     },
     open(model) {
       if (model == 0) {
