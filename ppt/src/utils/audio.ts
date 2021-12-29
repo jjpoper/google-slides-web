@@ -43,7 +43,7 @@ const captureMicrophone = async () => {
 let domAudioElement: any = null
 let recorder: any = null
 
-export const startRecordAudio = (domAudio: any) => {
+export const startRecordAudio = (domAudio: any, success = () => null, fail = () => null) => {
   domAudioElement = domAudio
   domAudioElement.muted = true
 
@@ -65,6 +65,10 @@ export const startRecordAudio = (domAudio: any) => {
     recorder = RecordRTC(microphone, options);
 
     recorder.startRecording();
+    success && success();
+  }).catch(() => {
+    showToast('Unable to capture your micro. Please check', 'error');
+    fail && fail()
   })
 }
 

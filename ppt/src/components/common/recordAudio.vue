@@ -137,9 +137,12 @@ export default {
     },
     startRecord() {
       this.timeValue = 0
-      startRecordAudio(document.getElementById("record-audio"))
-      this.endRecording = false
-      this.count()
+      startRecordAudio(document.getElementById("record-audio"), () => {
+        this.endRecording = false
+        this.count()
+      }, () => {
+        this.cancelUp()
+      })
     },
     sendRecord(){
        this.onSend(this.audioUrl, 'audio')

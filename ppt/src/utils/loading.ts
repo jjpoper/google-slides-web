@@ -16,7 +16,7 @@ export const hideLoading = () => {
 
 export const showToast = (text: string, type: MessageType = 'success') => {
   Notification({
-    title: 'success',
+    title: '',
     message: text,
     type
   });
