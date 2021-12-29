@@ -1521,7 +1521,7 @@ type: "slide"*/
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      const url = `${location.origin}/s/${this.class_id}?anonymouse=${anonymous}`;
+      const url = `${location.origin}/s/${this.class_id}?anonymouse=${anonymous}&p=${this.currentPageIndex}`;
       return url;
     },
 
