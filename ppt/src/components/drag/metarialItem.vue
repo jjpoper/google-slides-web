@@ -13,10 +13,6 @@
     }">
       <div class="dragselector">
         <i
-          class="el-icon-rank dragitem cursor"
-          style="font-size: 30px; color: #777"
-        ></i>
-        <i
           v-if="rect.source !== 'add-on' && teacher"
           class="el-icon-delete cursor"
           style="font-size: 30px; margin-left:10px; color: #777"
@@ -28,9 +24,10 @@
           <img :src="rect.url" class="full"/>
         </div>
         <div v-if="rect.type === 'video'" class="meidaitem teacherppt full" >
-          <VideoPlayer :src="rect.url" class="full"
-            controlslist="nodownload"
-            controls/>
+          <video
+            :src="rect.url"
+            class="full"
+          />
         </div>
         <div v-if="rect.type === 'audio'" class="meidaitem teacherppt full" >
           <audio-player :url="rect.url" class="full"/>
