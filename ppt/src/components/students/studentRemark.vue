@@ -295,7 +295,7 @@ export default {
       // TODO 增加页面展示
       
       this.addOneRemarkItem(params);
-      showToast("send success");
+      // showToast("send success");
       this.cancelRecord();
       this.updateAnswerdPage(this.currentPageIndex);
     },
