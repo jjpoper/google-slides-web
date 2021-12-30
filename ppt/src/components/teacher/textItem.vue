@@ -351,6 +351,7 @@ export default {
 .textinner{
   overflow: scroll;
   height: 100%;
+  word-break: break-word;
 }
 .text_area.full-text-area{
    height: 100%;

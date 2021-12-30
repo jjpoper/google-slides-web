@@ -1,6 +1,6 @@
 <template>
   <div class="mediaFour" v-if="vList.length > 0">
-    <div class="mediaFourItem" v-for="item in vList" :key="item.id">
+    <div :class="`mediaFourItem ${vList.length === 1 ? 'mediaFourItemfull' : ''}`" v-for="item in vList" :key="item.id">
       <div v-if="item.type === 'image'" class="meidaitem teacherppt full" >
         <img :src="item.url" class="full"/>
       </div>
@@ -109,6 +109,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #dbd4d4;
+}
+.mediaFourItemfull{
+  width: 100%;
+  height: 100%;
 }
 .rightClose{
   position: absolute;

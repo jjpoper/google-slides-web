@@ -236,7 +236,7 @@ export default {
 }
 .medialist{
   display: flex;
-  width: 100px;
+  width: 150px;
   height: 100%;
   overflow: scroll;
   flex-direction: column;

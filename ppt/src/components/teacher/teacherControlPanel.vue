@@ -32,7 +32,7 @@
         </div>
       </div> -->
     </template>
-    <UploadEnter v-if="meterialVisiable" />
+    <UploadEnter />
 
     <!-- 提交pro 暂时隐藏-->
 
@@ -134,7 +134,7 @@
     </div>
     <!--material-->
     <div
-      v-if="current_model !== 'Student-Paced'"
+      v-if="current_model !== 'Student-Paced' && filterAddedMediaList.length > 0"
       :class="`${meterialVisiable ? 'button_area back_focus' : 'button_area'} ${showFullAnswer ? 'buttondisable' : ''}`"
       style="margin-right: 20px"
       @click="changeMeterial"
@@ -291,6 +291,12 @@ export default {
     meterialVisiable: {
       type: Boolean,
       default: false,
+    },
+    filterAddedMediaList: {
+      type: Array,
+      function() {
+        return [];
+      },
     },
   },
   computed: {

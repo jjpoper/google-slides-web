@@ -157,10 +157,30 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
   return res;
 }
 
+const getUrlParams = () => {
+  const _url = window.location.href;
+  const _urlParams = _url.match(/([?&])(.+?=[^&]+)/igm);
+  return _urlParams ? _urlParams.reduce((a: any, b) => {
+     const value = b.slice(1).split('=');
+     a[value[0]] = value[1]
+     return a;
+  }, {}) : {};
+}
+
 const filterHref = () => {
   // const url = location.href
   // return url.split("&token")[0]
-  return location.origin + location.pathname
+  const searchParams = getUrlParams()
+  let url = location.origin + location.pathname
+  // if(searchParams.anonymouse) {
+  //   url += `?anonymouse=${searchParams.anonymouse}`
+  // }
+  // if(searchParams.p) {
+  //   url += `${searchParams.anonymouse ? '&' : '?'}p=${searchParams.p}`
+  // }
+  // console.log(url)
+  // debugger
+  return url
 }
 
 // 获取授权登录

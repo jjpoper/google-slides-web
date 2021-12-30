@@ -352,6 +352,7 @@ export default {
 .textinner{
   overflow: scroll;
   height: 100%;
+  word-break: break-word;
 }
 .text-footer{
   width: 100%;

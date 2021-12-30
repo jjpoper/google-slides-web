@@ -68,6 +68,7 @@
           :meterialVisiable="meterialVisiable"
           :showDashTips="showDashTips"
           :dashTipsModalVisiable="dashTipsModalVisiable"
+          :filterAddedMediaList="filterAddedMediaList"
         />
       </div>
     </template>
@@ -1313,6 +1314,7 @@ type: "slide"*/
         this.setAllAnswerdList(newList);
       }
       this.getResponeCount();
+      this.$forceUpdate();
     },
 
     pageChange(value, notSend) {
