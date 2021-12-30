@@ -63,7 +63,8 @@
     </div>
 
     <iframe
-      id="player"
+      v-if="videoUrl"
+      id="yt-add-player"
       width="560"
       height="315"
       :src="videoUrl"
@@ -72,7 +73,8 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;allow-presentation"
       allowfullscreen
     ></iframe>
-
+    <div style="width: 560px; height: 315px" v-else>
+    </div>
     <!-- <el-button v-if="showVideo" class="btn" @click="insert">Insert Video</el-button> -->
 
     <div class="time--set">
@@ -173,26 +175,27 @@ export default {
   created() {},
   watch: {
     videoId() {
-      console.log(this.videoId, "watch videoId");
-      let _this = this;
-      var tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      window.onYouTubeIframeAPIReady = () => {
-        _this.ytPalyer = new YT.Player("player", {
-          events: {
-            onReady: _this.onYTReady,
-            onStateChange: _this.onYTStateChange
-          }
-        });
-        //getDuration
-        console.log(_this.ytPalyer, "onYouTubeIframeAPIReady");
-      };
+      
     }
   },
-  mounted() {},
+  mounted() {
+    console.log(this.videoId, "watch videoId");
+    let _this = this;
+    var tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName("script")[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    // window.onYouTubeIframeAPIReady = () => {
+    //   console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+    //   this.ytPalyer = new YT.Player("yt-add-player", {
+    //     events: {
+    //       onReady: this.onYTReady,
+    //       onStateChange: this.onYTStateChange
+    //     }
+    //   });
+    //   //getDuration
+    // };
+  },
   methods: {
     onYTReady(event) {
       console.log(event);
@@ -237,13 +240,12 @@ export default {
       this.getTime(this.url.split("?v=")[1].split("&")[0]);
       if (this.url.indexOf("https://youtu.be/") > -1) {
         let ss = this.url.split("/");
-        this.vidoeId = this.url.split("?v=")[1].split("&")[0];
+        this.videoId = this.url.split("?v=")[1].split("&")[0];
         this.videoUrl =
           "https://www.youtube.com/embed/" +
           this.url.split("?v=")[1].split("&")[0] +
           "?enablejsapi=1&rel=0";
         this.videoUrl = this.videoUrl + "&start=" + this.startTime;
-        console.log(this.videoUrl);
       } else if (this.url.indexOf("https://www.youtube.com") > -1) {
         this.videoId = this.url.split("?v=")[1].split("&")[0];
         this.videoUrl =
@@ -252,6 +254,8 @@ export default {
           "?enablejsapi=1&rel=0";
         this.videoUrl = this.videoUrl + "&start=" + this.startTime;
       }
+
+        console.log(this.videoUrl);
     },
     refreshStartTime() {
       this.startTime = 0;

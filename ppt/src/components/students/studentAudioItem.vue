@@ -463,6 +463,7 @@ video {
   font-family: Inter-Bold;
   line-height: 24px;
   color: #000000;
+  word-break: break-word;
   text-align: left;
 }
 </style>

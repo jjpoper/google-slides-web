@@ -20,7 +20,7 @@
           @click="deleteMedia(index)"
         ></i>
       </div>
-      <div class="full" slot="reference">
+      <div class="full forHover" slot="reference">
         <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
           <img :src="rect.url" class="full"/>
         </div>
@@ -42,7 +42,7 @@
         <div class="transformmask" @click="choose"></div>
       </div>
     </el-popover>
-    <div class="full" slot="reference" v-else>
+    <div class="full forHover" slot="reference" v-else>
       <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
         <img :src="rect.url" class="full"/>
       </div>
@@ -201,7 +201,7 @@ export default {
   margin: 15px 2.5px;
   cursor: pointer;
 }
-.mitem:hover{
+.forHover:hover{
   transform: scale(1.2);
 }
 .selected-rect{

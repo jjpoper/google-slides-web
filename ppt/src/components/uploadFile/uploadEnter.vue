@@ -110,6 +110,7 @@
       @close="closeYoutubeDialog"
       :append-to-body="true"
       :destroy-on-close="distroyOnClose"
+      width="85%"
     >
       <google-youtube-vedio
         style="
