@@ -1,5 +1,5 @@
 <template>
-  <div class="page" id="app">
+  <div class="page" >
     <div class="open-google" @click="openYoutube">
       open youtube
       <svg
@@ -63,8 +63,7 @@
     </div>
 
     <iframe
-      v-if="videoUrl"
-      id="yt-add-player"
+      :id="youtubePlayerId"
       width="560"
       height="315"
       :src="videoUrl"
@@ -73,8 +72,7 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;allow-presentation"
       allowfullscreen
     ></iframe>
-    <div style="width: 560px; height: 315px" v-else>
-    </div>
+    <!-- <div v-else style="width: 560px; height: 315px"></div> -->
     <!-- <el-button v-if="showVideo" class="btn" @click="insert">Insert Video</el-button> -->
 
     <div class="time--set">
@@ -158,81 +156,132 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      showVideo: false,
-      videoLength: 0,
+      youtubePlayerId: `youtubePlayerId${Math.random()}`,
       videoId: "",
       ytPlayer: null,
-      timerDown: "",
       startTime: 0,
       endTime: 0,
       url: "",
       videoUrl: "",
-      ytPalyer: null
+      delaySetTime: null,
+      playerStatus: -1,
+      playerStatusInterval: null
     };
   },
 
   created() {},
   watch: {
     videoId() {
-      var tag = document.createElement("script");
-      tag.src = `https://www.youtube.com/iframe_api?v=${Math.random()}`;
-      tag.id = 'youtube-script'
-      var firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      window.onYouTubeIframeAPIReady = () => {
-        this.ytPalyer = new YT.Player("yt-add-player", {
-          events: {
-            onReady: this.onYTReady,
-            onStateChange: this.onYTStateChange
-          }
-        });
-        console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
-      };
-      // this.ytPalyer = new YT.Player("yt-add-player", {
-      //     events: {
-      //       onReady: this.onYTReady,
-      //       onStateChange: this.onYTStateChange
-      //     }
-      //   });
-      //   console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
-
+      this.startTime = 0
+      if(!this.ytPalyer) {
+        var tag = document.createElement("script");
+        tag.src = `https://www.youtube.com/iframe_api`;
+        tag.id = 'youtube-script'
+        var firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        window.onYouTubeIframeAPIReady = () => {
+          this.ytPalyer = new YT.Player(this.youtubePlayerId, {
+            events: {
+              onReady: this.onYTReady,
+              onStateChange: this.onYTStateChange
+            }
+          });
+          // this.ytPalyer.addEventListener('onStateChange', this.onYTStateChange);
+          console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+        };
+      }
     }
-  },
-  beforeDestroy() {
-    // const youtubeScript = document.getElementById('youtube-script')
-    // youtubeScript.parentNode.removeChild(youtubeScript);
-    // window.onYouTubeIframeAPIReady = null
   },
   mounted() {
     console.log(this.videoId, "watch videoId");
-    let _this = this;
+    // var tag = document.createElement("script");
+    //   tag.src = `https://www.youtube.com/iframe_api`;
+    //   tag.id = 'youtube-script'
+    //   var firstScriptTag = document.getElementsByTagName("script")[0];
+    //   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    //   window.onYouTubeIframeAPIReady = () => {
+    //     this.ytPalyer = new YT.Player(this.YTBID, {
+    //       events: {
+    //         onReady: this.onYTReady,
+    //         onStateChange: this.onYTStateChange
+    //       }
+    //     });
+    //     console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+    //   };
   },
   methods: {
+    closeYoutubeVideo() {
+      this.stopVideo()
+      setTimeout(() => {
+        // this.ytPalyer = null
+         this.videoId = '';
+        this.startTime = 0;
+        this.endTime = 0;
+        this.url = "";
+        this.videoUrl = ""
+        this.delaySetTime = null
+        console.log('closeYoutubeVideo')
+      }, 500)
+     
+      this.playerStatusInterval && clearInterval(this.playerStatusInterval)
+    },
     onYTReady(event) {
-        console.log(event);
+        console.log(event, 'onYTReady');
         this.endTime = this.ytPalyer.getDuration();
+        // this.checkStatus()
+        // this.ytPalyer = new YT.Player(this.YTBID, {
+        //   events: {
+        //     onReady: this.onYTReady,
+        //     onStateChange: this.onYTStateChange
+        //   }
+        // });
+        // try {
+        //   this.ytPalyer.removeEventListener('onStateChange', this.onYTStateChange);
+        //   this.ytPalyer.addEventListener('onStateChange', this.onYTStateChange);
+        // } catch(e) {}
+    },
+    checkStatus() {
+      // this.playerStatusInterval && clearInterval(this.playerStatusInterval)
+      // this.playerStatusInterval = setInterval(() => {
+      //   console.log('playerStatusInterval')
+      //   const state = this.ytPalyer.getPlayerState();
+      //   if ( this.playerStatus !== state ) {
+      //     this.onYTStateChange(state);
+      //   }
+      // }, 100);
     },
     onYTStateChange(event) {
-        console.log(event, "onYTStateChange");
-        if (event.data == 5 && this.setTimePaly) {
-            this.ytPalyer.mute();
-            this.ytPalyer.playVideo();
-        }
-        if (event.data == 1 && this.setTimePaly) {
-            this.ytPalyer.pauseVideo();
-            this.setTimePaly = false;
-            this.ytPalyer.unMute();
-        }
-        let _this = this;
+      const state = event.data
+      // if(this.playerStatus == state) return
+      // this.playerStatus = state
+      console.log(event, "onYTStateChange");
+      if (state == 5 && this.setTimePaly) {
+          this.ytPalyer.mute();
+          this.ytPalyer.playVideo();
+      }
+      if (state == 1 && this.setTimePaly) {
+          this.ytPalyer.pauseVideo();
+          this.setTimePaly = false;
+          this.ytPalyer.unMute();
+      }
     },
     stopVideo() {
-        this.ytPalyer.pauseVideo();
+        if(this.ytPalyer) {
+          this.ytPalyer.pauseVideo();
+          this.ytPalyer.clearVideo();
+        }
     },
     setStartTime() {
-      this.ytPalyer.cueVideoByUrl(this.videoUrl, this.startTime);
-      this.ytPalyer.mute();
-      this.setTimePaly = true;
+      if(this.delaySetTime) clearTimeout(this.delaySetTime)
+      this.delaySetTime = setTimeout(() => {
+        this.delaySetTime = null
+        // this.ytPalyer.seekTo(this.startTime);
+        // this.ytPalyer.mute();
+        // this.stopVideo()
+        this.ytPalyer.cueVideoByUrl(this.videoUrl, this.startTime);
+        this.ytPalyer.mute();
+        this.setTimePaly = true;
+      }, 100)
     },
 
     //显示提示
@@ -269,7 +318,7 @@ export default {
           this.url.split("?v=")[1].split("&")[0] +
           "?enablejsapi=1&rel=0";
       }
-      this.videoUrl = url + "&start=" + this.startTime;
+      this.videoUrl = url;
       console.log(this.videoUrl);
     },
     refreshStartTime() {

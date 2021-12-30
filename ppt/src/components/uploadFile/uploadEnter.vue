@@ -109,10 +109,11 @@
       :visible.sync="showYoutube"
       @close="closeYoutubeDialog"
       :append-to-body="true"
-      :destroy-on-close="distroyOnClose"
+      :destroy-on-close="false"
       width="85%"
     >
       <google-youtube-vedio
+        ref="googleyoutubevideo"
         style="
           width: 100%;
           height: 600px;
@@ -197,8 +198,6 @@ export default {
       imagesList: [],
       imageName: "",
       imageSelectedIndex: -1,
-      starttime: 0,
-      endtime: 0,
       distroyOnClose: true,
       showWebSite: false,
       recordType: null,
@@ -282,8 +281,7 @@ export default {
       this.youtubeurl = null;
       this.withKeyUrl = null;
       this.showIframe = false;
-      this.endtime = 0;
-      this.starttime = 0;
+      this.$refs.googleyoutubevideo.closeYoutubeVideo()
     },
     addDrive() {
       GooglePicker.init((type, res) => {
