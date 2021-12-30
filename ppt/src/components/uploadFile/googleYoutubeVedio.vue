@@ -104,7 +104,7 @@
                         <i class="el-icon-caret-bottom time-btn-flag" @click="numberDown(0)"></i>
           </div>-->
         </div>
-        /{{ endTime }}
+        /{{ endTime }}seconds
       </div>
 
       <!-- <div class="time" style="margin-left: 80px;">
@@ -175,49 +175,64 @@ export default {
   created() {},
   watch: {
     videoId() {
-      
+      var tag = document.createElement("script");
+      tag.src = `https://www.youtube.com/iframe_api?v=${Math.random()}`;
+      tag.id = 'youtube-script'
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      window.onYouTubeIframeAPIReady = () => {
+        this.ytPalyer = new YT.Player("yt-add-player", {
+          events: {
+            onReady: this.onYTReady,
+            onStateChange: this.onYTStateChange
+          }
+        });
+        console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+      };
+      // this.ytPalyer = new YT.Player("yt-add-player", {
+      //     events: {
+      //       onReady: this.onYTReady,
+      //       onStateChange: this.onYTStateChange
+      //     }
+      //   });
+      //   console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+
     }
+  },
+  beforeDestroy() {
+    // const youtubeScript = document.getElementById('youtube-script')
+    // youtubeScript.parentNode.removeChild(youtubeScript);
+    // window.onYouTubeIframeAPIReady = null
   },
   mounted() {
     console.log(this.videoId, "watch videoId");
     let _this = this;
-    var tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    // window.onYouTubeIframeAPIReady = () => {
-    //   console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
-    //   this.ytPalyer = new YT.Player("yt-add-player", {
-    //     events: {
-    //       onReady: this.onYTReady,
-    //       onStateChange: this.onYTStateChange
-    //     }
-    //   });
-    //   //getDuration
-    // };
   },
   methods: {
     onYTReady(event) {
-      console.log(event);
-      this.endTime = this.ytPalyer.getDuration();
-      if (this.startTime > 0) {
-        event.target.playVideo();
-        setTimeout(this.stopVideo, 1000);
-      }
+        console.log(event);
+        this.endTime = this.ytPalyer.getDuration();
     },
     onYTStateChange(event) {
-      console.log(event, "onYTStateChange");
-      let _this = this;
+        console.log(event, "onYTStateChange");
+        if (event.data == 5 && this.setTimePaly) {
+            this.ytPalyer.mute();
+            this.ytPalyer.playVideo();
+        }
+        if (event.data == 1 && this.setTimePaly) {
+            this.ytPalyer.pauseVideo();
+            this.setTimePaly = false;
+            this.ytPalyer.unMute();
+        }
+        let _this = this;
     },
     stopVideo() {
-      this.ytPalyer.pauseVideo();
+        this.ytPalyer.pauseVideo();
     },
     setStartTime() {
-      let _this = this;
-      clearTimeout(this.timerDown);
-      this.timerDown = setTimeout(function() {
-        _this.refreshVideo();
-      }, 500);
+      this.ytPalyer.cueVideoByUrl(this.videoUrl, this.startTime);
+      this.ytPalyer.mute();
+      this.setTimePaly = true;
     },
 
     //显示提示
@@ -238,24 +253,24 @@ export default {
       this.showVideo = true;
       //https://youtu.be/hCVHjyjh3WI   https://www.youtube.com/watch?v=hCVHjyjh3WI&t=2187s˝
       this.getTime(this.url.split("?v=")[1].split("&")[0]);
+      let url = ''
       if (this.url.indexOf("https://youtu.be/") > -1) {
         let ss = this.url.split("/");
         this.videoId = this.url.split("?v=")[1].split("&")[0];
-        this.videoUrl =
+        url =
           "https://www.youtube.com/embed/" +
           this.url.split("?v=")[1].split("&")[0] +
           "?enablejsapi=1&rel=0";
-        this.videoUrl = this.videoUrl + "&start=" + this.startTime;
+        this.videoUrl = url + "&start=" + this.startTime;
       } else if (this.url.indexOf("https://www.youtube.com") > -1) {
         this.videoId = this.url.split("?v=")[1].split("&")[0];
-        this.videoUrl =
+        url =
           "https://www.youtube.com/embed/" +
           this.url.split("?v=")[1].split("&")[0] +
           "?enablejsapi=1&rel=0";
-        this.videoUrl = this.videoUrl + "&start=" + this.startTime;
       }
-
-        console.log(this.videoUrl);
+      this.videoUrl = url + "&start=" + this.startTime;
+      console.log(this.videoUrl);
     },
     refreshStartTime() {
       this.startTime = 0;
