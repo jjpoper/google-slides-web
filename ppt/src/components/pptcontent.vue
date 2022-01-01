@@ -64,7 +64,7 @@ export default {
       isRemark: state => state.remark.isRemark,
     }),
     leftSortList() {
-      return this.filterAddedMediaList.reverse()
+      return [].concat(this.filterAddedMediaList).reverse()
     }
   },
   components: {
