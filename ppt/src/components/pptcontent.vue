@@ -5,17 +5,15 @@
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
     </div>
-    <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && hasData && (teacher || isStudentPaced)">
+    <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && (leftSortList && leftSortList.length) && (teacher || isStudentPaced)">
       <div class="medialist">
-        <template v-if="leftSortList && leftSortList.length">
-          <metarial-item 
-              v-for="rect in leftSortList" 
-              :key="rect.id"
-              :rect="rect"
-              :update="update" 
-              :deleteMedia="deleteMedia"
-              :teacher="teacher"/>
-        </template>
+        <metarial-item 
+          v-for="rect in leftSortList" 
+          :key="rect.id"
+          :rect="rect"
+          :update="update" 
+          :deleteMedia="deleteMedia"
+          :teacher="teacher"/>
       </div>
       <big-metarial-item :list="leftSortList"/>
     </div>
@@ -65,10 +63,8 @@ export default {
     ...mapState({
       isRemark: state => state.remark.isRemark,
     }),
-  },
-  watch: {
-    filterAddedMediaList () {
-     this.filterList()
+    leftSortList() {
+      return this.filterAddedMediaList.reverse()
     }
   },
   components: {
@@ -82,14 +78,12 @@ export default {
       height: 0,
       parentHeight: 0,
       rectMediaList: [],
-      leftSortList: [],
       hasData: false
     }
   },
   created() {
     this.rectingDelay = null
     this.sizeDelay = null
-    this.filterList()
   },
   mounted() {
     // this.width = document.documentElement.clientWidth - this.widthOffset;
@@ -105,9 +99,9 @@ export default {
   },
   methods: {
     filterList () {
-      if(!this.filterAddedMediaList) return
-      this.hasData = this.filterAddedMediaList.length > 0
-      this.leftSortList = this.filterAddedMediaList.reverse()
+      // if(!this.filterAddedMediaList) return
+      // this.hasData = this.filterAddedMediaList.length > 0
+      // this.leftSortList = this.filterAddedMediaList.reverse()
       return
       let i = 0
       let rectList = []

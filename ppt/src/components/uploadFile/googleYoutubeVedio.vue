@@ -172,24 +172,7 @@ export default {
   created() {},
   watch: {
     videoId() {
-      this.startTime = 0
-      if(!this.ytPalyer) {
-        var tag = document.createElement("script");
-        tag.src = `https://www.youtube.com/iframe_api`;
-        tag.id = 'youtube-script'
-        var firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        window.onYouTubeIframeAPIReady = () => {
-          this.ytPalyer = new YT.Player(this.youtubePlayerId, {
-            events: {
-              onReady: this.onYTReady,
-              onStateChange: this.onYTStateChange
-            }
-          });
-          // this.ytPalyer.addEventListener('onStateChange', this.onYTStateChange);
-          console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
-        };
-      }
+      this.loadScriptCallBack()
     }
   },
   mounted() {
@@ -200,20 +183,54 @@ export default {
     //   var firstScriptTag = document.getElementsByTagName("script")[0];
     //   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     //   window.onYouTubeIframeAPIReady = () => {
-    //     this.ytPalyer = new YT.Player(this.YTBID, {
+    //     this.ytPlayer = new YT.Player(this.YTBID, {
     //       events: {
     //         onReady: this.onYTReady,
     //         onStateChange: this.onYTStateChange
     //       }
     //     });
-    //     console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+    //     console.log(this.ytPlayer, "onYouTubeIframeAPIReady");
     //   };
+    // this.ytPlayer = new YT.Player(this.youtubePlayerId, {
+    //       events: {
+    //         onReady: this.onYTReady,
+    //         onStateChange: this.onYTStateChange
+    //       }
+    //     });
+    //      console.log(this.ytPlayer, "onYouTubeIframeAPIReady");
   },
   methods: {
+    loadScriptCallBack(){
+      // if(!this.ytPlayer) {
+      //   var tag = document.createElement("script");
+      //   tag.src = `https://www.youtube.com/iframe_api`;
+      //   tag.id = 'youtube-script'
+      //   var firstScriptTag = document.getElementsByTagName("script")[0];
+      //   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      //   window.onYouTubeIframeAPIReady = () => {
+      //     this.ytPlayer = new YT.Player(this.youtubePlayerId, {
+      //       events: {
+      //         onReady: this.onYTReady,
+      //         onStateChange: this.onYTStateChange
+      //       }
+      //     });
+      //     // this.ytPlayer.addEventListener('onStateChange', this.onYTStateChange);
+      //     console.log(this.ytPlayer, "onYouTubeIframeAPIReady");
+      //   };
+      // }
+      this.$nextTick(() => {
+        this.ytPlayer = new YT.Player(this.youtubePlayerId, {
+            events: {
+              onReady: this.onYTReady,
+              onStateChange: this.onYTStateChange
+            }
+          });
+      })
+    },
     closeYoutubeVideo() {
       this.stopVideo()
       setTimeout(() => {
-        // this.ytPalyer = null
+        // this.ytPlayer = null
          this.videoId = '';
         this.startTime = 0;
         this.endTime = 0;
@@ -227,24 +244,26 @@ export default {
     },
     onYTReady(event) {
         console.log(event, 'onYTReady');
-        this.endTime = this.ytPalyer.getDuration();
+        if(this.ytPlayer.getDuration) {
+          this.endTime = this.ytPlayer.getDuration();
+        }
         // this.checkStatus()
-        // this.ytPalyer = new YT.Player(this.YTBID, {
+        // this.ytPlayer = new YT.Player(this.YTBID, {
         //   events: {
         //     onReady: this.onYTReady,
         //     onStateChange: this.onYTStateChange
         //   }
         // });
         // try {
-        //   this.ytPalyer.removeEventListener('onStateChange', this.onYTStateChange);
-        //   this.ytPalyer.addEventListener('onStateChange', this.onYTStateChange);
+        //   this.ytPlayer.removeEventListener('onStateChange', this.onYTStateChange);
+        //   this.ytPlayer.addEventListener('onStateChange', this.onYTStateChange);
         // } catch(e) {}
     },
     checkStatus() {
       // this.playerStatusInterval && clearInterval(this.playerStatusInterval)
       // this.playerStatusInterval = setInterval(() => {
       //   console.log('playerStatusInterval')
-      //   const state = this.ytPalyer.getPlayerState();
+      //   const state = this.ytPlayer.getPlayerState();
       //   if ( this.playerStatus !== state ) {
       //     this.onYTStateChange(state);
       //   }
@@ -256,30 +275,33 @@ export default {
       // this.playerStatus = state
       console.log(event, "onYTStateChange");
       if (state == 5 && this.setTimePaly) {
-          this.ytPalyer.mute();
-          this.ytPalyer.playVideo();
+          this.ytPlayer.mute();
+          this.ytPlayer.playVideo();
       }
       if (state == 1 && this.setTimePaly) {
-          this.ytPalyer.pauseVideo();
+          this.ytPlayer.pauseVideo();
           this.setTimePaly = false;
-          this.ytPalyer.unMute();
+          this.ytPlayer.unMute();
       }
     },
     stopVideo() {
-        if(this.ytPalyer) {
-          this.ytPalyer.pauseVideo();
-          this.ytPalyer.clearVideo();
+        if(this.ytPlayer && this.ytPlayer.pauseVideo && this.ytPlayer.clearVideo) {
+          this.ytPlayer.pauseVideo();
+          this.ytPlayer.clearVideo();
         }
     },
     setStartTime() {
       if(this.delaySetTime) clearTimeout(this.delaySetTime)
       this.delaySetTime = setTimeout(() => {
         this.delaySetTime = null
-        // this.ytPalyer.seekTo(this.startTime);
-        // this.ytPalyer.mute();
+        // this.ytPlayer.seekTo(this.startTime);
+        // this.ytPlayer.mute();
         // this.stopVideo()
-        this.ytPalyer.cueVideoByUrl(this.videoUrl, this.startTime);
-        this.ytPalyer.mute();
+        // console.log(this.ytPlayer, this.ytPlayer.cueVideoByUrl, '=======')
+        if(this.ytPlayer.cueVideoByUrl) {
+          this.ytPlayer.cueVideoByUrl(this.videoUrl, this.startTime);
+          this.ytPlayer.mute();
+        }
         this.setTimePaly = true;
       }, 100)
     },
@@ -318,7 +340,7 @@ export default {
           this.url.split("?v=")[1].split("&")[0] +
           "?enablejsapi=1&rel=0";
       }
-      this.videoUrl = url;
+      this.videoUrl = url + '&origin=' + location.origin;
       console.log(this.videoUrl);
     },
     refreshStartTime() {
