@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { getStudentClassAnswers } from './index'
 
 type ItemType = "text" | "draw" | "choice" | 'number' | 'audio' | 'video'
@@ -35,9 +36,11 @@ export const addStudentData = (pageId: string, type: string, oldData: any) => {
   let oldDataIndex = -1
   if (type === 'choice' || type === 'number' || type === 'draw' || type == 'audio' || type == 'video') {
     // 一条答案数据，去重
-    oldDataIndex = studentData.findIndex(item => item.page_id === pageId)
+    oldDataIndex = studentData.findIndex(item => item.page_id == pageId)
   } else {
-    oldDataIndex = studentData.findIndex(item => item.page_id === pageId && item.item_id === itemId)
+    oldDataIndex = studentData.findIndex(item => {
+      return item.page_id == pageId && item.item_id == itemId
+    })
   }
 
   if (oldDataIndex > -1) {
