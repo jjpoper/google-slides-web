@@ -5,7 +5,7 @@
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from './socketEvents';
 
-type callback = (d: any) => void
+type callback = (d?: any) => void
 
 interface BaseParams {
   classId: string
@@ -69,7 +69,7 @@ const sendHeartBreak = () => {
   }, 5000)
 }
 
-export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback) => {
+export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback, onReJoinRoom: callback) => {
   const socket = window.io(PPT.wsUrl, {transports: ["websocket"]});
 
   BaseStudentParams.classId = classId
@@ -90,7 +90,8 @@ export const createSo = (room: string, token: string, classId: string, callback:
         sendHeartBreak()
       });
     } else {
-      rJoinRoom()
+      // rJoinRoom()
+      onReJoinRoom()
     }
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {

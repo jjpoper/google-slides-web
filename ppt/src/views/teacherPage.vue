@@ -316,7 +316,8 @@ import {
   getOnlineUsers,
   getAVComment,
   saveUserConfig,
-  getAllGroupMember
+  getAllGroupMember,
+  getCurrentClassPageIndex
 } from "../model/index";
 import {
   initTeacherData,
@@ -405,7 +406,6 @@ type: "slide"*/
       dialogTableVisible: false,
       teacherList: [],
       studentList: [],
-      current_page: 0,
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
       token: "",
@@ -946,11 +946,11 @@ type: "slide"*/
     },
     joinRoom() {
       this.currentSo = createSo(
-        this.slide_id,
         this.token,
         this.class_id,
         this.msgListener,
-        this.onLineStatusChanged
+        this.onLineStatusChanged,
+        this.rejoinRoomAction
       );
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
@@ -964,6 +964,13 @@ type: "slide"*/
         uid: this.uid,
         uname: teacher.name
       });
+    },
+    // 重连后要做的事情
+    rejoinRoomAction() {
+        getCurrentClassPageIndex(this.class_id)
+        .then((page) => {
+          this.pageChange(parseInt(page) + 1, true);
+        })
     },
     // dash 和 project 同步
     handelControlSelf(d) {
@@ -1086,8 +1093,7 @@ type: "slide"*/
         if (d.room == this.class_id) {
           if (d.params) {
             // this.pageChange(d.params.page);
-            this.current_page = parseInt(d.params.page) + 1;
-            this.pageChange(this.current_page, true);
+            this.pageChange(parseInt(d.params.page) + 1, true);
           }
         }
       } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
@@ -1322,7 +1328,7 @@ type: "slide"*/
 
       // }
       console.log('setStudentPageIndex pageChange')
-      this.giveFocus(value - 1, notSend);
+      this.giveFocus(parseInt(value) - 1, notSend);
       return;
     },
 

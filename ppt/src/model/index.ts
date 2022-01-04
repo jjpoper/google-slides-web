@@ -602,3 +602,10 @@ export const renameClass = async (name: string, id: number) => {
   })
   return data.data.code;
 }
+
+// 获取当前页码
+export const getCurrentClassPageIndex = async (id: string) => {
+  return axios.post(`${PPT.requestUrl}slide/get_class_page`, {
+    class_id: id
+  })
+}

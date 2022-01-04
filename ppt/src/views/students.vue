@@ -223,7 +223,8 @@ import {
   queryClassStatus,
   getAVComment,
   anmonymousLogin,
-  getAllGroupMember
+  getAllGroupMember,
+  getCurrentClassPageIndex
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
@@ -768,7 +769,7 @@ export default {
     },
     pageChange(page) {
       // console.log(page, "pageChange", this.currentPageIndex);
-      const nextPage = page;
+      const nextPage = parseInt(page);
       if (this.currentPageIndex != nextPage) {
         this.setStudentPageIndex(nextPage);
       } else {
@@ -888,7 +889,8 @@ export default {
             }"}}`
           );
         },
-        this.onLineStatusChanged
+        this.onLineStatusChanged,
+        this.rejoinRoomAction
       );
       setStudentWxBaseParams({
         classId: this.class_id,
@@ -896,6 +898,13 @@ export default {
         token: this.token,
         uname: this.uname
       });
+    },
+    // 重连后要做的事情
+    rejoinRoomAction() {
+        getCurrentClassPageIndex(this.class_id)
+        .then((page) => {
+          this.pageChange(page);
+        })
     },
     msgListener(d) {
       // console.log(d, d.mtype, "====收到消息命令");

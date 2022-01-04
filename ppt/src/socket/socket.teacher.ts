@@ -4,7 +4,7 @@
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from "./socketEvents";
 
-type callback = (d: any) => void
+type callback = (d?: any) => void
 
 interface BaseParams {
   classId: string
@@ -68,7 +68,7 @@ const sendHeartBreak = () => {
   }, 5000)
 }
 
-export const createSo = (room: string, token: string, classId: string, callback: callback, onLineStatusChanged: callback, onConnected: callback) => {
+export const createSo = (token: string, classId: string, callback: callback, onLineStatusChanged: callback, onReJoinRoom: callback) => {
   // console.log(classId, "create ws socket")
   const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
   socket.on('connect', () => {
@@ -81,7 +81,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
         sendHeartBreak()
       });
     } else {
-      rJoinRoom()
+      onReJoinRoom()
     }
 
     // console.log('connect 状态 上线')
