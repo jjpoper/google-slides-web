@@ -6,9 +6,9 @@ import PPT, { isDev } from "./pptConfig"
 
 const googleDriveConfig = {
   dev: {
-    clientId: '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com',
-    appId: '909953111628',
-    developerKey: 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
+    clientId: '1040108879273-ldfoennnk158t1p400hn2eok3atfll3i.apps.googleusercontent.com',
+    appId: '1040108879273',
+    developerKey: 'AIzaSyBzfqIuraxxIDUKeE9qx8LzkhfYRstiOO0'
   },
   release: {
     clientId: '337694010706-actv4k6bli7c4iknu6ak50gkqhk318ti.apps.googleusercontent.com',
@@ -95,7 +95,7 @@ class LoadPicker {
   private createPicker = () => {
     if(this.pickerApiLoaded && this.oauthToken) {
       const view = new window.google.picker.View(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS);
-      view.setMimeTypes("image/png,image/jpeg,image/jpg");
+      view.setMimeTypes("image/png,image/jpeg,image/jpg,video/*");
       const picker = new google.picker.PickerBuilder()
           .setTitle("My Drive 1")
           .enableFeature(google.picker.Feature.NAV_HIDDEN)
