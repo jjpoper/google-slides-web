@@ -104,8 +104,7 @@ class LoadPicker {
           .setOrigin(undefined)
           .setAppId(this.appId)
           .setOAuthToken(this.oauthToken)
-          .addView(view)
-          .addView(new google.picker.DocsUploadView())
+          .addView(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS)
           .setDeveloperKey(this.developerKey)
           .setCallback(this.pickerCallback)
           .build();
