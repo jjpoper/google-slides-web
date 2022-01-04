@@ -106,7 +106,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
   // 学端要响应老师发来的 control
   socket.on('control', (data: string) => {
     // console.log("老师发来了control. 详细数据: " + data);
-    callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+    callback({ mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data) })
   });
 
   // 学生端收到老师发来的消息反馈

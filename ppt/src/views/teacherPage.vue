@@ -1,5 +1,75 @@
 <template>
   <div class="page">
+    <!--dashboard header-->
+    <div class="top_btn" v-if="!isDashboard">
+      <div class="online_status">
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+      </div>
+      <div style="display: flex">
+        <div class="share_room" v-if="classRoomInfo" @click="copyUrl()">{{classRoomInfo.class_id}}</div>
+        <div v-if="false" style="margin-right: 20px; cursor: pointer" @click="shareScreen">
+          <svg
+            t="1634352581902"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="2514"
+            width="48"
+            height="48"
+          >
+            <path
+              d="M864 159.872L160 160c-17.696 0-32 14.176-32 31.872v448a32 32 0 0 0 32 32h704a32 32 0 0 0 32-32v-448a32 32 0 0 0-32-32zM864 640H160V191.872h704V640z"
+              fill="#333333"
+              p-id="2515"
+            />
+            <path
+              d="M928 32H96a96 96 0 0 0-96 96v640a95.904 95.904 0 0 0 95.68 95.936H416v38.944l-199.744 25.952A31.968 31.968 0 0 0 224 991.872h576a32 32 0 0 0 7.744-63.072L608 902.88v-38.944h320.32A95.904 95.904 0 0 0 1024 768V128a96 96 0 0 0-96-96z m32 736c0 17.632-14.368 32-32 32H96c-17.664 0-32-14.368-32-32V128a32 32 0 0 1 32-32h832c17.632 0 32 14.336 32 32v640z"
+              fill="#333333"
+              p-id="2516"
+            />
+          </svg>
+        </div>
+        <!-- <div
+          class="number_info"
+          @click="showStudents()"
+        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div> -->
+        <el-tooltip content="mark up and send comment" placement="top">
+          <div class="readchat comment" v-if="isDashboard">
+            <el-switch
+              style="display: block"
+              v-model="questionModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="comment"
+            ></el-switch>
+            <el-switch
+              style="display: block; margin-left: 10px"
+              v-model="overviewModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="overview slides"
+            ></el-switch>
+          </div>
+        </el-tooltip>
+      </div>
+    </div>
+    <DashHeader
+      v-if="isDashboard && classRoomInfo"
+      :share="copyUrl"
+      :onLine="onLine"
+      :classRoomInfo="classRoomInfo"
+      :openProject="openProject"
+      :endLesson="endLesson"
+      :showStudents="showStudents"
+      :isClosed="classRoomInfo.status == 'close'"
+      :getStudentOnLineCount="getStudentOnLineCount"
+      :studentList="studentList"
+      :reopenClass="_reopenClass"
+      :current_model="page_model"
+      :turnModel="turnModel"
+      :confirmModeChange="confirmModeChange"
+    />
     <student-paced-note
       v-if="showStudentPacedNotePage"
       class="student_note_page"
@@ -80,77 +150,6 @@
     />-->
 
     <comment-modal />
-    <div class="top_btn" v-if="!isDashboard">
-      <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
-      </div>
-      <div style="display: flex">
-        <div class="share_room" v-if="classRoomInfo" @click="copyUrl()">{{classRoomInfo.class_id}}</div>
-        <div v-if="false" style="margin-right: 20px; cursor: pointer" @click="shareScreen">
-          <svg
-            t="1634352581902"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2514"
-            width="48"
-            height="48"
-          >
-            <path
-              d="M864 159.872L160 160c-17.696 0-32 14.176-32 31.872v448a32 32 0 0 0 32 32h704a32 32 0 0 0 32-32v-448a32 32 0 0 0-32-32zM864 640H160V191.872h704V640z"
-              fill="#333333"
-              p-id="2515"
-            />
-            <path
-              d="M928 32H96a96 96 0 0 0-96 96v640a95.904 95.904 0 0 0 95.68 95.936H416v38.944l-199.744 25.952A31.968 31.968 0 0 0 224 991.872h576a32 32 0 0 0 7.744-63.072L608 902.88v-38.944h320.32A95.904 95.904 0 0 0 1024 768V128a96 96 0 0 0-96-96z m32 736c0 17.632-14.368 32-32 32H96c-17.664 0-32-14.368-32-32V128a32 32 0 0 1 32-32h832c17.632 0 32 14.336 32 32v640z"
-              fill="#333333"
-              p-id="2516"
-            />
-          </svg>
-        </div>
-        <!-- <div
-          class="number_info"
-          @click="showStudents()"
-        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div> -->
-        <el-tooltip content="mark up and send comment" placement="top">
-          <div class="readchat comment" v-if="isDashboard">
-            <el-switch
-              style="display: block"
-              v-model="questionModalVisiable"
-              active-color="#13ce66"
-              inactive-color="#999"
-              active-text="comment"
-            ></el-switch>
-            <el-switch
-              style="display: block; margin-left: 10px"
-              v-model="overviewModalVisiable"
-              active-color="#13ce66"
-              inactive-color="#999"
-              active-text="overview slides"
-            ></el-switch>
-          </div>
-        </el-tooltip>
-      </div>
-    </div>
-
-    <!--dashboard header-->
-    <DashHeader
-      v-if="isDashboard && classRoomInfo"
-      :share="copyUrl"
-      :onLine="onLine"
-      :classRoomInfo="classRoomInfo"
-      :openProject="openProject"
-      :endLesson="endLesson"
-      :showStudents="showStudents"
-      :isClosed="classRoomInfo.status == 'close'"
-      :getStudentOnLineCount="getStudentOnLineCount"
-      :studentList="studentList"
-      :reopenClass="_reopenClass"
-      :current_model="page_model"
-      :turnModel="turnModel"
-      :confirmModeChange="confirmModeChange"
-    />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
@@ -527,7 +526,7 @@ type: "slide"*/
       this.setStudentList(this.studentList);
     },
     currentPageIndex() {
-      this.sendPageChangeToStudents();
+      this.getPageData();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
       this.checkResponseStatus()
     }
@@ -1327,13 +1326,9 @@ type: "slide"*/
       return;
     },
 
-    sendPageChangeToStudents() {
+    getPageData() {
       this.questionModalVisiable = false; //与控制面板中的comment显示与否的按钮保持同步
       this.getItemData();
-      // const notSend = false;
-      // if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
-      //   this.sendPageControl()
-      // }
     },
 
     // 老师控制分页

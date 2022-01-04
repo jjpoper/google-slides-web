@@ -901,7 +901,7 @@ export default {
     msgListener(d) {
       // console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
-      if (d.mtype === SocketEventsEnum.GO_PAGE) {
+      if (d.mtype === SocketEventsEnum.CONTROL) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
           const nextPageIndex = parseInt(d.params.page);
           console.log(this.currentPageIndex, nextPageIndex, '===new')
