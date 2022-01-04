@@ -131,8 +131,8 @@ class LoadPicker {
       if(xhr.readyState === 4 && xhr.status === 200) {
         const data = JSON.parse(xhr.response)
         console.log(data)
-        const {downloadUrl} = data
-        this.downloadFile(downloadUrl)
+        const {downloadUrl, mimeType} = data
+        this.downloadFile(downloadUrl, mimeType)
       }
     }
     xhr.send();
@@ -146,7 +146,7 @@ class LoadPicker {
     return blob
   }
 
-  private downloadFile(downloadUrl: string) {
+  private downloadFile(downloadUrl: string, mimeType: string) {
     if(downloadUrl) {
       // var accessToken = gapi.auth.getToken().access_token;
       const xhr = new XMLHttpRequest();
@@ -155,9 +155,8 @@ class LoadPicker {
       xhr.responseType = 'arraybuffer';
       xhr.onload = () => {
         const blob = this.getBlob(xhr)
-
-        const file = new File([blob], 'test.png', {
-            type: 'image/png',
+        const file = new File([blob], 'drivefile', {
+            type: mimeType,
         });
         this.upLoadFile(file)
       };
@@ -176,14 +175,14 @@ class LoadPicker {
     // var upload_directory = upload_url;
 
     // this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
-    this.test(file, 2)
+    this.upDriveFire(file, 2)
   }
-  
-  test(file, type) {
+
+  upDriveFire(file: any, type: any) {
     upFireBaseFile(
       file,
-      () => {},
-      ((result) => {
+      null,
+      ((result: any) => {
         console.log(result, type)
       })
     )
@@ -191,7 +190,6 @@ class LoadPicker {
 
   // 创建http请求
   private makeXMLHttpRequest = (url: string, data: any) => {
-    return 
     const request = new XMLHttpRequest();
     const callback = this.classCallback
     request.onreadystatechange = () => {
