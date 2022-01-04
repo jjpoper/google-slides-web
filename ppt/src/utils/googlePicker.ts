@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-import { getTeacherClientStoreToken, saveTeacherClientStoreToken } from "@/model/store.teacher"
+import { saveTeacherClientStoreToken } from "@/model/store.teacher"
 import { showLoading } from "./loading"
-import PPT, { isDev } from "./pptConfig"
+import { isDev } from "./pptConfig"
+import { upFireBaseFile } from "./uploadFile"
 
 const googleDriveConfig = {
   dev: {
@@ -129,6 +130,7 @@ class LoadPicker {
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         const data = JSON.parse(xhr.response)
+        console.log(data)
         const {downloadUrl} = data
         this.downloadFile(downloadUrl)
       }
@@ -153,6 +155,7 @@ class LoadPicker {
       xhr.responseType = 'arraybuffer';
       xhr.onload = () => {
         const blob = this.getBlob(xhr)
+
         const file = new File([blob], 'test.png', {
             type: 'image/png',
         });
@@ -172,11 +175,23 @@ class LoadPicker {
 
     // var upload_directory = upload_url;
 
-    this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
+    // this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
+    this.test(file, 2)
+  }
+  
+  test(file, type) {
+    upFireBaseFile(
+      file,
+      () => {},
+      ((result) => {
+        console.log(result, type)
+      })
+    )
   }
 
   // 创建http请求
   private makeXMLHttpRequest = (url: string, data: any) => {
+    return 
     const request = new XMLHttpRequest();
     const callback = this.classCallback
     request.onreadystatechange = () => {
