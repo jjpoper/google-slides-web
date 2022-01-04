@@ -32,6 +32,7 @@ class LoadPicker {
   private oauthToken = ''
   private pickerApiLoaded = false
   private classCallback: any = null
+  private uploadDriveInstance: any = null
 
   init(callback: any) {
     this.loadPicker()
@@ -179,7 +180,7 @@ class LoadPicker {
   }
 
   upDriveFire(file: any, mimeType: string) {
-    upFireBaseFile(
+    this.uploadDriveInstance = upFireBaseFile(
       file,
       (p: number) => {
         console.log(p, 'progress')
@@ -188,8 +189,16 @@ class LoadPicker {
         console.log(result, mimeType)
         const callback = this.classCallback
         callback('upload-ended', result, mimeType);
+        this.uploadDriveInstance = null
       })
     )
+  }
+
+  cancelUpDrive() {
+    if(this.uploadDriveInstance) {
+      this.uploadDriveInstance.cancel()
+      this.uploadDriveInstance = null
+    }
   }
 
   // 创建http请求

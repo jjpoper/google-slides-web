@@ -195,8 +195,7 @@ export default {
         EventBus.$emit(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, upData);
       }, 300)
     },
-    deleteMedia(index) {
-      const {id} = this.filterAddedMediaList[index]
+    deleteMedia(id) {
       EventBus.$emit(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, id);
     }
   }

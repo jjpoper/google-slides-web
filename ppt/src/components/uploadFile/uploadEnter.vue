@@ -163,6 +163,7 @@
         :cancel="cancelRecord"
         :autoDone="true"
       />
+      <common-progress :progress="driveUpLoadProgress" :cancel="cancelUpDrive"/>
     </div>
   </div>
 </template>
@@ -178,6 +179,7 @@ import MetarialWebSite from './metarialWebSite.vue';
 import CommonUpload from '../common/commonUpload.vue';
 import RecordAudio from '../common/recordAudio.vue';
 import RecordVideo from '../common/recordVideo.vue';
+import CommonProgress from '../common/commonProgress.vue';
 export default {
   components: {
     googleImageSearch,
@@ -185,7 +187,8 @@ export default {
     MetarialWebSite,
     CommonUpload,
     RecordAudio,
-    RecordVideo
+    RecordVideo,
+    CommonProgress
   },
   data() {
     return {
@@ -201,7 +204,8 @@ export default {
       distroyOnClose: true,
       showWebSite: false,
       recordType: null,
-      ModalEventsTypeEnum
+      ModalEventsTypeEnum,
+      driveUpLoadProgress: 0
     };
   },
   mounted() {},
@@ -284,7 +288,9 @@ export default {
       this.$refs.googleyoutubevideo.closeYoutubeVideo()
     },
     addDrive() {
-      GooglePicker.init((type, url, mediaType) => {
+      GooglePicker.init((driveUpLoadProgress) => {
+        this.driveUpLoadProgress = driveUpLoadProgress
+      },(type, url, mediaType) => {
         if (url) {
           // // console.log('===done', data, d)
           EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
@@ -294,6 +300,11 @@ export default {
           hideLoading();
         }
       });
+    },
+    cancelUpDrive() {
+      GooglePicker.cancelUpDrive()
+      this.driveUpLoadProgress = 0
+      console.log('onProgressUpLoad')
     },
     searchImage() {
       if (this.imageName) {

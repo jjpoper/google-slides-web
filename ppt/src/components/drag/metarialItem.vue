@@ -17,7 +17,7 @@
           
           class="el-icon-delete cursor"
           style="font-size: 30px; margin-left:10px; color: #777"
-          @click="deleteMedia(index)"
+          @click="deleteMedia(rect.id)"
         ></i>
       </div>
       <div class="full forHover" slot="reference">
