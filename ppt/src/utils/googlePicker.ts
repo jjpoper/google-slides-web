@@ -32,11 +32,13 @@ class LoadPicker {
   private oauthToken = ''
   private pickerApiLoaded = false
   private classCallback: any = null
+  private onloadingCallBack: any = null
   private uploadDriveInstance: any = null
 
-  init(callback: any) {
+  init(onloadingCallBack: any, onSuccesscallback: any) {
     this.loadPicker()
-    this.classCallback = callback
+    this.classCallback = onSuccesscallback
+    this.onloadingCallBack = onloadingCallBack
   }
 
   private async checkLogin() {
@@ -182,9 +184,7 @@ class LoadPicker {
   upDriveFire(file: any, mimeType: string) {
     this.uploadDriveInstance = upFireBaseFile(
       file,
-      (p: number) => {
-        console.log(p, 'progress')
-      },
+      this.onloadingCallBack,
       ((result: any) => {
         console.log(result, mimeType)
         const callback = this.classCallback
