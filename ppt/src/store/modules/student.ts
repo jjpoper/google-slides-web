@@ -94,7 +94,9 @@ const actions = {
         commit('setElements', JSON.parse(JSON.stringify(list)))
     },
     setStudentPageIndex({ commit }: any, index: number) {
-        commit('setIndex', index)
+        if(!isNaN(index)) {
+            commit('setIndex', index)
+        }
     },
     setStudentAllSlides({ commit }: any, list: any) {
         commit('setAllSlides', JSON.parse(JSON.stringify(list)))

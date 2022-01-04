@@ -968,8 +968,10 @@ type: "slide"*/
     // 重连后要做的事情
     rejoinRoomAction() {
         getCurrentClassPageIndex(this.class_id)
-        .then((page) => {
-          this.pageChange(parseInt(page) + 1, true);
+        .then((data) => {
+          if(data) {
+            this.pageChange(parseInt(data.data) + 1, true);
+          }
         })
     },
     // dash 和 project 同步

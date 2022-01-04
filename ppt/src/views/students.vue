@@ -902,8 +902,10 @@ export default {
     // 重连后要做的事情
     rejoinRoomAction() {
         getCurrentClassPageIndex(this.class_id)
-        .then((page) => {
-          this.pageChange(page);
+        .then((data) => {
+          if(data) {
+            this.pageChange(parseInt(data.data), true);
+          }
         })
     },
     msgListener(d) {
