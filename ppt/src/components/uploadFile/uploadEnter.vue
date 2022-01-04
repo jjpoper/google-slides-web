@@ -293,6 +293,7 @@ export default {
         this.driveUpLoadProgress = driveUpLoadProgress
       },(type, url, mediaType) => {
         if (url) {
+          this.driveUpLoadProgress = 0
           console.log('===done', url, mediaType)
           EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
             type: mediaType.indexOf('image') > -1 ? "image" : 'video',
