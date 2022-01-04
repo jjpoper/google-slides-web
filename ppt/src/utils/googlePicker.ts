@@ -158,7 +158,7 @@ class LoadPicker {
         const file = new File([blob], 'drivefile', {
             type: mimeType,
         });
-        this.upLoadFile(file)
+        this.upLoadFile(file, mimeType)
       };
       xhr.send();
     } else {
@@ -166,7 +166,7 @@ class LoadPicker {
     }
   }
 
-  private upLoadFile(file: any) {
+  private upLoadFile(file: any, mimeType: string) {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -175,17 +175,19 @@ class LoadPicker {
     // var upload_directory = upload_url;
 
     // this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
-    this.upDriveFire(file, 2)
+    this.upDriveFire(file, mimeType)
   }
 
-  upDriveFire(file: any, type: any) {
+  upDriveFire(file: any, mimeType: string) {
     upFireBaseFile(
       file,
       (p: number) => {
         console.log(p, 'progress')
       },
       ((result: any) => {
-        console.log(result, type)
+        console.log(result, mimeType)
+        const callback = this.classCallback
+        callback('upload-ended', result, mimeType);
       })
     )
   }

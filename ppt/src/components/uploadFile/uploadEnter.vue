@@ -284,13 +284,12 @@ export default {
       this.$refs.googleyoutubevideo.closeYoutubeVideo()
     },
     addDrive() {
-      GooglePicker.init((type, res) => {
-        if (res) {
+      GooglePicker.init((type, url, mediaType) => {
+        if (url) {
           // // console.log('===done', data, d)
-          const { data } = JSON.parse(res);
           EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
-            type: "image",
-            url: data,
+            type: mediaType.indexOf('image') > -1 ? "image" : 'video',
+            url: url,
           });
           hideLoading();
         }
