@@ -289,10 +289,11 @@ export default {
     },
     addDrive() {
       GooglePicker.init((driveUpLoadProgress) => {
+        hideLoading();
         this.driveUpLoadProgress = driveUpLoadProgress
       },(type, url, mediaType) => {
         if (url) {
-          // // console.log('===done', data, d)
+          console.log('===done', url, mediaType)
           EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
             type: mediaType.indexOf('image') > -1 ? "image" : 'video',
             url: url,
