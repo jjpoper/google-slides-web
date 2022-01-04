@@ -327,7 +327,7 @@ import {
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { getJSONValue } from "../utils/help";
-import { createSo, setTeacherWxBaseParams, controlProject } from "../socket/socket.teacher";
+import { createSo, setTeacherWxBaseParams, controlProject, sendPageChangeControl} from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -1035,9 +1035,10 @@ type: "slide"*/
             this.studentCounts = this.studentList.length;
 
             // 新的学生加入 发送一个页面同步消息，让学生跳转到指定也么
-            if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
-              this.sendPageControl()
-            }
+            // 无需此操作，已经改成 从 get_class 读取当前最新的页码
+            // if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
+            //   this.sendPageControl()
+            // }
           } else if (d.join_in.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == student.user_id) {
@@ -1337,10 +1338,8 @@ type: "slide"*/
         this.sendControlDelay = null
       }
       this.sendControlDelay = setTimeout(() => {
-        this.emitSo(
-          `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
-        );
-      }, 500)
+        sendPageChangeControl(this.currentPageIndex)
+      }, 50)
     },
 
     queryResult(code, token, count) {

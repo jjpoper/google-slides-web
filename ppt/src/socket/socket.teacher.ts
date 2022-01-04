@@ -197,3 +197,15 @@ export const controlProject = (params: ControlP & any = {}) => {
     `{"room":"${classId}", "type": "${SocketEventsEnum.ASYNC_DASH_PROJECT}", "token": "${token}","class_id":"${classId}","params": ${JSON.stringify(params)}}`
   );
 }
+
+// 老师端发送切页消息
+export const sendPageChangeControl = (currentPageIndex: number) => {
+  const {
+    classId,
+    token
+  } = BaseTeacherParams
+  BaseWsRequest(
+    "control",
+    `{"room":"${classId}", "token": "${token}","class_id":"${classId}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${currentPageIndex}"}}`
+  );
+}
