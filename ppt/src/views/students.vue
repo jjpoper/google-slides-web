@@ -402,9 +402,7 @@ export default {
       const { token, p } = to.query;
       vm.class_id = id;
       vm.getGroups();
-      const index = to.query.p ? to.query.p : 0;
       const anonymous = to.query.anonymouse;
-      vm.setStudentPageIndex(index);
       initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
@@ -800,6 +798,7 @@ export default {
         .then(res => {
           this.classRoomInfo = res;
           // console.log(this.classRoomInfo);
+          this.setStudentPageIndex(parseInt(res.page));
           this.initRoomConfig(res);
           this.afterConnectRoom();
         })

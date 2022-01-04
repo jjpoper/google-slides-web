@@ -538,8 +538,6 @@ type: "slide"*/
       // vm.slide_id = slide_id;
       vm.class_id = id;
       window.classId = id;
-      const index = to.query.p ? to.query.p : 0;
-      vm.setStudentPageIndex(index);
       vm.isDashboard = vm.$route.name === "d";
       // console.log(vm.isDashboard)
       // vm.directFromPlugin = to.query.direct ? true : false;
@@ -858,6 +856,7 @@ type: "slide"*/
       queryClassStatus(this.class_id, this.token)
         .then(res => {
           this.initShortLinkConfig(res);
+          this.setStudentPageIndex(parseInt(res.page));
           this.classRoomInfo = res;
           // 有 referrer 的前提下新开一个 project
           if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard && document.referrer.indexOf('classcipe.com') > -1) {
@@ -1591,6 +1590,7 @@ type: "slide"*/
     showres() {
       this.showResponse = !this.showResponse;
       this.showResponseMap[this.currentPageId] = this.showResponse
+      this.sendResponseControl()
     },
     sendResponseControl() {
       controlProject({"result": this.showResponse, "controlType": 1})
@@ -1697,16 +1697,16 @@ type: "slide"*/
     },
     openProject() {
       const url = `${location.origin}/t/${this.class_id}?p=${this.currentPageIndex}`;
-      // var windowObjectReference;
-      // var strWindowFeatures =
-      //   "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
-      // windowObjectReference = window.open(
-      //   "about:blank",
-      //   "_blank",
-      //   strWindowFeatures
-      // );
-      // windowObjectReference.location = url;
-      window.open(url, '_blank')
+      var windowObjectReference;
+      var strWindowFeatures =
+        "width=1200,height=750,menubar=yes,location=yes,resizable=yes,scrollbars=true,status=true,top=100,left=200";
+      windowObjectReference = window.open(
+        "about:blank",
+        "_blank",
+        strWindowFeatures
+      );
+      windowObjectReference.location = url;
+      // window.open(url, '_blank')
     },
     open(model) {
       if (model == 0) {
