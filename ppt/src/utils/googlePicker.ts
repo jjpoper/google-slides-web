@@ -187,8 +187,7 @@ class LoadPicker {
       this.onloadingCallBack,
       ((result: any) => {
         console.log(result, mimeType)
-        const callback = this.classCallback
-        callback('upload-ended', result, mimeType);
+        this.classCallback('upload-ended', result, mimeType);
         this.uploadDriveInstance = null
       })
     )
