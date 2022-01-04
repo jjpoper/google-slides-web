@@ -158,7 +158,7 @@ class LoadPicker {
       xhr.responseType = 'arraybuffer';
       xhr.onload = () => {
         const blob = this.getBlob(xhr)
-        const file = new File([blob], 'drivefile', {
+        const file = new File([blob], `drivefile_${Date.now()}`, {
             type: mimeType,
         });
         this.upLoadFile(file, mimeType)
