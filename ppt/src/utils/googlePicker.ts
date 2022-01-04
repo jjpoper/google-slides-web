@@ -181,7 +181,9 @@ class LoadPicker {
   upDriveFire(file: any, type: any) {
     upFireBaseFile(
       file,
-      null,
+      (p: number) => {
+        console.log(p, 'progress')
+      },
       ((result: any) => {
         console.log(result, type)
       })
