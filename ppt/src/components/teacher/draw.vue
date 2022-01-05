@@ -13,9 +13,7 @@
                 <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
                   <div class="remark-item-content">
                     <Base64image :url="currentPPTUrl">
-                      <Base64image :url="item.content">
-                         <Base64image :url="item.content1">
-                         </Base64image>
+                      <Base64image :url="item.result">
                       </Base64image>
                     </Base64image>
                   </div>
@@ -29,7 +27,7 @@
                       pageId: data.page_id,
                       itemId: item.item_id,
                       studentId: item.user_id,
-                      title: item.content,
+                      title: item.result,
                       isStar: item.star,
                       isShowRes: item.show,
                       name: item.user_name,

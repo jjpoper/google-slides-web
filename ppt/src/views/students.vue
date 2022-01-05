@@ -107,6 +107,7 @@
             :smallWindow="smallWindow"
             :changeShowMetrial="changeShowMetrial"
             :meterialVisiable="meterialVisiable"
+            :filterAddedMediaList="filterAddedMediaList"
           />
         </div>
       </div>
@@ -701,7 +702,8 @@ export default {
         this.joinRoom();
       });
     },
-    sendCanvas(base64Url, texturl) {
+    sendCanvas(base64Url, texturl, result) {
+      console.log(result)
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
@@ -710,7 +712,7 @@ export default {
       });
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}"}`
+        `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}", "result": "${result}"}`
       );
       this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;

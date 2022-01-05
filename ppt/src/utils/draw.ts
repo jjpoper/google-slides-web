@@ -20,7 +20,7 @@ export enum DrawTypeData {
 }
 
 type DrawType = 'line' | 'draw' | 'text' | 'marker' | 'rect' | 'circle' | 'polygon'
-type onDrawBack = (data: any, str: any) => void
+type onDrawBack = (data: any, str: any, base64: string) => void
 type onDrawTextBack = (data: any) => void
 window.canvasPool = []
 window.drawPool = []
@@ -1034,15 +1034,39 @@ export default class Draw {
 
   }
 
+  drawAndShareImage(str: string, text: string) {
+    const canvas = document.createElement("canvas");
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+    const context: any = canvas.getContext("2d");
+    context.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    context.fillStyle = 'rgba(255,255,255,0)'
+    context.fill();
+    const myImage = new Image();
+    myImage.src = str; // 背景图片 你自己本地的图片或者在线图片
+    myImage.crossOrigin = 'Anonymous';
+    myImage.onload = () => {
+      context.drawImage(myImage, 0, 0, this.canvasWidth, this.canvasHeight);
+      const myImage2 = new Image();
+      myImage2.src = text; // 你自己本地的图片或者在线图片
+      myImage2.crossOrigin = 'Anonymous';
+      myImage2.onload = () => {
+        context.drawImage(myImage2, 0, 0, this.canvasWidth, this.canvasHeight);
+        const base64 = canvas.toDataURL("image/png"); // "image/png" 这里注意一下
+        this.onDrawBack(str, text, base64);
+      }
+    }
+  }
+
   callBackData(str: string, text: string) {
-    this.onDrawBack(str, text);
+    this.drawAndShareImage(str, text);
     this.saveImageData()
   }
+
   callBackDrawText(str: DrawTextItem) {
     this.onDrawTextBack(str);
     // console.log(str, 'send msg ======>>>');
   }
-
 
 
   addElementTextItem(content: DrawTextItem) {

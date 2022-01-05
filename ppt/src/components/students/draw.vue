@@ -876,10 +876,11 @@ export default {
       this.draw.clearCanvas();
       this.hideModal();
     },
-    onDrawBack(dataStr, str) {
-      this.sendCanvas(dataStr, str);
+    onDrawBack(dataStr, str, result) {
+      this.sendCanvas(dataStr, str, result);
     },
     onDrawTextBack(stringContent) {
+      console.log(stringContent)
       this.sendDrawText(stringContent);
     },
     showModal() {

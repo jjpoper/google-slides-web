@@ -701,7 +701,7 @@ type: "slide"*/
               EventBus.$emit("choice", { data });
             } else if (itemData[0].type == "draw") {
               const user_id = studentId;
-              const content = responseItem.content;
+              const content = responseItem.result;
               const content1 = responseItem.content1;
               const user_name = responseItem.user_name;
               newList = addTeacherData(pageId, itemData[0].type, {
@@ -1292,18 +1292,19 @@ type: "slide"*/
         });
         EventBus.$emit(d.type, { user_id, page_id, item_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
-        const { content, content1, type, user_id, user_name } = d;
+        const { result, content1, type, user_id, user_name } = d;
+        console.log(result)
         newList = addTeacherData(page_id, type, {
           user_id,
-          content,
           content1,
           star: false,
           show: true,
           key: user_id,
           user_name,
-          ...d
+          ...d,
+          content: result,
         });
-        EventBus.$emit("draw", { user_id, content, content1, user_name });
+        EventBus.$emit("draw", { user_id, content: result, content1, user_name });
       } else if (d.type == SocketEventsEnum.MEDIA_INPUT) {
         // console.log(d);
         // const { content, user_id, user_name, item_id, type } = d;

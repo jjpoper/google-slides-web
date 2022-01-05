@@ -52,6 +52,7 @@
       >
         <div class="meterialimage">
           <div :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"></div>
+          <i v-if="filterAddedMediaList.length > 0" class="metarialnums">{{filterAddedMediaList.length}}</i>
         </div>
         <strong class="button_text">{{meterialVisiable ? 'Material hiding' : 'Display material'}}</strong>
       </div>
@@ -145,6 +146,12 @@ export default {
     meterialVisiable: {
       type: Boolean,
       default: false,
+    },
+    filterAddedMediaList: {
+      type: Array,
+      function() {
+        return [];
+      },
     },
   },
   data() {
