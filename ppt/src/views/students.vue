@@ -310,7 +310,8 @@ export default {
       tipText: "",
       websiteUrl: "",
       showLoginDialog: false,
-      metrialStatusMap: {}
+      metrialStatusMap: {},
+      studentPaceLastPage: -1, // 学生模式下最后操作的页码
     };
   },
   computed: {
@@ -434,6 +435,9 @@ export default {
       // } else {
       //   this.websiteList = [];
       // }
+      if(this.isStudentPaced) {
+        this.studentPaceLastPage = this.currentPageIndex
+      }
     },
     studentAllSlides() {
       this.changeTipByWatchSlides();
@@ -926,6 +930,9 @@ export default {
               : ClassRoomModelEnum.TEACHER_MODEL;
           if (this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
             this.lock_all_pages = false;
+          } else if(this.studentPaceLastPage !== -1){
+            // 如果切回到学生模式。要跳转到之前学生模式那一页
+            this.pageChange(this.studentPaceLastPage)
           }
           this.$forceUpdate();
         } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {

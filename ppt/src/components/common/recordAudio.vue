@@ -31,7 +31,7 @@
           <div class="audio-play"></div>
         </div>
         <div class="record-footer">
-          <i class="done" @click="done"></i>
+          <i class="done scale-animation" @click="done"></i>
           <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
         </div>
       </div>

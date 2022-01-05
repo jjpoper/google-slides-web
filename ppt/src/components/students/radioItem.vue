@@ -9,13 +9,13 @@
         :value="item.id"
         @change="changAnswer"
         :title="item.text"
-      >{{item.text}}</el-radio>
+      >{{getAnswerText(item)}}</el-radio>
     </div>
     <template v-if="radio != -1">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
         正确答案：
         <template v-for="item in optionData.options">
-          <span :key="item.id" v-if="item.isAnswer">{{item.text}}</span>
+          <span :key="item.id" v-if="item.isAnswer">{{getAnswerText(item)}}</span>
         </template>
       </div>
       <div class="item" style="background: transparent">
@@ -57,6 +57,7 @@
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
 }
 .tag {
   color: red;
@@ -147,6 +148,11 @@ export default {
         }
       }
       return false;
+    },
+    getAnswerText(item) {
+      // console.log(item);
+      let AA = ["A", "B", "C", "D", "E", "F", "G"];
+      return AA[item.id] + ": " + item.text;
     }
   }
 };

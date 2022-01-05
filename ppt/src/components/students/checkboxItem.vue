@@ -6,7 +6,7 @@
       @change="handleCheckedValueChange"
     >
       <div class="item" v-for="item in optionData.options" :key="item.id">
-        <el-checkbox :label="item.id" :value="item.id" style="width: 100%">{{item.text}}</el-checkbox>
+        <el-checkbox :label="item.id" :value="item.id" class="rabox" :title="item.text">{{getAnswerText(item)}}</el-checkbox>
       </div>
     </el-checkbox-group>
 
@@ -70,7 +70,7 @@
   align-items: center;
   display: flex;
   justify-content: flex-start;
-  padding-left: 50px;
+  padding-left: 20px;
 }
 .textArea {
   display: flex;
@@ -97,6 +97,13 @@
   justify-content: center;
   cursor: pointer;
 }
+.rabox{
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
 </style>
 
 <script>

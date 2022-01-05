@@ -3,7 +3,7 @@
     <div class="input_parent" v-for="(item, index) in arrList" :key="index">
       <el-input
         type="textarea"
-        :autosize="{ minRows: 3 }"
+        :autosize="{ minRows: 3, maxRows: 5 }"
         placeholder="Please input answer(s)"
         v-model="item.content"
         @input="onInputText(index)"
