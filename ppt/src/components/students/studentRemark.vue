@@ -72,7 +72,7 @@
         @click="changeRemarkIndex(index)"
       >
         <div class="item-header">
-          <div class="user-info">
+          <!-- <div class="user-info">
             <div
               class="user-icon"
               v-if="userInfo.name"
@@ -81,7 +81,7 @@
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
               <p class="user-name user-time">{{getTimeStr(item.time)}}</p>
             </div>
-          </div>
+          </div> -->
           <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
         <div class="remark-item-content">

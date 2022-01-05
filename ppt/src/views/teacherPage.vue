@@ -359,6 +359,7 @@ import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
 import { openShare } from "@/utils/shareScreen";
 import { mapActions, mapState } from "vuex";
 import NewPromptPage from "@/components/teacher/newPromptPage.vue";
+import {isDev} from '../utils/pptConfig'
 export default {
   components: {
     teacherControlPanel,
@@ -1607,7 +1608,7 @@ type: "slide"*/
       if (this.isDashboard) {
         url = "https://docs.google.com/presentation/d/" + this.slide_id;
       } else {
-        url = "https://dev.classcipe.com/";
+        url = isDev ?  "https://dev.classcipe.com/teacher/main/created-by-me" : 'https://my.classcipe.com/teacher/main/created-by-me';
       }
       // console.log(this.slide_id);
       if (this.slide_id) {

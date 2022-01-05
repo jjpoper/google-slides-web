@@ -5,9 +5,10 @@
         v-model="radio"
         :disabled="showCorrect"
         :label="item.id"
-        class="ra"
+        class="rabox"
         :value="item.id"
         @change="changAnswer"
+        :title="item.text"
       >{{item.text}}</el-radio>
     </div>
     <template v-if="radio != -1">
@@ -19,6 +20,7 @@
       </div>
       <div class="item" style="background: transparent">
         <el-switch
+          :value="showCorrect"
           :disabled="showCorrect"
           active-color="#13ce66"
           inactive-color="#999"
@@ -48,7 +50,13 @@
   align-items: center;
   display: flex;
   justify-content: flex-start;
-  padding-left: 50px;
+  padding-left: 20px;
+  overflow: hidden;
+}
+.rabox{
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .tag {
   color: red;
@@ -126,6 +134,7 @@ export default {
       this.answer(value, this.showCorrect);
     },
     changeLocked() {
+      this.showCorrect = true
       this.answer(this.radio, true);
     },
     hasAnswer() {

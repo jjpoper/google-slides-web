@@ -23,12 +23,12 @@
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">
         <div class="item-header">
-          <div class="user-info">
+          <!-- <div class="user-info">
             <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
             <div>
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
             </div>
-          </div>
+          </div> -->
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
         <div class="remark-item-content remark-item-content-record">
@@ -51,12 +51,12 @@
         class="remark-list-item" v-for="item in uploadPool" :key="item.id">
         <uploading-progress :onSuccess="onProgressDone" :item="item">
           <div class="item-header">
-            <div class="user-info">
+            <!-- <div class="user-info">
               <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
               <div>
                 <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
               </div>
-            </div>
+            </div> -->
             <div @click.stop="cancelUpLoad(item.id)" class="delete-button"></div>
           </div>
         </uploading-progress>

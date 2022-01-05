@@ -36,7 +36,7 @@
       </div>
       <div v-else>
         <v-chart
-          style="height: 500px"
+          style="minHeight: 500px"
           :option="bar"
           :init-options="initOptions"
           ref="bar"
@@ -85,9 +85,9 @@ export default {
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
       isMulti: false,
       initOptions: {
-        renderer: "canvas"
+        renderer: "canvas",
       },
-      currentTab: 1
+      currentTab: 1,
     };
   },
   computed: {
@@ -115,7 +115,26 @@ export default {
         },
         xAxis: {
           type: "category",
-          data: names
+          data: names,
+          axisLabel: {
+              // rotate: '45',
+              fontSize: 14,
+              axisTick: {
+                  alignWithLabel: true,
+                  show: true
+              },
+              color: '#333',
+              triggerEvent: true,
+              formatter: function (params) {
+                var valueTxt = ''
+                if (params.length >6) {
+                  valueTxt = params.substring(0,6) + '...'
+                } else {
+                  valueTxt = params
+                }
+                return valueTxt
+              },
+            },
         },
         yAxis: {
           type: "value"
@@ -255,6 +274,40 @@ export default {
       } else {
         return "";
       }
+    },
+    extension(mychart) {
+　　　 //判断是否创建过div框,如果创建过就不再创建了
+      var id = document.getElementById("extension");
+      if(!id) {
+          var div = "<div id = 'extension' sytle=\"display:none\"></div>"
+          document.body.append(div);
+      }
+
+      mychart.on('mouseover', function(params) {
+          if(params.componentType == "xAxis") {
+              $('#extension').css({
+                  "position": "absolute",
+                  "color": "black",
+                  //"border":"solid 2px white",
+                  "font-family": "Arial",
+                  "font-size": "20px",
+                  "padding": "5px",
+                  "display": "inline"
+              }).text(params.value);
+
+              $("html").mousemove(function(event) {
+                  var xx = event.pageX - 30;
+                  var yy = event.pageY + 20;
+                  $('#extension').css('top', yy).css('left', xx);
+              });
+          }
+      });
+
+      mychart.on('mouseout', function(params) {
+          if(params.componentType == "xAxis") {
+            $('#extension').css('display', 'none');
+        }
+      });
     }
   }
 };
