@@ -39,7 +39,7 @@ let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
 let messageIdPool: any = {}
-let lastSocketId: string = ''
+let lastSocketId = ''
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -183,7 +183,6 @@ export const createSo = (room: string, token: string, classId: string, callback:
   // socket.onAny((event: string, ...args: any[]) => {
   //   console.log(`got ${event}`);
   // });
-  window.windowStudentWs = socket
   windowStudentWs = socket
   return socket
 }

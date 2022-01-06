@@ -38,7 +38,7 @@ let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
 let messageIdPool: any = {}
-let lastSocketId: string = ''
+let lastSocketId = ''
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
