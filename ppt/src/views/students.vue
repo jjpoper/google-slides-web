@@ -260,7 +260,6 @@ import colorSelector from "@/utils/color";
 import TipsList from "@/components/common/tipsList.vue";
 
 import { mapActions, mapState } from "vuex";
-import tipShow from "@/components/students/tipShow.vue";
 import StudentsPptList from "@/components/students/studentsPptList.vue";
 import StudentLoginPage from "@/components/students/studentLoginPage.vue";
 
@@ -395,7 +394,6 @@ export default {
     pageLockedNote,
     StudentQuestions,
     TipsList,
-    tipShow,
     StudentsPptList,
     StudentLoginPage
   },

@@ -10,7 +10,7 @@
       </div>
     </el-checkbox-group>
 
-    <div v-if="tipText&&tipText.length>0" class="tipArea">
+    <!-- <div v-if="tipText&&tipText.length>0" class="tipArea">
       <img
         v-if="!showTips"
         src="../../assets/icon/tip_close.png"
@@ -28,7 +28,7 @@
         @click="showTip()"
       />
       <span v-if="showTips" class="textArea">{{tipText}}</span>
-    </div>
+    </div> -->
 
     <template v-if="checkedValues.length > 0">
       <div v-if="showCorrect" style="line-height: 25px; color: green">

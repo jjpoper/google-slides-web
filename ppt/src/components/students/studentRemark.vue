@@ -29,7 +29,6 @@
         </div>
       </el-tooltip>
     </div>
-    <!-- <tipShow /> -->
     <ul class="remark-list" ref="remarklist">
       <!--输入区域item-->
       <li v-if="isEditing" class="remark-list-item record-item active-item">
@@ -115,7 +114,6 @@ import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 import AudioPlayer from '../common/audioPlayer.vue';
-import tipShow from "./tipShow.vue";
 import RemarkText from './remarkTextComp.vue';
 export default {
   props: {
@@ -126,7 +124,7 @@ export default {
   },
   components:{
     RecordVideo, RecordAudio, RecordText,
-    AudioPlayer,tipShow,
+    AudioPlayer,
     RemarkText
   },
   computed: {

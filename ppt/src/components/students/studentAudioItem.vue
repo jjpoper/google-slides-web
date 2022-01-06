@@ -18,7 +18,6 @@
         </div>
       </el-tooltip>
     </div>
-    <!-- <tipShow /> -->
     <ul class="remark-list">
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">
@@ -114,7 +113,6 @@ import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
-import tipShow from "./tipShow.vue";
 import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
 import base64image from '../base64image.vue';
 import CommonUpload from '../common/commonUpload.vue';
@@ -124,7 +122,6 @@ export default {
     RecordVideo,
     RecordAudio,
     AudioPlayer,
-    tipShow,
     base64image,
     CommonUpload,
     UploadingProgress

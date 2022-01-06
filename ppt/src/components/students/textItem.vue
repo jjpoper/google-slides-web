@@ -16,7 +16,6 @@
       </div>
     </div>
 
-    <!-- <tipShow /> -->
     <div v-if="showCorrect" class="answer_text">{{ data.items[0].data.answer }}</div>
     <el-switch
       v-if="hasAnswer()"
@@ -86,11 +85,7 @@ el-button {
 <script>
 import { SocketEventsEnum } from "../../socket/socketEvents";
 import { getCurrentPageStudentAnswerList } from "@/model/data.student";
-import tipShow from "./tipShow.vue";
 export default {
-  components: {
-    tipShow
-  },
   props: {
     method: { type: Function },
     data: {
