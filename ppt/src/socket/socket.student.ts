@@ -38,6 +38,7 @@ export const setStudentWxBaseParams = ({
 let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
+let messageIdPool: any = {}
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -67,6 +68,21 @@ const sendHeartBreak = () => {
     } = BaseStudentParams
     BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
   }, 5000)
+}
+
+const sendAck = (msgId: string) => {
+  BaseWsRequest('msg-receipt', `{"msg_id":"${msgId}"}`);
+}
+
+const preCheckAck = (data: string): any => {
+  const response = JSON.parse(data)
+  const {msg_id: msgId} = response
+  if(msgId && !messageIdPool[msgId]) {
+    messageIdPool[msgId] = true
+    sendAck(msgId)
+    return response
+  }
+  return null
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback, onReJoinRoom: callback) => {
@@ -107,7 +123,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
   // 学端要响应老师发来的 control
   socket.on('control', (data: string) => {
     // console.log("老师发来了control. 详细数据: " + data);
-    callback({ mtype: SocketEventsEnum.CONTROL, ...JSON.parse(data) })
+    const response = preCheckAck(data)
+    if(response) {
+      callback({ mtype: SocketEventsEnum.CONTROL, ...response})
+    }
   });
 
   // 学生端收到老师发来的消息反馈
@@ -135,7 +154,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
   });
   socket.on('response', (data: any) => {
     // console.log("收到自己发来的答案：" + data);
-    callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...JSON.parse(data) })
+    const response = preCheckAck(data)
+    if(response) {
+      callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...response})
+    }
   });
   socket.on('delete-response', (data: any) => {
     // console.log("删除答案" + data);
