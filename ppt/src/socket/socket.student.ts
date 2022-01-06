@@ -39,6 +39,7 @@ let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
 let messageIdPool: any = {}
+let lastSocketId: string = ''
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -53,7 +54,7 @@ const rJoinRoom = () => {
       classId,
       token
     } = BaseStudentParams
-    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}","last_sid": "${lastSocketId}"}`);
   // }, 10000)
 }
 const sendHeartBreak = () => {
@@ -97,7 +98,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
     if(!isJoined) {
       isJoined = true
       // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
-      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`, () => {
+      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}","last_sid":""}`, () => {
         // console.log("学生加入房间");
         if(joinCallback) {
           // @ts-ignore
@@ -106,9 +107,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
         sendHeartBreak()
       });
     } else {
-      // rJoinRoom()
+      rJoinRoom()
       onReJoinRoom()
     }
+    lastSocketId = socket.id
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
     //   // console.log("学生提交答案。");
@@ -178,6 +180,10 @@ export const createSo = (room: string, token: string, classId: string, callback:
     } catch(e) {}
     // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
+  // socket.onAny((event: string, ...args: any[]) => {
+  //   console.log(`got ${event}`);
+  // });
+  window.windowStudentWs = socket
   windowStudentWs = socket
   return socket
 }

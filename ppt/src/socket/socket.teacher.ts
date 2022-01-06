@@ -38,6 +38,7 @@ let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
 let messageIdPool: any = {}
+let lastSocketId: string = ''
 
 const BaseWsRequest = (action: string, message: string) => {
   if(windowStudentWs) {
@@ -51,7 +52,7 @@ const rJoinRoom = () => {
       classId,
       token
     } = BaseTeacherParams
-    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
+    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}, "last_sid": "${lastSocketId}"`);
   // }, 10000)
 }
 
@@ -92,16 +93,18 @@ export const createSo = (token: string, classId: string, callback: callback, onL
     if(!isJoined) {
       isJoined = true
       // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
-      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`, () => {
+      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}","last_sid":""}`, () => {
         // console.log("老师加入房间")
         sendHeartBreak()
       });
     } else {
+      rJoinRoom()
       onReJoinRoom()
     }
 
     // console.log('connect 状态 上线')
     onLineStatusChanged(true)
+    lastSocketId = socket.id
 
     // 发送 control ，type和 params 随便定义，学生那边收到的就是这些。
     // socket.emit('control', `{"room":"${room}", "type":"lock_page", "params": {"page": 3}}`, () => {

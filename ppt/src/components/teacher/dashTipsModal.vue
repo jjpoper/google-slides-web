@@ -59,7 +59,7 @@
               <div class="ppt-tips-item-top">
                 <div class="checktext">
                   <input type="checkbox" checked="true" class="tipscheck"/>
-                  正确答案
+                  Correct answer
                 </div>
                 <img
                   src="../../assets/picture/morshanchu.png"

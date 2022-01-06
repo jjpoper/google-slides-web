@@ -49,7 +49,7 @@
         active-text="show answers"
       />
       <div class="refresh-line" v-show="showRefreshAnswer">
-        <span>正确答案有更新！</span>
+        <span>Correct answer updated!</span>
         <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
       </div>
     </template>

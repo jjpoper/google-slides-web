@@ -13,7 +13,7 @@
     </div>
     <template v-if="radio != -1">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
-        正确答案：
+        Correct answer：
         <template v-for="item in optionData.options">
           <span :key="item.id" v-if="item.isAnswer">{{getAnswerText(item)}}</span>
         </template>
@@ -29,7 +29,7 @@
         />
       </div>
       <div class="refresh-line" v-show="showRefreshAnswer">
-        <span>正确答案有更新！</span>
+        <span>Correct answer updated!</span>
         <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
       </div>
     </template>
