@@ -153,7 +153,7 @@
       />
     </div>
 
-    <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
+    <!-- <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
       <div class="tip_area_popover">{{ tipText }}</div>
       <img
         src="../assets/icon/tip_close.png"
@@ -187,7 +187,7 @@
         "
         @click="changeTipShow()"
       />
-    </el-popover>
+    </el-popover> -->
 
     <!-- <div class="web_site_icon">
       <el-popover
