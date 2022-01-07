@@ -1,10 +1,10 @@
 <template>
   <div v-if="rect.id" :class="`mitem ${ isSelected ? 'selected-rect' : ''}`">
     <el-popover
-    v-if="rect.source !== 'add-on' && teacher"
     placement="right"
     trigger="hover"
     class="drag-popover"
+    :disabled="rect.source === 'add-on' || !teacher"
     :append-to-body="false"
     :popper-options="{
       boundariesElement: 'body',
@@ -20,56 +20,19 @@
           @click="deleteMedia(rect.id)"
         ></i>
       </div>
-      <div class="full forHover" slot="reference">
-        <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
-          <img :src="rect.url" class="full"/>
-        </div>
-        <div v-if="rect.type === 'video'" class="meidaitem teacherppt full" >
-          <video
-            :src="rect.url"
-            class="full"
-          />
-        </div>
-        <div v-if="rect.type === 'audio'" class="meidaitem teacherppt full" >
-          <audio-player :url="rect.url" class="full"/>
-        </div>
-        <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
-          <youtube :rect="rect"/>
-        </div>
-        <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
+      <div :class="`full ${rect.type === 'audio' ? '' : 'forHover'}`" slot="reference">
+        <item-child :item="rect"/>
+        <!-- <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
           <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
-        </div>
-        <div class="transformmask" @click="choose"></div>
+        </div> -->
+        <div class="transformmask" v-if="rect.type !== 'audio'" @click="choose"></div>
       </div>
     </el-popover>
-    <div class="full forHover" slot="reference" v-else>
-      <div v-if="rect.type === 'image'" class="meidaitem teacherppt full" >
-        <img :src="rect.url" class="full"/>
-      </div>
-      <div v-if="rect.type === 'video'" class="meidaitem teacherppt full" >
-        <video
-          :src="rect.url"
-          class="full"
-        />
-      </div>
-      <div v-if="rect.type === 'audio'" class="meidaitem teacherppt full" >
-        <audio-player :url="rect.url" class="full"/>
-      </div>
-      <div v-if="rect.type === 'iframe'" class="meidaitem teacherppt full" >
-        <youtube :rect="rect"/>
-      </div>
-      <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
-        <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
-      </div>
-      <div class="transformmask" @click="choose"></div>
-    </div>
   </div>
 </template>
 <script>
-import { ModalEventsNameEnum } from '@/socket/socketEvents';
-import AudioPlayer from '../common/audioPlayer.vue';
-import Youtube from './youtube.vue';
 import { mapActions, mapState } from "vuex";
+import ItemChild from './itemChild.vue';
 export default {
   props: {
     index: {
@@ -116,8 +79,7 @@ export default {
     }
   },
   components: {
-    AudioPlayer,
-    Youtube
+    ItemChild
   },
   methods: {
     ...mapActions("metarial", [

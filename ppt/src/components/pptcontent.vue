@@ -233,6 +233,8 @@ export default {
   height: 100%;
   overflow: scroll;
   flex-direction: column;
+  background-color: rgba(195,102, 22, 0.5);
+  align-items: center;
 }
 .mask{
   position: absolute;

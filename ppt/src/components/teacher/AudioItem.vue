@@ -24,7 +24,7 @@
                     class="remark-file"
                     v-else-if="item.content.mediaType === 'file'"
                   >
-                    <div v-show="currentTab === 1" :class="`file-icon ${getIconClass(item.content.fileName)}`" ></div>
+                    <div :class="`file-icon ${getIconClass(item.content.fileName)} ${currentTab === 1 ? '' : 'smallicon'}`" ></div>
                     <div class="file-name" style="flex: 1">
                       <p class="file-name">{{item.content.fileName}}</p>
                       <a :href="item.content.link" target="blank" download class="download-text">Download</a>
@@ -470,6 +470,11 @@ video{
 }
 .file-icon.file{
   background-image: url(../../assets/picture/file.png);
+}
+.file-icon.smallicon{
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
 }
 .download-text{
   text-decoration: none;

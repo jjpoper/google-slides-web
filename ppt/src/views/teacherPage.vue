@@ -570,7 +570,8 @@ type: "slide"*/
       "deleteOneRemarkItem"
     ]),
     ...mapActions("metarial", [
-      "setSelectedMetarialId"
+      "setSelectedMetarialId",
+      "setMaskMetarialId"
     ]),
     addprompt() {
       console.log("新增prompt!!");
@@ -989,6 +990,7 @@ type: "slide"*/
         if (controlType == 2) {
           this.meterialVisiable = result;
           this.metrialStatusMap[this.currentPageId] = result
+          console.log('========',  this.meterialVisiable)
           return
         }
         // 分享弹框是否展示
@@ -999,21 +1001,31 @@ type: "slide"*/
         // dash end class，project 关闭window
         if (controlType == 4 && !this.isDashboard) {
           window.close()
+          return
         }
         // youtube视频同步
         if(controlType == 5) {
           EventBus.$emit('youtubePlayer', result)
+          return
         }
 
         // dash 和 project 答案tab同步
         if(controlType == 6) {
           EventBus.$emit('responseTabChange', result)
+          return
         }
 
         // dash 和 project 查看metarial同步
         if(controlType == 7) {
           // EventBus.$emit('responseTabChange', result)
           this.setSelectedMetarialId(result)
+          return
+        }
+
+        if(controlType == 8) {
+          // EventBus.$emit('responseTabChange', result)
+          this.setMaskMetarialId(result)
+          return
         }
       }
     },
