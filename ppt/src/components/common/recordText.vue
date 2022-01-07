@@ -61,7 +61,7 @@ export default {
     sendMessage() {
       if (!this.commentValue) {
         // this.$message.warning("Please input your comment");
-        this.cancel()
+        // this.cancel()
         return;
       }
       this.onSend(this.commentValue, 'text')
