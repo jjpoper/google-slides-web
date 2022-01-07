@@ -2,7 +2,6 @@ import axios from 'axios';
 import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { getTeacherStoreToken } from './store.teacher';
-import { getDecodeText } from '@/utils/help';
 
 axios.interceptors.response.use((res: any) => {
   return res;
@@ -259,11 +258,7 @@ export const getTeacherClassAnswers = async (classId: string, token: string) => 
   // // let list = data.data.data.pages
   // // // // console.log(data.data.data)
   try {
-    const tempData = data.data.data
-    for(let v of tempData) {
-      v = getDecodeText(v)
-    }
-    result = tempData
+    result = data.data.data
   } catch(e) {
     // // console.log(e)
   }
@@ -283,11 +278,7 @@ export const getStudentClassAnswers = async (classId: string, token: string) => 
   // // let list = data.data.data.pages
   // // // // console.log(data.data.data)
   try {
-    const tempData = data.data.data
-    for(let v of tempData) {
-      v = getDecodeText(v)
-    }
-    result = tempData
+    result = data.data.data
   } catch(e) {
     // // console.log(e)
   }
