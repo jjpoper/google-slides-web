@@ -1,6 +1,7 @@
 /* eslint-disable no-empty */
 /* eslint-disable prefer-template */
 /* eslint-disable no-// console */
+import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from "./socketEvents";
 
@@ -184,6 +185,18 @@ export const createSo = (token: string, classId: string, callback: callback, onL
       if(isSuccess) {
         heartOK = true
       }
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
+  socket.on('invalid_request', (data: string) => {
+    try {
+      showToast(JSON.parse(data).message, 'error')
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
+  socket.on('invalid_token', () => {
+    try {
+      showToast('invalid_token, please press f5 to reload')
     } catch(e) {}
     // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });

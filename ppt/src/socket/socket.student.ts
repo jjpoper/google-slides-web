@@ -2,6 +2,7 @@
 /* eslint-disable max-len */
 /* eslint-disable no-// console */
 /* eslint-disable prefer-template */
+import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from './socketEvents';
 
@@ -177,6 +178,18 @@ export const createSo = (room: string, token: string, classId: string, callback:
       if(isSuccess) {
         heartOK = true
       }
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
+  socket.on('invalid_request', (data: string) => {
+    try {
+      showToast(JSON.parse(data).message, 'error')
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
+  socket.on('invalid_token', () => {
+    try {
+      showToast('invalid_token, please press f5 to reload')
     } catch(e) {}
     // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
