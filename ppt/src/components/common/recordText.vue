@@ -56,12 +56,12 @@ export default {
   methods: {
     focusInput() {
       this.$refs.textareaRecord.focus()
-      window.remarkInputStatus = false
+      window.preventSendRemark = false
     },
     sendMessage() {
       if (!this.commentValue) {
         // this.$message.warning("Please input your comment");
-        // this.cancel()
+        this.cancel()
         return;
       }
       this.onSend(this.commentValue, 'text')
@@ -76,7 +76,7 @@ export default {
       this.clearDelay();
       this.sendDelay = setTimeout(() => {
         // 换颜色时候不进行提交
-        if(window.remarkInputStatus) {
+        if(window.preventSendRemark) {
           this.focusInput()
         } else {
           this.sendMessage();
@@ -84,7 +84,7 @@ export default {
       }, 500);
     },
     changeInput() {
-      window.remarkInputStatus = false
+      window.preventSendRemark = false
     }
   }
 }
