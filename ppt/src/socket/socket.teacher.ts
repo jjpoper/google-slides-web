@@ -1,6 +1,7 @@
 /* eslint-disable no-empty */
 /* eslint-disable prefer-template */
 /* eslint-disable no-// console */
+import { getSocketDecodeText } from '@/utils/help';
 import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from "./socketEvents";
@@ -122,7 +123,7 @@ export const createSo = (token: string, classId: string, callback: callback, onL
     // // console.log("收到学生发来的答案：" + data);
     const response = preCheckAck(data)
     if(response) {
-      callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...response })
+      callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...getSocketDecodeText(response) })
     }
   });
 

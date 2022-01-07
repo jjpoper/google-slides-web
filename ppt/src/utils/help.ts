@@ -61,3 +61,23 @@ export const getJSONValue = (res: any) => {
   } catch(e) {}
   return data
 }
+
+// 转码字符
+export const getDecodeText = (tempData: any): object => {
+  if(tempData.type === 'text') {
+    let temp = JSON.parse(tempData.data)
+    tempData.data = JSON.stringify({
+      ...temp,
+      content: decodeURIComponent(temp.content)
+    })
+  }
+  return tempData
+}
+
+// 数据结构乱七八糟的
+export const getSocketDecodeText = (tempData: any): object => {
+  if(tempData.type === 'text') {
+    tempData.content = decodeURIComponent(tempData.content)
+  }
+  return tempData
+}
