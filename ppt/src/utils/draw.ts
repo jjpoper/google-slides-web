@@ -1036,22 +1036,22 @@ export default class Draw {
 
   drawAndShareImage(str: string, text: string) {
     const canvas = document.createElement("canvas");
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
+    canvas.width = this.canvasWidth * 0.3;
+    canvas.height = this.canvasHeight * 0.3;
     const context: any = canvas.getContext("2d");
-    context.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    context.rect(0, 0, this.canvasWidth * 0.3, this.canvasHeight * 0.3);
     context.fillStyle = 'rgba(255,255,255,0)'
     context.fill();
     const myImage = new Image();
     myImage.src = str; // 背景图片 你自己本地的图片或者在线图片
     myImage.crossOrigin = 'Anonymous';
     myImage.onload = () => {
-      context.drawImage(myImage, 0, 0, this.canvasWidth, this.canvasHeight);
+      context.drawImage(myImage, 0, 0, this.canvasWidth * 0.3, this.canvasHeight * 0.3);
       const myImage2 = new Image();
       myImage2.src = text; // 你自己本地的图片或者在线图片
       myImage2.crossOrigin = 'Anonymous';
       myImage2.onload = () => {
-        context.drawImage(myImage2, 0, 0, this.canvasWidth, this.canvasHeight);
+        context.drawImage(myImage2, 0, 0, this.canvasWidth * 0.3, this.canvasHeight * 0.3);
         const base64 = canvas.toDataURL("image/png"); // "image/png" 这里注意一下
         this.onDrawBack(str, text, base64);
       }
