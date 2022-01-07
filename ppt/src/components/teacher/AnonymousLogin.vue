@@ -343,7 +343,14 @@ export default {
         setRealClass(
           this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
           this.canAnonymous ? 1 : 0,
-          this.currentRoomId
+          this.currentRoomId,
+          this.className,
+          this.scheduleSession,
+          this.sessionStartTime,
+          this.allocatedTime,
+          this.time_type,
+          this.time_down,
+          this.deadline
         ).then((res) => {
           this.closeBtn()
         });
@@ -378,6 +385,7 @@ export default {
           var roomItem = {};
           roomItem.name = this.newRoomName;
           roomItem.id = res.data;
+          this.currentRoomId = roomItem.id
           this.roomItems.push(roomItem);
         }
       });
@@ -400,6 +408,7 @@ export default {
         this.createNewRoomConfirm()
       }else {
         this.newRoomName = rootItem.name
+        this.currentRoomId = rootItem.id
       }
     }
   },

@@ -583,12 +583,28 @@ export const getRealClass = async (mail: string) => {
   return data.data.data;
 }
 
-export const setRealClass = async (id: string, anonymous: number, real_id: number) => {
+export const setRealClass = async (id: string,
+                                   anonymous: number,
+                                   real_id: number,
+                                   class_name: string,
+                                   schedule_session: boolean,
+                                   session_start_time: string,
+                                   allocate_time: boolean,
+                                   allocate_time_type: number,
+                                   count_down: number,
+                                   dead_line: string,
+                                   ) => {
   const data = await axios.post(`${PPT.requestUrl}class/set`, {
     class_id: id,
     can_anonymous_sign_in: anonymous,
     real_class_id: real_id,
-    session_name: 'session_name'
+    class_name: class_name,
+    schedule_session: schedule_session,
+    session_start_time: session_start_time,
+    allocate_time: allocate_time,
+    allocate_time_type: allocate_time_type,
+    count_down: count_down,
+    dead_line: dead_line,
   })
   console.log(data.data);
   return data.data.code;
