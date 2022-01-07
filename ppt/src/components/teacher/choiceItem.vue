@@ -77,6 +77,7 @@ export default {
   },
   data() {
     return {
+      choiceData: null, 
       showStatistics: true,
       options: [],
       title: "",
@@ -167,27 +168,28 @@ export default {
     }
   },
   created() {
-    const { title, options, isMulti } = this.data.items[0].data;
+    this.choiceData = this.data
+    const { title, options, isMulti } = this.choiceData.items[0].data;
     this.title = title;
     this.options = options;
     this.isMulti = isMulti;
     this.answerList = getCurrentPageAnswerList(
-      this.data.page_id,
-      this.data.items[0].type
+      this.choiceData.page_id,
+      this.choiceData.items[0].type
     );
   },
   mounted() {
     EventBus.$on("choice", data => {
-      this.data = data.data;
-      const { title, options, isMulti } = this.data.items[0].data;
+      this.choiceData = data.data;
+      const { title, options, isMulti } = this.choiceData.items[0].data;
       this.title = title;
       this.options = options;
       this.isMulti = isMulti;
       // console.log(this.data, data, "EventBus on");
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
-        this.data.page_id,
-        this.data.items[0].type
+        this.choiceData.page_id,
+        this.choiceData.items[0].type
       );
     });
   },
@@ -352,7 +354,7 @@ export default {
   -moz-column-gap:  5px;
   column-gap:  5px; */
   width: 20%;
-  padding: 5px;
+  padding: 2px;
   box-sizing: border-box;
   margin-bottom: 10px;
 }
@@ -405,7 +407,7 @@ export default {
 }
 .text_area {
   width: 100%;
-  /* height: 59%; */
+  height: 59%;
   background: rgba(228,228,228,0.3);
   border-radius: 6px;
   font-size: 14px;

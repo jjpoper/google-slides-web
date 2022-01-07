@@ -279,7 +279,7 @@ export default {
   -moz-column-gap:  5px;
   column-gap:  5px; */
   width: 20%;
-  padding: 5px;
+  padding: 2px;
   box-sizing: border-box;
   margin-bottom: 10px;
 }

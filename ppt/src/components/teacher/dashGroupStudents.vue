@@ -12,7 +12,7 @@
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
             <div :class="`user-icon student-icon ${getSelected(item.user_id)}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
-            <div class="user-name">{{item.name}}</div>
+            <div class="user-name" :title="item.name">{{item.name.split("@")[0]}}</div>
           </li>
         </template>
       </ul>
@@ -181,6 +181,9 @@ export default {
     color: rgba(0, 0, 0, 1);
     opacity: 1;
     text-align: left;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .user-time {
     font-size: 10px;

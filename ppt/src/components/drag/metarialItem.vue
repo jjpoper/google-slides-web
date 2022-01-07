@@ -1,5 +1,5 @@
 <template>
-  <div v-if="rect.id" :class="`mitem ${ isSelected ? 'selected-rect' : ''}`">
+  <div v-if="rect.id" :class="`mitem ${ isSelected ? 'selected-rect commonshadow' : ''}`">
     <div :class="`full ${rect.type === 'audio' ? '' : 'forHover'}`" slot="reference">
       <item-child :item="rect"/>
       <!-- <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
@@ -152,6 +152,6 @@ export default {
   transform: scale(1.2);
 }
 .selected-rect{
-  border: 1px solid red;
+  border: 2px solid #fb0404;
 }
 </style>

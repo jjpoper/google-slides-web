@@ -278,7 +278,7 @@ export default {
 }
 .colume5{
   width: 20%;
-  padding: 5px;
+  padding: 2px;
   box-sizing: border-box;
   margin-bottom: 10px;
 }

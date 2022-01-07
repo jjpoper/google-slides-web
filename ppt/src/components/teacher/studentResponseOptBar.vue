@@ -1,7 +1,7 @@
 <template>
   <div class="answer-footer" v-if="data">
-    <div class="emoji_area">
-      {{ data ? data.name : " " }}
+    <div class="emoji_area" :title="data.name">
+      {{ data ? data.name.split("@")[0] : " " }}
     </div>
     <div class="opt_area">
       <el-tooltip
