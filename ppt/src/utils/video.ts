@@ -56,7 +56,7 @@ export const startRecordVideo = (domVideo: any, callback: any = () => null, fail
       mediaRecorder.startRecording();
       videoRecordStatus = 2
       callback && callback()
-    }, 2000)
+    }, 1000)
   }).catch((e) => {
     onMediaError(e)
     fail && fail()
