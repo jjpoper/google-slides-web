@@ -76,6 +76,7 @@ export default {
       this.clearDelay();
       this.sendDelay = setTimeout(() => {
         // 换颜色时候不进行提交
+        console.log('onInputText', window.preventSendRemark)
         if(window.preventSendRemark) {
           this.focusInput()
         } else {
