@@ -984,6 +984,7 @@ type: "slide"*/
         if(controlType == 1) {
           // 是否展示 response
           this.showResponse = result;
+          this.showResponseMap[this.currentPageId] = this.showResponse
           return
         }
         // toggleMetarial 是否展示

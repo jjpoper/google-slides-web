@@ -265,6 +265,7 @@ export default {
   overflow: scroll;
   position: relative;
   padding-bottom: 100px;
+  flex: 1;
 }
 .text-answer-list{
   width: 100%;
