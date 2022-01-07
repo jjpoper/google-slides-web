@@ -102,11 +102,11 @@ export default {
       this.progress = progress
     },
     startRecord() {
+      this.isRecording = true
+      this.endRecording = false
       startRecordVideo(document.getElementById("record-video"), this.countToRecord, this.fail)
     },
     countToRecord() {
-      this.isRecording = true
-      this.endRecording = false
       this.timeValue = 0
       this.count()
     },

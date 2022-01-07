@@ -165,7 +165,7 @@ export default {
     },
     currentRemarkOptions() {
       this.$refs.remarklist.scrollTop = 0
-    }
+    },
   },
   created() {
     this.setIsRemark(true);
@@ -203,12 +203,15 @@ export default {
       this.$refs.remarklist.scrollTop = 0
     },
     audio() {
+       this.cancelRecord()
       this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO);
     },
     video() {
+       this.cancelRecord()
       this.changeRemarkInputType(ModalEventsTypeEnum.VIDEO);
     },
     text() {
+       this.cancelRecord()
       this.changeRemarkInputType(ModalEventsTypeEnum.TEXT);
     },
     deleteItem(id) {
