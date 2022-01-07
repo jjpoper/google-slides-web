@@ -243,7 +243,7 @@ const mutations = {
         //     studentComment,
         //     unreadStudentCommentIds
         // } = nextState
-        nextState.studentFeedBackComments.push(data)
+        nextState.studentFeedBackComments.unshift(data)
         nextState.unreadStudentCommentIds.push(data.id)
     },
     delUnreadCommentId(nextState: any, id: any) {

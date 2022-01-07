@@ -436,6 +436,8 @@ export default {
       // }
       if(this.isStudentPaced) {
         this.studentPaceLastPage = this.currentPageIndex
+      } else {
+        this.hideStudentModal()
       }
     },
     studentAllSlides() {
@@ -930,6 +932,7 @@ export default {
               : ClassRoomModelEnum.TEACHER_MODEL;
           if (this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
             this.lock_all_pages = false;
+            this.hideStudentModal()
           } else if(this.studentPaceLastPage !== -1){
             // 如果切回到学生模式。要跳转到之前学生模式那一页
             this.pageChange(this.studentPaceLastPage)

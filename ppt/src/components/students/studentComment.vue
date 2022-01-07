@@ -1,7 +1,7 @@
 <template>
   <div class="studentComment" :style="`height: ${webHeight}px; `" v-if="modalVisibale">
     <div class="title">
-      <p>Student Feedback</p>
+      <p>Teacher Feedback</p>
       <i @click="hidecomment"></i>
     </div>
     <template v-for="(item, index) in commentList">
@@ -133,6 +133,7 @@ export default {
   watch: {
     currentFeedList() {
       console.log(this.currentFeedList, 'currentFeedList')
+      this.refreshList()
     }
   },
   data() {
@@ -175,8 +176,7 @@ export default {
       // const list = getStudentCommentList();
       // this.unreadIdList = getUnreadStudentCommentIds();
       // console.log(list)
-      this.commentList = this.currentFeedList.reverse();
-      console.log(this.commentList, '=commentList')
+      this.commentList = [].concat(this.currentFeedList);
       // console.log(list, this.unreadIdList);
     },
     getIndex(page_id) {
@@ -329,6 +329,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 50px 50px;
   cursor: pointer;
+  opacity: 0.6;
 }
 .pptimage {
   width: 321px;
