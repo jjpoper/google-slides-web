@@ -1,7 +1,7 @@
 <template>
   <div class="remark-item-content">
     <div class="remark-file">
-      <p class="file-name">{{item.content}}</p>
+      <p class="file-name">{{getText(item)}}</p>
     </div>
   </div>
 </template>
@@ -13,6 +13,14 @@ export default {
       default: () => {}
     }
   },
+  methods: {
+    getText(item) {
+      if (item.content) {
+        return item.content;
+      }
+      return "Deleted response";
+    },
+  }
 }
 </script>
 <style scoped>

@@ -1,6 +1,7 @@
 /* eslint-disable no-empty */
 /* eslint-disable prefer-template */
 /* eslint-disable no-// console */
+import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from "./socketEvents";
 
@@ -40,9 +41,9 @@ let heartOK = true
 let messageIdPool: any = {}
 let lastSocketId = ''
 
-const BaseWsRequest = (action: string, message: string) => {
+const BaseWsRequest = (action: string, message: string | object, callback: callback = () => null) => {
   if(windowStudentWs) {
-    windowStudentWs.emit(action, message);
+    windowStudentWs.emit(action, typeof message === 'object' ? JSON.stringify(message) : message, callback);
   }
 }
 
@@ -52,7 +53,10 @@ const rJoinRoom = () => {
       classId,
       token
     } = BaseTeacherParams
-    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}, "last_sid": "${lastSocketId}"`);
+    BaseWsRequest(
+      'join-room',
+      {room: classId, token: token, role: "teacher", class_id: classId, last_sid: lastSocketId}
+    );
   // }, 10000)
 }
 
@@ -71,7 +75,7 @@ const sendHeartBreak = () => {
 }
 
 const sendAck = (msgId: string) => {
-  BaseWsRequest('msg-receipt', `{"msg_id":"${msgId}"}`);
+  BaseWsRequest('msg-receipt', {msg_id: msgId});
 }
 
 const preCheckAck = (data: string): any => {
@@ -93,7 +97,7 @@ export const createSo = (token: string, classId: string, callback: callback, onL
     if(!isJoined) {
       isJoined = true
       // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
-      socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}","last_sid":""}`, () => {
+      BaseWsRequest('join-room', {room: classId, token: token, role: "teacher", class_id: classId, last_sid: ""}, () => {
         // console.log("老师加入房间")
         sendHeartBreak()
       });
@@ -105,7 +109,7 @@ export const createSo = (token: string, classId: string, callback: callback, onL
     // console.log('connect 状态 上线')
     onLineStatusChanged(true)
     lastSocketId = socket.id
-
+    rJoinRoom()
     // 发送 control ，type和 params 随便定义，学生那边收到的就是这些。
     // socket.emit('control', `{"room":"${room}", "type":"lock_page", "params": {"page": 3}}`, () => {
     //   // console.log("发送control")
@@ -187,6 +191,18 @@ export const createSo = (token: string, classId: string, callback: callback, onL
     } catch(e) {}
     // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
+  socket.on('invalid_request', (data: string) => {
+    try {
+      showToast(JSON.parse(data).message, 'error')
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
+  socket.on('invalid_token', () => {
+    try {
+      showToast('invalid_token, please press f5 to reload')
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
 
   windowStudentWs = socket
   return socket
@@ -219,7 +235,7 @@ export const controlProject = (params: ControlP & any = {}) => {
   } = BaseTeacherParams
   BaseWsRequest(
     "control",
-    `{"room":"${classId}", "type": "${SocketEventsEnum.ASYNC_DASH_PROJECT}", "token": "${token}","class_id":"${classId}","params": ${JSON.stringify(params)}}`
+    {room: classId, type: SocketEventsEnum.ASYNC_DASH_PROJECT, token: token, class_id: classId, params: JSON.stringify(params)}
   );
 }
 
@@ -231,6 +247,6 @@ export const sendPageChangeControl = (currentPageIndex: number) => {
   } = BaseTeacherParams
   BaseWsRequest(
     "control",
-    `{"room":"${classId}", "token": "${token}","class_id":"${classId}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${currentPageIndex}"}}`
+    {room: classId, token: token, class_id: classId, type: SocketEventsEnum.GO_PAGE, params: {page: currentPageIndex}}
   );
 }

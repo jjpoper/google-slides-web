@@ -732,7 +732,7 @@ export default {
       const { type } = items[0];
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}","locked": ${show}}`
+        JSON.stringify({"room": this.class_id, "type":type, "user_id": this.uid, "user_name":this.uname,"token": this.token,"class_id": this.class_id,  "page_id": page_id, "item_id": index, "content":msg,"locked": show})
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
@@ -1069,7 +1069,7 @@ export default {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         // // console.log(action, message);
-        this.currentSo.emit(action, message);
+        this.currentSo.emit(action, typeof message === 'object' ? JSON.stringify(message) : message);
       }
     },
     lastPage() {
@@ -1154,7 +1154,7 @@ export default {
       // console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"media", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+        {"room": this.class_id, "type":"media", "user_id": this.uid, "user_name":this.uname,"token": this.token,"class_id":this.class_id,  "page_id": page_id, "item_id": "0", "content":link}
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,

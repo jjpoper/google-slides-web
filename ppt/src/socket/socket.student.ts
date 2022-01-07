@@ -2,6 +2,7 @@
 /* eslint-disable max-len */
 /* eslint-disable no-// console */
 /* eslint-disable prefer-template */
+import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from './socketEvents';
 
@@ -41,9 +42,9 @@ let heartOK = true
 let messageIdPool: any = {}
 let lastSocketId = ''
 
-const BaseWsRequest = (action: string, message: string) => {
+const BaseWsRequest = (action: string, message: string | object) => {
   if(windowStudentWs) {
-    windowStudentWs.emit(action, message);
+    windowStudentWs.emit(action, typeof message === 'object' ? JSON.stringify(message) : message);
   }
 }
 
@@ -54,7 +55,10 @@ const rJoinRoom = () => {
       classId,
       token
     } = BaseStudentParams
-    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}","last_sid": "${lastSocketId}"}`);
+    BaseWsRequest(
+      'join-room',
+      {room: classId, token: token, role: "student", class_id: classId, last_sid: lastSocketId}
+    );
   // }, 10000)
 }
 const sendHeartBreak = () => {
@@ -72,7 +76,7 @@ const sendHeartBreak = () => {
 }
 
 const sendAck = (msgId: string) => {
-  BaseWsRequest('msg-receipt', `{"msg_id":"${msgId}"}`);
+  BaseWsRequest('msg-receipt', {msg_id: msgId});
 }
 
 const preCheckAck = (data: string): any => {
@@ -180,6 +184,18 @@ export const createSo = (room: string, token: string, classId: string, callback:
     } catch(e) {}
     // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
+  socket.on('invalid_request', (data: string) => {
+    try {
+      showToast(JSON.parse(data).message, 'error')
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
+  socket.on('invalid_token', () => {
+    try {
+      showToast('invalid_token, please press f5 to reload')
+    } catch(e) {}
+    // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
+  });
   // socket.onAny((event: string, ...args: any[]) => {
   //   console.log(`got ${event}`);
   // });
@@ -204,16 +220,24 @@ export const askToAddNewRemarkItem = (data: any) => {
   } = data;
   BaseWsRequest(
     "comment-ppt",
-    `{"token": "${BaseStudentParams.token}", "class_id": "${BaseStudentParams.classId}",
-    "data":
-      {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
-      "background": "${background}", "content_width": ${content_width},
-      "content_height": ${content_height},
-      "width": ${width},
-      "height": ${height},
-      "pointType": "${pointType}",
-      "page_id": "${page_id}"}}`
-    );
+    {
+      token: BaseStudentParams.token,
+      class_id: BaseStudentParams.classId,
+      data: {
+        left: left,
+        top,
+        link: link,
+        type: type,
+        background: background,
+        content_width: content_width,
+        content_height: content_height,
+        width: width,
+        height: height,
+        pointType: pointType,
+        page_id: page_id
+      }
+    }
+  );
 }
 
 export const deleteOneRemark = (id: string) => {

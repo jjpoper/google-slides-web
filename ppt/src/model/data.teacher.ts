@@ -25,7 +25,7 @@ export const initTeacherData = async (classId: string, token: string) => {
 
 // 老师端新增数据
 export const addTeacherData = (pageId: string, type: string, oldData: any) => {
-  if(type === 'media') {
+  if(type == 'media') {
     teacherData.push(oldData)
     return teacherData
   }
@@ -41,11 +41,11 @@ export const addTeacherData = (pageId: string, type: string, oldData: any) => {
   const { item_id: itemId, student_user_id: sid } = data
   // console.log(data, "addItem")
   let oldDataIndex = -1
-  if (type === 'choice' || type === 'number' || type === 'draw') {
+  if (type == 'choice' || type == 'number' || type == 'draw') {
     // 一条答案数据，去重
-    oldDataIndex = teacherData.findIndex(item => item.page_id === pageId && item.student_user_id === sid)
+    oldDataIndex = teacherData.findIndex(item => item.page_id == pageId && item.student_user_id == sid)
   } else {
-    oldDataIndex = teacherData.findIndex(item => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)
+    oldDataIndex = teacherData.findIndex(item => item.page_id == pageId && item.item_id == itemId && item.student_user_id == sid)
   }
   if (oldDataIndex > -1) {
     teacherData[oldDataIndex] = data
@@ -64,7 +64,7 @@ export const deletTeacherData = (id: any) => {
 
 // 获取老师端数据量
 export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) => {
-  const filterData = teacherData.filter(item => item.page_id === pageId && item.type === type)
+  const filterData = teacherData.filter(item => item.page_id == pageId && item.type == type)
   const mapData = filterData.map((item) => {
     return {
       star: false,
@@ -79,6 +79,6 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
 
 // 获取学生姓名
 export const getStudentsName = (uid: string) => {
-  const data = teacherData.filter(item => item.student_user_id === uid)[0]
+  const data = teacherData.filter(item => item.student_user_id == uid)[0]
   return data ? JSON.parse(data.data).user_name : ''
 }
