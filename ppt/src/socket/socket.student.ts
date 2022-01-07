@@ -42,9 +42,9 @@ let heartOK = true
 let messageIdPool: any = {}
 let lastSocketId = ''
 
-const BaseWsRequest = (action: string, message: string) => {
+const BaseWsRequest = (action: string, message: string | object) => {
   if(windowStudentWs) {
-    windowStudentWs.emit(action, message);
+    windowStudentWs.emit(action, typeof message === 'object' ? JSON.stringify(message) : message);
   }
 }
 
@@ -55,7 +55,10 @@ const rJoinRoom = () => {
       classId,
       token
     } = BaseStudentParams
-    BaseWsRequest('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}","last_sid": "${lastSocketId}"}`);
+    BaseWsRequest(
+      'join-room',
+      {room: classId, token: token, role: "student", class_id: classId, last_sid: lastSocketId}
+    );
   // }, 10000)
 }
 const sendHeartBreak = () => {
@@ -73,7 +76,7 @@ const sendHeartBreak = () => {
 }
 
 const sendAck = (msgId: string) => {
-  BaseWsRequest('msg-receipt', `{"msg_id":"${msgId}"}`);
+  BaseWsRequest('msg-receipt', {msg_id: msgId});
 }
 
 const preCheckAck = (data: string): any => {
@@ -217,16 +220,24 @@ export const askToAddNewRemarkItem = (data: any) => {
   } = data;
   BaseWsRequest(
     "comment-ppt",
-    `{"token": "${BaseStudentParams.token}", "class_id": "${BaseStudentParams.classId}",
-    "data":
-      {"left": ${left}, "top": ${top}, "link": "${link}", "type": "${type}",
-      "background": "${background}", "content_width": ${content_width},
-      "content_height": ${content_height},
-      "width": ${width},
-      "height": ${height},
-      "pointType": "${pointType}",
-      "page_id": "${page_id}"}}`
-    );
+    {
+      token: BaseStudentParams.token,
+      class_id: BaseStudentParams.classId,
+      data: {
+        left: left,
+        top,
+        link: link,
+        type: type,
+        background: background,
+        content_width: content_width,
+        content_height: content_height,
+        width: width,
+        height: height,
+        pointType: pointType,
+        page_id: page_id
+      }
+    }
+  );
 }
 
 export const deleteOneRemark = (id: string) => {
