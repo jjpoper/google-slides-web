@@ -257,12 +257,12 @@
     <!--  -->
     <el-dialog
       :visible.sync="showCopyLinkDialog"
+      :show-close="false"
       custom-class="custom-dialog"
-      width="80%"
+      width="900px"
       @close="closeCopyLinkDialog()"
     >
       <AnonymousLogin
-        style="height: 660px"
         v-if="classRoomInfo"
         :hindeTimeDialog="hindeTimeDialog"
         :url="getStudentUrl()"

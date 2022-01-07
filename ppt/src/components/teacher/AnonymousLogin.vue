@@ -1,171 +1,136 @@
 <template>
-  <div class="modal-body">
-    <img src="../../assets/picture/invate_icon.png" width="316" height="178" />
-    <div class="login_right">
-      <div @click="closeBtn" class="common-close-btn"></div>
-
-      <span class="title_1">Invite students to study</span>
-      <span class="title_2">Join at classcipe.com</span>
-      <div class="class_number">{{ getPass }}</div>
-
-      <div class="opt--item" style="margin-top: 20px">
-        <span class="opt--text">Session name</span>
-        <div class="room--area">
-          <el-input
-              placeholder="create new class"
-              v-model="className"
-              style="
-                width: 317px;
-                height: 40px;
-                border: 1px solid #d8d8d8;
-                border-radius: 6px;
-              "
-              @blur="changeName"
-            />
+  <el-card>
+    <el-row type="flex">
+      <el-col :span="7" class="login-col">
+        <div class="login-logo">
+          <img src="../../assets/picture/invite_icon.png" class="login-img" />
         </div>
-      </div>
-
-      <div class="opt--item" style="margin-top: 20px">
-        <span class="opt--text">Choose class</span>
-        <el-popover placement="bottom" width="300" v-model="visible">
-          <div class="room--area">
-            <div
-              v-for="(item, index) in roomItems"
-              :key="index"
-              class="room--item"
-              @click="selectRoom(item)"
-            >
-              {{ item.name }}
-            </div>
-
-            <div class="create--room">
-              <el-input
-                placeholder="create new class"
-                v-model="newRoomName"
-                style="
-                  width: 220px;
-                  height: 40px;
-                  border: 1px solid #9f9f9f;
-                  border-radius: 6px;
-                "
-              />
-              <div class="create--confirm" @click="createNewRoomConfirm">
-                Confirm
-              </div>
-            </div>
+      </el-col>
+      <el-col :span="16">
+        <div @click="closeBtn" class="common-close-btn"></div>
+        <div class="login-main-content">
+          <div class="login-header">
+            <el-row  type="flex" justify="start">
+              <el-col offset="7" span="15">
+                <div class="main-title">Invite students to study</div>
+                <div class="sub-title">Join at classcipe.com</div>
+                <div class="invite-code">{{ getPass }}</div>
+              </el-col>
+            </el-row>
           </div>
-          <div slot="reference" class="opt--value room--item">{{ room }}</div>
-        </el-popover>
-      </div>
+          <div class="login-form">
+            <el-row type="flex" class="form-item" justify="start" align="middle">
+              <el-col :span="7">
+                <div class="form-label">Session name</div>
+              </el-col>
+              <el-col :span="16">
+                <el-input
+                  size="medium"
+                  class="my-login-input"
+                  placeholder="Unnamed session"
+                  @blur="changeName"
+                  v-model="className"
+                  clearable>
+                </el-input>
+              </el-col>
+            </el-row>
 
-      <div class="opt--item">
-        <span class="opt--text">Time</span>
-        <el-select
-          v-model="time_type"
-          placeholder="--Select--"
-          style="
-            width: 315px;
-            height: 40px;
-            border: 1px solid #d8d8d8;
-            border-radius: 6px;
-          "
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </div>
+            <el-row type="flex" class="form-item" justify="start" align="middle">
+              <el-col :span="7">
+                <div class="form-label">Choose class</div>
+              </el-col>
+              <el-col :span="16">
+                <el-input
+                  size="medium"
+                  class="my-login-input"
+                  placeholder="Unnamed session"
+                  @blur="changeName"
+                  v-model="className"
+                  clearable>
+                </el-input>
+              </el-col>
+            </el-row>
 
-      <div class="opt--item" v-if="time_type == 2">
-        <span class="opt--text">Allocated time</span>
-        <el-select
-          v-model="time_down"
-          placeholder="--Select--"
-          style="
-            width: 315px;
-            height: 40px;
-            border: 1px solid #d8d8d8;
-            border-radius: 6px;
-          "
-        >
-          <el-option
-            v-for="item in timeCounts"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </div>
+            <el-row type="flex" class="form-item" justify="start" align="middle">
+              <el-col :span="7">
+                <div class="form-label">Schedule the session</div>
+              </el-col>
+              <el-col :span="16">
+                <el-input
+                  size="medium"
+                  class="my-login-input"
+                  placeholder="Unnamed session"
+                  @blur="changeName"
+                  v-model="className"
+                  clearable>
+                </el-input>
+              </el-col>
+            </el-row>
 
-      <div class="opt--item" v-if="time_type == 1">
-        <span class="opt--text"></span>
 
-        <el-date-picker
-          v-model="deadline"
-          type="datetime"
-          placeholder="--Select--"
-          format="yyyy-MM-dd HH:mm:ss"
-          :picker-options="pickerOptionsStart"
-          style="
-            width: 315px;
-            height: 40px;
-            border: 1px solid #d8d8d8;
-            border-radius: 6px;
-          "
-        ></el-date-picker>
-      </div>
+            <el-row type="flex" class="form-item" justify="start" align="middle">
+              <el-col :span="7">
+                <div class="form-label">Allocated time</div>
+              </el-col>
+              <el-col :span="16">
+                <el-input
+                  size="medium"
+                  class="my-login-input"
+                  placeholder="Unnamed session"
+                  @blur="changeName"
+                  v-model="className"
+                  clearable>
+                </el-input>
+              </el-col>
+            </el-row>
 
-      <div class="opt--item">
-        <div style="display: flex; width: 435px; align-items: center">
-          <div class="anonymous" style="margin-right: 10px">
-            Students must complete their work within allocated time
-          </div>
-          <div
-            class="anonymous--switch"
-            :style="
-              canAnonymous
-                ? 'background-color: #15c39a;'
-                : 'background-color: #afafaf;'
-            "
-            @click="anonymousBtnClicked"
-          >
-            <div
-              class="white--flag"
-              style="margin-left: 3px"
-              v-if="!canAnonymous"
-            ></div>
-            <div style="flex: 1"></div>
+            <el-row type="flex" class="form-item" justify="start" align="middle">
+              <el-col :span="7">
+                <div class="form-label">
+                  <el-switch
+                    v-model="canAnonymous"
+                    active-color="#15C39A">
+                  </el-switch>
+                </div>
+              </el-col>
+              <el-col :span="16">
+                <div class="login-setting-content">
+                  <div class="main-tips">
+                    Logins setting
+                  </div>
+                  <div class="sub-tips">
+                    Turn on to require students to join with their email/ID Turn off to allow anonymous logins
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
 
-            <div
-              class="white--flag"
-              style="margin-right: 3px"
-              v-if="canAnonymous"
-            ></div>
+            <el-row type="flex" class="form-item" justify="start" align="middle">
+              <el-col :span="7">
+              </el-col>
+              <el-col :span="16">
+                <el-row type="flex" justify="start" align="start">
+                  <el-col span="24">
+                    <div class="login-action">
+                      <div class="copy-link">
+                        <div class="copy-link-icon">
+                          <img src="../../assets/picture/link_icon.png" />
+                        </div>
+                        <div class="copy-link-text">copy link</div>
+                      </div>
+                      <div class="continue">
+                        <el-button type="primary" class="login-button">Continue<i class="el-icon-right el-icon--right"></i></el-button>
+                      </div>
+                    </div>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
           </div>
         </div>
-      </div>
-
-      <div class="anonymous" style="width: 315px; text-align: right;margin-left: 130px">
-        Anonymous logins
-      </div>
-
-      <div class="link--area">
-        <div
-          class="link-button"
-          @click="onCopyLink(canAnonymous)"
-        >
-          <img
-            src="../../assets/picture/link_icon.png"
-            style="width: 40px; height: 40px"
-          />
-          <div class="link--text">copy link</div>
-        </div>
-      </div>
-    </div>
-  </div>
+      </el-col>
+    </el-row>
+  </el-card>
 </template>
 
 
@@ -355,4 +320,123 @@ export default {
 };
 </script>
 
+<style scoped>
+  .login-col {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
 
+  .login-img {
+    width: 100%;
+  }
+
+  .common-close-btn {
+    top: 10px;
+  }
+
+  .login-main-content {
+    margin-top: 10px;
+  }
+
+  .main-title {
+    font-size: 24px;
+    font-family: Trebuchet MS;
+    font-weight: 400;
+    line-height: 30px;
+    color: #070707;
+    text-align: left;
+  }
+
+  .sub-title {
+    text-align: left;
+    font-size: 16px;
+    font-family: Arial;
+    font-weight: 400;
+    line-height: 25px;
+    color: #070707;
+  }
+
+  .invite-code {
+    text-align: left;
+    font-size: 50px;
+    font-family: FZCuYuan-M03S;
+    font-weight: 400;
+    line-height: 80px;
+    color: #15c39a;
+    padding-bottom: 10px;
+  }
+
+  .form-label {
+    text-align: right;
+    vertical-align: middle;
+    font-family: Arial;
+    font-weight: bold;
+    color: #000000;
+    padding-right: 15px;
+    box-sizing: border-box;
+  }
+
+  .my-login-input {
+    border: 1px solid #D8D8D8;
+    opacity: 1;
+    border-radius: 6px;
+  }
+
+  .form-item {
+    margin-bottom: 20px;
+  }
+
+  .login-button {
+    background: #15C39A;
+    border-color: #15C39A;
+  }
+
+  .login-setting-content {
+    text-align: left;
+  }
+
+  .main-tips {
+    font-size: 15px;
+    font-family: Trebuchet MS;
+    font-weight: 600;
+    color: #070707;
+    line-height: 25px;
+  }
+
+  .sub-tips {
+    padding: 5px 0;
+    font-size: 14px;
+    font-family: Arial;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .login-action {
+    display: flex;
+    margin-left: -8px;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .copy-link {
+    width: 70px;
+    cursor: pointer;
+  }
+
+  .copy-link-icon img {
+    width: 45px;
+  }
+
+  .copy-link-text {
+    font-family: Inter-Bold;
+    line-height: 24px;
+    color: #989DA1;
+  }
+
+  .continue {
+    text-align: left;
+    padding-left: 25px;
+  }
+</style>
