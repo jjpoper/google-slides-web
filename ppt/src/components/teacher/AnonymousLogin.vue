@@ -330,6 +330,7 @@ export default {
 
   .login-img {
     width: 100%;
+    margin-right: -35px;
   }
 
   .common-close-btn {
@@ -347,6 +348,7 @@ export default {
     line-height: 30px;
     color: #070707;
     text-align: left;
+    user-select: none;
   }
 
   .sub-title {
@@ -356,6 +358,7 @@ export default {
     font-weight: 400;
     line-height: 25px;
     color: #070707;
+    user-select: none;
   }
 
   .invite-code {
@@ -366,6 +369,14 @@ export default {
     line-height: 80px;
     color: #15c39a;
     padding-bottom: 10px;
+    user-select: all;
+    cursor: pointer;
+    border-radius: 50px;
+  }
+
+  .invite-code::selection {
+    background: #15c39a;
+    color: #fff;
   }
 
   .form-label {
@@ -376,12 +387,18 @@ export default {
     color: #000000;
     padding-right: 15px;
     box-sizing: border-box;
+    user-select: none;
   }
 
   .my-login-input {
-    border: 1px solid #D8D8D8;
     opacity: 1;
     border-radius: 6px;
+    border: 1px solid #D8D8D8;
+    cursor: pointer;
+  }
+
+  .my-login-input:hover {
+    border-color: #15c39a;
   }
 
   .form-item {
