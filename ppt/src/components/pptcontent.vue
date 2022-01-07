@@ -4,6 +4,7 @@
     </div> -->
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
+      <ppt-type />
     </div>
     <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && (leftSortList && leftSortList.length) && (teacher || isStudentPaced)">
       <div class="medialist">
@@ -70,7 +71,8 @@ export default {
   components: {
     StudentQuestions,
     MetarialItem,
-    BigMetarialItem
+    BigMetarialItem,
+    'ppt-type': () => import('./common/pptType.vue')
   },
   data() {
     return {
