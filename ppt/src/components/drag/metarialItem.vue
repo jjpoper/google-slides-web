@@ -1,37 +1,18 @@
 <template>
   <div v-if="rect.id" :class="`mitem ${ isSelected ? 'selected-rect' : ''}`">
-    <el-popover
-    placement="right"
-    trigger="hover"
-    class="drag-popover"
-    :disabled="rect.source === 'add-on' || !teacher"
-    :append-to-body="false"
-    :popper-options="{
-      boundariesElement: 'body',
-      gpuAcceleration: true,
-      positionFixed: true,
-      preventOverflow: true
-    }">
-      <div class="dragselector">
-        <i
-          
-          class="el-icon-delete cursor"
-          style="font-size: 30px; margin-left:10px; color: #777"
-          @click="deleteMedia(rect.id)"
-        ></i>
-      </div>
-      <div :class="`full ${rect.type === 'audio' ? '' : 'forHover'}`" slot="reference">
-        <item-child :item="rect"/>
-        <!-- <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
-          <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
-        </div> -->
-        <div class="transformmask" v-if="rect.type !== 'audio'" @click="choose"></div>
-      </div>
-    </el-popover>
+    <div :class="`full ${rect.type === 'audio' ? '' : 'forHover'}`" slot="reference">
+      <item-child :item="rect"/>
+      <!-- <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
+        <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
+      </div> -->
+      <div class="transformmask" v-if="rect.type !== 'audio'" @click="choose"></div>
+      <common-close-button v-if="rect.source !== 'add-on' && teacher" :deletefn="deleteTheMedia"/>
+    </div>
   </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
+import CommonCloseButton from '../common/commonCloseButton.vue';
 import ItemChild from './itemChild.vue';
 export default {
   props: {
@@ -79,7 +60,8 @@ export default {
     }
   },
   components: {
-    ItemChild
+    ItemChild,
+    CommonCloseButton
   },
   methods: {
     ...mapActions("metarial", [
@@ -92,6 +74,9 @@ export default {
       } else {
         this.deleteSelectedMetarialId(this.rect.id)
       }
+    },
+    deleteTheMedia() {
+      this.deleteMedia(this.rect.id)
     }
   }
 }
