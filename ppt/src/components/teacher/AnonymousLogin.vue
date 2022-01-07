@@ -11,7 +11,7 @@
         <div class="login-main-content">
           <div class="login-header">
             <el-row  type="flex" justify="start">
-              <el-col offset="7" span="15">
+              <el-col :offset="7" :span="15">
                 <div class="main-title">Invite students to study</div>
                 <div class="sub-title">Join at classcipe.com</div>
                 <div class="invite-code">{{ getPass }}</div>
@@ -40,30 +40,46 @@
                 <div class="form-label">Choose class</div>
               </el-col>
               <el-col :span="16">
-                <el-input
-                  size="medium"
+                <el-select
+                  placeholder="Please choose class"
                   class="my-login-input"
-                  placeholder="Unnamed session"
-                  @blur="changeName"
-                  v-model="className"
-                  clearable>
-                </el-input>
+                  v-model="newRoomName"
+                  @change="newRoomNameChange"
+                  filterable
+                  clearable
+                  allow-create
+                  default-first-option>
+                  <el-option
+                    v-for="item in roomItems"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </el-col>
             </el-row>
 
             <el-row type="flex" class="form-item" justify="start" align="middle">
               <el-col :span="7">
                 <div class="form-label">Schedule the session</div>
+                <div class="my-login-switch">
+                  <el-switch
+                    v-model="scheduleSession"
+                    active-color="#15C39A">
+                  </el-switch>
+                </div>
               </el-col>
               <el-col :span="16">
-                <el-input
-                  size="medium"
+                <el-date-picker
+                  :disabled="!scheduleSession"
                   class="my-login-input"
-                  placeholder="Unnamed session"
-                  @blur="changeName"
-                  v-model="className"
-                  clearable>
-                </el-input>
+                  prefix-icon="el-icon-date"
+                  v-model="sessionStartTime"
+                  type="datetime"
+                  format="yyyy-MM-dd HH:mm"
+                  :picker-options="pickerOptionsStart"
+                  placeholder="Start time">
+                </el-date-picker>
               </el-col>
             </el-row>
 
@@ -110,7 +126,7 @@
               </el-col>
               <el-col :span="16">
                 <el-row type="flex" justify="start" align="start">
-                  <el-col span="24">
+                  <el-col :span="24">
                     <div class="login-action">
                       <div class="copy-link">
                         <div class="copy-link-icon">
@@ -210,8 +226,14 @@ export default {
           //   time.getTime() > Date.now() - 8.64e6
           // ); /*今天及之前，注意数字不一样*/
         },
+        selectableRange: (new Date().getHours() > 10 ? new Date().getHours() : '0' + new Date().getHours()) +  ":" +
+          (new Date().getMinutes() > 10 ? new Date().getMinutes() : '0' + new Date().getMinutes())
+          + ":00 - 23:59:59",
       },
-      className: ''
+      className: 'Unnamed session',
+
+      scheduleSession: false,
+      sessionStartTime: null,
     };
   },
   created() {
@@ -304,7 +326,6 @@ export default {
           roomItem.name = this.newRoomName;
           roomItem.id = res.data;
           this.roomItems.push(roomItem);
-          this.newRoomName = "";
         }
       });
     },
@@ -314,6 +335,18 @@ export default {
         .then(() => {
           this.changeRoomName(this.className)
         })
+      }
+    },
+
+    newRoomNameChange (data) {
+      console.log('newRoomNameChange', data, this.roomItems)
+      // 按下回车时data为用户输入的文字，或者选中的选项的id，如果名称相同或者id相同，则不创建新班级
+      let rootItem = this.roomItems.find(item => item.id === data || item.name === data)
+      if(!rootItem) {
+        this.newRoomName = data
+        this.createNewRoomConfirm()
+      }else {
+        this.newRoomName = rootItem.name
       }
     }
   },
@@ -391,10 +424,10 @@ export default {
   }
 
   .my-login-input {
-    opacity: 1;
     border-radius: 6px;
     border: 1px solid #D8D8D8;
     cursor: pointer;
+    width: 100%;
   }
 
   .my-login-input:hover {
@@ -455,5 +488,11 @@ export default {
   .continue {
     text-align: left;
     padding-left: 25px;
+  }
+
+  .my-login-switch {
+    text-align: right;
+    padding-top: 5px;
+    padding-right: 15px;
   }
 </style>

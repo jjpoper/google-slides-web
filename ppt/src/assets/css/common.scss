@@ -88,7 +88,7 @@ html, button, input, select, textarea {
   padding: 0 !important;
 }
 .custom-dialog.el-dialog {
-  margin: 50px auto 0 !important; 
+  margin: 50px auto 0 !important;
   max-width: 900px;
 }
 .el-dialog__header {
@@ -251,4 +251,13 @@ html, button, input, select, textarea {
   color: #fff;
   font-size: 12px;
   font-style: normal;
+}
+
+//匿名登录页面下拉选项字体颜色
+.el-select-dropdown__item.selected {
+  color: #15c39a;
+}
+
+.my-login-input .el-input__icon {
+  display: inline-block !important;
 }
