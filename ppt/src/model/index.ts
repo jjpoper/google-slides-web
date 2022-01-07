@@ -587,7 +587,8 @@ export const setRealClass = async (id: string, anonymous: number, real_id: numbe
   const data = await axios.post(`${PPT.requestUrl}class/set`, {
     class_id: id,
     can_anonymous_sign_in: anonymous,
-    real_class_id: real_id
+    real_class_id: real_id,
+    session_name: 'session_name'
   })
   console.log(data.data);
   return data.data.code;

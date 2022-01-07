@@ -87,16 +87,58 @@
             <el-row type="flex" class="form-item" justify="start" align="middle">
               <el-col :span="7">
                 <div class="form-label">Allocated time</div>
+                <div class="my-login-switch">
+                  <el-switch
+                    v-model="allocatedTime"
+                    active-color="#15C39A">
+                  </el-switch>
+                </div>
               </el-col>
               <el-col :span="16">
-                <el-input
-                  size="medium"
+                <el-select
+                  :disabled="!allocatedTime"
+                  v-model="time_type"
                   class="my-login-input"
-                  placeholder="Unnamed session"
-                  @blur="changeName"
-                  v-model="className"
-                  clearable>
-                </el-input>
+                >
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+                <div class="allocate-time" v-show="allocatedTimeVisible">
+                  <div class="allocate-tips">
+                    <el-alert
+                      title="Students must complete their work within the allocated time"
+                      type="error">
+                    </el-alert>
+                  </div>
+                  <div class="time-type count-down" v-if="time_type === 2">
+                    <el-select
+                      v-model="time_down"
+                      placeholder="--Select--"
+                      class="my-login-input"
+                    >
+                      <el-option
+                        v-for="item in timeCounts"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </div>
+                  <div class="time-type dead-line"  v-if="time_type === 1">
+                    <el-date-picker
+                      v-model="deadline"
+                      type="datetime"
+                      placeholder="--Select--"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      :picker-options="pickerOptionsStart"
+                      class="my-login-input">
+                      ></el-date-picker>
+                  </div>
+                </div>
               </el-col>
             </el-row>
 
@@ -128,14 +170,14 @@
                 <el-row type="flex" justify="start" align="start">
                   <el-col :span="24">
                     <div class="login-action">
-                      <div class="copy-link">
+                      <div class="copy-link" @click="onCopyLink">
                         <div class="copy-link-icon">
                           <img src="../../assets/picture/link_icon.png" />
                         </div>
                         <div class="copy-link-text">copy link</div>
                       </div>
                       <div class="continue">
-                        <el-button type="primary" class="login-button">Continue<i class="el-icon-right el-icon--right"></i></el-button>
+                        <el-button type="primary" class="login-button" @click="saveLoginSetting">Continue<i class="el-icon-right el-icon--right"></i></el-button>
                       </div>
                     </div>
                   </el-col>
@@ -234,6 +276,8 @@ export default {
 
       scheduleSession: false,
       sessionStartTime: null,
+      allocatedTime: false,
+      allocatedTimeVisible: false
     };
   },
   created() {
@@ -256,6 +300,9 @@ export default {
       console.log(this.time_type);
       if (this.time_type == 0) {
         this.setDeadLine();
+        this.allocatedTimeVisible = false
+      }else {
+        this.allocatedTimeVisible = true
       }
     },
     deadline() {
@@ -288,20 +335,26 @@ export default {
       console.log("setDeadLine", this.time_type);
       this.hindeTimeDialog(this.time_type, this.deadline, this.time_down);
     },
-    onCopyLink(canAnonymous) {
-      if (this.currentRoomId != -1) {
+    onCopyLink () {
+      this.copyLink(this.canAnonymous);
+    },
+    saveLoginSetting() {
+      if (this.currentRoomId !== -1) {
         setRealClass(
           this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
           this.canAnonymous ? 1 : 0,
           this.currentRoomId
-        ).then((res) => {});
+        ).then((res) => {
+          this.closeBtn()
+        });
       } else {
         setRealClass(
           this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
           this.canAnonymous ? 1 : 0
-        ).then((res) => {});
+        ).then((res) => {
+          this.closeBtn()
+        });
       }
-      this.copyLink(canAnonymous);
       this.setDeadLine();
     },
     createNewRoomConfirm() {
@@ -311,7 +364,7 @@ export default {
       }
       this.visible = false;
       for (let i = 0; i < this.roomItems.length; i++) {
-        if (this.roomItems[i].name == this.newRoomName) {
+        if (this.roomItems[i].name === this.newRoomName) {
           this.room = this.newRoomName;
           this.newRoomName = "";
           this.currentRoomId = this.roomItems[i].id;
@@ -320,7 +373,7 @@ export default {
       }
       addRealClass(this.user_id, this.newRoomName).then((res) => {
         console.log(res);
-        if (res.code == "ok") {
+        if (res.code === "ok") {
           this.room = this.newRoomName;
           var roomItem = {};
           roomItem.name = this.newRoomName;
@@ -494,5 +547,11 @@ export default {
     text-align: right;
     padding-top: 5px;
     padding-right: 15px;
+  }
+
+  .allocate-tips {
+    margin-top: 10px;
+    text-align: left;
+    margin-bottom: 10px;
   }
 </style>
