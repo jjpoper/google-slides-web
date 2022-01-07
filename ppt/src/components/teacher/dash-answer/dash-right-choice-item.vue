@@ -30,8 +30,9 @@ export default {
     answerList() {
       const answer = JSON.parse(this.item.answer)
       const isArray = Object.prototype.toString.call(answer) === '[object Array]'
-      console.log(this.item, 'this.answerList')
-      return isArray ? answer : [answer]
+      console.log(this.item, answer, 'this.answerList')
+      let result = isArray ? answer : [answer]
+      return result.sort((a, b) => a - b)
     }
   },
   methods: {

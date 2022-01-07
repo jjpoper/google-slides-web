@@ -95,11 +95,15 @@ export default {
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     selectedAnswerList() {
-      if(this.selectedGroupMembers.length === 0) return this.answerList
-      let list = this.answerList.filter(item => {
-        return this.selectedGroupMembers.indexOf(item.user_id) > -1
-      })
-      return list
+      let result = []
+      if(this.selectedGroupMembers.length === 0) {
+        result = this.answerList
+      } else {
+        result = this.answerList.filter(item => {
+          return this.selectedGroupMembers.indexOf(item.user_id) > -1
+        })
+      }
+      return result
     },
     bar() {
       const names = this.options.map(item => {
@@ -227,6 +231,7 @@ export default {
       const data = [];
       if (this.isMulti) {
         let list = JSON.parse(answer.answer);
+        list.sort((a, b) => a - b)
         for (let i = 0; i < list.length; i++) {
           let text =
             this.optFlags[list[i]] +
