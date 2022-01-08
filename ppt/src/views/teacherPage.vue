@@ -1870,7 +1870,7 @@ type: "slide"*/
         value = deadline.getTime();
         let now = Date.now();
         if (now > value) {
-          this.$message("error", "Please select right time");
+          this.$message.error("Please select right time");
           return;
         }
         value = value / 1000;
