@@ -387,15 +387,16 @@ export default {
           this.allocatedTimeFlag = res.allocated_time_flag
           this.canAnonymous = res.can_anonymous_sign_in
           // deadline
-          if(res.time_type === 1) {
-            this.time_down = res.time_down
+          if(res.time_type === 1 && res.deadline) {
+            this.allocateTime = moment(res.deadline).toDate()
+            this.allocateHour = this.deadline.getHours()
+            this.allocateMinute = this.deadline.getMinutes()
           }
 
           // countdown
           if(res.time_type === 2) {
-            this.allocateTime = moment(res.deadline).toDate()
-            this.allocateHour = this.deadline.getHours()
-            this.allocateMinute = this.deadline.getMinutes()
+            this.time_down = res.time_down
+            this.deadline = null
           }
         }
       })
@@ -535,6 +536,7 @@ export default {
     saveLoginSetting() {
       // 设置deadline时间
       let deadline = this.allocateTime
+      console.log('this.allocateTime', this.allocateTime)
       if(deadline) {
         deadline.setHours(this.allocateHour)
         deadline.setMinutes(this.allocateMinute)
