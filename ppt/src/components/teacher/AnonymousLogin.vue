@@ -428,6 +428,7 @@ export default {
             console.log('mounted allocateHour ' + this.allocateHour + ' allocateMinute ' + this.allocateMinute, this.allocateTime)
           }
         }, 100)
+
     });
 
       this.className = this.classRoomInfo.class_name
