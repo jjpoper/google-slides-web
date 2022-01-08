@@ -111,7 +111,7 @@
             </el-row>
 
 
-            <el-row type="flex" class="form-item" justify="start" align="middle">
+            <el-row type="flex" class="form-item" justify="start" align="start">
               <el-col :span="7">
                 <div class="form-label">Allocated time</div>
                 <div class="my-login-switch">
@@ -290,7 +290,7 @@ export default {
   },
   data() {
     return {
-      canAnonymous: false,
+      canAnonymous: true,
       room: "--Select--",
       newRoomName: "",
       currentRoomId: -1,
@@ -373,8 +373,10 @@ export default {
         this.rawClassSet = res
         if(res.can_anonymous_sign_in === null) {
           this.allowEditAnonymous = true
+          this.canAnonymous = true
         }else {
           this.allowEditAnonymous = false
+          this.canAnonymous = !!res.can_anonymous_sign_in
         }
         console.log('allowEditAnonymous ' + this.allowEditAnonymous)
 
@@ -393,7 +395,6 @@ export default {
         }
 
         this.allocatedTimeFlag = !!res.allocated_time_flag
-        this.canAnonymous = !!res.can_anonymous_sign_in
         // deadline
         if(res.time_type) {
           this.time_type = res.time_type
