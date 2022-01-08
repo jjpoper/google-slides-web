@@ -114,7 +114,7 @@ export default {
   font-family: Trebuchet MS;
 }
 
-.wait-seconds {
+.wait-seconds-num {
   color: rgba(21, 195, 154, 1);
 }
 
