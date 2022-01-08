@@ -402,8 +402,8 @@ export default {
         }
     });
 
-
-    this.className = this.classRoomInfo.class_name
+      this.className = this.classRoomInfo.class_name
+    })
   },
   watch: {
     time_type(v) {
