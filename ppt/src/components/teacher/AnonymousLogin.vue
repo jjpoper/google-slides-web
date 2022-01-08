@@ -116,14 +116,14 @@
                 <div class="form-label">Allocated time</div>
                 <div class="my-login-switch">
                   <el-switch
-                    v-model="allocatedTime"
+                    v-model="allocatedTimeFlag"
                     active-color="#15C39A">
                   </el-switch>
                 </div>
               </el-col>
               <el-col :span="16">
                 <el-select
-                  :disabled="!allocatedTime"
+                  :disabled="!allocatedTimeFlag"
                   v-model="time_type"
                   class="my-login-input"
                 >
@@ -134,7 +134,7 @@
                     :value="item.value"
                   ></el-option>
                 </el-select>
-                <div class="allocate-time" v-show="allocatedTimeVisible">
+                <div class="allocate-time" v-show="allocatedTimeFlagVisible">
                   <div class="allocate-tips">
                     <el-alert
                       title="Students must complete their work within the allocated time"
@@ -156,14 +156,43 @@
                     </el-select>
                   </div>
                   <div class="time-type dead-line"  v-if="time_type === 1">
-                    <el-date-picker
-                      v-model="deadline"
-                      type="date"
-                      placeholder="--Select--"
-                      format="yyyy-MM-dd"
-                      :picker-options="pickerOptionsStart"
-                      class="my-login-input">
-                      ></el-date-picker>
+
+                    <el-row :gutter="10">
+                      <el-col :span="10">
+                        <el-date-picker
+                          class="my-login-input"
+                          prefix-icon="el-icon-date"
+                          v-model="allocateTime"
+                          type="date"
+                          format="yyyy-MM-dd"
+                          :picker-options="pickerOptionsStart"
+                          placeholder="Start time">
+                        </el-date-picker>
+                      </el-col>
+                      <el-col :span="7">
+                        <el-select v-model="allocateHour" placeholder="hour"  class="my-login-input">
+                          <el-option
+                            v-for="item in allocateHourOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                            :disabled="item.disabled">
+                          </el-option>
+                        </el-select>
+
+                      </el-col>
+                      <el-col :span="7">
+                        <el-select v-model="allocateMinute" placeholder="minute" class="my-login-input">
+                          <el-option
+                            v-for="item in allocateMinuteOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                            :disabled="item.disabled">
+                          </el-option>
+                        </el-select>
+                      </el-col>
+                    </el-row>
                   </div>
                 </div>
               </el-col>
@@ -295,8 +324,9 @@ export default {
 
       scheduleSession: false,
       sessionStartTime: null,
-      allocatedTime: false,
-      allocatedTimeVisible: false,
+      allocatedTimeFlag: false,
+      allocateTime: null,
+      allocatedTimeFlagVisible: false,
       sessionHour: 0,
       sessionMinute: 0,
       sessionHourOptions: [],
@@ -329,18 +359,13 @@ export default {
     this.initAllocateMinuteOptions()
   },
   watch: {
-    time_type() {
+    time_type(v) {
       console.log(this.time_type);
-      if (this.time_type == 0) {
+      if (this.time_type === 0) {
         this.setDeadLine();
-        this.allocatedTimeVisible = false
+        this.allocatedTimeFlagVisible = false
       }else {
-        this.allocatedTimeVisible = true
-      }
-    },
-    deadline() {
-      if (this.time_type == 1) {
-        this.setDeadLine();
+        this.allocatedTimeFlagVisible = true
       }
     },
     time_down() {
@@ -353,8 +378,8 @@ export default {
       let today = new Date()
       if(today.getFullYear() === v.getFullYear() && today.getMonth() === v.getMonth() && today.getDay() === v.getDay()) {
           // 限制小时与分钟
-        this.sessionHour = null
-        this.sessionMinute = null
+        this.sessionHour = 0
+        this.sessionMinute = 0
         console.log('sessionStartTime today', v)
         let hourOptions = [];
         for (let i = 0; i < 24; i++) {
@@ -393,6 +418,51 @@ export default {
       }else{
         this.initSessionMinuteOptions()
       }
+    },
+
+    allocateTime(v) {
+      // 日期选择范围筛选
+      let today = new Date()
+      if(v && today.getFullYear() === v.getFullYear() && today.getMonth() === v.getMonth() && today.getDay() === v.getDay()) {
+        // 限制小时与分钟
+        this.allocateHour = 0
+        this.allocateMinute = 0
+        console.log('deadline today', v)
+        let hourOptions = [];
+        for (let i = 0; i < 24; i++) {
+          hourOptions.push({
+            value: i,
+            label: i < 10 ? "0" + i : i,
+            disabled: i < today.getHours()
+          });
+        }
+        this.allocateHourOptions = hourOptions;
+      }else {
+        this.initAllocateHourOptions()
+      }
+    },
+    allocateHour (v) {
+      console.log('allocateHour', v)
+      let today = new Date()
+      let selectDay = this.allocateTime
+      if(v !== null && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
+        if(v === today.getHours()) {
+          this.allocateMinute = null
+          let minuteOptions = [];
+          for (let i = 0; i < 60; i++) {
+            minuteOptions.push({
+              value: i,
+              label: i < 10 ? "0" + i : i,
+              disabled: i < today.getMinutes() + 15
+            });
+          }
+          this.allocateHourOptions = minuteOptions;
+        }else{
+          this.initAllocateMinuteOptions()
+        }
+      }else{
+        this.initAllocateMinuteOptions()
+      }
     }
   },
   computed: {
@@ -425,7 +495,7 @@ export default {
           this.className,
           this.scheduleSession,
           this.sessionStartTime,
-          this.allocatedTime,
+          this.allocatedTimeFlag,
           this.time_type,
           this.time_down,
           this.deadline
