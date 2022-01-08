@@ -202,6 +202,7 @@
               <el-col :span="7">
                 <div class="form-label">
                   <el-switch
+                    :disabled="!allowEditAnonymous"
                     v-model="canAnonymous"
                     active-color="#15C39A">
                   </el-switch>
@@ -372,27 +373,36 @@ export default {
         this.rawClassSet = res
         if(res.can_anonymous_sign_in === null) {
           this.allowEditAnonymous = true
+        }else {
+          this.allowEditAnonymous = false
         }
+        console.log('allowEditAnonymous ' + this.allowEditAnonymous)
 
         this.className = res.class_name
         if(res.real_class_id) {
           let room = this.roomItems.find(item => item.id === res.real_class_id)
           this.newRoomName = room ? room.name : null
+          this.currentRoomId = res.real_class_id
         }
         this.scheduleSessionFlag = !!res.schedule_session_flag
         if(res.session_start_time) {
           this.sessionStartTime = moment(res.session_start_time).toDate()
           this.sessionHour = this.sessionStartTime.getHours()
           this.sessionMinute = this.sessionStartTime.getMinutes()
+          console.log(this.sessionStartTime, 'sessionHour ' + this.sessionHour + ' sessionMinute ' + this.sessionMinute, this.sessionStartTime)
         }
 
         this.allocatedTimeFlag = !!res.allocated_time_flag
         this.canAnonymous = !!res.can_anonymous_sign_in
         // deadline
-        if(res.time_type === 1 && res.deadline) {
+        if(res.time_type) {
+          this.time_type = res.time_type
+        }
+        if(res.deadline) {
           this.allocateTime = moment(res.deadline).toDate()
-          this.allocateHour = this.deadline.getHours()
-          this.allocateMinute = this.deadline.getMinutes()
+          this.allocateHour = this.allocateTime.getHours()
+          this.allocateMinute = this.allocateTime.getMinutes()
+          console.log(this.allocateTime, 'allocateHour ' + this.allocateHour + ' allocateMinute ' + this.allocateMinute, this.allocateTime)
         }
 
         // countdown
@@ -400,6 +410,21 @@ export default {
           this.time_down = res.time_down
           this.deadline = null
         }
+
+        setTimeout(() => {
+          console.log('set hour and minute!', this.sessionStartTime, this.allocateTime)
+          if(this.sessionStartTime) {
+            this.sessionHour = this.sessionStartTime.getHours()
+            this.sessionMinute = this.sessionStartTime.getMinutes()
+            console.log('mounted sessionHour ' + this.sessionHour + ' sessionMinute ' + this.sessionMinute, this.sessionStartTime)
+          }
+
+          if(this.allocateTime) {
+            this.allocateHour = this.allocateTime.getHours()
+            this.allocateMinute = this.allocateTime.getMinutes()
+            console.log('mounted allocateHour ' + this.allocateHour + ' allocateMinute ' + this.allocateMinute, this.allocateTime)
+          }
+        }, 500)
     });
 
       this.className = this.classRoomInfo.class_name

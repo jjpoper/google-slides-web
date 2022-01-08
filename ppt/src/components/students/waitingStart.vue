@@ -2,7 +2,7 @@
   <div class="waiting-start">
     <div class="wait-title">
       <div class="wait-icon">
-        <i class="el-icon-time"></i>
+        <img  src="../../assets/picture/clock.png" />
       </div>
       <div class="wait-title-text">
         Waiting time
@@ -73,8 +73,12 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  color: #000;
+  color: #070707;
   font-weight: bold;
+}
+
+.wait-icon img {
+  height: 25px;
 }
 
 .wait-title-text {
@@ -94,8 +98,9 @@ export default {
 
 .wait-title-first, .wait-title-mid, .wait-seconds {
   font-size: 20px;
-  color: #000;
+  color: #070707;
   font-weight: bold;
+  font-family: Trebuchet MS;
 }
 
 .wait-seconds {
