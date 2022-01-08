@@ -495,15 +495,19 @@ export default {
     saveLoginSetting() {
       // 设置deadline时间
       let deadline = this.allocateTime
-      deadline.setHours(this.allocateHour)
-      deadline.setMinutes(this.allocateMinute)
-      console.log('new deadline', deadline)
-      this.deadline = deadline
+      if(deadline) {
+        deadline.setHours(this.allocateHour)
+        deadline.setMinutes(this.allocateMinute)
+        console.log('new deadline', deadline)
+        this.deadline = deadline
+      }
 
       let sessionStartTime = this.sessionStartTime
-      sessionStartTime.setHours(this.sessionHour)
-      sessionStartTime.setMinutes(this.sessionMinute)
-      console.log('new sessionStartTime', sessionStartTime)
+      if(sessionStartTime) {
+        sessionStartTime.setHours(this.sessionHour)
+        sessionStartTime.setMinutes(this.sessionMinute)
+        console.log('new sessionStartTime', sessionStartTime)
+      }
 
       saveClassSet(
         this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
