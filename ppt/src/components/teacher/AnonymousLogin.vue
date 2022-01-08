@@ -313,7 +313,7 @@ export default {
           label: "Countdown mode",
         },
       ],
-      time_down: "",
+      time_down: 0,
       timeCounts: [
         { value: 15, label: "15  min" },
         { value: 30, label: "30  min" },

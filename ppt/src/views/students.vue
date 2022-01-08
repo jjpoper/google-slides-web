@@ -213,6 +213,16 @@
     </div> -->
 
     <div id="diycolor_comment"></div>
+
+    <el-dialog
+      :visible.sync="isWaitingStart"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      custom-class="custom-dialog"
+      width="900px">
+      <waiting-start :waiting-start-seconds="waitingStartSeconds"/>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -262,6 +272,8 @@ import TipsList from "@/components/common/tipsList.vue";
 import { mapActions, mapState } from "vuex";
 import StudentsPptList from "@/components/students/studentsPptList.vue";
 import StudentLoginPage from "@/components/students/studentLoginPage.vue";
+import moment from 'moment'
+import WaitingStart from "@/components/students/waitingStart.vue";
 
 export default {
   data() {
@@ -312,6 +324,11 @@ export default {
       showLoginDialog: false,
       metrialStatusMap: {},
       studentPaceLastPage: -1, // 学生模式下最后操作的页码
+
+      isWaitingStart: false,
+      sessionStartDateTime: null,
+      waitingStartSeconds: 0,
+      waitingTimer: null
     };
   },
   computed: {
@@ -386,6 +403,7 @@ export default {
     };
   },
   components: {
+    WaitingStart,
     pptcontent,
     StudentsIndexItem,
     StudentComment,
@@ -811,7 +829,29 @@ export default {
         })
         .catch(res => {
           // console.log(res);
-        });
+        }).finally(() => {
+          if(this.classRoomInfo && this.classRoomInfo.hasOwnProperty("session_start_time")){
+            let startTime = this.classRoomInfo.session_start_time
+            if(startTime) {
+              let startTimeDate = moment(startTime).toDate()
+              if(startTimeDate && startTimeDate.getTime() > Date.now()){
+                this.isWaitingStart = true
+                this.sessionStartDateTime = startTimeDate
+                console.log('isWaitingStart ' + this.isWaitingStart + 'sessionStartDateTime ' + this.sessionStartDateTime)
+                this.startWaitingTimer()
+              }
+            }
+          }
+      });
+    },
+    startWaitingTimer () {
+      if(this.waitingTimer) {
+        clearTimeout(this.waitingTimer)
+      }
+      this.waitingStartSeconds = Date.now() / 1000 - this.sessionStartDateTime.getTime() / 1000
+      this.startWaitingTimer = setTimeout(() => {
+        this.startWaitingTimer()
+      }, 1000)
     },
     afterConnectRoom() {
       this.getAllSlides();
