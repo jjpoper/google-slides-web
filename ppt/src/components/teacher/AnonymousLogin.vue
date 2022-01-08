@@ -70,16 +70,43 @@
                 </div>
               </el-col>
               <el-col :span="16">
-                <el-date-picker
-                  :disabled="!scheduleSession"
-                  class="my-login-input"
-                  prefix-icon="el-icon-date"
-                  v-model="sessionStartTime"
-                  type="datetime"
-                  format="yyyy-MM-dd HH:mm"
-                  :picker-options="pickerOptionsStart"
-                  placeholder="Start time">
-                </el-date-picker>
+                <el-row :gutter="10">
+                  <el-col :span="10">
+                    <el-date-picker
+                      :disabled="!scheduleSession"
+                      class="my-login-input"
+                      prefix-icon="el-icon-date"
+                      v-model="sessionStartTime"
+                      type="date"
+                      format="yyyy-MM-dd"
+                      :picker-options="pickerOptionsStart"
+                      placeholder="Start time">
+                    </el-date-picker>
+                  </el-col>
+                  <el-col :span="7">
+                    <el-select v-model="sessionHour" :disabled="!scheduleSession" placeholder="hour"  class="my-login-input">
+                      <el-option
+                        v-for="item in sessionHourOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        :disabled="item.disabled">
+                      </el-option>
+                    </el-select>
+
+                  </el-col>
+                  <el-col :span="7">
+                    <el-select v-model="sessionMinute" :disabled="!scheduleSession" placeholder="minute" class="my-login-input">
+                      <el-option
+                        v-for="item in sessionMinuteOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        :disabled="item.disabled">
+                      </el-option>
+                    </el-select>
+                  </el-col>
+                </el-row>
               </el-col>
             </el-row>
 
@@ -131,9 +158,9 @@
                   <div class="time-type dead-line"  v-if="time_type === 1">
                     <el-date-picker
                       v-model="deadline"
-                      type="datetime"
+                      type="date"
                       placeholder="--Select--"
-                      format="yyyy-MM-dd HH:mm:ss"
+                      format="yyyy-MM-dd"
                       :picker-options="pickerOptionsStart"
                       class="my-login-input">
                       ></el-date-picker>
@@ -261,23 +288,24 @@ export default {
       ],
       pickerOptionsStart: {
         disabledDate: (time) => {
-          let date = Date.now();
-          //- 8.64e7
-          return time.getTime() < Date.now() - 8.64e7; /*今天及以后*/
-          // return (
-          //   time.getTime() > Date.now() - 8.64e6
-          // ); /*今天及之前，注意数字不一样*/
+          return time.getTime() < (new Date().getTime() - 8.64e7);
         },
-        selectableRange: (new Date().getHours() > 10 ? new Date().getHours() : '0' + new Date().getHours()) +  ":" +
-          (new Date().getMinutes() > 10 ? new Date().getMinutes() : '0' + new Date().getMinutes())
-          + ":00 - 23:59:59",
       },
       className: 'Unnamed session',
 
       scheduleSession: false,
       sessionStartTime: null,
       allocatedTime: false,
-      allocatedTimeVisible: false
+      allocatedTimeVisible: false,
+      sessionHour: 0,
+      sessionMinute: 0,
+      sessionHourOptions: [],
+      sessionMinuteOptions: [],
+
+      allocateHour: 0,
+      allocateMinute: 0,
+      allocateHourOptions: [],
+      allocateMinuteOptions: [],
     };
   },
   created() {
@@ -294,6 +322,11 @@ export default {
     });
 
     this.className = this.classRoomInfo.class_name
+
+    this.initSessionHourOptions();
+    this.initSessionMinuteOptions()
+    this.initAllocateHourOptions()
+    this.initAllocateMinuteOptions()
   },
   watch: {
     time_type() {
@@ -316,6 +349,51 @@ export default {
         this.setDeadLine();
       }
     },
+    sessionStartTime(v) {
+      let today = new Date()
+      if(today.getFullYear() === v.getFullYear() && today.getMonth() === v.getMonth() && today.getDay() === v.getDay()) {
+          // 限制小时与分钟
+        this.sessionHour = null
+        this.sessionMinute = null
+        console.log('sessionStartTime today', v)
+        let hourOptions = [];
+        for (let i = 0; i < 24; i++) {
+          hourOptions.push({
+            value: i,
+            label: i < 10 ? "0" + i : i,
+            disabled: i < today.getHours()
+          });
+        }
+        this.sessionHourOptions = hourOptions;
+      }else {
+        this.initSessionHourOptions()
+      }
+      this.initSessionMinuteOptions()
+    },
+
+    sessionHour (v) {
+      console.log('sessionHour', v)
+      let today = new Date()
+      let selectDay = this.sessionStartTime
+      if(v !== null && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
+          if(v === today.getHours()) {
+            this.sessionMinute = null
+            let minuteOptions = [];
+            for (let i = 0; i < 60; i++) {
+              minuteOptions.push({
+                value: i,
+                label: i < 10 ? "0" + i : i,
+                disabled: i < today.getMinutes() + 15
+              });
+            }
+            this.sessionMinuteOptions = minuteOptions;
+          }else{
+            this.initSessionMinuteOptions()
+          }
+      }else{
+        this.initSessionMinuteOptions()
+      }
+    }
   },
   computed: {
     getPass() {
@@ -410,7 +488,54 @@ export default {
         this.newRoomName = rootItem.name
         this.currentRoomId = rootItem.id
       }
-    }
+    },
+
+    initSessionHourOptions () {
+      let hourOptions = [];
+      for (let i = 0; i < 24; i++) {
+        hourOptions.push({
+          value: i,
+          label: i < 10 ? "0" + i : i,
+          disabled: false
+        });
+      }
+      this.sessionHourOptions = hourOptions;
+    },
+
+    initSessionMinuteOptions () {
+      let minuteOptions = [];
+      for (let i = 0; i < 24; i++) {
+        minuteOptions.push({
+          value: i,
+          label: i < 10 ? "0" + i : i,
+          disabled: false
+        });
+      }
+      this.sessionMinuteOptions = minuteOptions;
+    },
+
+    initAllocateHourOptions () {
+      let hourOptions = [];
+      for (let i = 0; i < 24; i++) {
+        hourOptions.push({
+          value: i,
+          label: i < 10 ? "0" + i : i,
+          disabled: false
+        });
+      }
+      this.allocateHourOptions = hourOptions;
+    },
+    initAllocateMinuteOptions () {
+      let minuteOptions = [];
+      for (let i = 0; i < 24; i++) {
+        minuteOptions.push({
+          value: i,
+          label: i < 10 ? "0" + i : i,
+          disabled: false
+        });
+      }
+      this.allocateMinuteOptions = minuteOptions;
+    },
   },
 };
 </script>
