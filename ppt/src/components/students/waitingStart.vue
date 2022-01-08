@@ -5,14 +5,14 @@
         <img  src="../../assets/picture/clock.png" />
       </div>
       <div class="wait-title-text">
-        Waiting time
+        <img  src="../../assets/picture/wait_time.png" />
       </div>
     </div>
     <div class="wait-img">
       <img  src="../../assets/picture/wait.png" />
     </div>
     <div class="wait-seconds">
-      <div class="wait-title-first">Please wait,</div>
+      <div class="wait-title-first"><img  src="../../assets/picture/please_wait.png" /></div>
       <div class="wait-title-mid">the session will start in </div>
       <div class="wait-seconds" v-if="displayTime"> ({{displayTime}})</div>
     </div>
@@ -72,17 +72,22 @@ export default {
   text-align: center;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 25px;
   color: #070707;
   font-weight: bold;
+  padding-bottom: 20px;
 }
 
 .wait-icon img {
-  height: 25px;
+  height: 30px;
 }
 
 .wait-title-text {
   padding-left: 15px;
+}
+
+.wait-title-text img {
+  height: 30px;
 }
 
 .wait-img img {
@@ -90,14 +95,20 @@ export default {
 }
 
 .wait-seconds {
+  margin-top: 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
 }
 
-.wait-title-first, .wait-title-mid, .wait-seconds {
-  font-size: 20px;
+.wait-title-first img {
+  height: 35px;
+}
+
+.wait-title-mid, .wait-seconds {
+  font-size: 25px;
+  padding-left: 10px;
   color: #070707;
   font-weight: bold;
   font-family: Trebuchet MS;
@@ -105,7 +116,6 @@ export default {
 
 .wait-seconds {
   color: rgba(21, 195, 154, 1);
-  padding-left: 10px;
 }
 
 </style>
