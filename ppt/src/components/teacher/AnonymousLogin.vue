@@ -411,11 +411,14 @@ export default {
           this.deadline = null
         }
 
+        // 避免watch赋值覆盖，定时器延迟执行赋值
         setTimeout(() => {
           console.log('set hour and minute!', this.sessionStartTime, this.allocateTime)
           if(this.sessionStartTime) {
             this.sessionHour = this.sessionStartTime.getHours()
-            this.sessionMinute = this.sessionStartTime.getMinutes()
+            setTimeout(() => {
+              this.sessionMinute = this.sessionStartTime.getMinutes()
+            }, 100)
             console.log('mounted sessionHour ' + this.sessionHour + ' sessionMinute ' + this.sessionMinute, this.sessionStartTime)
           }
 
@@ -424,7 +427,7 @@ export default {
             this.allocateMinute = this.allocateTime.getMinutes()
             console.log('mounted allocateHour ' + this.allocateHour + ' allocateMinute ' + this.allocateMinute, this.allocateTime)
           }
-        }, 500)
+        }, 100)
     });
 
       this.className = this.classRoomInfo.class_name
@@ -474,7 +477,7 @@ export default {
       let selectDay = this.sessionStartTime
       if(v !== null && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
           if(v === today.getHours()) {
-            this.sessionMinute = null
+            this.sessionMinute = 0
             let minuteOptions = [];
             for (let i = 0; i < 60; i++) {
               minuteOptions.push({
