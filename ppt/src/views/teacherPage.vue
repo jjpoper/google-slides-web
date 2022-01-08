@@ -256,6 +256,7 @@
 
     <!--  -->
     <el-dialog
+      :destroy-on-close="true"
       :visible.sync="showCopyLinkDialog"
       :show-close="false"
       custom-class="custom-dialog"
