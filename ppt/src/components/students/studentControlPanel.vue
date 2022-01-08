@@ -45,14 +45,14 @@
       </div>
     </div>
 
-    <div class="aligncenter" v-if="isStudentPaced">
+    <div class="aligncenter" v-if="isStudentPaced && filterAddedMediaList.length > 0">
       <div
-        class="button_area"
+        :class="`button_area ${meterialVisiable ? 'back_focus' : ''}`"
         @click="changeMeterial"
       >
         <div class="meterialimage">
           <div :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"></div>
-          <i v-if="filterAddedMediaList.length > 0" class="metarialnums">{{filterAddedMediaList.length}}</i>
+          <i class="metarialnums">{{filterAddedMediaList.length}}</i>
         </div>
         <strong class="button_text">{{meterialVisiable ? 'Material hiding' : 'Display material'}}</strong>
       </div>
@@ -325,7 +325,7 @@ export default {
   position: relative;
 }
 .me-show{
-  background-image:url(../../assets/picture/m-show.png)
+  background-image:url(../../assets/picture/m-show.png);
 }
 .me-hide{
   background-image:url(../../assets/picture/m-hide.png)
@@ -347,7 +347,7 @@ export default {
   background-color: #cfcfcf;
 }
 .back_focus {
-  background-color: #fff;
+  background-color: red;
   border-radius: 8px;
 }
 .button_text {
