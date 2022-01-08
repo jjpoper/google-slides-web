@@ -370,36 +370,36 @@ export default {
       getClassSet(classId).then(res => {
         console.log('rawClassSet', res)
         this.rawClassSet = res
-        if(!res) {
-          this.allowEditAnonymous = false
-        }else{
+        if(res.can_anonymous_sign_in === null) {
           this.allowEditAnonymous = true
-          this.className = res.class_name
+        }
+
+        this.className = res.class_name
+        if(res.real_class_id) {
           let room = this.roomItems.find(item => item.id === res.real_class_id)
           this.newRoomName = room ? room.name : null
-          this.scheduleSessionFlag = res.schedule_session_flag
-          if(res.session_start_time) {
-            this.sessionStartTime = moment(res.session_start_time).toDate()
-            this.sessionHour = this.sessionStartTime.getHours()
-            this.sessionMinute = this.sessionStartTime.getMinutes()
-          }
-
-          this.allocatedTimeFlag = res.allocated_time_flag
-          this.canAnonymous = res.can_anonymous_sign_in
-          // deadline
-          if(res.time_type === 1 && res.deadline) {
-            this.allocateTime = moment(res.deadline).toDate()
-            this.allocateHour = this.deadline.getHours()
-            this.allocateMinute = this.deadline.getMinutes()
-          }
-
-          // countdown
-          if(res.time_type === 2) {
-            this.time_down = res.time_down
-            this.deadline = null
-          }
         }
-      })
+        this.scheduleSessionFlag = !!res.schedule_session_flag
+        if(res.session_start_time) {
+          this.sessionStartTime = moment(res.session_start_time).toDate()
+          this.sessionHour = this.sessionStartTime.getHours()
+          this.sessionMinute = this.sessionStartTime.getMinutes()
+        }
+
+        this.allocatedTimeFlag = !!res.allocated_time_flag
+        this.canAnonymous = !!res.can_anonymous_sign_in
+        // deadline
+        if(res.time_type === 1 && res.deadline) {
+          this.allocateTime = moment(res.deadline).toDate()
+          this.allocateHour = this.deadline.getHours()
+          this.allocateMinute = this.deadline.getMinutes()
+        }
+
+        // countdown
+        if(res.time_type === 2) {
+          this.time_down = res.time_down
+          this.deadline = null
+        }
     });
 
 
