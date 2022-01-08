@@ -14,7 +14,7 @@
     <div class="wait-seconds">
       <div class="wait-title-first"><img  src="../../assets/picture/please_wait.png" /></div>
       <div class="wait-title-mid">the session will start in </div>
-      <div class="wait-seconds" v-if="displayTime"> ({{displayTime}})</div>
+      <div class="wait-seconds-num" v-if="displayTime"> ({{displayTime}})</div>
     </div>
   </div>
 </template>
@@ -106,7 +106,7 @@ export default {
   height: 35px;
 }
 
-.wait-title-mid, .wait-seconds {
+.wait-title-mid, .wait-seconds-num {
   font-size: 25px;
   padding-left: 10px;
   color: #070707;
