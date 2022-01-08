@@ -343,7 +343,8 @@ export default {
       allocateHourOptions: [],
       allocateMinuteOptions: [],
 
-      rawClassSet: null
+      rawClassSet: null,
+      allowEditAnonymous: true,
     };
   },
   created() {
@@ -354,22 +355,54 @@ export default {
       this.show_url = this.url;
     }
 
-    getRealClass(this.user_id).then((res) => {
-      console.log(res);
-      this.roomItems = res;
-    });
-
-    let classId = this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
-    getClassSet(classId).then(res => {
-      console.log('rawClassSet', res)
-      this.rawClassSet = res
-    })
-    this.className = this.classRoomInfo.class_name
-
     this.initSessionHourOptions();
     this.initSessionMinuteOptions()
     this.initAllocateHourOptions()
     this.initAllocateMinuteOptions()
+
+    getRealClass(this.user_id).then((res) => {
+      console.log(res);
+      this.roomItems = res;
+    }).then(() => {
+
+      // 获取班级列表后开始加载配置数据
+      let classId = this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
+      getClassSet(classId).then(res => {
+        console.log('rawClassSet', res)
+        this.rawClassSet = res
+        if(!res) {
+          this.allowEditAnonymous = false
+        }else{
+          this.allowEditAnonymous = true
+          this.className = res.class_name
+          let room = this.roomItems.find(item => item.id === res.real_class_id)
+          this.newRoomName = room ? room.name : null
+          this.scheduleSessionFlag = res.schedule_session_flag
+          if(res.session_start_time) {
+            this.sessionStartTime = moment(res.session_start_time).toDate()
+            this.sessionHour = this.sessionStartTime.getHours()
+            this.sessionMinute = this.sessionStartTime.getMinutes()
+          }
+
+          this.allocatedTimeFlag = res.allocated_time_flag
+          this.canAnonymous = res.can_anonymous_sign_in
+          // deadline
+          if(res.time_type === 1) {
+            this.time_down = res.time_down
+          }
+
+          // countdown
+          if(res.time_type === 2) {
+            this.allocateTime = moment(res.deadline).toDate()
+            this.allocateHour = this.deadline.getHours()
+            this.allocateMinute = this.deadline.getMinutes()
+          }
+        }
+      })
+    });
+
+
+    this.className = this.classRoomInfo.class_name
   },
   watch: {
     time_type(v) {
