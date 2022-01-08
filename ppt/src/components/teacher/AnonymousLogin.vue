@@ -251,10 +251,10 @@
 
 <script>
 import {
-  addRealClass,
+  addRealClass, getClassSet,
   getRealClass,
   renameClass,
-  saveClassSet
+  saveClassSet,
 } from "../../model/index";
 import moment from 'moment'
 export default {
@@ -342,6 +342,8 @@ export default {
       allocateMinute: 0,
       allocateHourOptions: [],
       allocateMinuteOptions: [],
+
+      rawClassSet: null
     };
   },
   created() {
@@ -357,6 +359,11 @@ export default {
       this.roomItems = res;
     });
 
+    let classId = this.show_url.substring(this.show_url.lastIndexOf("/") + 1);
+    getClassSet(classId).then(res => {
+      console.log('rawClassSet', res)
+      this.rawClassSet = res
+    })
     this.className = this.classRoomInfo.class_name
 
     this.initSessionHourOptions();
