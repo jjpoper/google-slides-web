@@ -3,9 +3,6 @@ import App from './App.vue';
 import router from './router/index';
 import './elementUse'
 import { Message } from 'element-ui'
-import lang from 'element-ui/lib/locale/lang/en'
-import locale from 'element-ui/lib/locale'
-locale.use(lang)
 import { use } from 'echarts/core'
 import {
   CanvasRenderer

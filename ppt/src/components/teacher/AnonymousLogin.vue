@@ -64,7 +64,7 @@
                 <div class="form-label">Schedule the session</div>
                 <div class="my-login-switch">
                   <el-switch
-                    v-model="scheduleSession"
+                    v-model="scheduleSessionFlag"
                     active-color="#15C39A">
                   </el-switch>
                 </div>
@@ -73,7 +73,7 @@
                 <el-row :gutter="10">
                   <el-col :span="10">
                     <el-date-picker
-                      :disabled="!scheduleSession"
+                      :disabled="!scheduleSessionFlag"
                       class="my-login-input"
                       prefix-icon="el-icon-date"
                       v-model="sessionStartTime"
@@ -84,7 +84,7 @@
                     </el-date-picker>
                   </el-col>
                   <el-col :span="7">
-                    <el-select v-model="sessionHour" :disabled="!scheduleSession" placeholder="hour"  class="my-login-input">
+                    <el-select v-model="sessionHour" :disabled="!scheduleSessionFlag" placeholder="hour"  class="my-login-input">
                       <el-option
                         v-for="item in sessionHourOptions"
                         :key="item.value"
@@ -96,7 +96,7 @@
 
                   </el-col>
                   <el-col :span="7">
-                    <el-select v-model="sessionMinute" :disabled="!scheduleSession" placeholder="minute" class="my-login-input">
+                    <el-select v-model="sessionMinute" :disabled="!scheduleSessionFlag" placeholder="minute" class="my-login-input">
                       <el-option
                         v-for="item in sessionMinuteOptions"
                         :key="item.value"
@@ -250,7 +250,13 @@
 
 
 <script>
-import { addRealClass, getRealClass, renameClass, setRealClass } from "../../model/index";
+import {
+  addRealClass,
+  getRealClass,
+  renameClass,
+  saveClassSet
+} from "../../model/index";
+import moment from 'moment'
 export default {
   props: {
     copyLink: {
@@ -322,7 +328,7 @@ export default {
       },
       className: 'Unnamed session',
 
-      scheduleSession: false,
+      scheduleSessionFlag: false,
       sessionStartTime: null,
       allocatedTimeFlag: false,
       allocateTime: null,
@@ -456,7 +462,7 @@ export default {
               disabled: i < today.getMinutes() + 15
             });
           }
-          this.allocateHourOptions = minuteOptions;
+          this.allocateMinuteOptions = minuteOptions;
         }else{
           this.initAllocateMinuteOptions()
         }
@@ -487,30 +493,33 @@ export default {
       this.copyLink(this.canAnonymous);
     },
     saveLoginSetting() {
-      if (this.currentRoomId !== -1) {
-        setRealClass(
-          this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
-          this.canAnonymous ? 1 : 0,
-          this.currentRoomId,
-          this.className,
-          this.scheduleSession,
-          this.sessionStartTime,
-          this.allocatedTimeFlag,
-          this.time_type,
-          this.time_down,
-          this.deadline
-        ).then((res) => {
-          this.closeBtn()
-        });
-      } else {
-        setRealClass(
-          this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
-          this.canAnonymous ? 1 : 0
-        ).then((res) => {
-          this.closeBtn()
-        });
-      }
-      this.setDeadLine();
+      // 设置deadline时间
+      let deadline = this.allocateTime
+      deadline.setHours(this.allocateHour)
+      deadline.setMinutes(this.allocateMinute)
+      console.log('new deadline', deadline)
+      this.deadline = deadline
+
+      let sessionStartTime = this.sessionStartTime
+      sessionStartTime.setHours(this.sessionHour)
+      sessionStartTime.setMinutes(this.sessionMinute)
+      console.log('new sessionStartTime', sessionStartTime)
+
+      saveClassSet(
+        this.show_url.substring(this.show_url.lastIndexOf("/") + 1),
+        this.className,
+        this.currentRoomId,
+        this.scheduleSessionFlag,
+        moment.utc(this.sessionStartTime).local().format('YYYY-MM-DD HH:mm:ss'),
+        this.allocatedTimeFlag,
+        this.time_type,
+        this.time_down,
+        moment.utc(this.deadline).local().format('YYYY-MM-DD HH:mm:ss'),
+        this.canAnonymous ? 1 : 0,
+      ).then((res) => {
+        this.closeBtn()
+        this.setDeadLine();
+      });
     },
     createNewRoomConfirm() {
       if (!this.newRoomName || this.newRoomName.length < 1) {
@@ -574,7 +583,7 @@ export default {
 
     initSessionMinuteOptions () {
       let minuteOptions = [];
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 60; i++) {
         minuteOptions.push({
           value: i,
           label: i < 10 ? "0" + i : i,
@@ -597,7 +606,7 @@ export default {
     },
     initAllocateMinuteOptions () {
       let minuteOptions = [];
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 60; i++) {
         minuteOptions.push({
           value: i,
           label: i < 10 ? "0" + i : i,

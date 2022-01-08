@@ -583,28 +583,11 @@ export const getRealClass = async (mail: string) => {
   return data.data.data;
 }
 
-export const setRealClass = async (id: string,
-                                   anonymous: number,
-                                   real_id: number,
-                                   class_name: string,
-                                   schedule_session: boolean,
-                                   session_start_time: string,
-                                   allocate_time: boolean,
-                                   allocate_time_type: number,
-                                   count_down: number,
-                                   dead_line: string,
-                                   ) => {
+export const setRealClass = async (id: string, anonymous: number, real_id: number) => {
   const data = await axios.post(`${PPT.requestUrl}class/set`, {
     class_id: id,
     can_anonymous_sign_in: anonymous,
-    real_class_id: real_id,
-    class_name: class_name,
-    schedule_session: schedule_session,
-    session_start_time: session_start_time,
-    allocate_time: allocate_time,
-    allocate_time_type: allocate_time_type,
-    count_down: count_down,
-    dead_line: dead_line,
+    real_class_id: real_id
   })
   console.log(data.data);
   return data.data.code;
@@ -625,4 +608,40 @@ export const getCurrentClassPageIndex = async (id: string) => {
   return axios.post(`${PPT.requestUrl}slide/get_class_page`, {
     class_id: id
   })
+}
+
+// 获取课堂当前的配置
+export const getClassSet = async (classId: string) => {
+  const data = await axios.post(`${PPT.requestUrl}class/get_class_set`, {
+    class_id: classId
+  })
+  return data.data.data;
+}
+
+// 保存课堂配置
+export const saveClassSet = async (
+  classId: string,
+  className: string,
+  realClassId: string,
+  scheduleSessionFlag: boolean,
+  sessionStartTime: string,
+  allocatedTimeFlag: boolean,
+  time_type: number,
+  time_down: number,
+  deadline: string,
+  canAnonymous: boolean,
+  ) => {
+  const data = await axios.post(`${PPT.requestUrl}class/save_class_set`, {
+    class_id: classId,
+    class_name: className,
+    real_class_id: realClassId,
+    schedule_session_flag: scheduleSessionFlag,
+    session_start_time: sessionStartTime,
+    allocated_time_flag: allocatedTimeFlag,
+    time_type: time_type,
+    time_down: time_down,
+    deadline: deadline,
+    can_anonymous_sign_in: canAnonymous
+  })
+  return data.data.code;
 }
