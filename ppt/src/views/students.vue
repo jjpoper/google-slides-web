@@ -215,6 +215,7 @@
     <div id="diycolor_comment"></div>
 
     <el-dialog
+      :center="true"
       :visible.sync="isWaitingStart"
       :show-close="false"
       :close-on-click-modal="false"
@@ -832,26 +833,37 @@ export default {
         }).finally(() => {
           if(this.classRoomInfo && this.classRoomInfo.hasOwnProperty("session_start_time")){
             let startTime = this.classRoomInfo.session_start_time
+            console.log('startTime', startTime)
             if(startTime) {
               let startTimeDate = moment(startTime).toDate()
+              console.log('startTimeDate', startTime)
+              console.log('Date.now()', Date.now())
               if(startTimeDate && startTimeDate.getTime() > Date.now()){
                 this.isWaitingStart = true
                 this.sessionStartDateTime = startTimeDate
                 console.log('isWaitingStart ' + this.isWaitingStart + 'sessionStartDateTime ' + this.sessionStartDateTime)
-                this.startWaitingTimer()
+                this.startWaitingTime()
               }
             }
           }
       });
     },
-    startWaitingTimer () {
+    startWaitingTime () {
+      console.log('startWaitingTimer now ' + (Date.now() / 1000) + ' sessionStartDateTime ' + (this.sessionStartDateTime.getTime() / 1000))
       if(this.waitingTimer) {
         clearTimeout(this.waitingTimer)
       }
-      this.waitingStartSeconds = Date.now() / 1000 - this.sessionStartDateTime.getTime() / 1000
-      this.startWaitingTimer = setTimeout(() => {
-        this.startWaitingTimer()
-      }, 1000)
+      let leftSeconds = parseInt((this.sessionStartDateTime.getTime() / 1000) - (Date.now() / 1000))
+      if(leftSeconds > 0) {
+        console.log('waitingStartSeconds ' + leftSeconds)
+        this.waitingStartSeconds = leftSeconds
+        this.waitingTimer = setTimeout(() => {
+          this.startWaitingTime()
+        }, 1000)
+      }else {
+        this.isWaitingStart = false
+        this.waitingStartSeconds = 0
+      }
     },
     afterConnectRoom() {
       this.getAllSlides();
