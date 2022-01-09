@@ -1,5 +1,5 @@
 <template>
-  <div class="remark-item-content">
+  <div class="remark-item-content-right">
     <VideoPlayer
       v-if="item.type === 'video'"
       controlslist="nodownload"
@@ -13,8 +13,8 @@
       v-else-if="item.type === 'audio'"
       :url="item.link"
     />
-    <div class="remark-file" v-else>
-      <p class="file-name">{{item.link}}</p>
+    <div class="remark-file-right" v-else>
+      <p class="file-name-right">{{item.link}}</p>
     </div>
   </div>
 </template>

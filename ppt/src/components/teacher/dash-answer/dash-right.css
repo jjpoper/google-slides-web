@@ -1,4 +1,4 @@
-.remark-item-content {
+.remark-item-content-right {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -10,7 +10,7 @@
   justify-content: center;
   position: relative;
 }
-.remark-file {
+.remark-file-right {
   min-height: 60px;
   display: flex;
   align-items: center;
@@ -20,7 +20,7 @@ video {
   /* height: 100%; */
   object-fit: cover;
 }
-.file-icon {
+.file-icon-right {
   width: 60px;
   height: 60px;
   margin-right: 10px;
@@ -28,16 +28,16 @@ video {
   background-size: contain;
   background-position: center;
 }
-.file-icon.pdf {
+.file-icon-right.pdf {
   background-image: url(../../../assets/picture/pdf.png);
 }
-.file-icon.word {
+.file-icon-right.word {
   background-image: url(../../../assets/picture/word.png);
 }
-.file-icon.file {
+.file-icon-right.file {
   background-image: url(../../../assets/picture/file.png);
 }
-.download-text {
+.download-text-right {
   text-decoration: none;
   text-align: left;
   float: left;
@@ -52,7 +52,7 @@ video {
   line-height: 24px;
   color: #15c39a;
 }
-.file-name {
+.file-name-right {
   font-size: 10px;
   font-family: Inter-Bold;
   line-height: 24px;
@@ -60,7 +60,4 @@ video {
   word-break: break-word;
   text-align: left;
   width: 100%;
-}
-.dash-a-img{
-
 }

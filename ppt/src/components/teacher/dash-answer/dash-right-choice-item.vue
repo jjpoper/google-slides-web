@@ -1,7 +1,7 @@
 <template>
-  <div class="remark-item-content" >
-    <div class="remark-file" style="flex-direction: column; justify-content: center">
-      <p class="file-name"  v-for="item in answerList" :key="item">{{getText(item)}}</p>
+  <div class="remark-item-content-right" >
+    <div class="remark-file-right" style="flex-direction: column; justify-content: center">
+      <p class="file-name-right"  v-for="item in answerList" :key="item">{{getText(item)}}</p>
     </div>
   </div>
 </template>
