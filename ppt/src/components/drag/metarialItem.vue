@@ -6,13 +6,13 @@
         <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
       </div> -->
       <div class="transformmask" v-if="rect.type !== 'audio'" @click="choose"></div>
-      <common-close-button v-if="rect.source !== 'add-on' && teacher" :deletefn="deleteTheMedia"/>
+      <common-delete-button v-if="rect.source !== 'add-on' && teacher" :deletefn="deleteTheMedia"/>
     </div>
   </div>
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
-import CommonCloseButton from '../common/commonCloseButton.vue';
+import CommonDeleteButton from '../common/commonDeleteButton.vue';
 import ItemChild from './itemChild.vue';
 export default {
   props: {
@@ -61,7 +61,7 @@ export default {
   },
   components: {
     ItemChild,
-    CommonCloseButton
+    CommonDeleteButton
   },
   methods: {
     ...mapActions("metarial", [
