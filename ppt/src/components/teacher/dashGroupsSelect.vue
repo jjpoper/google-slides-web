@@ -27,13 +27,6 @@ export default {
       currentPageId: 'student/currentPageId',
     }),
   },
-  watch: {
-    currentPageIndex() {
-      this.currentGroupId = ''
-      this.changeSelectedGroup([])
-      this.changeGroupMembers([])
-    }
-  },
   data() {
     return {
       currentGroupId: '',
@@ -42,7 +35,6 @@ export default {
   methods: {
     ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
     changeGroup(id) {
-      this.selectedStudents = false
       if(!id) {
         this.changeSelectedGroup([])
         this.changeGroupMembers([])

@@ -533,6 +533,8 @@ type: "slide"*/
       this.getPageData();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
       this.checkResponseStatus()
+      this.changeSelectedGroup([])
+      this.changeGroupMembers([])
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -556,7 +558,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
