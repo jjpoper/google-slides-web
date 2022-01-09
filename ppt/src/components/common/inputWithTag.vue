@@ -122,6 +122,8 @@ ul, li {
 
 .option-list {
   padding: 5px 0;
+  max-height: 200px;
+  overflow-y: scroll;
 }
 
 .option-item {
