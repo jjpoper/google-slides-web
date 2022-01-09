@@ -13,7 +13,7 @@
             <el-row  type="flex" justify="start">
               <el-col :offset="7" :span="15">
                 <div class="main-title">Invite students to study</div>
-                <div class="sub-title">Join at classcipe.com</div>
+                <div class="sub-title">Join classcipe.com</div>
                 <div class="invite-code">{{ getPass }}</div>
               </el-col>
             </el-row>
@@ -40,22 +40,7 @@
                 <div class="form-label">Choose class</div>
               </el-col>
               <el-col :span="16">
-                <el-select
-                  placeholder="Please choose class"
-                  class="my-login-input"
-                  v-model="newRoomName"
-                  @change="newRoomNameChange"
-                  filterable
-                  clearable
-                  allow-create
-                  default-first-option>
-                  <el-option
-                    v-for="item in roomItems"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+                <input-with-tag :options="roomItems" @select-or-create-option="selectOrCreateRoom"/>
               </el-col>
             </el-row>
 
@@ -257,6 +242,7 @@ import {
   renameClass,
   saveClassSet,
 } from "../../model/index";
+import inputWithTag from "@/components/common/inputWithTag";
 import moment from 'moment'
 export default {
   props: {
@@ -288,6 +274,10 @@ export default {
       default: () => {},
     },
   },
+
+  components: {
+    inputWithTag
+  },
   data() {
     return {
       canAnonymous: true,
@@ -296,7 +286,6 @@ export default {
       currentRoomId: -1,
       inputDialog: false,
       roomItems: [],
-      visible: false,
       show_url: "",
       time_type: 0,
       deadline: "",
@@ -362,7 +351,7 @@ export default {
     this.initAllocateMinuteOptions()
 
     getRealClass(this.user_id).then((res) => {
-      console.log(res);
+      console.log('roomItems', res);
       this.roomItems = res;
     }).then(() => {
 
@@ -551,11 +540,6 @@ export default {
     anonymousBtnClicked() {
       this.canAnonymous = !this.canAnonymous;
     },
-    selectRoom(item) {
-      this.room = item.name;
-      this.visible = false;
-      this.currentRoomId = item.id;
-    },
     setDeadLine() {
       console.log("setDeadLine", this.time_type);
       this.hindeTimeDialog(this.time_type, this.deadline, this.time_down);
@@ -566,18 +550,22 @@ export default {
     saveLoginSetting() {
       // 设置deadline时间
       let deadline = this.allocateTime
+      let deadlineStr = null
       console.log('this.allocateTime', this.allocateTime)
       if(deadline) {
         deadline.setHours(this.allocateHour)
         deadline.setMinutes(this.allocateMinute)
+        deadlineStr = moment.utc(this.allocateTime).local().format('YYYY-MM-DD HH:mm:ss')
         console.log('new deadline', deadline)
         this.deadline = deadline
       }
 
       let sessionStartTime = this.sessionStartTime
+      let sessionStartTimeStr = null
       if(sessionStartTime) {
         sessionStartTime.setHours(this.sessionHour)
         sessionStartTime.setMinutes(this.sessionMinute)
+        sessionStartTimeStr = moment.utc(this.sessionStartTime).local().format('YYYY-MM-DD HH:mm:ss')
         console.log('new sessionStartTime', sessionStartTime)
       }
 
@@ -586,11 +574,11 @@ export default {
         this.className,
         this.currentRoomId,
         this.scheduleSessionFlag,
-        moment.utc(this.sessionStartTime).local().format('YYYY-MM-DD HH:mm:ss'),
+        sessionStartTimeStr,
         this.allocatedTimeFlag,
         this.time_type,
         this.time_down,
-        moment.utc(this.deadline).local().format('YYYY-MM-DD HH:mm:ss'),
+        deadlineStr,
         this.canAnonymous ? 1 : 0,
       ).then((res) => {
         this.closeBtn()
@@ -602,15 +590,6 @@ export default {
         this.$message.error("Please input a name!");
         return;
       }
-      this.visible = false;
-      for (let i = 0; i < this.roomItems.length; i++) {
-        if (this.roomItems[i].name === this.newRoomName) {
-          this.room = this.newRoomName;
-          this.newRoomName = "";
-          this.currentRoomId = this.roomItems[i].id;
-          return;
-        }
-      }
       addRealClass(this.user_id, this.newRoomName).then((res) => {
         console.log(res);
         if (res.code === "ok") {
@@ -620,6 +599,7 @@ export default {
           roomItem.id = res.data;
           this.currentRoomId = roomItem.id
           this.roomItems.push(roomItem);
+          this.$message.success("Create new class successfully!");
         }
       });
     },
@@ -632,12 +612,14 @@ export default {
       }
     },
 
-    newRoomNameChange (data) {
-      console.log('newRoomNameChange', data, this.roomItems)
+    selectOrCreateRoom (roomName) {
+      console.log('selectOrCreateRoom', roomName, this.roomItems)
       // 按下回车时data为用户输入的文字，或者选中的选项的id，如果名称相同或者id相同，则不创建新班级
-      let rootItem = this.roomItems.find(item => item.id === data || item.name === data)
+      let rootItem = this.roomItems.find(item => item.name === roomName)
+      console.log('select roomItem', rootItem)
       if(!rootItem) {
-        this.newRoomName = data
+        // 新建班级
+        this.newRoomName = roomName
         this.createNewRoomConfirm()
       }else {
         this.newRoomName = rootItem.name

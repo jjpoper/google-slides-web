@@ -12,7 +12,8 @@ import {
     Upload,
     InfiniteScroll,
     ButtonGroup,
-    Card
+    Card,
+    Tag
 } from 'element-ui';
 
 Vue.use(Image)
@@ -51,4 +52,5 @@ Vue.use(Upload)
 Vue.use(InfiniteScroll)
 Vue.use(ButtonGroup)
 Vue.use(Card)
+Vue.use(Tag)
 Vue.prototype.$alert = MessageBox

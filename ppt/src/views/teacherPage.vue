@@ -256,6 +256,8 @@
 
     <!--  -->
     <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       :destroy-on-close="true"
       :visible.sync="showCopyLinkDialog"
       :show-close="false"
