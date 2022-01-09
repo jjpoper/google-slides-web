@@ -936,8 +936,12 @@ type: "slide"*/
               res.data[i].data.user_id = res.data[i].user_id;
               res.data[i].data.user_name = res.data[i].user_name;
               res.data[i].data.updated_at = res.data[i].data.time;
-              marks.push(res.data[i].data);
+              marks.push({
+                id: res.data[i].id,
+                ...res.data[i].data
+              });
             }
+            
             // 初始化remark数据
             this.setAllRemarkList(marks);
           }
