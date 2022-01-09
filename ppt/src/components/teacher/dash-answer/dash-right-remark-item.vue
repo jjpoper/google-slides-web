@@ -18,7 +18,7 @@
       <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
       <div style="flex: 1">
         <p class="file-name">{{item.content.fileName}}</p>
-        <a :href="item.content.link" download class="download-text">Download</a>
+        <a :href="item.content.link" download target="_blank"  class="download-text">Download</a>
       </div>
     </div>
     <div class="remark-img" v-else-if="item.content.mediaType === 'image'">

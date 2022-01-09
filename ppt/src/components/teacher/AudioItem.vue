@@ -27,7 +27,7 @@
                     <div :class="`file-icon ${getIconClass(item.content.fileName)} ${currentTab === 1 ? '' : 'smallicon'}`" ></div>
                     <div class="file-name" style="flex: 1">
                       <p class="file-name">{{item.content.fileName}}</p>
-                      <a :href="item.content.link" target="blank" download class="download-text">Download</a>
+                      <a :href="item.content.link" target="_blank"  download class="download-text">Download</a>
                     </div>
                   </div>
                   <div style="width: 100%; height: 100%; position: relative" v-else-if="item.content.mediaType === 'image'">
