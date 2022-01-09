@@ -13,7 +13,7 @@
             <el-row  type="flex" justify="start">
               <el-col :offset="7" :span="15">
                 <div class="main-title">Invite students to study</div>
-                <div class="sub-title">Join classcipe.com</div>
+                <div class="sub-title">Join joincp.com</div>
                 <div class="invite-code">{{ getPass }}</div>
               </el-col>
             </el-row>
