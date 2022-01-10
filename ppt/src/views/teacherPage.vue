@@ -444,7 +444,8 @@ type: "slide"*/
       inputDialog: false,
       sendControlDelay: null,
       metrialStatusMap: {},
-      showResponseMap: {}
+      showResponseMap: {},
+      alreadyShowCopyUrl: false
     };
   },
   mounted() {
@@ -1005,6 +1006,7 @@ type: "slide"*/
         }
         // 分享弹框是否展示
         if (controlType == 3) {
+          this.alreadyShowCopyUrl = true
           this.showCopyLinkDialog = result
           return
         }
@@ -1407,7 +1409,6 @@ type: "slide"*/
             }, 1000);
           } else {
             this.getAllSlides();
-            hideLoading();
           }
         })
         .catch(res => {
@@ -1436,9 +1437,12 @@ type: "slide"*/
           this.responsePercentage[i] = 0;
         }
         this.isFocus[this.currentPageIndex] = true;
-        this.$nextTick(() => {
-          this.copyUrl()
-        })
+        if(!this.alreadyShowCopyUrl) {
+          this.$nextTick(() => {
+            this.copyUrl()
+          })
+        }
+        hideLoading();
       });
     },
     getItemData() {
@@ -1514,7 +1518,7 @@ type: "slide"*/
       // } else {
       //   this.showCopyLinkDialog = true;
       // }
-
+      this.alreadyShowCopyUrl = true
       this.showCopyLinkDialog = true;
       controlProject({"result": true, "controlType": 3})
     },
