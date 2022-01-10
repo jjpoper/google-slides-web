@@ -1822,6 +1822,7 @@ type: "slide"*/
       this.stepTwoDialog = false;
     },
     giveFocus(index, notSend) {
+      if(isNaN(index)) return false
       console.log(index, notSend, 'giveFocus', this.page_model ,ClassRoomModelEnum.STUDENT_MODEL)
       if(index != this.currentPageIndex || !this.currentItemData) {
         this.setStudentPageIndex(index);
