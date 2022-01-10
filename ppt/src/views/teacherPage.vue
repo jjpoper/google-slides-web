@@ -1678,7 +1678,8 @@ type: "slide"*/
               // let url =
               //   "https://docs.google.com/presentation/d/" + _this.slide_id;
               // let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
-              let url = 'https://my.classcipe.com/teacher/main/created-by-me'
+              // let url = 'https://my.classcipe.com/teacher/main/created-by-me'
+              let url = isDev ?  "https://dev.classcipe.com/teacher/main/created-by-me" : 'https://my.classcipe.com/teacher/main/created-by-me';
               window.location.href = url;
 
             }, 2000);
