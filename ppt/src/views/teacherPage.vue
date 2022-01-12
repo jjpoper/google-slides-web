@@ -444,7 +444,8 @@ type: "slide"*/
       inputDialog: false,
       sendControlDelay: null,
       metrialStatusMap: {},
-      showResponseMap: {}
+      showResponseMap: {},
+      alreadyShowCopyUrl: false
     };
   },
   mounted() {
@@ -533,6 +534,8 @@ type: "slide"*/
       this.getPageData();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
       this.checkResponseStatus()
+      this.changeSelectedGroup([])
+      this.changeGroupMembers([])
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -556,7 +559,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -934,8 +937,12 @@ type: "slide"*/
               res.data[i].data.user_id = res.data[i].user_id;
               res.data[i].data.user_name = res.data[i].user_name;
               res.data[i].data.updated_at = res.data[i].data.time;
-              marks.push(res.data[i].data);
+              marks.push({
+                id: res.data[i].id,
+                ...res.data[i].data
+              });
             }
+            
             // 初始化remark数据
             this.setAllRemarkList(marks);
           }
@@ -999,6 +1006,7 @@ type: "slide"*/
         }
         // 分享弹框是否展示
         if (controlType == 3) {
+          this.alreadyShowCopyUrl = true
           this.showCopyLinkDialog = result
           return
         }
@@ -1401,7 +1409,6 @@ type: "slide"*/
             }, 1000);
           } else {
             this.getAllSlides();
-            hideLoading();
           }
         })
         .catch(res => {
@@ -1430,9 +1437,12 @@ type: "slide"*/
           this.responsePercentage[i] = 0;
         }
         this.isFocus[this.currentPageIndex] = true;
-        this.$nextTick(() => {
-          this.copyUrl()
-        })
+        if(!this.alreadyShowCopyUrl) {
+          this.$nextTick(() => {
+            this.copyUrl()
+          })
+        }
+        hideLoading();
       });
     },
     getItemData() {
@@ -1508,7 +1518,7 @@ type: "slide"*/
       // } else {
       //   this.showCopyLinkDialog = true;
       // }
-
+      this.alreadyShowCopyUrl = true
       this.showCopyLinkDialog = true;
       controlProject({"result": true, "controlType": 3})
     },
@@ -1672,7 +1682,8 @@ type: "slide"*/
               // let url =
               //   "https://docs.google.com/presentation/d/" + _this.slide_id;
               // let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
-              let url = 'https://my.classcipe.com/teacher/main/created-by-me'
+              // let url = 'https://my.classcipe.com/teacher/main/created-by-me'
+              let url = isDev ?  "https://dev.classcipe.com/teacher/main/created-by-me" : 'https://my.classcipe.com/teacher/main/created-by-me';
               window.location.href = url;
 
             }, 2000);
@@ -1816,6 +1827,7 @@ type: "slide"*/
       this.stepTwoDialog = false;
     },
     giveFocus(index, notSend) {
+      if(isNaN(index)) return false
       console.log(index, notSend, 'giveFocus', this.page_model ,ClassRoomModelEnum.STUDENT_MODEL)
       if(index != this.currentPageIndex || !this.currentItemData) {
         this.setStudentPageIndex(index);

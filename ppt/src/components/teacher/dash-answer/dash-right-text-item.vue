@@ -1,7 +1,7 @@
 <template>
-  <div class="remark-item-content">
-    <div class="remark-file">
-      <p class="file-name">{{getText(item)}}</p>
+  <div class="remark-item-content-right">
+    <div class="remark-file-right">
+      <p class="file-name-right">{{getText(item)}}</p>
     </div>
   </div>
 </template>

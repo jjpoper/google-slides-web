@@ -1,5 +1,5 @@
 <template>
-  <div class="remark-item-content" style="height: 150px">
+  <div class="remark-item-content-right" style="height: 150px">
     <Base64image :url="currentPPTUrl">
       <Base64image :url="item.result || item.content">
       </Base64image>

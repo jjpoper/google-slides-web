@@ -69,7 +69,7 @@
 <style scoped>
 .answer-footer {
   width: 100%;
-  height: 100%;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: space-between;

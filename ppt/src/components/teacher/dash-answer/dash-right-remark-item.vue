@@ -1,5 +1,5 @@
 <template>
-  <div class="remark-item-content">
+  <div class="remark-item-content-right">
     <VideoPlayer
       v-if="item.content && item.content.mediaType === 'video'"
       controlslist="nodownload"
@@ -14,11 +14,11 @@
       v-else-if="item.content &&  item.content.mediaType === 'audio'"
       :url="item.content.link"
     />
-    <div class="remark-file" v-else-if="item.content.mediaType === 'file'">
-      <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
+    <div class="remark-file-right" v-else-if="item.content.mediaType === 'file'">
+      <div :class="`file-icon-right ${getIconClass(item.content.fileName)}`"></div>
       <div style="flex: 1">
-        <p class="file-name">{{item.content.fileName}}</p>
-        <a :href="item.content.link" download class="download-text">Download</a>
+        <p class="file-name-right">{{item.content.fileName}}</p>
+        <a :href="item.content.link" download target="_blank"  class="download-text">Download</a>
       </div>
     </div>
     <div class="remark-img" v-else-if="item.content.mediaType === 'image'">

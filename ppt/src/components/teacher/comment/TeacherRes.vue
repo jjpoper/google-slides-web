@@ -27,7 +27,7 @@
     <div v-else>
       <dash-right-remark-item :item='{content: item.title}' />
     </div>
-    <div class="tfuser">
+    <div class="tfuser" v-if="userData">
       <div class="tfusericon">{{userData.sname.split("")[0]}}</div>
       <div class="tfinfo">
         <p class="tfuname">{{userData.sname}}</p>
