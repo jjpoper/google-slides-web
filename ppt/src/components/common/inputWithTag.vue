@@ -1,21 +1,20 @@
 <template>
   <transition name="el-fade-in">
-    <div class="input-with-tag">
+    <div class="input-with-tag" @click.stop="">
       <el-input type="text" v-model="inputValue"
                 class="my-login-input"
                 @input="onInput"
                 @focus="onFocus"
-                @blur="onBlur"
                 @keydown.enter.native="onEnter">
       </el-input>
       <div
         v-show="showPopper"
         class="popover-option el-popper">
         <ul class="option-list">
-          <li class="option-item" v-for="(optionItem, oIndex) in filterOptions" :key="oIndex" @click="selectItem(optionItem)">
+          <li class="option-item" v-for="(optionItem, oIndex) in filterOptions" :key="oIndex" @click.stop="selectItem(optionItem)">
             <span class="option-item-text">{{optionItem.name}}</span>
           </li>
-          <li class="option-item create-new" v-show="showCreate" @click="createItem">
+          <li class="option-item create-new" v-show="showCreate" @click.stop="createItem">
           <span class="create-new-item">
             <el-tag type="success" color="#15c39a22" class="create-new-tag" size="small">Create {{inputValue}}</el-tag></span>
           </li>
@@ -76,11 +75,17 @@ export default {
       this.showPopper = false
     },
     createItem () {
+      console.log('createItem', this.inputValue.trim());
       this.$emit("select-or-create-option", this.inputValue.trim());
       this.showPopper = false
     },
     selectItem (item) {
-      this.$emit('select-or-create-options', item.name)
+      console.log('selectItem', item);
+      this.$emit('select-or-create-option', item.name)
+      this.inputValue = item.name
+      this.showPopper = false
+    },
+    hiddenPoppers() {
       this.showPopper = false
     }
   }

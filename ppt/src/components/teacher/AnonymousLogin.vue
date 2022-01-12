@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card @click.native="hiddenTagInputPopover">
     <el-row type="flex">
       <el-col :span="7" class="login-col">
         <div class="login-logo">
@@ -40,7 +40,7 @@
                 <div class="form-label">Choose class</div>
               </el-col>
               <el-col :span="16">
-                <input-with-tag :options="roomItems" @select-or-create-option="selectOrCreateRoom"/>
+                <input-with-tag ref="tagInput" :options="roomItems" @select-or-create-option="selectOrCreateRoom"/>
               </el-col>
             </el-row>
 
@@ -49,6 +49,7 @@
                 <div class="form-label">Schedule the session</div>
                 <div class="my-login-switch">
                   <el-switch
+                    @change="scheduleSessionChange"
                     v-model="scheduleSessionFlag"
                     active-color="#15C39A">
                   </el-switch>
@@ -101,6 +102,7 @@
                 <div class="form-label">Allocated time</div>
                 <div class="my-login-switch">
                   <el-switch
+                    @change="allocatedTimeChange"
                     v-model="allocatedTimeFlag"
                     active-color="#15C39A">
                   </el-switch>
@@ -443,7 +445,7 @@ export default {
     },
     sessionStartTime(v) {
       let today = new Date()
-      if(today.getFullYear() === v.getFullYear() && today.getMonth() === v.getMonth() && today.getDay() === v.getDay()) {
+      if(v && today.getFullYear() === v.getFullYear() && today.getMonth() === v.getMonth() && today.getDay() === v.getDay()) {
           // 限制小时与分钟
         this.sessionHour = 0
         this.sessionMinute = 0
@@ -467,7 +469,7 @@ export default {
       console.log('sessionHour', v)
       let today = new Date()
       let selectDay = this.sessionStartTime
-      if(v !== null && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
+      if(selectDay && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
           if(v === today.getHours()) {
             this.sessionMinute = 0
             let minuteOptions = [];
@@ -512,7 +514,7 @@ export default {
       console.log('allocateHour', v)
       let today = new Date()
       let selectDay = this.allocateTime
-      if(v !== null && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
+      if(selectDay && today.getFullYear() === selectDay.getFullYear() && today.getMonth() === selectDay.getMonth() && today.getDay() === selectDay.getDay()) {
         if(v === today.getHours()) {
           this.allocateMinute = null
           let minuteOptions = [];
@@ -674,6 +676,29 @@ export default {
       }
       this.allocateMinuteOptions = minuteOptions;
     },
+    scheduleSessionChange (newFlag) {
+      console.log('scheduleSessionChange ' + newFlag)
+      if(!newFlag) {
+        this.sessionStartTime = null
+        this.sessionHour = 0;
+        this.sessionMinute = 0
+      }
+    },
+
+    allocatedTimeChange (newFlag) {
+      console.log('allocatedTimeChange ' + newFlag)
+      if(!newFlag) {
+        this.time_type = 0;
+        this.time_down = 0;
+        this.allocateTime = null
+        this.allocateHour = 0
+        this.allocateMinute = 0
+      }
+    },
+
+    hiddenTagInputPopover () {
+      this.$refs.tagInput.hiddenPoppers()
+    }
   },
 };
 </script>
