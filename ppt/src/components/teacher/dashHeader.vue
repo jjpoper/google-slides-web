@@ -5,7 +5,7 @@
       <el-tooltip :content="`${onLine ? 'Online' : 'Offline'}`" placement="top">
         <i class="online"  :style="`background-color: ${onLine ? 'green' : 'rgba(255, 26, 14, 1);'}`"></i>
       </el-tooltip>
-      <p>课程标题：{{classRoomInfo.class_name}}</p>
+      <p>{{classRoomInfo.class_name}}</p>
       <el-popover placement="bottom" width="236" trigger="hover" class="dropdown-icon">
          <div class="dash-drop">
           <div class="tab" @click="openProject">Present in new window</div>

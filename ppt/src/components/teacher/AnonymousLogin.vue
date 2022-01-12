@@ -316,7 +316,7 @@ export default {
           return time.getTime() < (new Date().getTime() - 8.64e7);
         },
       },
-      className: 'Unnamed session',
+      className: '',
 
       scheduleSessionFlag: false,
       sessionStartTime: null,
@@ -369,7 +369,10 @@ export default {
         }
         console.log('allowEditAnonymous ' + this.allowEditAnonymous)
 
-        this.className = res.class_name
+        // 如果老师不起名字，就默认叫session1,2,3 of "task的名字"(就看老师在这个task上面开启了多少次未命名的课堂），如果老师给session命名了，那就变成session name
+        let historySessionNum = res.history_session_num ? parseInt(res.history_session_num) + 1 : 1
+        this.className = ['Unnamed session', 'unnamed', '', undefined, null].indexOf(this.classRoomInfo.class_name) !== -1 ? `Session ${historySessionNum} of ${res.file_name}` : res.file_name
+        this.classRoomInfo.class_name = this.className
         if(res.real_class_id) {
           let room = this.roomItems.find(item => item.id === res.real_class_id)
           this.newRoomName = room ? room.name : null
@@ -419,9 +422,7 @@ export default {
           }
         }, 100)
 
-    });
-
-      this.className = this.classRoomInfo.class_name
+      });
     })
   },
   watch: {
