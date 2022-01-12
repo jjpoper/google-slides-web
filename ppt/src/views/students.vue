@@ -329,7 +329,8 @@ export default {
       isWaitingStart: false,
       sessionStartDateTime: null,
       waitingStartSeconds: 0,
-      waitingTimer: null
+      waitingTimer: null,
+      refreshTimer: null
     };
   },
   computed: {
@@ -843,6 +844,7 @@ export default {
                 this.sessionStartDateTime = startTimeDate
                 console.log('isWaitingStart ' + this.isWaitingStart + 'sessionStartDateTime ' + this.sessionStartDateTime)
                 this.startWaitingTime()
+                this.autoRefreshSessionStartTime()
               }
             }
           }
@@ -864,6 +866,35 @@ export default {
         this.isWaitingStart = false
         this.waitingStartSeconds = 0
       }
+    },
+
+    // 在倒计时时自动定时刷新班级开始时间，老师更新配置后，学生端可以自动关闭倒计时
+    autoRefreshSessionStartTime () {
+      if(this.refreshTimer) {
+        clearTimeout(this.refreshTimer)
+      }
+      queryClassStatus(this.class_id, this.token).then(res => {
+          if(res && res.hasOwnProperty("session_start_time")){
+            let startTime = res.session_start_time
+            console.log('startTime', startTime)
+            if(startTime) {
+              let startTimeDate = moment(startTime).toDate()
+              console.log('startTimeDate', startTime)
+              console.log('Date.now()', Date.now())
+              if(startTimeDate && startTimeDate.getTime() > Date.now()){
+                this.isWaitingStart = true
+                this.sessionStartDateTime = startTimeDate
+                console.log('isWaitingStart ' + this.isWaitingStart + 'sessionStartDateTime ' + this.sessionStartDateTime)
+              }
+            } else{
+              this.isWaitingStart = false
+            }
+          }
+        }).finally(() => {
+          if(this.isWaitingStart) {
+            this.refreshTimer = setTimeout(this.autoRefreshSessionStartTime, 5000)
+          }
+        })
     },
     afterConnectRoom() {
       this.getAllSlides();
