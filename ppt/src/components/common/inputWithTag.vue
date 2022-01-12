@@ -34,6 +34,10 @@ export default {
     options: {
       type: Array,
       default: () => []
+    },
+    defaultValue: {
+      type: String,
+      default: null
     }
   },
   mixins: [Popper],
@@ -41,7 +45,6 @@ export default {
     return {
       inputValue: "",
       showPopper: false,
-
     };
   },
   computed: {
@@ -55,7 +58,10 @@ export default {
     }
   },
   created() {
-    console.log("inputWithTag created ", this.options);
+    console.log("inputWithTag created ", this.options, ' defaultValue ', this.defaultValue);
+    if(this.defaultValue) {
+      this.inputValue = this.defaultValue
+    }
   },
   methods: {
     onInput(event) {

@@ -40,7 +40,7 @@
                 <div class="form-label">Choose class</div>
               </el-col>
               <el-col :span="16">
-                <input-with-tag ref="tagInput" :options="roomItems" @select-or-create-option="selectOrCreateRoom"/>
+                <input-with-tag ref="tagInput" :default-value="classRoomInfo ? classRoomInfo.real_class_name : null" :options="roomItems" @select-or-create-option="selectOrCreateRoom"/>
               </el-col>
             </el-row>
 
