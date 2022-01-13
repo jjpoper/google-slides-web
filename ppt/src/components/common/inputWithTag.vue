@@ -47,6 +47,11 @@ export default {
       showPopper: false,
     };
   },
+  watch: {
+    defaultValue(val) {
+      this.inputValue = val;
+    }
+  },
   computed: {
     filterOptions() {
       return this.options.filter(option => {

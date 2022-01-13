@@ -66,7 +66,7 @@
                       type="date"
                       format="yyyy-MM-dd"
                       :picker-options="pickerOptionsStart"
-                      placeholder="Start time">
+                      placeholder="Starting time">
                     </el-date-picker>
                   </el-col>
                   <el-col :span="7">
@@ -153,7 +153,7 @@
                           type="date"
                           format="yyyy-MM-dd"
                           :picker-options="pickerOptionsStart"
-                          placeholder="Start time">
+                          placeholder="Ending time">
                         </el-date-picker>
                       </el-col>
                       <el-col :span="7">
@@ -378,6 +378,7 @@ export default {
         if(res.real_class_id) {
           let room = this.roomItems.find(item => item.id === res.real_class_id)
           this.newRoomName = room ? room.name : null
+          console.log('恢复设置的班级', room)
           this.currentRoomId = res.real_class_id
         }
         this.scheduleSessionFlag = !!res.schedule_session_flag
@@ -697,7 +698,9 @@ export default {
     },
 
     hiddenTagInputPopover () {
-      this.$refs.tagInput.hiddenPoppers()
+      if(this.$refs.tagInput) {
+        this.$refs.tagInput.hiddenPoppers()
+      }
     }
   },
 };

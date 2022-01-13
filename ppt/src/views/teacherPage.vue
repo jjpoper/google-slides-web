@@ -261,6 +261,7 @@
       :destroy-on-close="true"
       :visible.sync="showCopyLinkDialog"
       :show-close="false"
+      :center="true"
       custom-class="custom-dialog"
       width="900px"
       @close="closeCopyLinkDialog()"
@@ -942,7 +943,7 @@ type: "slide"*/
                 ...res.data[i].data
               });
             }
-            
+
             // 初始化remark数据
             this.setAllRemarkList(marks);
           }
