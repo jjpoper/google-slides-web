@@ -332,7 +332,13 @@ import {
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { getJSONValue } from "../utils/help";
-import { createSo, setTeacherWxBaseParams, controlProject, sendPageChangeControl} from "../socket/socket.teacher";
+import {
+  createSo,
+  setTeacherWxBaseParams,
+  controlProject,
+  sendPageChangeControl,
+  sendTeacherSocketRequest
+} from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -470,13 +476,13 @@ type: "slide"*/
     );
 
     EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, url => {
-      this.addMediaList(url);
+      this.addMetarialList(url);
     });
     EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, data => {
       this.updateMediaList(data);
     });
     EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, data => {
-      this.deleteMedia(data);
+      this.deleteMetarial(data);
     });
   },
   computed: {
@@ -597,34 +603,45 @@ type: "slide"*/
     showDashTips() {
       this.dashTipsModalVisiable = !this.dashTipsModalVisiable;
     },
-    addMediaList({ url, type }) {
+    // this.currentSo.emit(
+    //     SocketEventsEnum.TEACHER_ADD_MEDIA,
+    //     `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
+    //   );
+    //   sendm
+    // },
+    // updateMediaList(data) {
+    //   const page_id = this.currentPageId;
+    //   const itemData = JSON.stringify({ page_id: page_id, ...data });
+    //   sendTeacherMetarial(
+    //     SocketEventsEnum.TEACHER_UPDATE_MEDIA,
+    addMetarialList({ url, type }) {
       const page_id = this.currentPageId;
-      const itemData = JSON.stringify({
+      const itemData = {
         page_id: page_id,
         url: url,
         type: type,
         position: { x: 0, y: 0, w: 0, h: 0 }
-      });
-      this.currentSo.emit(
+      };
+      sendTeacherSocketRequest(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
+        { slide_id: this.slide_id, page_id: page_id, data: itemData}
       );
     },
     updateMediaList(data) {
       const page_id = this.currentPageId;
-      const itemData = JSON.stringify({ page_id: page_id, ...data });
-      this.currentSo.emit(
+      const itemData = { page_id: page_id, ...data};
+      sendTeacherSocketRequest(
         SocketEventsEnum.TEACHER_UPDATE_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "id": "${data.id}", "data": ${itemData}}`
+        {slide_id: this.slide_id, page_id: page_id, id: data.id, data: itemData}
       );
     },
-    deleteMedia(id) {
+    deleteMetarial(id){
       // delete-element
       // request: {"token": "", "class_id", "id": 1}
       // console.log(id);
-      this.currentSo.emit(
+      sendTeacherSocketRequest(
         SocketEventsEnum.TEACHER_DELETE_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${this.currentPageId}", "id": "${id}"}`
+        {slide_id: this.slide_id, page_id: this.currentPageId, id: id}
       );
     },
     onLineStatusChanged(status) {

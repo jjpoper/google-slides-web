@@ -41,9 +41,19 @@ let heartOK = true
 let messageIdPool: any = {}
 let lastSocketId = ''
 
-const BaseWsRequest = (action: string, message: string | object, callback: callback = () => null) => {
+const BaseWsRequest = (action: string, message: object, callback: callback = () => null) => {
+  const {
+    classId,
+    token
+  } = BaseTeacherParams
+  const params = {
+    ...message,
+    room: classId,
+    token: token,
+    class_id: classId
+  }
   if(windowStudentWs) {
-    windowStudentWs.emit(action, typeof message === 'object' ? JSON.stringify(message) : message, callback);
+    windowStudentWs.emit(action, JSON.stringify(params), callback);
   }
 }
 
@@ -66,11 +76,7 @@ const sendHeartBreak = () => {
       rJoinRoom()
     }
     heartOK = false
-    const {
-      classId,
-      token
-    } = BaseTeacherParams
-    BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"teacher","class_id":"${classId}"}`);
+    BaseWsRequest('heart-beat', {role: "teacher"});
   }, 5000)
 }
 
@@ -212,15 +218,15 @@ export const createSo = (token: string, classId: string, callback: callback, onL
 export const changeTips = (pageId: string, tip: string, id: number) => {
   BaseWsRequest(
     "update-tip",
-    `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "id": ${id}, "tip": "${tip}"}`
+    {page_id: pageId, id: id, tip: tip}
     );
 }
 
 export const changeAnswer = (pageId: string, correctanswer: number[]) => {
   BaseWsRequest(
     "update-correct-answer",
-    `{"class_id": "${BaseTeacherParams.classId}", "page_id":"${pageId}", "correct_answer": ${JSON.stringify(correctanswer)}}`
-    );
+    {page_id: pageId, correct_answer: JSON.stringify(correctanswer)}
+  );
 }
 
 interface ControlP {
@@ -249,4 +255,12 @@ export const sendPageChangeControl = (currentPageIndex: number) => {
     "control",
     {room: classId, token: token, class_id: classId, type: SocketEventsEnum.GO_PAGE, params: {page: currentPageIndex}}
   );
+}
+
+// 处理发送socket 数据
+export const sendTeacherSocketRequest = (socketType: string, data = {}) => {
+  BaseWsRequest(
+    socketType,
+    data
+  )
 }
