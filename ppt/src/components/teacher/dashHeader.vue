@@ -109,7 +109,7 @@ export default {
       }
       // window.history.back()
       setTimeout(() => {
-        let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
+        let url = isDev ?  "https://dev.classcipe.com/teacher/main/created-by-me" : 'https://my.classcipe.com/teacher/main/created-by-me';
         window.location.href = url;
       }, 500 )
     }
