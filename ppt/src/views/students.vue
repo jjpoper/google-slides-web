@@ -242,7 +242,11 @@ import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
-import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
+import {
+  createSo,
+  setStudentWxBaseParams,
+  sendStudentSocketRequest
+} from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -1155,7 +1159,7 @@ export default {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         // // console.log(action, message);
-        this.currentSo.emit(action, typeof message === 'object' ? JSON.stringify(message) : message);
+        sendStudentSocketRequest(action, typeof message === 'object' ? message  : JSON.parse(message))
       }
     },
     lastPage() {

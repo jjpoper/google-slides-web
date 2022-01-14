@@ -35,11 +35,18 @@ export const setTeacherWxBaseParams = ({
   }
 }
 
+interface MessageItem {
+  action: string
+  params: object
+  callback: callback
+}
+
 let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
 let messageIdPool: any = {}
 let lastSocketId = ''
+let messageDelayPool: MessageItem[] = []
 
 const BaseWsRequest = (action: string, message: object, callback: callback = () => null) => {
   const {
@@ -52,8 +59,27 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
     token: token,
     class_id: classId
   }
-  if(windowStudentWs) {
+  if(windowStudentWs && window.isNetWorkOnLine) {
     windowStudentWs.emit(action, JSON.stringify(params), callback);
+  } else {
+    messageDelayPool.push({
+      action,
+      params,
+      callback
+    })
+  }
+}
+
+// 发送未成功发出的消息
+const sendDelayMessage = () => {
+  while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs) {
+    const {
+      action,
+      params,
+      callback
+    } = messageDelayPool[0]
+    BaseWsRequest(action, params, callback)
+    messageDelayPool.shift()
   }
 }
 
@@ -67,6 +93,7 @@ const rJoinRoom = () => {
       'join-room',
       {room: classId, token: token, role: "teacher", class_id: classId, last_sid: lastSocketId}
     );
+    sendDelayMessage()
   // }, 10000)
 }
 
@@ -84,15 +111,22 @@ const sendAck = (msgId: string) => {
   BaseWsRequest('msg-receipt', {msg_id: msgId});
 }
 
-const preCheckAck = (data: string): any => {
+const preCheckAck = (data: string, callback: callback, params: object): any => {
   const response = JSON.parse(data)
   const {msg_id: msgId} = response
   if(msgId && !messageIdPool[msgId]) {
     messageIdPool[msgId] = true
     sendAck(msgId)
-    return response
+    callback({
+      ...params,
+      ...response,
+    })
+  } else if(!msgId) {
+    callback({
+      ...params,
+      ...response,
+    })
   }
-  return null
 }
 
 export const createSo = (token: string, classId: string, callback: callback, onLineStatusChanged: callback, onReJoinRoom: callback) => {
@@ -114,6 +148,7 @@ export const createSo = (token: string, classId: string, callback: callback, onL
 
     // console.log('connect 状态 上线')
     onLineStatusChanged(true)
+    window.isNetWorkOnLine = true
     lastSocketId = socket.id
     rJoinRoom()
     // 发送 control ，type和 params 随便定义，学生那边收到的就是这些。
@@ -123,70 +158,64 @@ export const createSo = (token: string, classId: string, callback: callback, onL
   });
 
   socket.on('disconnect', () => {
-    // console.log('connect 状态 断线')
     onLineStatusChanged(false)
+    window.isNetWorkOnLine = false
   });
   // 老师端接收到学生发来的答案
   socket.on('response', (data: any) => {
     // // console.log("收到学生发来的答案：" + data);
-    const response = preCheckAck(data)
-    if(response) {
-      callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...response })
-    }
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.ANSWER_QUESTION})
   });
 
   // 老师端接到系统信息（目前只有一个在线学生人数）
   socket.on('status', (data: any) => {
-    callback({ mtype: SocketEventsEnum.STUDENTS_COUNTS, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.STUDENTS_COUNTS})
   });
 
   socket.on('control', (data: any) => {
     // console.log("收到系统信息：" + data);
-    const response = preCheckAck(data)
-    if(response) {
-      callback({ mtype: SocketEventsEnum.CONTROL, ...response })
-    }
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.CONTROL})
   });
 
   socket.on('rename', (data: any) => {
-    callback({ mtype: SocketEventsEnum.RENAME, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.RENAME})
   });
 
   socket.on('go-to-page', (data: any) => {
     // console.log("收到系统信息：STUDETN_GO_PAGE" + data);
-    callback({ mtype: SocketEventsEnum.STUDETN_GO_PAGE, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.STUDETN_GO_PAGE})
   });
 
   socket.on('comment-ppt', (data: any) => {
     // console.log("收到学生评论ppt信息", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.STUNDENT_COMMENT_PPT, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.STUNDENT_COMMENT_PPT})
   });
 
   socket.on('delete-ppt-comment', (data: any) => {
     // console.log("收到学生删除ppt信息", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.STUDENT_DELETE_PPT, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.STUDENT_DELETE_PPT})
   });
 
   socket.on('update-ppt-comment', (data: any) => {
     // console.log("收到学生删除ppt信息", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.STUDENT_UPDATE_COMMENT, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.STUDENT_UPDATE_COMMENT})
   });
 
   socket.on('add-element', (data: any) => {
     // console.log("收到老师添加的 media", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.STUDENT_ADD_MEDIA, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.STUDENT_ADD_MEDIA})
   });
   socket.on('update-element', (data: any) => {
     // console.log("update-element media", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.TEACHER_UPDATE_MEDIA, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.TEACHER_UPDATE_MEDIA})
   });
   socket.on('delete-element', (data: any) => {
     // console.log("update-element media", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA})
   });
   socket.on('delete-response', (data: any) => {
     // console.log("删除答案" + data);
-    callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
+    preCheckAck(data, callback, {mtype: SocketEventsEnum.DELETE_QUESTION})
   });
   socket.on('msg', (data: string) => {
     try {

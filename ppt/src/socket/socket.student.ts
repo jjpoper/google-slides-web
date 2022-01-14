@@ -36,15 +36,48 @@ export const setStudentWxBaseParams = ({
   }
 }
 
+interface MessageItem {
+  action: string
+  params: object
+}
+
 let windowStudentWs: any = null
 let isJoined = false
 let heartOK = true
 let messageIdPool: any = {}
 let lastSocketId = ''
+let messageDelayPool: MessageItem[] = []
 
-const BaseWsRequest = (action: string, message: string | object) => {
-  if(windowStudentWs) {
-    windowStudentWs.emit(action, typeof message === 'object' ? JSON.stringify(message) : message);
+const BaseWsRequest = (action: string, message: object) => {
+  const {
+    classId,
+    token
+  } = BaseStudentParams
+  const params = {
+    ...message,
+    room: classId,
+    token: token,
+    class_id: classId
+  }
+  if(windowStudentWs && window.isNetWorkOnLine) {
+    windowStudentWs.emit(action, JSON.stringify(params));
+  } else {
+    messageDelayPool.push({
+      action,
+      params
+    })
+  }
+}
+
+// 发送未成功发出的消息
+const sendDelayMessage = () => {
+  while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs) {
+    const {
+      action,
+      params,
+    } = messageDelayPool[0]
+    BaseWsRequest(action, params)
+    messageDelayPool.shift()
   }
 }
 
@@ -59,6 +92,7 @@ const rJoinRoom = () => {
       'join-room',
       {room: classId, token: token, role: "student", class_id: classId, last_sid: lastSocketId}
     );
+    sendDelayMessage()
   // }, 10000)
 }
 const sendHeartBreak = () => {
@@ -67,11 +101,7 @@ const sendHeartBreak = () => {
       rJoinRoom()
     }
     heartOK = false
-    const {
-      classId,
-      token
-    } = BaseStudentParams
-    BaseWsRequest('heart-beat', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}"}`);
+    BaseWsRequest('heart-beat', {role: "student"});
   }, 5000)
 }
 
@@ -79,15 +109,22 @@ const sendAck = (msgId: string) => {
   BaseWsRequest('msg-receipt', {msg_id: msgId});
 }
 
-const preCheckAck = (data: string): any => {
+const preCheckAck = (data: string, callback: callback, params: object): void => {
   const response = JSON.parse(data)
   const {msg_id: msgId} = response
   if(msgId && !messageIdPool[msgId]) {
     messageIdPool[msgId] = true
     sendAck(msgId)
-    return response
+    callback({
+      ...params,
+      ...response,
+    })
+  } else if(!msgId) {
+    callback({
+      ...params,
+      ...response,
+    })
   }
-  return null
 }
 
 export const createSo = (room: string, token: string, classId: string, callback: callback, joinCallback: callback, onLineStatusChanged: callback, onReJoinRoom: callback) => {
@@ -99,6 +136,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
   socket.on('connect', () => {
     // console.log('connect 状态 新链接')
     onLineStatusChanged(true)
+    window.isNetWorkOnLine = true
     if(!isJoined) {
       isJoined = true
       // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
@@ -124,35 +162,33 @@ export const createSo = (room: string, token: string, classId: string, callback:
   socket.on('disconnect', () => {
     // console.log('connect 状态 断线')
     onLineStatusChanged(false)
+    window.isNetWorkOnLine = false
   });
 
   // 学端要响应老师发来的 control
   socket.on('control', (data: string) => {
     // console.log("老师发来了control. 详细数据: " + data);
-    const response = preCheckAck(data)
-    if(response) {
-      callback({ mtype: SocketEventsEnum.CONTROL, ...response})
-    }
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.CONTROL})
   });
 
   // 学生端收到老师发来的消息反馈
   socket.on('comment', (data: string) => {
     // console.log("老师发来了消息反馈。详细数据：" + data);
-    callback({ mtype: SocketEventsEnum.TEACHER_COMMENT, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.TEACHER_COMMENT})
   });
 
   socket.on('comment-ppt', (data: string) => {
     // console.log("学生评论id" + data);
-    callback({ mtype: SocketEventsEnum.GET_COMMENT_ID, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.GET_COMMENT_ID})
   });
 
   socket.on('add-element', (data: any) => {
     // console.log("收到老师添加的 media", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.STUDENT_ADD_MEDIA, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.STUDENT_ADD_MEDIA})
   });
   socket.on('update-element', (data: any) => {
     // console.log("update-element media", JSON.parse(data));
-    callback({ mtype: SocketEventsEnum.TEACHER_UPDATE_MEDIA, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.TEACHER_UPDATE_MEDIA})
   });
   socket.on('delete-element', (data: any) => {
     // console.log("update-element media", JSON.parse(data));
@@ -160,20 +196,17 @@ export const createSo = (room: string, token: string, classId: string, callback:
   });
   socket.on('response', (data: any) => {
     // console.log("收到自己发来的答案：" + data);
-    const response = preCheckAck(data)
-    if(response) {
-      callback({ mtype: SocketEventsEnum.ANSWER_QUESTION, ...response})
-    }
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.ANSWER_QUESTION})
   });
   socket.on('delete-response', (data: any) => {
     // console.log("删除答案" + data);
-    callback({ mtype: SocketEventsEnum.DELETE_QUESTION, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.DELETE_QUESTION})
   });
   socket.on('update-tip', (data: any) => {
-    callback({ mtype: SocketEventsEnum.UPDATE_TIP, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.UPDATE_TIP})
   });
   socket.on('update-correct-answer', (data: any) => {
-    callback({ mtype: SocketEventsEnum.UPDATE_RIGHT_ANSWERS, ...JSON.parse(data) })
+    preCheckAck(data, callback, { mtype: SocketEventsEnum.UPDATE_RIGHT_ANSWERS})
   });
   socket.on('msg', (data: string) => {
     try {
@@ -243,7 +276,7 @@ export const askToAddNewRemarkItem = (data: any) => {
 export const deleteOneRemark = (id: string) => {
   BaseWsRequest(
     "delete-ppt-comment",
-    `{"token":"${BaseStudentParams.token}","class_id":"${BaseStudentParams.classId}","id":${id}}`
+    {id: id}
   );
 }
 
@@ -253,10 +286,10 @@ export const updateRemarkItemData = (data: any) => {
   } = data;
   BaseWsRequest(
     "update-ppt-comment",
-    `{"token": "${BaseStudentParams.token}", "class_id": "${BaseStudentParams.classId}",
-    "ppt_comment_id":${id},
-    "ppt_comment":
-      ${JSON.stringify(data)}}`
+      {
+        ppt_comment_id: id,
+        ppt_comment: data
+      }
     );
 }
 
@@ -268,24 +301,26 @@ export const sendAudioOrVideoAnswer = ({
   fileName = ''
 }: any) => {
   const {
-    classId,
-    token,
     uid,
     uname
   } = BaseStudentParams
   const content = `{"link":"${link}","mediaType":"${mediaType}", "fileName": "${fileName}"}`
   BaseWsRequest(
-    "response", `{"room": "${classId}","type":"media","user_id": "${uid}","user_name":"${uname}","token": "${token}","class_id":"${classId}","page_id": "${page_id}","item_id": "0","content": ${content}}`
+    "response", {type: "media", user_id: uid, user_name: uname, page_id: page_id, item_id: "0", content: content}
   );
 }
 
 // 删除media
 export const deleteMedia = (id: number) => {
-  const {
-    classId,
-    token
-  } = BaseStudentParams
   BaseWsRequest(
-    "delete-response", `{"token": "${token}","class_id":"${classId}", "response_id": ${id}}`
+    "delete-response", {response_id: id}
   );
+}
+
+// 处理发送socket 数据
+export const sendStudentSocketRequest = (socketType: string, data = {}) => {
+  BaseWsRequest(
+    socketType,
+    data
+  )
 }

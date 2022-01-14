@@ -654,7 +654,7 @@ type: "slide"*/
           this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
           if (this.directFromPlugin) {
             this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${
                 SocketEventsEnum.MODEL_CHANGE
               }", "token": "${this.token}","class_id":"${
@@ -768,7 +768,7 @@ type: "slide"*/
           }
           //发送一个ws消息通知其他端，更新状态
           if (sendWSMsg) {
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}",
               "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
             );
@@ -804,12 +804,11 @@ type: "slide"*/
         answertime
       });
       // // console.log(itemData);
-      this.currentSo.emit(
-        "comment",
-        `{"user_id":"${studentId}","token": "${this.token}","class_id":"${this.class_id}", "item": ${itemData}}`
-      );
+      sendTeacherSocketRequest('comment', {
+        user_id: studentId, item: itemData
+      })
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {// console.log("发送消息反馈")});
-      // this.emitSo(itemData)
+      // this.emitControlSocket(itemData)
     },
 
     // 检查token
@@ -1586,11 +1585,8 @@ type: "slide"*/
       // this.stepTwoDialog = false;
     },
 
-    emitSo(message) {
-      if (this.currentSo) {
-        // this.currentSo.emit('control', JSON.stringify(data));
-        this.currentSo.emit("control", message);
-      }
+    emitControlSocket(message) {
+      sendTeacherSocketRequest("control", typeof message === 'object' ? message : JSON.parse(message))
     },
 
     closeDashCopy() {
@@ -1619,7 +1615,7 @@ type: "slide"*/
     sendModeChangeCommend() {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        this.emitSo(
+        this.emitControlSocket(
           `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.MODEL_CHANGE
           }", "token": "${this.token}","class_id":"${
@@ -1691,7 +1687,7 @@ type: "slide"*/
           let _this = this;
           this.confirmCloseDialogVisible = false;
           if (res.code == "ok") {
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
             controlProject({"result": true, "controlType": 4})
@@ -1735,7 +1731,7 @@ type: "slide"*/
       this.$forceUpdate();
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        this.emitSo(
+        this.emitControlSocket(
           `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.LOCK_PAGE
           }", "token": "${this.token}","class_id":"${
@@ -1799,7 +1795,7 @@ type: "slide"*/
           // console.log(res);
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "live"}}`
             );
           } else {
@@ -1911,7 +1907,7 @@ type: "slide"*/
         value = countDownTime * 60;
       }
 
-      this.emitSo(
+      this.emitControlSocket(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.SET_DEADLINE_TIME}","token": "${this.token}","class_id":"${this.class_id}", "params": {"response_limit_mode":${mode},"response_limit_time":${value}}}`
       );
     },
@@ -1927,14 +1923,14 @@ type: "slide"*/
       // if (this.firstCloseCopyLinkDialog) {
       // console.log("close copy link dialog!!");
       this.firstCloseCopyLinkDialog = false;
-      this.emitSo(
+      this.emitControlSocket(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
       // }
     },
     openCopyLinkDialog() {
       // console.log("open copy link dialog!!");
-      this.emitSo(
+      this.emitControlSocket(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
     },
