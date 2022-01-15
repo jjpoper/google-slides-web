@@ -57,6 +57,7 @@ export default {
   overflow: scroll;
   position: relative;
   padding-bottom: 100px;
+  flex: 1;
 }
 .text-answer-list{
   width: 100%;
@@ -72,7 +73,7 @@ export default {
   -moz-column-gap:  5px;
   column-gap:  5px; */
   width: 20%;
-  padding: 5px;
+  padding: 2px;
   box-sizing: border-box;
   margin-bottom: 10px;
 }

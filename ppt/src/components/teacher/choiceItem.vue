@@ -36,7 +36,7 @@
       </div>
       <div v-else>
         <v-chart
-          style="height: 500px"
+          style="minHeight: 500px"
           :option="bar"
           :init-options="initOptions"
           ref="bar"
@@ -77,6 +77,7 @@ export default {
   },
   data() {
     return {
+      choiceData: null, 
       showStatistics: true,
       options: [],
       title: "",
@@ -85,9 +86,9 @@ export default {
       optFlags: ["A", "B", "C", "D", "E", "F", "G", "H"],
       isMulti: false,
       initOptions: {
-        renderer: "canvas"
+        renderer: "canvas",
       },
-      currentTab: 1
+      currentTab: 1,
     };
   },
   computed: {
@@ -95,11 +96,15 @@ export default {
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     selectedAnswerList() {
-      if(this.selectedGroupMembers.length === 0) return this.answerList
-      let list = this.answerList.filter(item => {
-        return this.selectedGroupMembers.indexOf(item.user_id) > -1
-      })
-      return list
+      let result = []
+      if(this.selectedGroupMembers.length === 0) {
+        result = this.answerList
+      } else {
+        result = this.answerList.filter(item => {
+          return this.selectedGroupMembers.indexOf(item.user_id) > -1
+        })
+      }
+      return result
     },
     bar() {
       const names = this.options.map(item => {
@@ -115,7 +120,26 @@ export default {
         },
         xAxis: {
           type: "category",
-          data: names
+          data: names,
+          axisLabel: {
+              // rotate: '45',
+              fontSize: 14,
+              axisTick: {
+                  alignWithLabel: true,
+                  show: true
+              },
+              color: '#333',
+              triggerEvent: true,
+              formatter: function (params) {
+                var valueTxt = ''
+                if (params.length >6) {
+                  valueTxt = params.substring(0,6) + '...'
+                } else {
+                  valueTxt = params
+                }
+                return valueTxt
+              },
+            },
         },
         yAxis: {
           type: "value"
@@ -144,27 +168,28 @@ export default {
     }
   },
   created() {
-    const { title, options, isMulti } = this.data.items[0].data;
+    this.choiceData = this.data
+    const { title, options, isMulti } = this.choiceData.items[0].data;
     this.title = title;
     this.options = options;
     this.isMulti = isMulti;
     this.answerList = getCurrentPageAnswerList(
-      this.data.page_id,
-      this.data.items[0].type
+      this.choiceData.page_id,
+      this.choiceData.items[0].type
     );
   },
   mounted() {
     EventBus.$on("choice", data => {
-      this.data = data.data;
-      const { title, options, isMulti } = this.data.items[0].data;
+      this.choiceData = data.data;
+      const { title, options, isMulti } = this.choiceData.items[0].data;
       this.title = title;
       this.options = options;
       this.isMulti = isMulti;
       // console.log(this.data, data, "EventBus on");
       const { user_id, answer, user_name } = data;
       this.answerList = getCurrentPageAnswerList(
-        this.data.page_id,
-        this.data.items[0].type
+        this.choiceData.page_id,
+        this.choiceData.items[0].type
       );
     });
   },
@@ -208,6 +233,7 @@ export default {
       const data = [];
       if (this.isMulti) {
         let list = JSON.parse(answer.answer);
+        list.sort((a, b) => a - b)
         for (let i = 0; i < list.length; i++) {
           let text =
             this.optFlags[list[i]] +
@@ -255,169 +281,42 @@ export default {
       } else {
         return "";
       }
+    },
+    extension(mychart) {
+　　　 //判断是否创建过div框,如果创建过就不再创建了
+      var id = document.getElementById("extension");
+      if(!id) {
+          var div = "<div id = 'extension' sytle=\"display:none\"></div>"
+          document.body.append(div);
+      }
+
+      mychart.on('mouseover', function(params) {
+          if(params.componentType == "xAxis") {
+              $('#extension').css({
+                  "position": "absolute",
+                  "color": "black",
+                  //"border":"solid 2px white",
+                  "font-family": "Arial",
+                  "font-size": "20px",
+                  "padding": "5px",
+                  "display": "inline"
+              }).text(params.value);
+
+              $("html").mousemove(function(event) {
+                  var xx = event.pageX - 30;
+                  var yy = event.pageY + 20;
+                  $('#extension').css('top', yy).css('left', xx);
+              });
+          }
+      });
+
+      mychart.on('mouseout', function(params) {
+          if(params.componentType == "xAxis") {
+            $('#extension').css('display', 'none');
+        }
+      });
     }
   }
 };
 </script>
 
-
-<style scoped>
-.text-answer-container {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px 20px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background-color: #fff;
-}
-.text-scroll{
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  overflow: scroll;
-  position: relative;
-  padding-bottom: 100px;
-}
-.text-answer-list{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.colume5{
-  /* -webkit-column-count:  5;
-  -moz-column-count:  5;
-  column-count:  5;
-  -webkit-column-gap:  5px;
-  -moz-column-gap:  5px;
-  column-gap:  5px; */
-  width: 20%;
-  padding: 5px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-}
-.colume1{
-  width: 100%;
-  padding: 5px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-}
-/* 有星标时的bg */
-.star_bg {
-  border: 3px solid #f7d567;
-  background-color: #f8f1d3;
-}
-.text-item-outer1{
-  /* height: 290px; */
-  width: 100%;
-  position: relative;
-}
-.text-item-outer5{
-  width: 100%;
-  /* padding-bottom: 85%; */
-  position: relative;
-}
-.text-item-outer1.full-text-area{
-  /* height: 148px; */
-}
-.text-item-outer5.full-text-area{
-  padding-bottom: 45%;
-}
-.text-list-item {
-  width: 100%;
-  /* height: 100%; */
-  border-radius: 8px;
-  margin-right: 10px;
-  border: 1px solid #F1F1F1;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.16);
-  background-color: #fff;
-  box-sizing: border-box;
-  padding: 10px;
-  /* position: absolute; */
-  top: 0;
-  left: 0;
-  overflow: hidden;
-}
-.text_static {
-  position: absolute;
-  bottom: 10px;
-  right: 7px;
-}
-.text_area {
-  width: 100%;
-  /* height: 59%; */
-  background: rgba(228,228,228,0.3);
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: Inter-Bold;
-  line-height: 24px;
-  color: #000000;
-  box-sizing: border-box;
-  padding:7px 7px 30px 7px;
-  overflow: scroll;
-  position: relative;
-  text-align: left;
-}
-.text_area.full-text-area{
-   height: 100%;
-}
-.text-footer{
-  width: 100%;
-  height: 41%;
-}
-.on-as-outer{
-  width: 50%;
-  min-height: 100px;
-  background: #FFFFFF;
-  border: 1px solid #F7F8FF;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-  opacity: 1;
-  border-radius: 6px;
-  box-sizing: border-box;
-  padding: 18px 14px;
-  position: relative;
-  margin: 10px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.no-as-title{
-  height: 24px;
-  font-size: 18px;
-  font-family: Segoe UI;
-  font-weight: bold;
-  line-height: 24px;
-  color: #36425A;
-  padding-left: 28px;
-  display: inline-block;
-  text-align: left;
-  position: relative;
-}
-.no-as-title >i{
-  width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  background-color: #FF1A0E;
-  display: inline-block;
-  top: 3px;
-  left: 0;
-  position: absolute;
-}
-.on-as-list{
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  font-size: 18px;
-  font-family: Segoe UI;
-  font-weight: bold;
-  line-height: 24px;
-  color: #BCBCBC;
-  margin-top: 17px;
-}
-.on-as-list-item{
-  margin-right: 20px;
-}
-</style>

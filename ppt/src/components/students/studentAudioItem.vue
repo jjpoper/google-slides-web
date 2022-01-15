@@ -18,17 +18,16 @@
         </div>
       </el-tooltip>
     </div>
-    <!-- <tipShow /> -->
     <ul class="remark-list">
       <!--输入区域item-->
       <li v-if="recordType" class="remark-list-item record-item active-item">
         <div class="item-header">
-          <div class="user-info">
+          <!-- <div class="user-info">
             <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
             <div>
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
             </div>
-          </div>
+          </div> -->
           <div @click.stop="cancelRecord" class="delete-button"></div>
         </div>
         <div class="remark-item-content remark-item-content-record">
@@ -51,12 +50,12 @@
         class="remark-list-item" v-for="item in uploadPool" :key="item.id">
         <uploading-progress :onSuccess="onProgressDone" :item="item">
           <div class="item-header">
-            <div class="user-info">
+            <!-- <div class="user-info">
               <div class="user-icon">{{userInfo.name ? userInfo.name.substr(0, 1) : ''}}</div>
               <div>
                 <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
               </div>
-            </div>
+            </div> -->
             <div @click.stop="cancelUpLoad(item.id)" class="delete-button"></div>
           </div>
         </uploading-progress>
@@ -95,7 +94,7 @@
             <div :class="`file-icon ${getIconClass(item.content.fileName)}`"></div>
             <div style="flex: 1">
               <p class="file-name">{{item.content.fileName}}</p>
-              <a :href="item.content.link" target="blank" download class="download-text">Download</a>
+              <a :href="item.content.link" target="_blank"  download class="download-text">Download</a>
             </div>
           </div>
           <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
@@ -114,7 +113,6 @@ import RecordAudio from "../common/recordAudio.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import { getAnswerTimeStr } from "@/utils/help";
 import AudioPlayer from "../common/audioPlayer.vue";
-import tipShow from "./tipShow.vue";
 import {videoTypes, audioTypes, fileTypes} from '@/utils/constants'
 import base64image from '../base64image.vue';
 import CommonUpload from '../common/commonUpload.vue';
@@ -124,7 +122,6 @@ export default {
     RecordVideo,
     RecordAudio,
     AudioPlayer,
-    tipShow,
     base64image,
     CommonUpload,
     UploadingProgress
@@ -463,6 +460,7 @@ video {
   font-family: Inter-Bold;
   line-height: 24px;
   color: #000000;
+  word-break: break-word;
   text-align: left;
 }
 </style>

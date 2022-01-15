@@ -109,9 +109,11 @@
       :visible.sync="showYoutube"
       @close="closeYoutubeDialog"
       :append-to-body="true"
-      :destroy-on-close="distroyOnClose"
+      :destroy-on-close="false"
+      width="85%"
     >
       <google-youtube-vedio
+        ref="googleyoutubevideo"
         style="
           width: 100%;
           height: 600px;
@@ -161,6 +163,7 @@
         :cancel="cancelRecord"
         :autoDone="true"
       />
+      <common-progress :progress="driveUpLoadProgress" :cancel="cancelUpDrive"/>
     </div>
   </div>
 </template>
@@ -176,6 +179,7 @@ import MetarialWebSite from './metarialWebSite.vue';
 import CommonUpload from '../common/commonUpload.vue';
 import RecordAudio from '../common/recordAudio.vue';
 import RecordVideo from '../common/recordVideo.vue';
+import CommonProgress from '../common/commonProgress.vue';
 export default {
   components: {
     googleImageSearch,
@@ -183,7 +187,8 @@ export default {
     MetarialWebSite,
     CommonUpload,
     RecordAudio,
-    RecordVideo
+    RecordVideo,
+    CommonProgress
   },
   data() {
     return {
@@ -196,12 +201,11 @@ export default {
       imagesList: [],
       imageName: "",
       imageSelectedIndex: -1,
-      starttime: 0,
-      endtime: 0,
       distroyOnClose: true,
       showWebSite: false,
       recordType: null,
-      ModalEventsTypeEnum
+      ModalEventsTypeEnum,
+      driveUpLoadProgress: 0
     };
   },
   mounted() {},
@@ -281,21 +285,30 @@ export default {
       this.youtubeurl = null;
       this.withKeyUrl = null;
       this.showIframe = false;
-      this.endtime = 0;
-      this.starttime = 0;
+      this.$refs.googleyoutubevideo.closeYoutubeVideo()
     },
     addDrive() {
-      GooglePicker.init((type, res) => {
-        if (res) {
-          // // console.log('===done', data, d)
-          const { data } = JSON.parse(res);
+      GooglePicker.init((driveUpLoadProgress) => {
+        hideLoading();
+        this.driveUpLoadProgress = driveUpLoadProgress
+      },(type, url, mediaType) => {
+        if (url) {
+          console.log('===done', url, mediaType)
           EventBus.$emit(ModalEventsNameEnum.ADD_NEW_MEDIA, {
-            type: "image",
-            url: data,
+            type: mediaType.indexOf('image') > -1 ? "image" : 'video',
+            url: url,
           });
           hideLoading();
         }
+        this.$nextTick(() => {
+          this.driveUpLoadProgress = 0
+        })
       });
+    },
+    cancelUpDrive() {
+      GooglePicker.cancelUpDrive()
+      this.driveUpLoadProgress = 0
+      console.log('onProgressUpLoad')
     },
     searchImage() {
       if (this.imageName) {

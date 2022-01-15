@@ -2,6 +2,7 @@ import { controlProject } from "@/socket/socket.teacher"
 
 const state = () => ({
   selectedMetarialIds: [], // 当前正在呈现的 metarial
+  maskMetarialId: 0
 })
 
 // getters
@@ -18,6 +19,9 @@ const actions = {
   },
   deleteSelectedMetarialId({commit}: any, id: number) {
     commit('deleteSelectedMetarialId', id)
+  },
+  setMaskMetarialId({commit}: any, id: number) {
+    commit('setMaskMetarialId', id)
   },
 }
 
@@ -37,6 +41,9 @@ const mutations = {
     preIds = preIds.filter((item: number) => item !== id)
     nextState.selectedMetarialIds = preIds
     controlProject({result: preIds, controlType: 7})
+  },
+  setMaskMetarialId(nextState: any, id: number) {
+    nextState.maskMetarialId = id
   },
 }
 

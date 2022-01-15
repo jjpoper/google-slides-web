@@ -107,6 +107,7 @@
             :smallWindow="smallWindow"
             :changeShowMetrial="changeShowMetrial"
             :meterialVisiable="meterialVisiable"
+            :filterAddedMediaList="filterAddedMediaList"
           />
         </div>
       </div>
@@ -152,7 +153,7 @@
       />
     </div>
 
-    <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
+    <!-- <el-popover placement="left" trigger="manual" v-model="showTip" width="200">
       <div class="tip_area_popover">{{ tipText }}</div>
       <img
         src="../assets/icon/tip_close.png"
@@ -186,7 +187,7 @@
         "
         @click="changeTipShow()"
       />
-    </el-popover>
+    </el-popover> -->
 
     <!-- <div class="web_site_icon">
       <el-popover
@@ -212,6 +213,17 @@
     </div> -->
 
     <div id="diycolor_comment"></div>
+
+    <el-dialog
+      :center="true"
+      :visible.sync="isWaitingStart"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      custom-class="custom-dialog"
+      width="900px">
+      <waiting-start :waiting-start-seconds="waitingStartSeconds"/>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -223,13 +235,18 @@ import {
   queryClassStatus,
   getAVComment,
   anmonymousLogin,
-  getAllGroupMember
+  getAllGroupMember,
+  getCurrentClassPageIndex
 } from "../model/index";
 import { initStudentData } from "@/model/data.student";
 import { initStudentCommentData } from "@/model/comment.student";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import StudentsIndexItem from "../components/students/Index";
-import { createSo, setStudentWxBaseParams } from "../socket/socket.student";
+import {
+  createSo,
+  setStudentWxBaseParams,
+  sendStudentSocketRequest
+} from "../socket/socket.student";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -258,9 +275,10 @@ import colorSelector from "@/utils/color";
 import TipsList from "@/components/common/tipsList.vue";
 
 import { mapActions, mapState } from "vuex";
-import tipShow from "@/components/students/tipShow.vue";
 import StudentsPptList from "@/components/students/studentsPptList.vue";
 import StudentLoginPage from "@/components/students/studentLoginPage.vue";
+import moment from 'moment'
+import WaitingStart from "@/components/students/waitingStart.vue";
 
 export default {
   data() {
@@ -309,7 +327,14 @@ export default {
       tipText: "",
       websiteUrl: "",
       showLoginDialog: false,
-      metrialStatusMap: {}
+      metrialStatusMap: {},
+      studentPaceLastPage: -1, // 学生模式下最后操作的页码
+
+      isWaitingStart: false,
+      sessionStartDateTime: null,
+      waitingStartSeconds: 0,
+      waitingTimer: null,
+      refreshTimer: null
     };
   },
   computed: {
@@ -384,6 +409,7 @@ export default {
     };
   },
   components: {
+    WaitingStart,
     pptcontent,
     StudentsIndexItem,
     StudentComment,
@@ -392,7 +418,6 @@ export default {
     pageLockedNote,
     StudentQuestions,
     TipsList,
-    tipShow,
     StudentsPptList,
     StudentLoginPage
   },
@@ -402,9 +427,7 @@ export default {
       const { token, p } = to.query;
       vm.class_id = id;
       vm.getGroups();
-      const index = to.query.p ? to.query.p : 0;
       const anonymous = to.query.anonymouse;
-      vm.setStudentPageIndex(index);
       initStudentStoreSlideId(id);
       if (token) {
         vm.token = token;
@@ -435,6 +458,11 @@ export default {
       // } else {
       //   this.websiteList = [];
       // }
+      if(this.isStudentPaced) {
+        this.studentPaceLastPage = this.currentPageIndex
+      } else {
+        this.hideStudentModal()
+      }
     },
     studentAllSlides() {
       this.changeTipByWatchSlides();
@@ -698,7 +726,8 @@ export default {
         this.joinRoom();
       });
     },
-    sendCanvas(base64Url, texturl) {
+    sendCanvas(base64Url, texturl, result) {
+      console.log(result)
       const { page_id, items } = this.currentItemData;
       const { type } = items[0];
       saveStudentsCurrentPageAnswerList(page_id, type, {
@@ -707,7 +736,7 @@ export default {
       });
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}"}`
+        `{"room": "${this.class_id}", "type":"draw", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${base64Url}","content1":"${texturl}", "result": "${result}"}`
       );
       this.updateAnswerdPage(this.currentPageIndex);
       this.currentAnswerd = true;
@@ -729,7 +758,7 @@ export default {
       const { type } = items[0];
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"${type}", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "${index}", "content":"${msg}","locked": ${show}}`
+        JSON.stringify({"room": this.class_id, "type":type, "user_id": this.uid, "user_name":this.uname,"token": this.token,"class_id": this.class_id,  "page_id": page_id, "item_id": index, "content":msg,"locked": show})
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: index,
@@ -770,7 +799,7 @@ export default {
     },
     pageChange(page) {
       // console.log(page, "pageChange", this.currentPageIndex);
-      const nextPage = page;
+      const nextPage = parseInt(page);
       if (this.currentPageIndex != nextPage) {
         this.setStudentPageIndex(nextPage);
       } else {
@@ -800,12 +829,76 @@ export default {
         .then(res => {
           this.classRoomInfo = res;
           // console.log(this.classRoomInfo);
+          this.setStudentPageIndex(parseInt(res.page));
           this.initRoomConfig(res);
           this.afterConnectRoom();
         })
         .catch(res => {
           // console.log(res);
-        });
+        }).finally(() => {
+          if(this.classRoomInfo && this.classRoomInfo.hasOwnProperty("session_start_time")){
+            let startTime = this.classRoomInfo.session_start_time
+            console.log('startTime', startTime)
+            if(startTime) {
+              let startTimeDate = moment(startTime).toDate()
+              console.log('startTimeDate', startTime)
+              console.log('Date.now()', Date.now())
+              if(startTimeDate && startTimeDate.getTime() > Date.now()){
+                this.isWaitingStart = true
+                this.sessionStartDateTime = startTimeDate
+                console.log('isWaitingStart ' + this.isWaitingStart + 'sessionStartDateTime ' + this.sessionStartDateTime)
+                this.startWaitingTime()
+                this.autoRefreshSessionStartTime()
+              }
+            }
+          }
+      });
+    },
+    startWaitingTime () {
+      console.log('startWaitingTimer now ' + (Date.now() / 1000) + ' sessionStartDateTime ' + (this.sessionStartDateTime.getTime() / 1000))
+      if(this.waitingTimer) {
+        clearTimeout(this.waitingTimer)
+      }
+      let leftSeconds = parseInt((this.sessionStartDateTime.getTime() / 1000) - (Date.now() / 1000))
+      if(leftSeconds > 0) {
+        console.log('waitingStartSeconds ' + leftSeconds)
+        this.waitingStartSeconds = leftSeconds
+        this.waitingTimer = setTimeout(() => {
+          this.startWaitingTime()
+        }, 1000)
+      }else {
+        this.isWaitingStart = false
+        this.waitingStartSeconds = 0
+      }
+    },
+
+    // 在倒计时时自动定时刷新班级开始时间，老师更新配置后，学生端可以自动关闭倒计时
+    autoRefreshSessionStartTime () {
+      if(this.refreshTimer) {
+        clearTimeout(this.refreshTimer)
+      }
+      queryClassStatus(this.class_id, this.token).then(res => {
+          if(res && res.hasOwnProperty("session_start_time")){
+            let startTime = res.session_start_time
+            console.log('startTime', startTime)
+            if(startTime) {
+              let startTimeDate = moment(startTime).toDate()
+              console.log('startTimeDate', startTime)
+              console.log('Date.now()', Date.now())
+              if(startTimeDate && startTimeDate.getTime() > Date.now()){
+                this.isWaitingStart = true
+                this.sessionStartDateTime = startTimeDate
+                console.log('isWaitingStart ' + this.isWaitingStart + 'sessionStartDateTime ' + this.sessionStartDateTime)
+              }
+            } else{
+              this.isWaitingStart = false
+            }
+          }
+        }).finally(() => {
+          if(this.isWaitingStart) {
+            this.refreshTimer = setTimeout(this.autoRefreshSessionStartTime, 5000)
+          }
+        })
     },
     afterConnectRoom() {
       this.getAllSlides();
@@ -889,7 +982,8 @@ export default {
             }"}}`
           );
         },
-        this.onLineStatusChanged
+        this.onLineStatusChanged,
+        this.rejoinRoomAction
       );
       setStudentWxBaseParams({
         classId: this.class_id,
@@ -898,10 +992,19 @@ export default {
         uname: this.uname
       });
     },
+    // 重连后要做的事情
+    rejoinRoomAction() {
+        getCurrentClassPageIndex(this.class_id)
+        .then((data) => {
+          if(data) {
+            this.pageChange(parseInt(data.data), true);
+          }
+        })
+    },
     msgListener(d) {
       // console.log(d, d.mtype, "====收到消息命令");
       // 收到切换页码命令
-      if (d.mtype === SocketEventsEnum.GO_PAGE) {
+      if (d.mtype === SocketEventsEnum.CONTROL) {
         if (d.type == SocketEventsEnum.GO_PAGE) {
           const nextPageIndex = parseInt(d.params.page);
           console.log(this.currentPageIndex, nextPageIndex, '===new')
@@ -916,6 +1019,10 @@ export default {
               : ClassRoomModelEnum.TEACHER_MODEL;
           if (this.currentModel != ClassRoomModelEnum.STUDENT_MODEL) {
             this.lock_all_pages = false;
+            this.hideStudentModal()
+          } else if(this.studentPaceLastPage !== -1){
+            // 如果切回到学生模式。要跳转到之前学生模式那一页
+            this.pageChange(this.studentPaceLastPage)
           }
           this.$forceUpdate();
         } else if (d.type == SocketEventsEnum.CHANGE_SESSION_STATUS) {
@@ -1052,7 +1159,7 @@ export default {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
         // // console.log(action, message);
-        this.currentSo.emit(action, message);
+        sendStudentSocketRequest(action, typeof message === 'object' ? message  : JSON.parse(message))
       }
     },
     lastPage() {
@@ -1137,7 +1244,7 @@ export default {
       // console.log("sendAudioOrVideoAnswer", page_id);
       this.emitSo(
         "response",
-        `{"room": "${this.class_id}", "type":"media", "user_id": "${this.uid}", "user_name":"${this.uname}","token": "${this.token}","class_id":"${this.class_id}",  "page_id": "${page_id}", "item_id": "0", "content":"${link}"}`
+        {"room": this.class_id, "type":"media", "user_id": this.uid, "user_name":this.uname,"token": this.token,"class_id":this.class_id,  "page_id": page_id, "item_id": "0", "content":link}
       );
       saveStudentsCurrentPageAnswerList(page_id, type, {
         item_id: 0,

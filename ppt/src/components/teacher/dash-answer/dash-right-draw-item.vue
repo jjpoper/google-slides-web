@@ -1,9 +1,7 @@
 <template>
-  <div class="remark-item-content" style="height: 150px">
+  <div class="remark-item-content-right" style="height: 150px">
     <Base64image :url="currentPPTUrl">
-      <Base64image :url="item.content">
-          <Base64image :url="item.content1">
-          </Base64image>
+      <Base64image :url="item.result || item.content">
       </Base64image>
     </Base64image>
   </div>

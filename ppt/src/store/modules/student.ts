@@ -94,7 +94,9 @@ const actions = {
         commit('setElements', JSON.parse(JSON.stringify(list)))
     },
     setStudentPageIndex({ commit }: any, index: number) {
-        commit('setIndex', index)
+        if(!isNaN(index)) {
+            commit('setIndex', index)
+        }
     },
     setStudentAllSlides({ commit }: any, list: any) {
         commit('setAllSlides', JSON.parse(JSON.stringify(list)))
@@ -241,7 +243,7 @@ const mutations = {
         //     studentComment,
         //     unreadStudentCommentIds
         // } = nextState
-        nextState.studentFeedBackComments.push(data)
+        nextState.studentFeedBackComments.unshift(data)
         nextState.unreadStudentCommentIds.push(data.id)
     },
     delUnreadCommentId(nextState: any, id: any) {

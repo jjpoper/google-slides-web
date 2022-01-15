@@ -29,7 +29,6 @@
         </div>
       </el-tooltip>
     </div>
-    <!-- <tipShow /> -->
     <ul class="remark-list" ref="remarklist">
       <!--输入区域item-->
       <li v-if="isEditing" class="remark-list-item record-item active-item">
@@ -72,7 +71,7 @@
         @click="changeRemarkIndex(index)"
       >
         <div class="item-header">
-          <div class="user-info">
+          <!-- <div class="user-info">
             <div
               class="user-icon"
               v-if="userInfo.name"
@@ -81,7 +80,7 @@
               <p class="user-name" v-if="userInfo.name">{{userInfo.name}}</p>
               <p class="user-name user-time">{{getTimeStr(item.time)}}</p>
             </div>
-          </div>
+          </div> -->
           <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
@@ -115,7 +114,6 @@ import RecordVideo from "../common/recordVideo.vue";
 import RecordText from '../common/recordText.vue';
 import { showToast } from '@/utils/loading';
 import AudioPlayer from '../common/audioPlayer.vue';
-import tipShow from "./tipShow.vue";
 import RemarkText from './remarkTextComp.vue';
 export default {
   props: {
@@ -126,7 +124,7 @@ export default {
   },
   components:{
     RecordVideo, RecordAudio, RecordText,
-    AudioPlayer,tipShow,
+    AudioPlayer,
     RemarkText
   },
   computed: {
@@ -167,7 +165,7 @@ export default {
     },
     currentRemarkOptions() {
       this.$refs.remarklist.scrollTop = 0
-    }
+    },
   },
   created() {
     this.setIsRemark(true);
@@ -205,12 +203,15 @@ export default {
       this.$refs.remarklist.scrollTop = 0
     },
     audio() {
+       this.cancelRecord()
       this.changeRemarkInputType(ModalEventsTypeEnum.AUDIO);
     },
     video() {
+       this.cancelRecord()
       this.changeRemarkInputType(ModalEventsTypeEnum.VIDEO);
     },
     text() {
+       this.cancelRecord()
       this.changeRemarkInputType(ModalEventsTypeEnum.TEXT);
     },
     deleteItem(id) {
@@ -295,7 +296,7 @@ export default {
       // TODO 增加页面展示
       
       this.addOneRemarkItem(params);
-      showToast("send success");
+      // showToast("send success");
       this.cancelRecord();
       this.updateAnswerdPage(this.currentPageIndex);
     },

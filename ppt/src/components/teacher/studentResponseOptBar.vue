@@ -1,14 +1,11 @@
 <template>
   <div class="answer-footer" v-if="data">
-    <div class="emoji_area">
-      <!-- <div class="user_icon">
-        {{ data ? data.name.substr(0, 1) : " " }}
-      </div> -->
-      <span>{{ data ? data.name : " " }}</span>
+    <div class="emoji_area" :title="data.name">
+      {{ data ? data.name.split("@")[0] : " " }}
     </div>
     <div class="opt_area">
       <el-tooltip
-        :class="data.isShowRes ? 'item' : 'item hide'"
+        v-if="data.isShowRes"
         effect="dark"
         content="Star Answer"
         placement="top-start"
@@ -72,7 +69,7 @@
 <style scoped>
 .answer-footer {
   width: 100%;
-  height: 100%;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -86,7 +83,8 @@
   font-weight: bold;
   line-height: 52px;
   color: #15C39A;
-  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .user_icon{
   width: 52px;
@@ -114,7 +112,7 @@
 .opt_area {
   display: flex;
   height: 100%;
-  flex: 1;
+  width: 80px;
   justify-content: flex-end;
   align-items: center;
 }

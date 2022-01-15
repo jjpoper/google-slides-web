@@ -5,20 +5,22 @@
         v-model="radio"
         :disabled="showCorrect"
         :label="item.id"
-        class="ra"
+        class="rabox"
         :value="item.id"
         @change="changAnswer"
-      >{{item.text}}</el-radio>
+        :title="item.text"
+      >{{getAnswerText(item)}}</el-radio>
     </div>
     <template v-if="radio != -1">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
-        正确答案：
+        Correct answer：
         <template v-for="item in optionData.options">
-          <span :key="item.id" v-if="item.isAnswer">{{item.text}}</span>
+          <span :key="item.id" v-if="item.isAnswer">{{getAnswerText(item)}}</span>
         </template>
       </div>
       <div class="item" style="background: transparent">
         <el-switch
+          :value="showCorrect"
           :disabled="showCorrect"
           active-color="#13ce66"
           inactive-color="#999"
@@ -27,7 +29,7 @@
         />
       </div>
       <div class="refresh-line" v-show="showRefreshAnswer">
-        <span>正确答案有更新！</span>
+        <span>Correct answer updated!</span>
         <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
       </div>
     </template>
@@ -48,7 +50,14 @@
   align-items: center;
   display: flex;
   justify-content: flex-start;
-  padding-left: 50px;
+  padding-left: 20px;
+  overflow: hidden;
+}
+.rabox{
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 .tag {
   color: red;
@@ -126,6 +135,7 @@ export default {
       this.answer(value, this.showCorrect);
     },
     changeLocked() {
+      this.showCorrect = true
       this.answer(this.radio, true);
     },
     hasAnswer() {
@@ -138,6 +148,11 @@ export default {
         }
       }
       return false;
+    },
+    getAnswerText(item) {
+      // console.log(item);
+      let AA = ["A", "B", "C", "D", "E", "F", "G"];
+      return AA[item.id] + ": " + item.text;
     }
   }
 };

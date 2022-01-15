@@ -32,7 +32,7 @@
         </div>
       </div> -->
     </template>
-    <UploadEnter v-if="meterialVisiable" />
+    <UploadEnter v-if="meterialVisiable"/>
 
     <!-- 提交pro 暂时隐藏-->
 
@@ -143,6 +143,7 @@
         <div
           :class="`fullbgimg ${meterialVisiable ? 'me-show' : 'me-hide'}`"
         ></div>
+        <i v-if="filterAddedMediaList.length > 0" class="metarialnums">{{filterAddedMediaList.length}}</i>
       </div>
       <strong class="button_text">{{
         meterialVisiable ? "Material Hiding" : "Display Material(s)"
@@ -292,6 +293,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    filterAddedMediaList: {
+      type: Array,
+      function() {
+        return [];
+      },
+    },
   },
   computed: {
     ...mapState({
@@ -332,20 +339,21 @@ export default {
         return true;
       }
       let items = this.slides[this.currentPage - 1].items;
-      if (items && items[0]) {
-        if (items[0].type == "choice") {
-          let opts = items[0].data.options;
-          for (let i = 0; i < opts.length; i++) {
-            if (opts[i].isAnswer) {
-              return false;
-            }
-          }
-        } else if (items[0].type == "text") {
-          if (items[0].data.answer && items[0].data.answer.length > 0) {
-            return false;
-          }
-        }
-      }
+      // lock screen 和 choice是否有正确答案 无关
+      // if (items && items[0]) {
+      //   if (items[0].type == "choice") {
+      //     let opts = items[0].data.options;
+      //     for (let i = 0; i < opts.length; i++) {
+      //       if (opts[i].isAnswer) {
+      //         return false;
+      //       }
+      //     }
+      //   } else if (items[0].type == "text") {
+      //     if (items[0].data.answer && items[0].data.answer.length > 0) {
+      //       return false;
+      //     }
+      //   }
+      // }
 
       return true;
     },

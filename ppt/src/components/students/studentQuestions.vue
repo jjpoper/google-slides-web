@@ -242,7 +242,8 @@ export default {
       this.nextPosition = {offsetX: 0, offsetY: 0}
     },
     pickColor(item, index, background){
-      window.remarkInputStatus = true
+      window.preventSendRemark = true
+      console.log('pickColor', window.preventSendRemark)
       console.log(item.id, background)
       if(item.id) {
         // update
@@ -360,7 +361,10 @@ export default {
       }
     },
     mouseMoving(e) {
+      // 移动过程中禁止提交
       if(this.isMovingPos) {
+        console.log('window.preventSendRemark', window.preventSendRemark, this.isMovingPos)
+        window.preventSendRemark = true
         const { offsetX, offsetY } = e;
         const left = offsetX - 15;
         const top = offsetY - 15;
@@ -378,7 +382,6 @@ export default {
       // if(!this.recordVisiable && this.markType !== 2) {
       //   this.changeMarkType(2)
       // }
-
       const { offsetX, offsetY, clientX, clientY } = e;
       if(offsetX - this.nextPosition.offsetX > 20 ||
       offsetY - this.nextPosition.offsetY > 20) {
@@ -393,6 +396,7 @@ export default {
       }
     },
     mouseLeave() {
+      window.preventSendRemark = false
       if(this.isMovingPos) {
         this.isMovingPos = false
         this.updateItemData()
@@ -408,6 +412,7 @@ export default {
       }
     },
     mouseEnd(e) {
+      window.preventSendRemark = false
       if(this.isMovingPos) {
         this.isMovingPos = false
         this.updateItemData()

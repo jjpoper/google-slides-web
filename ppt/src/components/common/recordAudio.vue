@@ -31,7 +31,7 @@
           <div class="audio-play"></div>
         </div>
         <div class="record-footer">
-          <i class="done" @click="done"></i>
+          <i class="done scale-animation" @click="done"></i>
           <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
         </div>
       </div>
@@ -137,9 +137,12 @@ export default {
     },
     startRecord() {
       this.timeValue = 0
-      startRecordAudio(document.getElementById("record-audio"))
-      this.endRecording = false
-      this.count()
+      startRecordAudio(document.getElementById("record-audio"), () => {
+        this.endRecording = false
+        this.count()
+      }, () => {
+        this.cancelUp()
+      })
     },
     sendRecord(){
        this.onSend(this.audioUrl, 'audio')

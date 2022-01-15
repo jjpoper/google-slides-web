@@ -49,7 +49,6 @@
               </div>
               <div  v-if="isTeacher"  style="position: relative">
                 <textarea v-model="tipsValue" :disabled="!contenteditable" class="ppt-tips-item-text" ref="pptTipstext" />
-                
               </div>
               <div v-else class="ppt-tips-item-text" >{{tipsValue}}</div>
             </div>
@@ -60,7 +59,7 @@
               <div class="ppt-tips-item-top">
                 <div class="checktext">
                   <input type="checkbox" checked="true" class="tipscheck"/>
-                  正确答案
+                  Correct answer
                 </div>
                 <img
                   src="../../assets/picture/morshanchu.png"
@@ -77,7 +76,7 @@
                 </el-checkbox-group> -->
                 <div v-for="(item, index) in tipsItemList[currentIndex].items[0].data.options" :key="index" class="checktext checkitem">
                   <input type="checkbox" v-model="rightAnswers" @change="handleCheckedChange" :value="item.id" class="tipscheck"/>
-                  <p class="checktextbox">
+                  <p class="checktextbox" :title="item.text">
                     {{item.text}}
                   </p>
                 </div>
@@ -312,7 +311,9 @@ export default {
   flex: 1;
   outline: none;
   border: none;
-  resize:none
+  resize:none;
+  height: 72px;
+  word-break: break-word;
 }
 .ppt-tips-item-text:active{
   outline: none;
@@ -412,6 +413,10 @@ export default {
   box-sizing: border-box;
   text-align: left;
   padding-left: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 120px;
 }
 .tipsempty{
   margin-bottom: 100px;

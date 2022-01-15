@@ -1,5 +1,75 @@
 <template>
   <div class="page">
+    <!--dashboard header-->
+    <div class="top_btn" v-if="!isDashboard">
+      <div class="online_status">
+        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
+      </div>
+      <div style="display: flex">
+        <div class="share_room" v-if="classRoomInfo" @click="copyUrl()">{{classRoomInfo.class_id}}</div>
+        <div v-if="false" style="margin-right: 20px; cursor: pointer" @click="shareScreen">
+          <svg
+            t="1634352581902"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="2514"
+            width="48"
+            height="48"
+          >
+            <path
+              d="M864 159.872L160 160c-17.696 0-32 14.176-32 31.872v448a32 32 0 0 0 32 32h704a32 32 0 0 0 32-32v-448a32 32 0 0 0-32-32zM864 640H160V191.872h704V640z"
+              fill="#333333"
+              p-id="2515"
+            />
+            <path
+              d="M928 32H96a96 96 0 0 0-96 96v640a95.904 95.904 0 0 0 95.68 95.936H416v38.944l-199.744 25.952A31.968 31.968 0 0 0 224 991.872h576a32 32 0 0 0 7.744-63.072L608 902.88v-38.944h320.32A95.904 95.904 0 0 0 1024 768V128a96 96 0 0 0-96-96z m32 736c0 17.632-14.368 32-32 32H96c-17.664 0-32-14.368-32-32V128a32 32 0 0 1 32-32h832c17.632 0 32 14.336 32 32v640z"
+              fill="#333333"
+              p-id="2516"
+            />
+          </svg>
+        </div>
+        <!-- <div
+          class="number_info"
+          @click="showStudents()"
+        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div> -->
+        <el-tooltip content="mark up and send comment" placement="top">
+          <div class="readchat comment" v-if="isDashboard">
+            <el-switch
+              style="display: block"
+              v-model="questionModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="comment"
+            ></el-switch>
+            <el-switch
+              style="display: block; margin-left: 10px"
+              v-model="overviewModalVisiable"
+              active-color="#13ce66"
+              inactive-color="#999"
+              active-text="overview slides"
+            ></el-switch>
+          </div>
+        </el-tooltip>
+      </div>
+    </div>
+    <DashHeader
+      v-if="isDashboard && classRoomInfo"
+      :share="copyUrl"
+      :onLine="onLine"
+      :classRoomInfo="classRoomInfo"
+      :openProject="openProject"
+      :endLesson="endLesson"
+      :showStudents="showStudents"
+      :isClosed="classRoomInfo.status == 'close'"
+      :getStudentOnLineCount="getStudentOnLineCount"
+      :studentList="studentList"
+      :reopenClass="_reopenClass"
+      :current_model="page_model"
+      :turnModel="turnModel"
+      :confirmModeChange="confirmModeChange"
+    />
     <student-paced-note
       v-if="showStudentPacedNotePage"
       class="student_note_page"
@@ -68,6 +138,7 @@
           :meterialVisiable="meterialVisiable"
           :showDashTips="showDashTips"
           :dashTipsModalVisiable="dashTipsModalVisiable"
+          :filterAddedMediaList="filterAddedMediaList"
         />
       </div>
     </template>
@@ -79,77 +150,6 @@
     />-->
 
     <comment-modal />
-    <div class="top_btn" v-if="!isDashboard">
-      <div class="online_status">
-        <i class="el-icon-s-opportunity" :style="`color: ${onLine ? 'green' : 'red'}`" />
-      </div>
-      <div style="display: flex">
-        <div class="share_room" v-if="classRoomInfo" @click="copyUrl()">{{classRoomInfo.class_id}}</div>
-        <div v-if="false" style="margin-right: 20px; cursor: pointer" @click="shareScreen">
-          <svg
-            t="1634352581902"
-            class="icon"
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            p-id="2514"
-            width="48"
-            height="48"
-          >
-            <path
-              d="M864 159.872L160 160c-17.696 0-32 14.176-32 31.872v448a32 32 0 0 0 32 32h704a32 32 0 0 0 32-32v-448a32 32 0 0 0-32-32zM864 640H160V191.872h704V640z"
-              fill="#333333"
-              p-id="2515"
-            />
-            <path
-              d="M928 32H96a96 96 0 0 0-96 96v640a95.904 95.904 0 0 0 95.68 95.936H416v38.944l-199.744 25.952A31.968 31.968 0 0 0 224 991.872h576a32 32 0 0 0 7.744-63.072L608 902.88v-38.944h320.32A95.904 95.904 0 0 0 1024 768V128a96 96 0 0 0-96-96z m32 736c0 17.632-14.368 32-32 32H96c-17.664 0-32-14.368-32-32V128a32 32 0 0 1 32-32h832c17.632 0 32 14.336 32 32v640z"
-              fill="#333333"
-              p-id="2516"
-            />
-          </svg>
-        </div>
-        <!-- <div
-          class="number_info"
-          @click="showStudents()"
-        >Class Roster {{ getStudentOnLineCount() }}/{{ studentList.length }}</div> -->
-        <el-tooltip content="mark up and send comment" placement="top">
-          <div class="readchat comment" v-if="isDashboard">
-            <el-switch
-              style="display: block"
-              v-model="questionModalVisiable"
-              active-color="#13ce66"
-              inactive-color="#999"
-              active-text="comment"
-            ></el-switch>
-            <el-switch
-              style="display: block; margin-left: 10px"
-              v-model="overviewModalVisiable"
-              active-color="#13ce66"
-              inactive-color="#999"
-              active-text="overview slides"
-            ></el-switch>
-          </div>
-        </el-tooltip>
-      </div>
-    </div>
-
-    <!--dashboard header-->
-    <DashHeader
-      v-if="isDashboard && classRoomInfo"
-      :share="copyUrl"
-      :onLine="onLine"
-      :classRoomInfo="classRoomInfo"
-      :openProject="openProject"
-      :endLesson="endLesson"
-      :showStudents="showStudents"
-      :isClosed="classRoomInfo.status == 'close'"
-      :getStudentOnLineCount="getStudentOnLineCount"
-      :studentList="studentList"
-      :reopenClass="_reopenClass"
-      :current_model="page_model"
-      :turnModel="turnModel"
-      :confirmModeChange="confirmModeChange"
-    />
 
     <el-dialog title="Ending Session" :visible.sync="dialogVisible">
       <div class="dialog_page">
@@ -256,13 +256,17 @@
 
     <!--  -->
     <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :destroy-on-close="true"
       :visible.sync="showCopyLinkDialog"
+      :show-close="false"
+      :center="true"
       custom-class="custom-dialog"
-      width="80%"
+      width="900px"
       @close="closeCopyLinkDialog()"
     >
       <AnonymousLogin
-        style="height: 660px"
         v-if="classRoomInfo"
         :hindeTimeDialog="hindeTimeDialog"
         :url="getStudentUrl()"
@@ -316,7 +320,8 @@ import {
   getOnlineUsers,
   getAVComment,
   saveUserConfig,
-  getAllGroupMember
+  getAllGroupMember,
+  getCurrentClassPageIndex
 } from "../model/index";
 import {
   initTeacherData,
@@ -327,7 +332,13 @@ import {
 import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { getJSONValue } from "../utils/help";
-import { createSo, setTeacherWxBaseParams, controlProject } from "../socket/socket.teacher";
+import {
+  createSo,
+  setTeacherWxBaseParams,
+  controlProject,
+  sendPageChangeControl,
+  sendTeacherSocketRequest
+} from "../socket/socket.teacher";
 import {
   ModalEventsNameEnum,
   SocketEventsEnum,
@@ -358,6 +369,7 @@ import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
 import { openShare } from "@/utils/shareScreen";
 import { mapActions, mapState } from "vuex";
 import NewPromptPage from "@/components/teacher/newPromptPage.vue";
+import {isDev} from '../utils/pptConfig'
 export default {
   components: {
     teacherControlPanel,
@@ -405,7 +417,6 @@ type: "slide"*/
       dialogTableVisible: false,
       teacherList: [],
       studentList: [],
-      current_page: 0,
       responseContentList: [],
       page_model: ClassRoomModelEnum.TEACHER_MODEL,
       token: "",
@@ -440,7 +451,8 @@ type: "slide"*/
       inputDialog: false,
       sendControlDelay: null,
       metrialStatusMap: {},
-      showResponseMap: {}
+      showResponseMap: {},
+      alreadyShowCopyUrl: false
     };
   },
   mounted() {
@@ -464,13 +476,13 @@ type: "slide"*/
     );
 
     EventBus.$on(ModalEventsNameEnum.ADD_NEW_MEDIA, url => {
-      this.addMediaList(url);
+      this.addMetarialList(url);
     });
     EventBus.$on(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, data => {
       this.updateMediaList(data);
     });
     EventBus.$on(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, data => {
-      this.deleteMedia(data);
+      this.deleteMetarial(data);
     });
   },
   computed: {
@@ -526,9 +538,11 @@ type: "slide"*/
       this.setStudentList(this.studentList);
     },
     currentPageIndex() {
-      this.sendPageChangeToStudents();
+      this.getPageData();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
       this.checkResponseStatus()
+      this.changeSelectedGroup([])
+      this.changeGroupMembers([])
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -538,8 +552,6 @@ type: "slide"*/
       // vm.slide_id = slide_id;
       vm.class_id = id;
       window.classId = id;
-      const index = to.query.p ? to.query.p : 0;
-      vm.setStudentPageIndex(index);
       vm.isDashboard = vm.$route.name === "d";
       // console.log(vm.isDashboard)
       // vm.directFromPlugin = to.query.direct ? true : false;
@@ -554,7 +566,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -571,7 +583,8 @@ type: "slide"*/
       "deleteOneRemarkItem"
     ]),
     ...mapActions("metarial", [
-      "setSelectedMetarialId"
+      "setSelectedMetarialId",
+      "setMaskMetarialId"
     ]),
     addprompt() {
       console.log("新增prompt!!");
@@ -590,34 +603,45 @@ type: "slide"*/
     showDashTips() {
       this.dashTipsModalVisiable = !this.dashTipsModalVisiable;
     },
-    addMediaList({ url, type }) {
+    // this.currentSo.emit(
+    //     SocketEventsEnum.TEACHER_ADD_MEDIA,
+    //     `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
+    //   );
+    //   sendm
+    // },
+    // updateMediaList(data) {
+    //   const page_id = this.currentPageId;
+    //   const itemData = JSON.stringify({ page_id: page_id, ...data });
+    //   sendTeacherMetarial(
+    //     SocketEventsEnum.TEACHER_UPDATE_MEDIA,
+    addMetarialList({ url, type }) {
       const page_id = this.currentPageId;
-      const itemData = JSON.stringify({
+      const itemData = {
         page_id: page_id,
         url: url,
         type: type,
         position: { x: 0, y: 0, w: 0, h: 0 }
-      });
-      this.currentSo.emit(
+      };
+      sendTeacherSocketRequest(
         SocketEventsEnum.TEACHER_ADD_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "data": ${itemData}}`
+        { slide_id: this.slide_id, page_id: page_id, data: itemData}
       );
     },
     updateMediaList(data) {
       const page_id = this.currentPageId;
-      const itemData = JSON.stringify({ page_id: page_id, ...data });
-      this.currentSo.emit(
+      const itemData = { page_id: page_id, ...data};
+      sendTeacherSocketRequest(
         SocketEventsEnum.TEACHER_UPDATE_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${page_id}", "id": "${data.id}", "data": ${itemData}}`
+        {slide_id: this.slide_id, page_id: page_id, id: data.id, data: itemData}
       );
     },
-    deleteMedia(id) {
+    deleteMetarial(id){
       // delete-element
       // request: {"token": "", "class_id", "id": 1}
       // console.log(id);
-      this.currentSo.emit(
+      sendTeacherSocketRequest(
         SocketEventsEnum.TEACHER_DELETE_MEDIA,
-        `{"token": "${this.token}","class_id":"${this.class_id}", "slide_id": "${this.slide_id}","page_id": "${this.currentPageId}", "id": "${id}"}`
+        {slide_id: this.slide_id, page_id: this.currentPageId, id: id}
       );
     },
     onLineStatusChanged(status) {
@@ -630,7 +654,7 @@ type: "slide"*/
           this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
           if (this.directFromPlugin) {
             this.page_model = ClassRoomModelEnum.STUDENT_MODEL;
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${
                 SocketEventsEnum.MODEL_CHANGE
               }", "token": "${this.token}","class_id":"${
@@ -702,7 +726,7 @@ type: "slide"*/
               EventBus.$emit("choice", { data });
             } else if (itemData[0].type == "draw") {
               const user_id = studentId;
-              const content = responseItem.content;
+              const content = responseItem.result;
               const content1 = responseItem.content1;
               const user_name = responseItem.user_name;
               newList = addTeacherData(pageId, itemData[0].type, {
@@ -744,7 +768,7 @@ type: "slide"*/
           }
           //发送一个ws消息通知其他端，更新状态
           if (sendWSMsg) {
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.STAR_OR_HIDE_ANSWER}","token": "${this.token}","class_id":"${this.class_id}",
               "params": {"pageId": "${pageId}","itemId": "${itemId}","studentId": "${studentId}","nextStatus": ${nextStatus},"type": "${type}"}}`
             );
@@ -780,12 +804,11 @@ type: "slide"*/
         answertime
       });
       // // console.log(itemData);
-      this.currentSo.emit(
-        "comment",
-        `{"user_id":"${studentId}","token": "${this.token}","class_id":"${this.class_id}", "item": ${itemData}}`
-      );
+      sendTeacherSocketRequest('comment', {
+        user_id: studentId, item: itemData
+      })
       // this.currentSo.emit('comment', `{"user_id":"${studentId}", "item": {"id":"item_1", "response_index": 0}}`, data => {// console.log("发送消息反馈")});
-      // this.emitSo(itemData)
+      // this.emitControlSocket(itemData)
     },
 
     // 检查token
@@ -858,6 +881,7 @@ type: "slide"*/
       queryClassStatus(this.class_id, this.token)
         .then(res => {
           this.initShortLinkConfig(res);
+          this.setStudentPageIndex(parseInt(res.page));
           this.classRoomInfo = res;
           // 有 referrer 的前提下新开一个 project
           if (this.classRoomInfo.mode === 'student-paced' && this.isDashboard && document.referrer.indexOf('classcipe.com') > -1) {
@@ -930,8 +954,12 @@ type: "slide"*/
               res.data[i].data.user_id = res.data[i].user_id;
               res.data[i].data.user_name = res.data[i].user_name;
               res.data[i].data.updated_at = res.data[i].data.time;
-              marks.push(res.data[i].data);
+              marks.push({
+                id: res.data[i].id,
+                ...res.data[i].data
+              });
             }
+
             // 初始化remark数据
             this.setAllRemarkList(marks);
           }
@@ -947,11 +975,11 @@ type: "slide"*/
     },
     joinRoom() {
       this.currentSo = createSo(
-        this.slide_id,
         this.token,
         this.class_id,
         this.msgListener,
-        this.onLineStatusChanged
+        this.onLineStatusChanged,
+        this.rejoinRoomAction
       );
       let teacher = new Object();
       teacher.name = this.name ? this.name : "A teacher";
@@ -966,6 +994,15 @@ type: "slide"*/
         uname: teacher.name
       });
     },
+    // 重连后要做的事情
+    rejoinRoomAction() {
+        getCurrentClassPageIndex(this.class_id)
+        .then((data) => {
+          if(data) {
+            this.pageChange(parseInt(data.data) + 1, true);
+          }
+        })
+    },
     // dash 和 project 同步
     handelControlSelf(d) {
       if (d.room == this.class_id) {
@@ -974,37 +1011,50 @@ type: "slide"*/
         if(controlType == 1) {
           // 是否展示 response
           this.showResponse = result;
+          this.showResponseMap[this.currentPageId] = this.showResponse
           return
         }
         // toggleMetarial 是否展示
         if (controlType == 2) {
           this.meterialVisiable = result;
           this.metrialStatusMap[this.currentPageId] = result
+          console.log('========',  this.meterialVisiable)
           return
         }
         // 分享弹框是否展示
         if (controlType == 3) {
+          this.alreadyShowCopyUrl = true
           this.showCopyLinkDialog = result
           return
         }
         // dash end class，project 关闭window
         if (controlType == 4 && !this.isDashboard) {
           window.close()
+          return
         }
         // youtube视频同步
         if(controlType == 5) {
           EventBus.$emit('youtubePlayer', result)
+          return
         }
 
         // dash 和 project 答案tab同步
         if(controlType == 6) {
           EventBus.$emit('responseTabChange', result)
+          return
         }
 
         // dash 和 project 查看metarial同步
         if(controlType == 7) {
           // EventBus.$emit('responseTabChange', result)
           this.setSelectedMetarialId(result)
+          return
+        }
+
+        if(controlType == 8) {
+          // EventBus.$emit('responseTabChange', result)
+          this.setMaskMetarialId(result)
+          return
         }
       }
     },
@@ -1036,9 +1086,10 @@ type: "slide"*/
             this.studentCounts = this.studentList.length;
 
             // 新的学生加入 发送一个页面同步消息，让学生跳转到指定也么
-            if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
-              this.sendPageControl()
-            }
+            // 无需此操作，已经改成 从 get_class 读取当前最新的页码
+            // if (this.page_model === ClassRoomModelEnum.TEACHER_MODEL) {
+            //   this.sendPageControl()
+            // }
           } else if (d.join_in.role == "teacher") {
             for (let i = 0; i < this.teacherList.length; i++) {
               if (this.teacherList[i].user_id == student.user_id) {
@@ -1086,8 +1137,7 @@ type: "slide"*/
         if (d.room == this.class_id) {
           if (d.params) {
             // this.pageChange(d.params.page);
-            this.current_page = parseInt(d.params.page) + 1;
-            this.pageChange(this.current_page, true);
+            this.pageChange(parseInt(d.params.page) + 1, true);
           }
         }
       } else if (d.type == SocketEventsEnum.MODEL_CHANGE) {
@@ -1283,18 +1333,19 @@ type: "slide"*/
         });
         EventBus.$emit(d.type, { user_id, page_id, item_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
-        const { content, content1, type, user_id, user_name } = d;
+        const { result, content1, type, user_id, user_name } = d;
+        console.log(result)
         newList = addTeacherData(page_id, type, {
           user_id,
-          content,
           content1,
           star: false,
           show: true,
           key: user_id,
           user_name,
-          ...d
+          ...d,
+          content: result,
         });
-        EventBus.$emit("draw", { user_id, content, content1, user_name });
+        EventBus.$emit("draw", { user_id, content: result, content1, user_name });
       } else if (d.type == SocketEventsEnum.MEDIA_INPUT) {
         // console.log(d);
         // const { content, user_id, user_name, item_id, type } = d;
@@ -1313,6 +1364,7 @@ type: "slide"*/
         this.setAllAnswerdList(newList);
       }
       this.getResponeCount();
+      this.$forceUpdate();
     },
 
     pageChange(value, notSend) {
@@ -1321,17 +1373,13 @@ type: "slide"*/
 
       // }
       console.log('setStudentPageIndex pageChange')
-      this.giveFocus(value - 1, notSend);
+      this.giveFocus(parseInt(value) - 1, notSend);
       return;
     },
 
-    sendPageChangeToStudents() {
+    getPageData() {
       this.questionModalVisiable = false; //与控制面板中的comment显示与否的按钮保持同步
       this.getItemData();
-      // const notSend = false;
-      // if (!notSend && this.page_model != ClassRoomModelEnum.STUDENT_MODEL) {
-      //   this.sendPageControl()
-      // }
     },
 
     // 老师控制分页
@@ -1341,10 +1389,8 @@ type: "slide"*/
         this.sendControlDelay = null
       }
       this.sendControlDelay = setTimeout(() => {
-        this.emitSo(
-          `{"room":"${this.class_id}", "token": "${this.token}","class_id":"${this.class_id}","type": "${SocketEventsEnum.GO_PAGE}", "params": {"page": "${this.currentPageIndex}"}}`
-        );
-      }, 500)
+        sendPageChangeControl(this.currentPageIndex)
+      }, 50)
     },
 
     queryResult(code, token, count) {
@@ -1380,7 +1426,6 @@ type: "slide"*/
             }, 1000);
           } else {
             this.getAllSlides();
-            hideLoading();
           }
         })
         .catch(res => {
@@ -1409,9 +1454,12 @@ type: "slide"*/
           this.responsePercentage[i] = 0;
         }
         this.isFocus[this.currentPageIndex] = true;
-        this.$nextTick(() => {
-          this.copyUrl()
-        })
+        if(!this.alreadyShowCopyUrl) {
+          this.$nextTick(() => {
+            this.copyUrl()
+          })
+        }
+        hideLoading();
       });
     },
     getItemData() {
@@ -1487,7 +1535,7 @@ type: "slide"*/
       // } else {
       //   this.showCopyLinkDialog = true;
       // }
-
+      this.alreadyShowCopyUrl = true
       this.showCopyLinkDialog = true;
       controlProject({"result": true, "controlType": 3})
     },
@@ -1521,7 +1569,7 @@ type: "slide"*/
       if (!this.page_model) {
         this.page_model = ClassRoomModelEnum.TEACHER_MODEL;
       }
-      const url = `${location.origin}/s/${this.class_id}?anonymouse=${anonymous}`;
+      const url = `${location.origin}/s/${this.class_id}?anonymouse=${anonymous}&p=${this.currentPageIndex}`;
       return url;
     },
 
@@ -1537,11 +1585,8 @@ type: "slide"*/
       // this.stepTwoDialog = false;
     },
 
-    emitSo(message) {
-      if (this.currentSo) {
-        // this.currentSo.emit('control', JSON.stringify(data));
-        this.currentSo.emit("control", message);
-      }
+    emitControlSocket(message) {
+      sendTeacherSocketRequest("control", typeof message === 'object' ? message : JSON.parse(message))
     },
 
     closeDashCopy() {
@@ -1570,7 +1615,7 @@ type: "slide"*/
     sendModeChangeCommend() {
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        this.emitSo(
+        this.emitControlSocket(
           `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.MODEL_CHANGE
           }", "token": "${this.token}","class_id":"${
@@ -1594,6 +1639,7 @@ type: "slide"*/
     showres() {
       this.showResponse = !this.showResponse;
       this.showResponseMap[this.currentPageId] = this.showResponse
+      this.sendResponseControl()
     },
     sendResponseControl() {
       controlProject({"result": this.showResponse, "controlType": 1})
@@ -1603,7 +1649,7 @@ type: "slide"*/
       if (this.isDashboard) {
         url = "https://docs.google.com/presentation/d/" + this.slide_id;
       } else {
-        url = "https://dev.classcipe.com/";
+        url = isDev ?  "https://dev.classcipe.com/teacher/main/created-by-me" : 'https://my.classcipe.com/teacher/main/created-by-me';
       }
       // console.log(this.slide_id);
       if (this.slide_id) {
@@ -1641,7 +1687,7 @@ type: "slide"*/
           let _this = this;
           this.confirmCloseDialogVisible = false;
           if (res.code == "ok") {
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "close"}}`
             );
             controlProject({"result": true, "controlType": 4})
@@ -1650,7 +1696,8 @@ type: "slide"*/
               // let url =
               //   "https://docs.google.com/presentation/d/" + _this.slide_id;
               // let url = 'https://dev.classcipe.com/teacher/main/created-by-me'
-              let url = 'https://my.classcipe.com/teacher/main/created-by-me'
+              // let url = 'https://my.classcipe.com/teacher/main/created-by-me'
+              let url = isDev ?  "https://dev.classcipe.com/teacher/main/created-by-me" : 'https://my.classcipe.com/teacher/main/created-by-me';
               window.location.href = url;
 
             }, 2000);
@@ -1684,7 +1731,7 @@ type: "slide"*/
       this.$forceUpdate();
       if (this.currentSo) {
         // this.currentSo.emit('control', JSON.stringify(data));
-        this.emitSo(
+        this.emitControlSocket(
           `{"room":"${this.class_id}", "type": "${
             SocketEventsEnum.LOCK_PAGE
           }", "token": "${this.token}","class_id":"${
@@ -1709,6 +1756,7 @@ type: "slide"*/
         strWindowFeatures
       );
       windowObjectReference.location = url;
+      // window.open(url, '_blank')
     },
     open(model) {
       if (model == 0) {
@@ -1747,7 +1795,7 @@ type: "slide"*/
           // console.log(res);
           if (res.code == "ok") {
             this.classRoomInfo.status = "live";
-            this.emitSo(
+            this.emitControlSocket(
               `{"room":"${this.class_id}", "type": "${SocketEventsEnum.CHANGE_SESSION_STATUS}", "token": "${this.token}","class_id":"${this.class_id}","params": {"status": "live"}}`
             );
           } else {
@@ -1793,6 +1841,7 @@ type: "slide"*/
       this.stepTwoDialog = false;
     },
     giveFocus(index, notSend) {
+      if(isNaN(index)) return false
       console.log(index, notSend, 'giveFocus', this.page_model ,ClassRoomModelEnum.STUDENT_MODEL)
       if(index != this.currentPageIndex || !this.currentItemData) {
         this.setStudentPageIndex(index);
@@ -1850,7 +1899,7 @@ type: "slide"*/
         value = deadline.getTime();
         let now = Date.now();
         if (now > value) {
-          this.$message("error", "Please select right time");
+          this.$message.error("Please select right time");
           return;
         }
         value = value / 1000;
@@ -1858,7 +1907,7 @@ type: "slide"*/
         value = countDownTime * 60;
       }
 
-      this.emitSo(
+      this.emitControlSocket(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.SET_DEADLINE_TIME}","token": "${this.token}","class_id":"${this.class_id}", "params": {"response_limit_mode":${mode},"response_limit_time":${value}}}`
       );
     },
@@ -1874,14 +1923,14 @@ type: "slide"*/
       // if (this.firstCloseCopyLinkDialog) {
       // console.log("close copy link dialog!!");
       this.firstCloseCopyLinkDialog = false;
-      this.emitSo(
+      this.emitControlSocket(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
       // }
     },
     openCopyLinkDialog() {
       // console.log("open copy link dialog!!");
-      this.emitSo(
+      this.emitControlSocket(
         `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
       );
     },

@@ -11,10 +11,10 @@
       </div>
       <div class="tfmbox" v-if="commentData.pageId">
         <div class="tfleft">
-          <teacher-res :item="commentData" :userData="commentData" />
+          <teacher-res :item="commentData" />
           <div v-if="(commentList && commentList.length > 0) && !addmore" class="tffooter-button-more"
             @click="addmoreFeed">
-            <p class="tfmore-feed">Add More Feedback</p>
+            <p class="boldText tfmore-feed">Add More Feedback</p>
             <img src="../../assets/picture/send.png" class="tfmore-icon"/>
           </div>
           <div class="tfedit-area tfshadow" v-else>
@@ -31,7 +31,7 @@
               </div>
             </div>
             <div class="tffooter-button" @click="sendMessage">
-              <div :class="`tfsend-button ${!showPlaceholder && 'tfactive'}`">Send Feedback</div>
+              <div :class="`boldText tfsend-button ${!showPlaceholder && 'tfactive'}`">Send Feedback</div>
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@ export default {
         itemId,
         studentId,
         type,
-        sname: name,
+        sname: window.currentTeacherName.split("@")[0],
         answertime
       };
       console.log('title', 'modal')

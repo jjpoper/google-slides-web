@@ -7,12 +7,12 @@
       <ul class="res-list">
         <template  v-for="item in studentList" >
           <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
-            v-if="!currentGroupId || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
+            v-if="currentGroupMembers.length === 0 || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
             @click="selectUsers(item)">
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
             <div :class="`user-icon student-icon ${getSelected(item.user_id)}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
-            <div class="user-name">{{item.name}}</div>
+            <div class="user-name" :title="item.name">{{item.name.split("@")[0]}}</div>
           </li>
         </template>
       </ul>
@@ -85,46 +85,49 @@ export default {
         // this.changeTab(1)
       }
     },
-    currentPageIndex() {
-      this.currentGroupId = ''
-      this.changeSelectedGroup([])
-      this.changeGroupMembers([])
+    currentGroupMembers() {
+      this.selectedStudents = false
     }
   },
   data() {
     return {
-      currentGroupId: '',
       selectedStudents: false, // 是否选中学生
     }
   },
   methods: {
     ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
-    changeGroup(id) {
-      this.selectedStudents = false
-      if(!id) {
-        this.changeSelectedGroup([])
-        this.changeGroupMembers([])
-        return
-      }
-      const data = this.allGroups.filter(item => item.group_id == id)[0]
-      console.log(data)
-      const list = data.members.map(item => item.user_id)
-      console.log(list)
-      this.changeSelectedGroup(list)
-      this.changeGroupMembers(list)
-    },
+    // changeGroup(id) {
+    //   this.selectedStudents = false
+    //   if(!id) {
+    //     this.changeSelectedGroup([])
+    //     this.changeGroupMembers([])
+    //     return
+    //   }
+    //   const data = this.allGroups.filter(item => item.group_id == id)[0]
+    //   console.log(data)
+    //   const list = data.members.map(item => item.user_id)
+    //   console.log(list)
+    //   this.changeSelectedGroup(list)
+    //   this.changeGroupMembers(list)
+    // },
     selectUsers(item) {
       console.log(item)
-      this.selectedStudents = true
       const {user_id} = item
-      const newList = this.selectedGroupMembers.concat([])
-      const index = newList.indexOf(user_id)
-      if(index > -1) {
-        newList.splice(index, 1)
+      let newList = []
+      if(!this.selectedStudents) {
+        newList = [user_id]
       } else {
-        newList.push(user_id)
+        newList = [].concat(this.selectedGroupMembers)
+        const index = newList.indexOf(user_id)
+        if(index > -1) {
+          newList.splice(index, 1)
+        } else {
+          newList.push(user_id)
+        }
       }
       this.changeSelectedGroup(newList)
+      this.selectedStudents = true
+      
     },
     getSelected(user_id) {
       if(this.selectedStudents) {
@@ -181,6 +184,9 @@ export default {
     color: rgba(0, 0, 0, 1);
     opacity: 1;
     text-align: left;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .user-time {
     font-size: 10px;

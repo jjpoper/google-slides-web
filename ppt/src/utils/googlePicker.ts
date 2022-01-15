@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-import { getTeacherClientStoreToken, saveTeacherClientStoreToken } from "@/model/store.teacher"
+import { saveTeacherClientStoreToken } from "@/model/store.teacher"
 import { showLoading } from "./loading"
-import PPT, { isDev } from "./pptConfig"
+import { isDev } from "./pptConfig"
+import { upFireBaseFile } from "./uploadFile"
 
 const googleDriveConfig = {
   dev: {
-    clientId: '909953111628-acoskn3h8gvhscc90bs70a1hkb3ktmn4.apps.googleusercontent.com',
-    appId: '909953111628',
-    developerKey: 'AIzaSyAmw2xInu4ZyamfvDaGxiznpVMag_rvpjI'
+    clientId: '1040108879273-ldfoennnk158t1p400hn2eok3atfll3i.apps.googleusercontent.com',
+    appId: '1040108879273',
+    developerKey: 'AIzaSyBzfqIuraxxIDUKeE9qx8LzkhfYRstiOO0'
   },
   release: {
     clientId: '337694010706-actv4k6bli7c4iknu6ak50gkqhk318ti.apps.googleusercontent.com',
@@ -31,10 +32,13 @@ class LoadPicker {
   private oauthToken = ''
   private pickerApiLoaded = false
   private classCallback: any = null
+  private onloadingCallBack: any = null
+  private uploadDriveInstance: any = null
 
-  init(callback: any) {
+  init(onloadingCallBack: any, onSuccesscallback: any) {
     this.loadPicker()
-    this.classCallback = callback
+    this.classCallback = onSuccesscallback
+    this.onloadingCallBack = onloadingCallBack
   }
 
   private async checkLogin() {
@@ -95,7 +99,7 @@ class LoadPicker {
   private createPicker = () => {
     if(this.pickerApiLoaded && this.oauthToken) {
       const view = new window.google.picker.View(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS);
-      view.setMimeTypes("image/png,image/jpeg,image/jpg");
+      view.setMimeTypes("image/png,image/jpeg,image/jpg,video/*");
       const picker = new google.picker.PickerBuilder()
           .setTitle("My Drive 1")
           .enableFeature(google.picker.Feature.NAV_HIDDEN)
@@ -104,8 +108,7 @@ class LoadPicker {
           .setOrigin(undefined)
           .setAppId(this.appId)
           .setOAuthToken(this.oauthToken)
-          .addView(view)
-          .addView(new google.picker.DocsUploadView())
+          .addView(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS)
           .setDeveloperKey(this.developerKey)
           .setCallback(this.pickerCallback)
           .build();
@@ -130,8 +133,9 @@ class LoadPicker {
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         const data = JSON.parse(xhr.response)
-        const {downloadUrl} = data
-        this.downloadFile(downloadUrl)
+        console.log(data)
+        const {downloadUrl, mimeType} = data
+        this.downloadFile(downloadUrl, mimeType)
       }
     }
     xhr.send();
@@ -145,7 +149,7 @@ class LoadPicker {
     return blob
   }
 
-  private downloadFile(downloadUrl: string) {
+  private downloadFile(downloadUrl: string, mimeType: string) {
     if(downloadUrl) {
       // var accessToken = gapi.auth.getToken().access_token;
       const xhr = new XMLHttpRequest();
@@ -154,10 +158,10 @@ class LoadPicker {
       xhr.responseType = 'arraybuffer';
       xhr.onload = () => {
         const blob = this.getBlob(xhr)
-        const file = new File([blob], 'test.png', {
-            type: 'image/png',
+        const file = new File([blob], `drivefile_${Date.now()}`, {
+            type: mimeType,
         });
-        this.upLoadFile(file)
+        this.upLoadFile(file, mimeType)
       };
       xhr.send();
     } else {
@@ -165,7 +169,7 @@ class LoadPicker {
     }
   }
 
-  private upLoadFile(file: any) {
+  private upLoadFile(file: any, mimeType: string) {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -173,7 +177,27 @@ class LoadPicker {
 
     // var upload_directory = upload_url;
 
-    this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
+    // this.makeXMLHttpRequest(`${PPT.requestUrl}file/upload`, formData);
+    this.upDriveFire(file, mimeType)
+  }
+
+  upDriveFire(file: any, mimeType: string) {
+    this.uploadDriveInstance = upFireBaseFile(
+      file,
+      this.onloadingCallBack,
+      ((result: any) => {
+        console.log(result, mimeType)
+        this.classCallback('upload-ended', result, mimeType);
+        this.uploadDriveInstance = null
+      })
+    )
+  }
+
+  cancelUpDrive() {
+    if(this.uploadDriveInstance) {
+      this.uploadDriveInstance.cancel()
+      this.uploadDriveInstance = null
+    }
   }
 
   // 创建http请求

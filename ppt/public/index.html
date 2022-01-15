@@ -32,7 +32,28 @@
     </noscript>
     <div id="app"></div>
     <script src="https://cdn.bootcss.com/socket.io/2.3.0/socket.io.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- <script>
+      var ytPalyer = null
+      function ytonYTReady(e) {
+        if(window.currentOnYTReady) {
+          window.currentOnYTReady(ytPalyer, e)
+        }
+      }
+      function ytonYTStateChange(e) {
+        if(window.currentOnYTStateChange) {
+          window.currentOnYTStateChange(e)
+        }
+      }
+      window.onYouTubeIframeAPIReady = () => {
+        // ytPalyer = new YT.Player("yt-add-player", {
+        //   events: {
+        //     onReady: ytonYTReady,
+        //     onStateChange: ytonYTStateChange
+        //   }
+        // });
+        // console.log(this.ytPalyer, "onYouTubeIframeAPIReady");
+      };
+    </script> -->
     <!-- <script>
       window.googleIsReady = false
       function handleClientLoad() {
@@ -43,7 +64,13 @@
       onload="handleClientLoad()">
     </script> -->
     
-    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/api.js" defer></script>
+    <script type="text/javascript" src="https://www.youtube.com/iframe_api" defer></script>
+    <script >
+      window.onYouTubeIframeAPIReady = function() {
+
+      };
+    </script>
 
     <!-- built files will be auto injected -->
   </body>

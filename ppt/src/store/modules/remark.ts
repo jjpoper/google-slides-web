@@ -98,6 +98,7 @@ const mutations = {
   [RemarkActionTypes.UPDATE_ONE_REMARK_ITEM](nextState: any, listItem: any) {
     const index = nextState.allRemarks.findIndex((item: any) => item.id === listItem.id)
     const currentData = nextState.allRemarks[index]
+    console.log(currentData, listItem, '====合并remark数据')
     nextState.allRemarks.splice(index, 1, {
       ...currentData,
       ...listItem

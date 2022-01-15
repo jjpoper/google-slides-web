@@ -1,8 +1,9 @@
 <template>
   <div class="tfleft-answer tfshadow" v-if="item.title">
+    
     <div class="tfanswerdetail" v-if="checkType(item.title) === 'string'">
       <div class="tfanswer-media flex-center" v-if="item.title.indexOf('data:image/') > -1">
-        <div class="inner-media" >
+        <div class="tfinner-media" >
           <base64image :url="item.title" />
         </div>
       </div>
@@ -26,7 +27,7 @@
     <div v-else>
       <dash-right-remark-item :item='{content: item.title}' />
     </div>
-    <div class="tfuser">
+    <div class="tfuser" v-if="userData">
       <div class="tfusericon">{{userData.sname.split("")[0]}}</div>
       <div class="tfinfo">
         <p class="tfuname">{{userData.sname}}</p>

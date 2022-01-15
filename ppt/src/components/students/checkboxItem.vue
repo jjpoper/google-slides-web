@@ -6,11 +6,11 @@
       @change="handleCheckedValueChange"
     >
       <div class="item" v-for="item in optionData.options" :key="item.id">
-        <el-checkbox :label="item.id" :value="item.id" style="width: 100%">{{item.text}}</el-checkbox>
+        <el-checkbox :label="item.id" :value="item.id" class="rabox" :title="item.text">{{getAnswerText(item)}}</el-checkbox>
       </div>
     </el-checkbox-group>
 
-    <div v-if="tipText&&tipText.length>0" class="tipArea">
+    <!-- <div v-if="tipText&&tipText.length>0" class="tipArea">
       <img
         v-if="!showTips"
         src="../../assets/icon/tip_close.png"
@@ -28,7 +28,7 @@
         @click="showTip()"
       />
       <span v-if="showTips" class="textArea">{{tipText}}</span>
-    </div>
+    </div> -->
 
     <template v-if="checkedValues.length > 0">
       <div v-if="showCorrect" style="line-height: 25px; color: green">
@@ -49,7 +49,7 @@
         active-text="show answers"
       />
       <div class="refresh-line" v-show="showRefreshAnswer">
-        <span>正确答案有更新！</span>
+        <span>Correct answer updated!</span>
         <img width="40" height="40" src="../../assets/picture/refresh.png"  @click="refreshNewAnswer"/>
       </div>
     </template>
@@ -70,7 +70,7 @@
   align-items: center;
   display: flex;
   justify-content: flex-start;
-  padding-left: 50px;
+  padding-left: 20px;
 }
 .textArea {
   display: flex;
@@ -97,6 +97,13 @@
   justify-content: center;
   cursor: pointer;
 }
+.rabox{
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
 </style>
 
 <script>

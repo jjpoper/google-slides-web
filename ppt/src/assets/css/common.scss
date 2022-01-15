@@ -88,7 +88,7 @@ html, button, input, select, textarea {
   padding: 0 !important;
 }
 .custom-dialog.el-dialog {
-  margin: 50px auto 0 !important; 
+  margin: 50px auto 0 !important;
   max-width: 900px;
 }
 .el-dialog__header {
@@ -191,4 +191,91 @@ html, button, input, select, textarea {
 }
 .cursor{
   cursor: pointer;
+}
+.rabox .el-checkbox__label {
+  display: inline !important
+}
+.el-input__icon{
+  display: none !important;
+}
+.scale-animation{
+  position:relative;
+  animation:mymove 4s infinite;
+  -webkit-animation:mymove 4s infinite; /*Safari and Chrome*/
+  animation-direction:alternate;/*轮流反向播放动画。*/
+  animation-timing-function: ease-in-out; /*动画的速度曲线*/
+  /* Safari 和 Chrome */
+  -webkit-animation:mymove 4s infinite;
+  -webkit-animation-direction:alternate;/*轮流反向播放动画。*/
+  -webkit-animation-timing-function: ease-in-out; /*动画的速度曲线*/
+}
+@keyframes mymove
+{
+  0%{
+  transform: scale(1);  /*开始为原始大小*/
+  }
+  25%{
+      transform: scale(0.75); /*放大1.1倍*/
+  }
+  50%{
+      transform: scale(1);
+  }
+  75%{
+      transform: scale(0.75);
+  }
+
+}
+
+@-webkit-keyframes mymove /*Safari and Chrome*/
+{
+  0%{
+  transform: scale(1);  /*开始为原始大小*/
+  }
+  25%{
+      transform: scale(0.75); /*放大1.1倍*/
+  }
+  50%{
+      transform: scale(1);
+  }
+  75%{
+      transform: scale(0.75);
+  }
+}
+.metarialnums{
+  padding: 0 5px;
+  position: absolute;
+  top: -4px;
+  background-color: #FF1A0E;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+}
+
+//匿名登录页面下拉选项字体颜色
+.el-select-dropdown__item.selected {
+  color: #15c39a;
+}
+
+.my-login-input .el-input__icon {
+  display: inline-block !important;
+}
+
+.allocate-time .el-alert {
+  padding: 8px 16px 6px 0;
+}
+.pptTypeIcon{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 100px;
+  height: 100px;
+}
+.commonshadow{
+  box-shadow: 0px 1px 3px 3px rgb(14 122 231);
+  border-radius: 8px;
+}
+.boldText{
+  font-weight: bolder;
 }

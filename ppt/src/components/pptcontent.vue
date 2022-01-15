@@ -1,21 +1,20 @@
 <template>
   <div v-if="url" id="pptContainer" class="ppt">
-    <div v-if="teacher" class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
-    </div>
+    <!-- <div v-if="teacher" class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
+    </div> -->
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
+      <ppt-type />
     </div>
-    <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && hasData && (teacher || isStudentPaced)">
+    <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && (leftSortList && leftSortList.length) && (teacher || isStudentPaced)">
       <div class="medialist">
-        <template v-if="leftSortList && leftSortList.length">
-          <metarial-item 
-              v-for="rect in leftSortList" 
-              :key="rect.id"
-              :rect="rect"
-              :update="update" 
-              :deleteMedia="deleteMedia"
-              :teacher="teacher"/>
-        </template>
+        <metarial-item 
+          v-for="rect in leftSortList" 
+          :key="rect.id"
+          :rect="rect"
+          :update="update" 
+          :deleteMedia="deleteMedia"
+          :teacher="teacher"/>
       </div>
       <big-metarial-item :list="leftSortList"/>
     </div>
@@ -65,16 +64,15 @@ export default {
     ...mapState({
       isRemark: state => state.remark.isRemark,
     }),
-  },
-  watch: {
-    filterAddedMediaList () {
-     this.filterList()
+    leftSortList() {
+      return [].concat(this.filterAddedMediaList).reverse()
     }
   },
   components: {
     StudentQuestions,
     MetarialItem,
-    BigMetarialItem
+    BigMetarialItem,
+    'ppt-type': () => import('./common/pptType.vue')
   },
   data() {
     return {
@@ -82,14 +80,12 @@ export default {
       height: 0,
       parentHeight: 0,
       rectMediaList: [],
-      leftSortList: [],
       hasData: false
     }
   },
   created() {
     this.rectingDelay = null
     this.sizeDelay = null
-    this.filterList()
   },
   mounted() {
     // this.width = document.documentElement.clientWidth - this.widthOffset;
@@ -105,9 +101,9 @@ export default {
   },
   methods: {
     filterList () {
-      if(!this.filterAddedMediaList) return
-      this.hasData = this.filterAddedMediaList.length > 0
-      this.leftSortList = this.filterAddedMediaList.reverse()
+      // if(!this.filterAddedMediaList) return
+      // this.hasData = this.filterAddedMediaList.length > 0
+      // this.leftSortList = this.filterAddedMediaList.reverse()
       return
       let i = 0
       let rectList = []
@@ -201,8 +197,7 @@ export default {
         EventBus.$emit(ModalEventsNameEnum.UPDATE_MEDIA_ELEMENT, upData);
       }, 300)
     },
-    deleteMedia(index) {
-      const {id} = this.filterAddedMediaList[index]
+    deleteMedia(id) {
       EventBus.$emit(ModalEventsNameEnum.DELETE_MEDIA_ELEMENT, id);
     }
   }
@@ -236,10 +231,12 @@ export default {
 }
 .medialist{
   display: flex;
-  width: 100px;
+  width: 150px;
   height: 100%;
   overflow: scroll;
   flex-direction: column;
+  background-color: rgba(195,102, 22, 0.5);
+  align-items: center;
 }
 .mask{
   position: absolute;

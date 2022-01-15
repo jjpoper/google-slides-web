@@ -17,6 +17,8 @@ const mediaConstraints = {
 let mediaRecorder: any = null
 let domVideoElement: any = null
 let upFileInstance: any = null
+let videoRecordStatus = 0 // 0 未启动，1 启动中 2 已启动 3取消了
+let retryTimes = 0
 
 const closePictureInPicture = () => {
   const dom: any = document
@@ -24,6 +26,7 @@ const closePictureInPicture = () => {
 }
 
 export const startRecordVideo = (domVideo: any, callback: any = () => null, fail: any = () => null) => {
+  videoRecordStatus = 1
   domVideoElement = domVideo
   domVideoElement.muted = true
   domVideoElement.volume = 0
@@ -45,9 +48,15 @@ export const startRecordVideo = (domVideo: any, callback: any = () => null, fail
     });
     mediaRecorder.camera = camera;
     setTimeout(() => {
+      // if(videoRecordStatus === 1) {
+      // } else if(videoRecordStatus === 3) {
+      //   videoRecordStatus = 0
+      //   retryTimes = 0
+      // }
       mediaRecorder.startRecording();
+      videoRecordStatus = 2
       callback && callback()
-    }, 2000)
+    }, 1000)
   }).catch((e) => {
     onMediaError(e)
     fail && fail()
@@ -65,12 +74,29 @@ export const resumeRecordVideo = () => {
 }
 
 export const endRecord = () => {
+  if(videoRecordStatus === 1 && retryTimes <= 5) {
+    retryTimes++
+    setTimeout(() => {
+      endRecord()
+    }, 1000)
+    return
+  }
+  videoRecordStatus = 0
+  retryTimes = 0
   domVideoElement.pause();
   mediaRecorder.stopRecording(() => {
     domVideoElement.src = domVideoElement.srcObject = null;
     mediaRecorder.camera.stop();
     mediaRecorder.destroy();
     mediaRecorder = null;
+    // console.log('=====endRecord close vdeo', )
+    // try {
+    //   const tracks = document.getElementById('record-video').srcObject.getTracks();
+    //   for(let i = 0 ; i< tracks.length ; i++)
+    //   {
+    //       tracks[i].stop();
+    //   }
+    // } catch(e){}
     try {
       closePictureInPicture()
     } catch(e){}

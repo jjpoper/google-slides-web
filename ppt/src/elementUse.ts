@@ -11,7 +11,9 @@ import {
     DropdownMenu,
     Upload,
     InfiniteScroll,
-    ButtonGroup
+    ButtonGroup,
+    Card,
+    Tag
 } from 'element-ui';
 
 Vue.use(Image)
@@ -49,4 +51,6 @@ Vue.use(DropdownMenu)
 Vue.use(Upload)
 Vue.use(InfiniteScroll)
 Vue.use(ButtonGroup)
+Vue.use(Card)
+Vue.use(Tag)
 Vue.prototype.$alert = MessageBox

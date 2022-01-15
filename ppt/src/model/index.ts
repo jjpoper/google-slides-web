@@ -157,10 +157,30 @@ export const getOnlineUsers = async (token: string, class_id: string) => {
   return res;
 }
 
+const getUrlParams = () => {
+  const _url = window.location.href;
+  const _urlParams = _url.match(/([?&])(.+?=[^&]+)/igm);
+  return _urlParams ? _urlParams.reduce((a: any, b) => {
+     const value = b.slice(1).split('=');
+     a[value[0]] = value[1]
+     return a;
+  }, {}) : {};
+}
+
 const filterHref = () => {
   // const url = location.href
   // return url.split("&token")[0]
-  return location.origin + location.pathname
+  const searchParams = getUrlParams()
+  let url = location.origin + location.pathname
+  // if(searchParams.anonymouse) {
+  //   url += `?anonymouse=${searchParams.anonymouse}`
+  // }
+  // if(searchParams.p) {
+  //   url += `${searchParams.anonymouse ? '&' : '?'}p=${searchParams.p}`
+  // }
+  // console.log(url)
+  // debugger
+  return url
 }
 
 // 获取授权登录
@@ -579,6 +599,49 @@ export const renameClass = async (name: string, id: number) => {
     token: getTeacherStoreToken(),
     class_name: name,
     class_id: id
+  })
+  return data.data.code;
+}
+
+// 获取当前页码
+export const getCurrentClassPageIndex = async (id: string) => {
+  return axios.post(`${PPT.requestUrl}slide/get_class_page`, {
+    class_id: id
+  })
+}
+
+// 获取课堂当前的配置
+export const getClassSet = async (classId: string) => {
+  const data = await axios.post(`${PPT.requestUrl}class/get_class_set`, {
+    class_id: classId
+  })
+  return data.data.data;
+}
+
+// 保存课堂配置
+export const saveClassSet = async (
+  classId: string,
+  className: string,
+  realClassId: string,
+  scheduleSessionFlag: boolean,
+  sessionStartTime: string,
+  allocatedTimeFlag: boolean,
+  time_type: number,
+  time_down: number,
+  deadline: string,
+  canAnonymous: boolean,
+  ) => {
+  const data = await axios.post(`${PPT.requestUrl}class/save_class_set`, {
+    class_id: classId,
+    class_name: className,
+    real_class_id: realClassId,
+    schedule_session_flag: scheduleSessionFlag,
+    session_start_time: sessionStartTime,
+    allocated_time_flag: allocatedTimeFlag,
+    time_type: time_type,
+    time_down: time_down,
+    deadline: deadline,
+    can_anonymous_sign_in: canAnonymous
   })
   return data.data.code;
 }
