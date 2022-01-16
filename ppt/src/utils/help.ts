@@ -61,3 +61,12 @@ export const getJSONValue = (res: any) => {
   } catch(e) {}
   return data
 }
+
+export const getHashCode = (hashString: any) => {
+  if(typeof hashString === 'object') {
+    hashString = JSON.stringify(hashString)
+  }
+  let result = hashString.split("").reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a&a }, 0);
+  console.log('hashKey', result)
+  return result.toString()
+}

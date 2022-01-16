@@ -303,9 +303,11 @@
     >
       <VideoPlayer ref="screen-share" width="200" height="200" autoplay />
     </div>
-    <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
-      <network-error />
-    </el-dialog>
+    <!-- <template v-if="!onLine">
+      <el-dialog visible custom-class="custom-dialog" width="80%" :show-close="false">
+        <network-error />
+      </el-dialog>
+    </template> -->
   </div>
 </template>
 
@@ -536,9 +538,6 @@ type: "slide"*/
         this.changeShowMetrial(false)
       }
       return isStudentMode
-    },
-    networkErrorVisible() {
-      return !this.onLine
     }
   },
   watch: {

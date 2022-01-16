@@ -224,6 +224,11 @@
       width="900px">
       <waiting-start :waiting-start-seconds="waitingStartSeconds"/>
     </el-dialog>
+    <!-- <template v-if="!onLine">
+      <el-dialog visible custom-class="custom-dialog" width="80%" :show-close="false">
+        <network-error />
+      </el-dialog>
+    </template> -->
   </div>
 </template>
 <script>
@@ -279,6 +284,7 @@ import StudentsPptList from "@/components/students/studentsPptList.vue";
 import StudentLoginPage from "@/components/students/studentLoginPage.vue";
 import moment from 'moment'
 import WaitingStart from "@/components/students/waitingStart.vue";
+import NetworkError from "@/components/common/networkError.vue";
 
 export default {
   data() {
@@ -303,7 +309,7 @@ export default {
       class_id: "",
       classRoomInfo: null,
       answerList: [],
-      onLine: false, // 在线状态
+      onLine: true, // 在线状态
       deadLineTimer: null,
       limitText: null,
       lock_all_pages: false,
@@ -329,7 +335,6 @@ export default {
       showLoginDialog: false,
       metrialStatusMap: {},
       studentPaceLastPage: -1, // 学生模式下最后操作的页码
-
       isWaitingStart: false,
       sessionStartDateTime: null,
       waitingStartSeconds: 0,
@@ -377,7 +382,7 @@ export default {
       const isStundentPaced = this.currentModel == ClassRoomModelEnum.STUDENT_MODEL
       this.updateIsStudentPaced(isStundentPaced)
       return isStundentPaced
-    }
+    },
   },
   mounted() {
     this.unread = getStudentCommentUnReadStatus();
@@ -419,7 +424,8 @@ export default {
     StudentQuestions,
     TipsList,
     StudentsPptList,
-    StudentLoginPage
+    StudentLoginPage,
+    NetworkError
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -994,12 +1000,15 @@ export default {
     },
     // 重连后要做的事情
     rejoinRoomAction() {
-        getCurrentClassPageIndex(this.class_id)
-        .then((data) => {
-          if(data) {
-            this.pageChange(parseInt(data.data), true);
-          }
-        })
+        if(!this.isStudentPaced) {
+          getCurrentClassPageIndex(this.class_id)
+          .then((data) => {
+            if(data) {
+              this.pageChange(parseInt(data.data), true);
+            }
+          })
+        }
+        
     },
     msgListener(d) {
       // console.log(d, d.mtype, "====收到消息命令");

@@ -2,6 +2,7 @@
 /* eslint-disable no-empty */
 /* eslint-disable prefer-template */
 /* eslint-disable no-// console */
+import { getHashCode } from '@/utils/help';
 import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from "./socketEvents";
@@ -10,10 +11,10 @@ type callback = (d?: any) => void
 
 // 老师端需要补发的消息类型
 const RsendSocketTypeMaps: any = {
-  'join-room': true,
-  'update-tip': true,
-  'update-correct-answer': true,
-  'control': true
+  'join-room': 'join-room',
+  'update-tip': 'update-tip',
+  'update-correct-answer': 'update-correct-answer',
+  'control': 'control'
 }
 
 interface BaseParams {
@@ -48,7 +49,7 @@ interface MessageItem {
   action: string
   params: object
   callback: callback
-  id?: any
+  clientMsgId?: any
 }
 
 let windowStudentWs: any = null
@@ -61,39 +62,45 @@ let messageDelayPool: MessageItem[] = []
 // 无需补发的消息
 const filterSocketTypes = ['heart-beat', 'msg-receipt']
 
-// 补发消息需要去重
-const pushMessageToDelayPool = (action: string, params: object, callback: callback = () => null) => {
+const getMessageId = (action: string, params: object) => {
+  let clientMsgId: string | null = null
   if(filterSocketTypes.indexOf(action) === -1) {
-    let id: string | null = null
     const keyMaps: any = {...params}
     if(action === RsendSocketTypeMaps['join-room']) {
       // 加入房间 只需要补发最后一次消息
-      id = 'join-room'
-    } else if(action === RsendSocketTypeMaps[1]) {
-      // 评论ppt feedback
-    } else if(action === RsendSocketTypeMaps.control) {
+      clientMsgId = 'join-room'
+    } if(action === RsendSocketTypeMaps.control) {
       // control
       if(keyMaps.params) {
         delete keyMaps.params.result
       }
-      id = JSON.stringify(keyMaps)
+      clientMsgId = getHashCode(keyMaps)
     } else if(action === RsendSocketTypeMaps['update-tip']) {
       // 添加metarial
       delete keyMaps.tip
-      id = JSON.stringify(keyMaps)
+      clientMsgId = getHashCode(keyMaps)
     } else if(action === RsendSocketTypeMaps['update-correct-answer']) {
       delete keyMaps.correct_answer
-      id = JSON.stringify(keyMaps)
+      clientMsgId = getHashCode(keyMaps)
     }
+    if(clientMsgId) {
+      clientMsgId = `${action}${clientMsgId}`
+    }
+  }
+  return clientMsgId
+}
+// 补发消息需要去重
+const pushMessageToDelayPool = (action: string, params: any, callback: callback = () => null) => {
+  if(filterSocketTypes.indexOf(action) === -1) {
+    const {clientMsgId} = params
     // 如果有id，就去重，没有就不用去重
-    if(id) {
-      id = `${id}_${action}`
-      const index = messageDelayPool.findIndex(item => item.id && item.id === id)
+    if(clientMsgId) {
+      const index = messageDelayPool.findIndex(item => item.clientMsgId && item.clientMsgId === clientMsgId)
       const withIdData = {
         action,
         params,
         callback,
-        id
+        clientMsgId
       }
       if(index > -1) {
         messageDelayPool[index] = withIdData
@@ -119,9 +126,13 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
     ...message,
     room: classId,
     token: token,
-    class_id: classId
+    class_id: classId,
+    clientMsgId: ''
   }
-
+  const clientMsgId = getMessageId(action, params)
+  if(clientMsgId) {
+    params.clientMsgId = clientMsgId
+  }
   // console.log('socket', action, params)
   if(windowStudentWs && window.isNetWorkOnLine) {
     windowStudentWs.emit(action, JSON.stringify(params), callback);
@@ -132,6 +143,7 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
 
 // 发送未成功发出的消息
 const sendDelayMessage = () => {
+  console.log(messageDelayPool, 'messageDelayPool')
   while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs) {
     const {
       action,
