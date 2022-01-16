@@ -140,7 +140,7 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
     const checkSuccessTimer = (function () {
       let timer: any = setTimeout(() => {
         pushMessageToDelayPool(action, params)
-      }, 500)
+      }, 100)
       return () => {
         if(timer) {
           clearTimeout(timer)
