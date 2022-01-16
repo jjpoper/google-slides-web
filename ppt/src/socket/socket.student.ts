@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable func-names */
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
@@ -179,6 +180,7 @@ const BaseWsRequest = (action: string, message: object) => {
 const sendDelayMessage = () => {
   let startIndex = 0
   // 防止死循环，最多补发50条
+  console.log('messageDelayPool', messageDelayPool)
   while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs && startIndex < 50) {
     startIndex++
     const {
