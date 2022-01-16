@@ -176,8 +176,10 @@ const BaseWsRequest = (action: string, message: object) => {
 
 // 发送未成功发出的消息
 const sendDelayMessage = () => {
-  console.log(messageDelayPool, 'messageDelayPool')
-  while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs) {
+  let startIndex = 0
+  // 防止死循环，最多补发50条
+  while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs && startIndex < 50) {
+    startIndex++
     const {
       action,
       params,
@@ -185,6 +187,7 @@ const sendDelayMessage = () => {
     BaseWsRequest(action, params)
     messageDelayPool.shift()
   }
+  messageDelayPool = []
 }
 
 // 定时join，避免消息收不到
