@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
 /* eslint-disable no-empty */
@@ -156,7 +157,7 @@ const BaseWsRequest = (action: string, message: object) => {
   if(windowStudentWs && window.isNetWorkOnLine) {
     // 500ms没收到发送成功回调，需要补发一次
     const checkSuccessTimer = (function () {
-      let timer: number | null = setTimeout(() => {
+      let timer: any = setTimeout(() => {
         // console.log('没收到回调，导致补发')
         pushMessageToDelayPool(action, params)
       }, 500)

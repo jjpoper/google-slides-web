@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /* eslint-disable quote-props */
 /* eslint-disable no-empty */
 /* eslint-disable prefer-template */
@@ -137,7 +138,7 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
   if(windowStudentWs && window.isNetWorkOnLine) {
     // 500ms没收到发送成功回调，需要补发一次
     const checkSuccessTimer = (function () {
-      let timer: number | null = setTimeout(() => {
+      let timer: any = setTimeout(() => {
         pushMessageToDelayPool(action, params)
       }, 500)
       return () => {
