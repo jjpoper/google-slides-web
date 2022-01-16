@@ -771,7 +771,7 @@ export default {
     font-family: Arial;
     font-weight: bold;
     color: #000000;
-    padding-right: 15px;
+    padding-right: 10px;
     box-sizing: border-box;
     user-select: none;
   }

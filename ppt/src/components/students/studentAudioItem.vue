@@ -245,7 +245,7 @@ export default {
     },
     focusIndex() {
       this.$nextTick(() => {
-        if(this.$refs.activeRef) {
+        if(this.$refs.activeRef && this.$refs.activeRef.length > 0) {
           this.$refs.activeRef[0].focus();
         }
       });

@@ -303,6 +303,9 @@
     >
       <VideoPlayer ref="screen-share" width="200" height="200" autoplay />
     </div>
+    <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
+      <network-error :hideNetWorkError="hideNetWorkError"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -369,6 +372,7 @@ import dashTipsModal from "@/components/teacher/dashTipsModal.vue";
 import { openShare } from "@/utils/shareScreen";
 import { mapActions, mapState } from "vuex";
 import NewPromptPage from "@/components/teacher/newPromptPage.vue";
+import NetworkError from "@/components/common/networkError.vue";
 import {isDev} from '../utils/pptConfig'
 export default {
   components: {
@@ -388,7 +392,8 @@ export default {
     DashHeader,
     dashCopyDialog,
     dashTipsModal,
-    NewPromptPage
+    NewPromptPage,
+    NetworkError
   },
 
   /*author: "yujj085@gmail.com"
@@ -430,7 +435,7 @@ type: "slide"*/
       isFocus: [],
       stepOneDialog: false,
       stepTwoDialog: false,
-      onLine: false, // 在线状态
+      onLine: true, // 在线状态
       directFromPlugin: false, //是否是从插件直接打开的。
       showTimeSetDialog: false,
       showCopyLinkDialog: false,
@@ -452,7 +457,8 @@ type: "slide"*/
       sendControlDelay: null,
       metrialStatusMap: {},
       showResponseMap: {},
-      alreadyShowCopyUrl: false
+      alreadyShowCopyUrl: false,
+      networkErrorVisible: false
     };
   },
   mounted() {
@@ -543,6 +549,9 @@ type: "slide"*/
       this.checkResponseStatus()
       this.changeSelectedGroup([])
       this.changeGroupMembers([])
+    },
+    onLine() {
+      this.networkErrorVisible = !this.onLine
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -586,6 +595,9 @@ type: "slide"*/
       "setSelectedMetarialId",
       "setMaskMetarialId"
     ]),
+    hideNetWorkError() {
+      this.networkErrorVisible = false
+    },
     addprompt() {
       console.log("新增prompt!!");
       this.showNewPromptDialog = true;

@@ -1,12 +1,29 @@
+/* eslint-disable dot-notation */
+/* eslint-disable quote-props */
 /* eslint-disable no-empty */
 /* eslint-disable max-len */
 /* eslint-disable no-// console */
 /* eslint-disable prefer-template */
+import { getHashCode } from '@/utils/help';
 import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { SocketEventsEnum } from './socketEvents';
 
 type callback = (d?: any) => void
+
+const RsendSocketTypeMaps: any = {
+  'rename': 'rename',
+  'response': 'response',
+  'go-to-page': 'go-to-page',
+  'comment-ppt': 'comment-ppt',
+  'delete-ppt-comment': 'delete-ppt-comment',
+  'update-ppt-comment': 'update-ppt-comment',
+  'add-element': 'update-ppt-comment',
+  'update-element': 'update-element',
+  'delete-element': 'delete-element',
+  'delete-response': 'delete-response',
+  'join-room': 'join-room'
+}
 
 interface BaseParams {
   classId: string
@@ -39,6 +56,7 @@ export const setStudentWxBaseParams = ({
 interface MessageItem {
   action: string
   params: object
+  clientMsgId?: any
 }
 
 let windowStudentWs: any = null
@@ -48,30 +66,120 @@ let messageIdPool: any = {}
 let lastSocketId = ''
 let messageDelayPool: MessageItem[] = []
 
+// 无需补发的消息
+const filterSocketTypes = ['heart-beat', 'msg-receipt']
+
+// 补发消息需要去重
+const getMessageId = (action: string, params: object): string | null => {
+  let clientMsgId: string | null = null
+  if(filterSocketTypes.indexOf(action) === -1) {
+    const keyMaps: any = {...params}
+    if(action === RsendSocketTypeMaps['join-room']) {
+      // 加入房间 只需要补发最后一次消息
+      clientMsgId = 'join-room'
+    } else if(action === RsendSocketTypeMaps['rename']) {
+      delete keyMaps.user_name_new
+      clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps['go-to-page']) {
+      delete keyMaps.params
+      clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps['response']) {
+      const responseType = keyMaps.type
+      if(responseType === 'choice') {
+        // 选择题
+        delete keyMaps.answer
+        delete keyMaps.locked
+      } else if(responseType === 'text') {
+        delete keyMaps.content
+      } else if(responseType === 'draw') {
+        delete keyMaps.content
+        delete keyMaps.content1
+        delete keyMaps.result
+      }
+      clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps['update-ppt-comment']) {
+      // 更新remark数据
+      const pptCommentId = keyMaps.ppt_comment.id
+      // 更新数据，只要id一致就去重
+      keyMaps.ppt_comment = {
+        id: pptCommentId
+      }
+      clientMsgId = getHashCode(keyMaps)
+    }
+    // 如果有id，就去重，没有就不用去重
+    if(clientMsgId) {
+      clientMsgId = `${action}${clientMsgId}`
+    }
+  }
+  return clientMsgId
+}
+const pushMessageToDelayPool = (action: string, params: any) => {
+  if(filterSocketTypes.indexOf(action) === -1) {
+    const {clientMsgId} = params
+    if(clientMsgId) {
+      const index = messageDelayPool.findIndex(item => item.clientMsgId && item.clientMsgId === clientMsgId)
+      const withIdData = {
+        action,
+        params,
+        clientMsgId
+      }
+      if(index > -1) {
+        messageDelayPool[index] = withIdData
+      } else {
+        messageDelayPool.push(withIdData)
+      }
+    } else {
+      messageDelayPool.push({
+        action,
+        params,
+      })
+    }
+  }
+}
+
 const BaseWsRequest = (action: string, message: object) => {
   const {
     classId,
     token
   } = BaseStudentParams
-  const params = {
+  const params: any = {
     ...message,
     room: classId,
     token: token,
-    class_id: classId
+    class_id: classId,
+    clientMsgId: ''
+  }
+  const clientMsgId = getMessageId(action, params)
+  if(clientMsgId) {
+    params.clientMsgId = clientMsgId
   }
   if(windowStudentWs && window.isNetWorkOnLine) {
-    windowStudentWs.emit(action, JSON.stringify(params));
+    // 500ms没收到发送成功回调，需要补发一次
+    const checkSuccessTimer = (function () {
+      let timer: number | null = setTimeout(() => {
+        // console.log('没收到回调，导致补发')
+        pushMessageToDelayPool(action, params)
+      }, 500)
+      return () => {
+        if(timer) {
+          // console.log('收到回调，取消补发')
+          clearTimeout(timer)
+          timer = null
+        }
+      }
+    }());
+    windowStudentWs.emit(action, JSON.stringify(params), checkSuccessTimer);
   } else {
-    messageDelayPool.push({
-      action,
-      params
-    })
+    pushMessageToDelayPool(action, params)
   }
 }
 
 // 发送未成功发出的消息
 const sendDelayMessage = () => {
-  while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs) {
+  let startIndex = 0
+  // 防止死循环，最多补发50条
+  while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs && startIndex < 50) {
+    startIndex++
     const {
       action,
       params,
@@ -79,6 +187,7 @@ const sendDelayMessage = () => {
     BaseWsRequest(action, params)
     messageDelayPool.shift()
   }
+  messageDelayPool = []
 }
 
 // 定时join，避免消息收不到
@@ -134,14 +243,14 @@ export const createSo = (room: string, token: string, classId: string, callback:
   BaseStudentParams.token = token
 
   socket.on('connect', () => {
-    // console.log('connect 状态 新链接')
+    // // console.log('connect 状态 新链接')
     onLineStatusChanged(true)
     window.isNetWorkOnLine = true
     if(!isJoined) {
       isJoined = true
       // 加入房间，房间名是slide_id，user_id是学生输入的名称，role是student
       socket.emit('join-room', `{"room":"${classId}", "token": "${token}", "role":"student","class_id":"${classId}","last_sid":""}`, () => {
-        // console.log("学生加入房间");
+        // // console.log("学生加入房间");
         if(joinCallback) {
           // @ts-ignore
           joinCallback()
@@ -155,51 +264,51 @@ export const createSo = (room: string, token: string, classId: string, callback:
     lastSocketId = socket.id
     // 提交答案，page_id是哪一页，item_id是哪个自定义元素，answer是学生的答案是什么
     // socket.emit('response', `{"room": "${room}", "user_id": "student_1", "page_id": "page_1", "item_id": "item_1", "answer": "Lily"}`, () => {
-    //   // console.log("学生提交答案。");
+    //   // // console.log("学生提交答案。");
     // });
   });
 
   socket.on('disconnect', () => {
-    // console.log('connect 状态 断线')
+    // // console.log('connect 状态 断线')
     onLineStatusChanged(false)
     window.isNetWorkOnLine = false
   });
 
   // 学端要响应老师发来的 control
   socket.on('control', (data: string) => {
-    // console.log("老师发来了control. 详细数据: " + data);
+    // // console.log("老师发来了control. 详细数据: " + data);
     preCheckAck(data, callback, { mtype: SocketEventsEnum.CONTROL})
   });
 
   // 学生端收到老师发来的消息反馈
   socket.on('comment', (data: string) => {
-    // console.log("老师发来了消息反馈。详细数据：" + data);
+    // // console.log("老师发来了消息反馈。详细数据：" + data);
     preCheckAck(data, callback, { mtype: SocketEventsEnum.TEACHER_COMMENT})
   });
 
   socket.on('comment-ppt', (data: string) => {
-    // console.log("学生评论id" + data);
+    // // console.log("学生评论id" + data);
     preCheckAck(data, callback, { mtype: SocketEventsEnum.GET_COMMENT_ID})
   });
 
   socket.on('add-element', (data: any) => {
-    // console.log("收到老师添加的 media", JSON.parse(data));
+    // // console.log("收到老师添加的 media", JSON.parse(data));
     preCheckAck(data, callback, { mtype: SocketEventsEnum.STUDENT_ADD_MEDIA})
   });
   socket.on('update-element', (data: any) => {
-    // console.log("update-element media", JSON.parse(data));
+    // // console.log("update-element media", JSON.parse(data));
     preCheckAck(data, callback, { mtype: SocketEventsEnum.TEACHER_UPDATE_MEDIA})
   });
   socket.on('delete-element', (data: any) => {
-    // console.log("update-element media", JSON.parse(data));
+    // // console.log("update-element media", JSON.parse(data));
     callback({ mtype: SocketEventsEnum.TEACHER_DELETE_MEDIA, ...JSON.parse(data) })
   });
   socket.on('response', (data: any) => {
-    // console.log("收到自己发来的答案：" + data);
+    // // console.log("收到自己发来的答案：" + data);
     preCheckAck(data, callback, { mtype: SocketEventsEnum.ANSWER_QUESTION})
   });
   socket.on('delete-response', (data: any) => {
-    // console.log("删除答案" + data);
+    // // console.log("删除答案" + data);
     preCheckAck(data, callback, { mtype: SocketEventsEnum.DELETE_QUESTION})
   });
   socket.on('update-tip', (data: any) => {
@@ -230,7 +339,7 @@ export const createSo = (room: string, token: string, classId: string, callback:
     // callback({ mtype: SocketEventsEnum.GO_PAGE, ...JSON.parse(data) })
   });
   // socket.onAny((event: string, ...args: any[]) => {
-  //   console.log(`got ${event}`);
+  //   // console.log(`got ${event}`);
   // });
   windowStudentWs = socket
   return socket
@@ -304,7 +413,7 @@ export const sendAudioOrVideoAnswer = ({
     uid,
     uname
   } = BaseStudentParams
-  const content = `{"link":"${link}","mediaType":"${mediaType}", "fileName": "${fileName}"}`
+  const content = {link, mediaType, fileName}
   BaseWsRequest(
     "response", {type: "media", user_id: uid, user_name: uname, page_id: page_id, item_id: "0", content: content}
   );
