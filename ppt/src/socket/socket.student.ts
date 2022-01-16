@@ -190,7 +190,7 @@ const sendDelayMessage = () => {
     BaseWsRequest(action, params)
     messageDelayPool.shift()
   }
-  messageDelayPool = []
+  // messageDelayPool = []
 }
 
 // 定时join，避免消息收不到

@@ -171,7 +171,7 @@ const sendDelayMessage = () => {
     BaseWsRequest(action, params, callback)
     messageDelayPool.shift()
   }
-  messageDelayPool = []
+  // messageDelayPool = []
 }
 
 const rJoinRoom = () => {
