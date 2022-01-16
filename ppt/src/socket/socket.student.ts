@@ -161,7 +161,7 @@ const BaseWsRequest = (action: string, message: object) => {
       let timer: any = setTimeout(() => {
         console.log('没收到发送回调，导致补发')
         pushMessageToDelayPool(action, params)
-      }, 100)
+      }, 500)
       return () => {
         if(timer) {
           console.log('收到回调，取消补发')
