@@ -159,12 +159,12 @@ const BaseWsRequest = (action: string, message: object) => {
     // 500ms没收到发送成功回调，需要补发一次
     const checkSuccessTimer = (function () {
       let timer: any = setTimeout(() => {
-        // console.log('没收到回调，导致补发')
+        console.log('没收到发送回调，导致补发')
         pushMessageToDelayPool(action, params)
       }, 100)
       return () => {
         if(timer) {
-          // console.log('收到回调，取消补发')
+          console.log('收到回调，取消补发')
           clearTimeout(timer)
           timer = null
         }
