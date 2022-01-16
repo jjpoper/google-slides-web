@@ -303,11 +303,9 @@
     >
       <VideoPlayer ref="screen-share" width="200" height="200" autoplay />
     </div>
-    <!-- <template v-if="!onLine">
-      <el-dialog visible custom-class="custom-dialog" width="80%" :show-close="false">
-        <network-error />
-      </el-dialog>
-    </template> -->
+    <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
+      <network-error :hideNetWorkError="hideNetWorkError"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -459,7 +457,8 @@ type: "slide"*/
       sendControlDelay: null,
       metrialStatusMap: {},
       showResponseMap: {},
-      alreadyShowCopyUrl: false
+      alreadyShowCopyUrl: false,
+      networkErrorVisible: false
     };
   },
   mounted() {
@@ -550,6 +549,9 @@ type: "slide"*/
       this.checkResponseStatus()
       this.changeSelectedGroup([])
       this.changeGroupMembers([])
+    },
+    onLine() {
+      this.networkErrorVisible = !this.onLine
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -593,6 +595,9 @@ type: "slide"*/
       "setSelectedMetarialId",
       "setMaskMetarialId"
     ]),
+    hideNetWorkError() {
+      this.networkErrorVisible = false
+    },
     addprompt() {
       console.log("新增prompt!!");
       this.showNewPromptDialog = true;

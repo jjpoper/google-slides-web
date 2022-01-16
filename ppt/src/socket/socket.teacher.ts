@@ -135,7 +135,22 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
   }
   // console.log('socket', action, params)
   if(windowStudentWs && window.isNetWorkOnLine) {
-    windowStudentWs.emit(action, JSON.stringify(params), callback);
+    // 500ms没收到发送成功回调，需要补发一次
+    const checkSuccessTimer = (function () {
+      let timer: number | null = setTimeout(() => {
+        pushMessageToDelayPool(action, params)
+      }, 500)
+      return () => {
+        if(timer) {
+          clearTimeout(timer)
+          timer = null
+        }
+      }
+    }());
+    windowStudentWs.emit(action, JSON.stringify(params), () => {
+      callback()
+      checkSuccessTimer()
+    });
   } else {
     pushMessageToDelayPool(action, params, callback)
   }

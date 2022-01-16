@@ -154,7 +154,21 @@ const BaseWsRequest = (action: string, message: object) => {
     params.clientMsgId = clientMsgId
   }
   if(windowStudentWs && window.isNetWorkOnLine) {
-    windowStudentWs.emit(action, JSON.stringify(params));
+    // 500ms没收到发送成功回调，需要补发一次
+    const checkSuccessTimer = (function () {
+      let timer: number | null = setTimeout(() => {
+        // console.log('没收到回调，导致补发')
+        pushMessageToDelayPool(action, params)
+      }, 500)
+      return () => {
+        if(timer) {
+          // console.log('收到回调，取消补发')
+          clearTimeout(timer)
+          timer = null
+        }
+      }
+    }());
+    windowStudentWs.emit(action, JSON.stringify(params), checkSuccessTimer);
   } else {
     pushMessageToDelayPool(action, params)
   }

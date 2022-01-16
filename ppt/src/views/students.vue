@@ -224,11 +224,9 @@
       width="900px">
       <waiting-start :waiting-start-seconds="waitingStartSeconds"/>
     </el-dialog>
-    <!-- <template v-if="!onLine">
-      <el-dialog visible custom-class="custom-dialog" width="80%" :show-close="false">
-        <network-error />
-      </el-dialog>
-    </template> -->
+    <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
+      <network-error :hideNetWorkError="hideNetWorkError"/>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -310,6 +308,7 @@ export default {
       classRoomInfo: null,
       answerList: [],
       onLine: true, // 在线状态
+      networkErrorVisible: false,
       deadLineTimer: null,
       limitText: null,
       lock_all_pages: false,
@@ -472,6 +471,9 @@ export default {
     },
     studentAllSlides() {
       this.changeTipByWatchSlides();
+    },
+    onLine() {
+      this.networkErrorVisible = !this.onLine
     }
   },
   methods: {
@@ -496,6 +498,9 @@ export default {
       "setAllRemarkList",
       "updateLatestRemarkId"
     ]),
+    hideNetWorkError() {
+      this.networkErrorVisible = false
+    },
     changeTipShow() {
       this.showTip = !this.showTip;
       // console.log("change show !!" + this.showTip);
