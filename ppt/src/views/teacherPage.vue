@@ -800,7 +800,7 @@ type: "slide"*/
       commentType,
       answertime
     }) {
-      const itemData = JSON.stringify({
+      const itemData = {
         type: SocketEventsEnum.TEACHER_COMMENT,
         studentId,
         pageId,
@@ -814,7 +814,7 @@ type: "slide"*/
         slideIndex: parseInt(this.currentPageIndex) + 1,
         room: this.slide_id,
         answertime
-      });
+      };
       // // console.log(itemData);
       sendTeacherSocketRequest('comment', {
         user_id: studentId, item: itemData

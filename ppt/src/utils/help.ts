@@ -1,3 +1,4 @@
+/* eslint-disable space-infix-ops */
 /* 生成组件随机id */
 export const generateUuid = (prefix: string, length?: number) => {
   const uuidStr = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'
@@ -66,7 +67,7 @@ export const getHashCode = (hashString: any) => {
   if(typeof hashString === 'object') {
     hashString = JSON.stringify(hashString)
   }
-  let result = hashString.split("").reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a&a }, 0);
-  console.log('hashKey', result)
+  let result = hashString.split("").reduce((a: number, b: string) => { a = ((a << 5) - a) + b.charCodeAt(0); return a&a }, 0);
+  // console.log('hashKey', result)
   return result.toString()
 }
