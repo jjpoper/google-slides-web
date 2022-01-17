@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable func-names */
 /* eslint-disable dot-notation */
 /* eslint-disable quote-props */
 /* eslint-disable no-empty */
@@ -154,15 +156,14 @@ const BaseWsRequest = (action: string, message: object) => {
     params.clientMsgId = clientMsgId
   }
   if(windowStudentWs && window.isNetWorkOnLine) {
-    // 500ms没收到发送成功回调，需要补发一次
+    // 1500ms没收到发送成功回调，需要补发一次
     const checkSuccessTimer = (function () {
-      let timer: number | null = setTimeout(() => {
-        // console.log('没收到回调，导致补发')
+      let timer: any = setTimeout(() => {
+        console.log('没收到发送回调，导致补发')
         pushMessageToDelayPool(action, params)
-      }, 500)
+      }, 1500)
       return () => {
         if(timer) {
-          // console.log('收到回调，取消补发')
           clearTimeout(timer)
           timer = null
         }
@@ -178,6 +179,7 @@ const BaseWsRequest = (action: string, message: object) => {
 const sendDelayMessage = () => {
   let startIndex = 0
   // 防止死循环，最多补发50条
+  console.log('messageDelayPool', messageDelayPool)
   while(messageDelayPool.length > 0 && window.isNetWorkOnLine && windowStudentWs && startIndex < 50) {
     startIndex++
     const {
@@ -187,7 +189,7 @@ const sendDelayMessage = () => {
     BaseWsRequest(action, params)
     messageDelayPool.shift()
   }
-  messageDelayPool = []
+  // messageDelayPool = []
 }
 
 // 定时join，避免消息收不到

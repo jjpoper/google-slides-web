@@ -169,7 +169,7 @@ export default {
       this.clearDelay();
       this.sendDelay = setTimeout(() => {
         this.send(index);
-      }, 200);
+      }, 500);
     },
     changeLocked(type) {
       this.answer("text", true, type);
