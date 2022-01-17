@@ -136,11 +136,11 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
   }
   // console.log('socket', action, params)
   if(windowStudentWs && window.isNetWorkOnLine) {
-    // 500ms没收到发送成功回调，需要补发一次
+    // 1500ms没收到发送成功回调，需要补发一次
     const checkSuccessTimer = (function () {
       let timer: any = setTimeout(() => {
         pushMessageToDelayPool(action, params)
-      }, 500)
+      }, 1500)
       return () => {
         if(timer) {
           clearTimeout(timer)

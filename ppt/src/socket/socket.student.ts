@@ -156,15 +156,14 @@ const BaseWsRequest = (action: string, message: object) => {
     params.clientMsgId = clientMsgId
   }
   if(windowStudentWs && window.isNetWorkOnLine) {
-    // 500ms没收到发送成功回调，需要补发一次
+    // 1500ms没收到发送成功回调，需要补发一次
     const checkSuccessTimer = (function () {
       let timer: any = setTimeout(() => {
         console.log('没收到发送回调，导致补发')
         pushMessageToDelayPool(action, params)
-      }, 500)
+      }, 1500)
       return () => {
         if(timer) {
-          console.log('收到回调，取消补发')
           clearTimeout(timer)
           timer = null
         }
