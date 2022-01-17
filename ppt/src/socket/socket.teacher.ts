@@ -224,7 +224,9 @@ export const createSo = (token: string, classId: string, callback: callback, onL
   // // console.log(classId, "create ws socket")
   const socket = window.io(PPT.wsUrl, { transports: ["websocket"] });
   socket.on('connect', () => {
-    // // console.log('connect 状态 新链接')
+    // console.log('connect 状态 新链接')
+    onLineStatusChanged(true)
+    window.isNetWorkOnLine = true
     if(!isJoined) {
       isJoined = true
       // 加入房间，room是slide_id，token 是老师的身份信息，role必须是teacher
@@ -236,12 +238,8 @@ export const createSo = (token: string, classId: string, callback: callback, onL
       rJoinRoom()
       onReJoinRoom()
     }
-
     // // console.log('connect 状态 上线')
-    onLineStatusChanged(true)
-    window.isNetWorkOnLine = true
     lastSocketId = socket.id
-    rJoinRoom()
     // 发送 control ，type和 params 随便定义，学生那边收到的就是这些。
     // socket.emit('control', `{"room":"${room}", "type":"lock_page", "params": {"page": 3}}`, () => {
     //   // // console.log("发送control")
