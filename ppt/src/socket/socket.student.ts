@@ -360,7 +360,8 @@ export const askToAddNewRemarkItem = (data: any) => {
     page_id,
     width = 0,
     height = 0,
-    pointType
+    pointType,
+    item_id
   } = data;
   BaseWsRequest(
     "comment-ppt",
@@ -379,7 +380,8 @@ export const askToAddNewRemarkItem = (data: any) => {
         height: height,
         pointType: pointType,
         page_id: page_id
-      }
+      },
+      item_id
     }
   );
 }

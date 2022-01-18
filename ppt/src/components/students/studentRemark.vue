@@ -65,7 +65,7 @@
       <li
         v-for="(item, index) in marks"
         :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'} ${(isEditing || (currentRemarkIndex >= 0 && currentRemarkIndex !== index)) ? 'remark-list-item-gray' : ''}`"
-        :key="item.id"
+        :key="item.id == -1 ? index : item.id"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
         :tabindex="currentRemarkIndex === index ? '0' : ''"
         @click="changeRemarkIndex(index)"
@@ -290,6 +290,7 @@ export default {
         width,
         height,
         pointType,
+        item_id: this.marks.length,
         id: -1
       };
       askToAddNewRemarkItem(params);

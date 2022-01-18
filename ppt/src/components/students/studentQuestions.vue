@@ -11,7 +11,7 @@
         >
         <template v-for="(item, index) in currentPageMarks">
           <el-popover
-            :key="item.id"
+            :key="item.id == -1 ? index : item.id"
             placement="top"
             trigger="hover"
             :append-to-body="true"
