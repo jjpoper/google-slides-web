@@ -41,6 +41,7 @@
   </div>
 </template>
 <script>
+import { isDev } from '@/utils/pptConfig'
 export default {
   props: {
     share: {
