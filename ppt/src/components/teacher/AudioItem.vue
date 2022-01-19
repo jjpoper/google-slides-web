@@ -1,7 +1,7 @@
 <template>
-  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+  <div class="text-answer-container" >
     <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
-    <div class="text-scroll">
+    <div class="text-scroll" v-if="selectedAnswerList && selectedAnswerList.length > 0">
       <div class="text-answer-list">
         <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
           <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${flag_1 ? 'dash-outer' : 'full-text-area'}`"
@@ -67,6 +67,7 @@
         </div>
       </div> -->
     </div>
+    <loading-view v-else/>
   </div>
 </template>
 
@@ -78,6 +79,7 @@ import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
 import Base64image from '../base64image.vue';
 import CommonSwitchTab from './commonSwitchTab.vue';
+import LoadingView from './loadingView.vue';
 export default {
   computed: {
     // 未答题学生
@@ -126,7 +128,7 @@ export default {
       return list;
     },
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab, LoadingView },
   props: {
     data: {
       type: Object,

@@ -1,72 +1,67 @@
 <template>
-  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+  <div class="text-answer-container" >
     <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
-    <template v-if="currentTab !== 3">
-      <div class="text-scroll">
-        <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
-            <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
-              <div
-                v-if="shouldShow(item)"
-                :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
-              >
-                <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
-                  <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
-                    <VideoPlayer
-                      v-if="item.type === 'video'"
-                      controlslist="nodownload"
-                      controls=""
-                      :src="item.link"
-                      preload="auto"
-                    />
-                    <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
-                    <p class="textinner" v-else-if="item.type === 'text'">
-                      {{item.link}}
-                    </p>
+    <template v-if="selectedAnswerList && selectedAnswerList.length > 0">
+      <template v-if="currentTab !== 3">
+        <div class="text-scroll">
+          <div class="text-answer-list">
+            <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
+              <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
+                <div
+                  v-if="shouldShow(item)"
+                  :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
+                >
+                  <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
+                    <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
+                      <VideoPlayer
+                        v-if="item.type === 'video'"
+                        controlslist="nodownload"
+                        controls=""
+                        :src="item.link"
+                        preload="auto"
+                      />
+                      <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
+                      <p class="textinner" v-else-if="item.type === 'text'">
+                        {{item.link}}
+                      </p>
+                    </div>
+                    <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                      {{ index + 1 + " of " + selectedAnswerList.length }}
+                    </span>
                   </div>
-                  <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
-                    {{ index + 1 + " of " + selectedAnswerList.length }}
-                  </span>
-                </div>
-                <div class="text-footer" v-if="flag_1">
-                  <student-response-opt-bar
-                    :data="{
-                      pageId: data.page_id,
-                      itemId: item.item_id,
-                      studentId: item.user_id,
-                      title: item.type === 'text' ? item.link : {link: item.link, mediaType: item.type},
-                      isStar: item.star,
-                      isShowRes: item.show,
-                      name: item.user_name,
-                      answertime: item.updated_at
-                    }"
-                  />
+                  <div class="text-footer" v-if="flag_1">
+                    <student-response-opt-bar
+                      :data="{
+                        pageId: data.page_id,
+                        itemId: item.item_id,
+                        studentId: item.user_id,
+                        title: item.type === 'text' ? item.link : {link: item.link, mediaType: item.type},
+                        isStar: item.star,
+                        isShowRes: item.show,
+                        name: item.user_name,
+                        answertime: item.updated_at
+                      }"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>    
+      </template>
+      <template v-else-if="currentTab === 3">
+        <div class="teacherppt-outer" >
+          <div class="fullbgimg" :style="`position: relative;background-image:url(${currentPPTUrl})`">
+            <student-questions :disable="true"/>
+          </div>
+          <div class="teacherppt-remark">
+            <student-remark :disable="true"/>
+          </div>
         </div>
-        <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
-          <div class="no-as-title">
-            <i></i> No Response
-          </div>
-          <div class="on-as-list">
-            <p class="on-as-list-item" v-for="item in noAnswerStudents" :key="item.user_id">
-              {{item.user_id}}
-            </p>
-          </div>
-        </div> -->
-      </div>    
+      </template>
     </template>
-    <template v-else-if="currentTab === 3">
-      <div class="teacherppt-outer" >
-        <div class="fullbgimg" :style="`position: relative;background-image:url(${currentPPTUrl})`">
-          <student-questions :disable="true"/>
-        </div>
-        <div class="teacherppt-remark">
-          <student-remark :disable="true"/>
-        </div>
-      </div>
+    <template v-else>
+      <loading-view />
     </template>
   </div>
 </template>
@@ -78,6 +73,7 @@ import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
 import CommonSwitchTab from './commonSwitchTab.vue';
+import LoadingView from './loadingView.vue';
 export default {
   computed: {
     // 未答题学生
@@ -123,7 +119,7 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].thumbnail_url
     }
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, CommonSwitchTab},
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, CommonSwitchTab, LoadingView},
   props: {
     data: {
       type: Object,

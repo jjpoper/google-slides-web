@@ -1,7 +1,7 @@
 <template>
-  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+  <div class="text-answer-container">
     <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
-    <div class="text-scroll">
+    <div class="text-scroll"  v-if="selectedAnswerList && selectedAnswerList.length > 0">
       <div class="text-answer-list">
         <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
           <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
@@ -45,7 +45,8 @@
           </p>
         </div>
       </div> -->
-    </div>    
+    </div>
+    <loading-view v-else/>    
   </div>
 </template>
 
@@ -55,6 +56,7 @@ import { getCurrentPageAnswerList } from "@/model/store.teacher";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
 import { mapState } from 'vuex'
 import CommonSwitchTab from './commonSwitchTab.vue';
+import LoadingView from './loadingView.vue';
 export default {
   computed: {
     // 未答题学生
@@ -82,7 +84,7 @@ export default {
       selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     })
   },
-  components: { StudentResponseOptBar, CommonSwitchTab },
+  components: { StudentResponseOptBar, CommonSwitchTab, LoadingView },
   props: {
     data: {
       type: Object,
