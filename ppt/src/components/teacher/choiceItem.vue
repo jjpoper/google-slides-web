@@ -10,7 +10,7 @@
               :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
             >
               <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                <p v-for="ans_text in getAnswer(item)" :key="ans_text">{{ ans_text }}</p>
+                <p class="nowrapword" v-for="ans_text in getAnswer(item)" :key="ans_text">{{ ans_text }}</p>
                 <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
                   {{ index + 1 + " of " + selectedAnswerList.length }}
                 </span>
@@ -243,9 +243,7 @@ export default {
         }
       } else {
         data.push(
-          this.optFlags[answer.answer] +
-            " : " +
-            this.options.filter(item => item.id == answer.answer)[0].text
+          this.optFlags[answer.answer] + ':' + this.options.filter(item => item.id == answer.answer)[0].text
         );
       }
       return data;

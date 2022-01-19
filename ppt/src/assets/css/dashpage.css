@@ -517,6 +517,9 @@
   position: relative;
   text-align: left;
 }
+.nowrapword{
+  word-break: break-word;
+}
 .columText{
 }
 .textinner{
