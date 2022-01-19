@@ -41,7 +41,7 @@
   /* width: 50%; */
   margin: 10px;
   /* display: inline-block; */
-  height: 50px;
+  /* min-height: 50px; */
   /* border: 1px solid #fff; */
   background-color: #fff;
   border-radius: 10px;
@@ -51,13 +51,6 @@
   display: flex;
   justify-content: flex-start;
   padding-left: 20px;
-  overflow: hidden;
-}
-.rabox{
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
 }
 .tag {
   color: red;
