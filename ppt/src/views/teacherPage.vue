@@ -1069,6 +1069,13 @@ type: "slide"*/
           this.setMaskMetarialId(result)
           return
         }
+
+        // 选中学生人员
+        if(controlType == 9) {
+          // EventBus.$emit('responseTabChange', result)
+          this.changeSelectedGroup(result)
+          return
+        }
       }
     },
     msgListener(d) {

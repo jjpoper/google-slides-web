@@ -23,6 +23,7 @@
 import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import dashGroupsSelect from './dashGroupsSelect.vue'
+import { controlProject } from '@/socket/socket.teacher'
 export default {
   components: { dashGroupsSelect },
   computed: {
@@ -127,6 +128,10 @@ export default {
       }
       this.changeSelectedGroup(newList)
       this.selectedStudents = true
+      controlProject({
+        controlType: 9,
+        result: newList
+      })
       
     },
     getSelected(user_id) {
