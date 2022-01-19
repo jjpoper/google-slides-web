@@ -44,6 +44,7 @@
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
             :isStudentPaced="isStudentPaced"
+            :showLogo="true"
           />
         </div>
         <div
@@ -63,6 +64,7 @@
               :filterAddedMediaList="filterAddedMediaList"
               :meterialVisiable="meterialVisiable"
               :isStudentPaced="isStudentPaced"
+              :showLogo="true"
             />
           </div>
         </div>

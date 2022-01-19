@@ -4,7 +4,7 @@
     </div> -->
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
-      <ppt-type />
+      <ppt-type v-if="showLogo"/>
     </div>
     <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && (leftSortList && leftSortList.length) && (teacher || isStudentPaced)">
       <div class="medialist">
@@ -59,6 +59,10 @@ export default {
       type: Number,
       default: 40,
     },
+    showLogo: {
+      type: Boolean,
+      default: false,
+    }
   },
   computed: {
     ...mapState({

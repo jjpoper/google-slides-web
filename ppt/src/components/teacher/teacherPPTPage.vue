@@ -6,6 +6,7 @@
       :teacher="true"
       :filterAddedMediaList="filterAddedMediaList"
       :meterialVisiable="meterialVisiable"
+      :showLogo="true"
     />
     <div v-else-if="currentItemData && currentItemData.items[0]" :style="`height:${height - 110}px`">
       <teacherIndexItem

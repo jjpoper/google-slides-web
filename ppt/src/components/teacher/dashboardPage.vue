@@ -29,7 +29,7 @@
           </template>
           </template>
           <template v-else>
-            <pptcontent :url="slides[currentPageIndex].thumbnail_url"/>
+            <pptcontent :url="slides[currentPageIndex].thumbnail_url" :showLogo="true"/>
           </template>
           <dashboard-meterial
             v-if="!showFullAnswer || !shouldShowPageAnswer"
