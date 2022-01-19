@@ -130,7 +130,7 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
     class_id: classId,
     clientMsgId: ''
   }
-  const clientMsgId = getMessageId(action, params)
+  const clientMsgId = getMessageId(action, JSON.parse(JSON.stringify(params)))
   if(clientMsgId) {
     params.clientMsgId = clientMsgId
   }

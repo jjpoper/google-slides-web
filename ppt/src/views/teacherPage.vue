@@ -1017,6 +1017,7 @@ type: "slide"*/
     },
     // dash 和 project 同步
     handelControlSelf(d) {
+      console.log(d,'handelControlSelf')
       if (d.room == this.class_id) {
         const {params} = d
         const {controlType, result} = params
@@ -1211,9 +1212,9 @@ type: "slide"*/
       } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
         // console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
       } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
-        this.firstCloseCopyLinkDialog = false;
-        this.showCopyLinkDialog = false;
-        this.stepTwoDialog = false;
+        // this.firstCloseCopyLinkDialog = false;
+        // this.showCopyLinkDialog = false;
+        // this.stepTwoDialog = false;
       } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
         if (this.isDashboard) {
           this.stepTwoDialog = true;
@@ -1934,10 +1935,10 @@ type: "slide"*/
     closeCopyLinkDialog() {
       // if (this.firstCloseCopyLinkDialog) {
       // console.log("close copy link dialog!!");
-      this.firstCloseCopyLinkDialog = false;
-      this.emitControlSocket(
-        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
-      );
+      // this.firstCloseCopyLinkDialog = false;
+      // this.emitControlSocket(
+      //   `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
+      // );
       // }
     },
     openCopyLinkDialog() {
