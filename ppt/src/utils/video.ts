@@ -22,7 +22,7 @@ let retryTimes = 0
 
 const closePictureInPicture = () => {
   const dom: any = document
-  dom.exitPictureInPicture()
+  // dom.exitPictureInPicture()
 }
 
 export const startRecordVideo = (domVideo: any, callback: any = () => null, fail: any = () => null) => {
