@@ -123,7 +123,7 @@
       :class="`${isResponseShow ? 'button_area back_focus' : 'button_area'} ${showFullAnswer ? '' : 'buttondisable'}`"
       style="margin-right: 20px"
       @click="showRes()"
-      v-if="!isClosed && isDashboard && shouldShowPageAnswer"
+      v-if="!isClosed && isDashboard && shouldShowPageAnswer && current_model != 'Student-Paced'"
     >
       <div class="meterialimage">
         <div class="fullbgimg res-show"></div>

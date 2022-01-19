@@ -99,7 +99,7 @@
           :slides="slides"
           :getPageStudent="getPageStudent"
           :getStudentName="getStudentName"
-          :page_model="page_model"
+          :isStudentPacedMode="isStudentPacedMode"
           :filterAddedMediaList="filterAddedMediaList"
           :meterialVisiable="meterialVisiable"
           :filterTips="filterTips"
@@ -502,16 +502,6 @@ type: "slide"*/
         return "p";
       }
     },
-    // filterMarkupList() {
-    //   if (this.currentPageId) {
-    //     // console.log(this.currentPageId);
-    //     const list = this.markupslist.filter(
-    //       item => item.data.page_id === this.currentPageId
-    //     );
-    //     return list;
-    //   }
-    //   return [];
-    // },
     // meterial 数据
     filterAddedMediaList() {
       if (this.slides[this.currentPageIndex]) {

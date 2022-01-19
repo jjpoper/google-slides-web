@@ -13,14 +13,6 @@
         <i @click="starAnswer"
           :class="`answer-footer-button ${data.isStar ? 'star' : 'unstar'}`"></i>
       </el-tooltip>
-<!-- 
-      <el-tooltip class="item" effect="dark" content="Audio" placement="top-start">
-        <svg @click="audio" t="1622676486182" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1217" width="20" height="20"><path d="M566.215111 899.811556v118.158222h-85.333333v-114.915556C294.4 888.718222 147.342222 735.573333 147.342222 562.688a42.666667 42.666667 0 0 1 85.333334 0c0 134.257778 123.790222 256.113778 276.764444 256.113778s276.707556-121.912889 276.707556-256.113778a42.666667 42.666667 0 1 1 85.333333 0c0 164.067556-132.380444 310.385778-305.265778 337.123556zM510.976 33.336889a170.666667 170.666667 0 0 1 170.666667 170.666667v341.333333a170.666667 170.666667 0 1 1-341.333334 0v-341.333333a170.666667 170.666667 0 0 1 170.666667-170.666667z" fill="#1296db" p-id="1218"></path></svg>
-      </el-tooltip>
-
-      <el-tooltip class="item" effect="dark" content="Video" placement="top-start">
-        <svg @click="video" t="1622676554377" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2348" width="20" height="20"><path d="M768 648.533333V768H128V256h640v119.466667L896 298.666667v426.666666l-128-76.8z m0-93.866666l42.666667 25.6v-136.533334l-42.666667 25.6v85.333334zM213.333333 341.333333v341.333334h469.333334V341.333333H213.333333z" fill="#1296db" p-id="2349"></path></svg>
-      </el-tooltip> -->
 
       <el-tooltip class="item" effect="dark" content="Feedback" placement="top-start">
         <i @click="comment"

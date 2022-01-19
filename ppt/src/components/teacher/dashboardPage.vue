@@ -2,7 +2,7 @@
   <div class="dashboard">
     <div class="dashboardpage" :style="`height:${height - 110}px`">
       <dash-top-ppt-list v-show="showPPTList" :changePage="changePage"/>
-      <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${((showResponse && shouldShowPageAnswer) || isLockPage) && 'red-dash-border'}`" >
+      <div :class="`dash-second ${showFullAnswer && 'dash-border'} ${((showResponse && shouldShowPageAnswer && !isStudentPacedMode) || isLockPage) && 'red-dash-border'}`" >
         <div :class="`dash-second-left ${!showFullAnswer && 'dash-border'}`">
           <template v-if="showFullAnswer && shouldShowPageAnswer">
             <template
@@ -12,7 +12,7 @@
                 currentItemData.items &&
                 currentItemData.items[0] &&
                 currentItemData.items[0].type != 'website' &&
-                page_model != 'Student-Paced'
+                !isStudentPacedMode
                   ? 'content_parent content_parent--border'
                   : 'content_parent'
               "
@@ -90,9 +90,9 @@ export default {
         return {};
       },
     },
-    page_model: {
-      type: String,
-      default: "Insturctor-Paced",
+    isStudentPacedMode: {
+      type: Boolean,
+      default: false,
     },
     slides: {
       type: Array,
