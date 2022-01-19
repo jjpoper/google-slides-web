@@ -65,7 +65,7 @@
       <li
         v-for="(item, index) in marks"
         :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'} ${(isEditing || (currentRemarkIndex >= 0 && currentRemarkIndex !== index)) ? 'remark-list-item-gray' : ''}`"
-        :key="item.id == -1 ? index : item.id"
+        :key="item.id == -1 ? item.tempid : item.id"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
         :tabindex="currentRemarkIndex === index ? '0' : ''"
         @click="changeRemarkIndex(index)"
@@ -81,7 +81,7 @@
               <p class="user-name user-time">{{getTimeStr(item.time)}}</p>
             </div>
           </div> -->
-          <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
+          <div v-if="item.id != -1" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
           <VideoPlayer
@@ -296,7 +296,10 @@ export default {
       askToAddNewRemarkItem(params);
       // TODO 增加页面展示
       
-      this.addOneRemarkItem(params);
+      this.addOneRemarkItem({
+        ...params,
+        tempid: Date.now()
+      });
       // showToast("send success");
       this.cancelRecord();
       this.updateAnswerdPage(this.currentPageIndex);
