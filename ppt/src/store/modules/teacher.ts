@@ -6,6 +6,7 @@ const state = () => ({
   allGroups: [],
   selectedGroupMembers: [], // 选中的学生。用于匹配答案，可能是一组，也可能是一个人
   currentGroupMembers: [], // 分组的学生，用于展示学生列表，肯定是一组
+  feedBackList: [], // 老师的feedback回答列表
 })
 
 // getters
@@ -31,6 +32,12 @@ const actions = {
   },
   changeGroupMembers({commit}: any, list: string[]) {
     commit('changeGroupMembers', JSON.parse(JSON.stringify(list)))
+  },
+  setFeedBackList({commit}: any, list: any) {
+    commit('setFeedBackList', JSON.parse(JSON.stringify(list)))
+  },
+  addFeedBack({commit}: any, data: any) {
+    commit('addFeedBack', JSON.parse(JSON.stringify(data)))
   },
 }
 
@@ -64,7 +71,12 @@ const mutations = {
   changeGroupMembers(nextState: any, list: any) {
     nextState.currentGroupMembers = list
   },
-
+  setFeedBackList(nextState: any, list: any) {
+    nextState.feedBackList = list
+  },
+  addFeedBack(nextState: any, data: any) {
+    nextState.feedBackList.unshift(data)
+  },
 }
 
 export default {

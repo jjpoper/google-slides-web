@@ -64,15 +64,16 @@
 </template>
 <script>
 import {
+  mapActions
+} from 'vuex'
+import {
   ModalEventsNameEnum,
   ModalEventsTypeEnum
 } from "@/socket/socketEvents";
 import {
   getTeacherUserName,
-  addTeacherComment,
-  getTeacherCommentList
 } from "@/model/store.teacher";
-import { getTimeValue } from "@/utils/help";
+import { getTimeValue, getTeacherCommentList } from "@/utils/help";
 import base64image from "../base64image.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import TeacherRes from './comment/TeacherRes.vue';
@@ -116,6 +117,7 @@ export default {
     );
   },
   methods: {
+    ...mapActions("teacher", ["addFeedBack"]),
     focus() {
       this.textFocus = true
     },
@@ -133,7 +135,7 @@ export default {
         answertime
       };
       console.log('title', 'modal')
-      this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
+      this.commentList = getTeacherCommentList({ feedBackList: this.$store.state.teacher.feedBackList, pageId, itemId, studentId });
       this.modalVisiable = true;
     },
     closeModal() {
@@ -158,14 +160,15 @@ export default {
         teacherName: getTeacherUserName()
       };
       const { pageId, itemId, studentId, title, answertime } = this.commentData;
-      addTeacherComment({
+      const feedBackData = {
         studentId,
         pageId,
         itemId,
         title,
         answertime,
         ...data
-      });
+      }
+      this.addFeedBack(feedBackData)
       this.commentList.unshift({
         ...this.commentData,
         ...data,

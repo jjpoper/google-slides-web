@@ -1,9 +1,9 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable @typescript-eslint/camelcase */
 // 学生端缓存信息
 import { getStore, saveStore } from '@/utils/localStore'
 import { generateUuid } from '../utils/help'
 import { getTeacherCurrentPageAnswerList, getStudentsName, addTeacherData } from './data.teacher'
-import { getTeacherCurrentItemCommentList, addTeacherCommentData } from './comment.teacher'
 
 let slideId = ''
 let UID_KEY = ''
@@ -74,22 +74,6 @@ interface TeacherCommentItem {
   title: string
 }
 
-// 老师端评价列表 pageid_studentid_answerid 为key
-// @ts-ignore
-export const getTeacherCommentList = ({ pageId, itemId, studentId }): TeacherCommentItem[] => {
-  const list = getTeacherCurrentItemCommentList(pageId, itemId, studentId)
-  return list && list.length > 0 ? list : []
-}
-
-// @ts-ignore
-export const addTeacherComment = (data: ANY) => {
-  // const key = `comment_${pageId}_${itemId}_${studentId}`
-  // const list = addTeacherCommentData(data)
-  // list.unshift(data)
-  // saveTeacherStore(key, list)
-  addTeacherCommentData(data)
-}
-
 // 获取学生端当前page的回答列表信息
 export const getCurrentPageAnswerList = (pageId: string, type: string) => {
   // @ts-ignore
@@ -115,7 +99,6 @@ export const saveStudentsPageAnswerList = (pageId: string, type: string, data: S
 export const saveAnswerList = (pageId: string, type: string, data: any) => {
   saveTeacherStore(`c_p_a_${pageId}_${type}`, data);
 }
-
 
 export const saveStepOneStatus = (user_id: string, isHide: string) => {
   localStorage.setItem(`stepone_${user_id}`, isHide)

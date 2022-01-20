@@ -16,7 +16,7 @@
 
       <el-tooltip class="item" effect="dark" content="Feedback" placement="top-start">
         <i @click="comment"
-          :class="`answer-footer-button unmessage`"></i>
+          :class="`answer-footer-button ${isCommented ? 'message' : 'unmessage'} `"></i>
       </el-tooltip>
 
       <el-popover placement="top-start" width="100" trigger="hover">
@@ -56,6 +56,95 @@
     </div>
   </div>
 </template>
+<script>
+import { getTimeValue, getTeacherCommentList } from "@/utils/help";
+import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
+import {mapState} from 'vuex'
+export default {
+  props: {
+    data: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      feedBackList: state => state.teacher.feedBackList
+    }),
+    isCommented() {
+      const { pageId, itemId, studentId } = this.data;
+      if(pageId && itemId && studentId) {
+        const commentList = getTeacherCommentList({ feedBackList: this.feedBackList, pageId, itemId, studentId });
+        console.log('commentList', commentList,  this.feedBackList)
+        return commentList.length > 0
+      }
+      return false      
+    }
+  },
+  data() {
+    return {
+      //   isStar: false,
+      //   isShowRes: true,
+      size: 20,
+    };
+  },
+  methods: {
+    starAnswer() {
+      const { pageId, itemId, studentId, title, isStar } = this.data;
+      const nextStatus = !isStar;
+      const type = "star";
+      // console.log("星标", this.data);
+      EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
+        pageId,
+        itemId,
+        title,
+        studentId,
+        nextStatus,
+        type
+      });
+    },
+    comment() {
+      // console.log("回复");
+      this.showComment(ModalEventsTypeEnum.TEXT)
+    },
+    showComment(type) {
+      const { pageId, itemId, studentId, title, name, answertime } = this.data;
+      console.log(title, 'title 1')
+      EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
+        pageId,
+        itemId,
+        title,
+        studentId,
+        type,
+        name,
+        answertime
+      });
+    },
+    hideResponse() {
+      // console.log("隐藏");
+      const { pageId, itemId, studentId, title, isShowRes } = this.data;
+      const nextStatus = !isShowRes;
+      const type = "show";
+      EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
+        pageId,
+        itemId,
+        title,
+        studentId,
+        nextStatus,
+        type
+      });
+    },
+    video() {
+      this.showComment(ModalEventsTypeEnum.VIDEO)
+    },
+    audio() {
+      this.showComment(ModalEventsTypeEnum.AUDIO)
+    }
+  }
+};
+</script>
 
 
 <style scoped>
@@ -156,79 +245,3 @@
   z-index: 999;
 }
 </style>
-
-<script>
-import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
-import {startVideo} from '@/utils/video'
-export default {
-  props: {
-    data: {
-      type: Object,
-      default: () => {
-        return {};
-      }
-    }
-  },
-
-  data() {
-    return {
-      //   isStar: false,
-      //   isShowRes: true,
-      size: 20,
-    };
-  },
-  methods: {
-    starAnswer() {
-      const { pageId, itemId, studentId, title, isStar } = this.data;
-      const nextStatus = !isStar;
-      const type = "star";
-      // console.log("星标", this.data);
-      EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
-        pageId,
-        itemId,
-        title,
-        studentId,
-        nextStatus,
-        type
-      });
-    },
-    comment() {
-      // console.log("回复");
-      this.showComment(ModalEventsTypeEnum.TEXT)
-    },
-    showComment(type) {
-      const { pageId, itemId, studentId, title, name, answertime } = this.data;
-      console.log(title, 'title 1')
-      EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
-        pageId,
-        itemId,
-        title,
-        studentId,
-        type,
-        name,
-        answertime
-      });
-    },
-    hideResponse() {
-      // console.log("隐藏");
-      const { pageId, itemId, studentId, title, isShowRes } = this.data;
-      const nextStatus = !isShowRes;
-      const type = "show";
-      EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
-        pageId,
-        itemId,
-        title,
-        studentId,
-        nextStatus,
-        type
-      });
-    },
-    video() {
-      this.showComment(ModalEventsTypeEnum.VIDEO)
-    },
-    audio() {
-      this.showComment(ModalEventsTypeEnum.AUDIO)
-    }
-  }
-};
-</script>

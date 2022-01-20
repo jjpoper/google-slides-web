@@ -324,7 +324,8 @@ import {
   getAVComment,
   saveUserConfig,
   getAllGroupMember,
-  getCurrentClassPageIndex
+  getCurrentClassPageIndex,
+  getTeacherAllComments
 } from "../model/index";
 import {
   initTeacherData,
@@ -332,7 +333,6 @@ import {
   addTeacherData,
   deletTeacherData
 } from "@/model/data.teacher";
-import { initTeacherCommentData } from "@/model/comment.teacher";
 import { showLoading, hideLoading, showToast } from "../utils/loading";
 import { getJSONValue } from "../utils/help";
 import {
@@ -565,7 +565,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers", "setFeedBackList"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -1444,7 +1444,11 @@ type: "slide"*/
     },
     getAllSlides() {
       // 初始化评论数据
-      initTeacherCommentData(this.class_id, this.token);
+      getTeacherAllComments(this.class_id, this.token)
+      .then((list) => {
+        // console.log(list, 'initTeacherCommentData')
+        this.setFeedBackList(list)
+      });
       Promise.all([
         initTeacherData(this.class_id, this.token),
         getAllPPTS(this.slide_id,this.class_id)

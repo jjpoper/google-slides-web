@@ -93,7 +93,6 @@ export default {
           id: item.id || item.response_id,
         }
       })
-      console.log(list, 'righten')
       return list.reverse();
     }
   },
