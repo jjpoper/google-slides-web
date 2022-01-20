@@ -565,7 +565,7 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers", "setFeedBackList"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers", "setFeedBackList", "setFeedBackAnswerIds"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -782,7 +782,7 @@ type: "slide"*/
     sendComment({
       studentId,
       pageId,
-      itemId,
+      id,
       title,
       time,
       value,
@@ -795,7 +795,7 @@ type: "slide"*/
         studentId,
         pageId,
         page_id: pageId,
-        itemId,
+        id,
         title,
         time,
         value,
@@ -1448,6 +1448,14 @@ type: "slide"*/
       .then((list) => {
         // console.log(list, 'initTeacherCommentData')
         this.setFeedBackList(list)
+        let mapData = {}
+        for(let k in list) {
+          const {id} = JSON.parse(list[k].data)
+          if(id) {
+            mapData[id] = true
+          }
+        }
+        this.setFeedBackAnswerIds(mapData)
       });
       Promise.all([
         initTeacherData(this.class_id, this.token),

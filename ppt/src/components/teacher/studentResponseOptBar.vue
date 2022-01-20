@@ -71,16 +71,11 @@ export default {
   },
   computed: {
     ...mapState({
-      feedBackList: state => state.teacher.feedBackList
+      feedBackAnswerIds: state => state.teacher.feedBackAnswerIds
     }),
     isCommented() {
-      const { pageId, itemId, studentId } = this.data;
-      if(pageId && itemId && studentId) {
-        const commentList = getTeacherCommentList({ feedBackList: this.feedBackList, pageId, itemId, studentId });
-        console.log('commentList', commentList,  this.feedBackList)
-        return commentList.length > 0
-      }
-      return false      
+      const { id } = this.data;
+      return this.feedBackAnswerIds[id]
     }
   },
   data() {
@@ -92,17 +87,18 @@ export default {
   },
   methods: {
     starAnswer() {
-      const { pageId, itemId, studentId, title, isStar } = this.data;
+      const { pageId, itemId, studentId, title, isStar, id } = this.data;
       const nextStatus = !isStar;
       const type = "star";
-      // console.log("星标", this.data);
+      console.log("星标", this.data);
       EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
         pageId,
         itemId,
         title,
         studentId,
         nextStatus,
-        type
+        type,
+        id
       });
     },
     comment() {
@@ -110,16 +106,16 @@ export default {
       this.showComment(ModalEventsTypeEnum.TEXT)
     },
     showComment(type) {
-      const { pageId, itemId, studentId, title, name, answertime } = this.data;
-      console.log(title, 'title 1')
+      const { pageId, studentId, title, name, answertime, id } = this.data;
+      // console.log(title, id, 'title 1')
       EventBus.$emit(ModalEventsNameEnum.TEACHER_COMMENT_MODAL, {
         pageId,
-        itemId,
         title,
         studentId,
         type,
         name,
-        answertime
+        answertime,
+        id
       });
     },
     hideResponse() {

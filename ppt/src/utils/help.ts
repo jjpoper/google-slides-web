@@ -75,21 +75,24 @@ export const getHashCode = (hashString: any) => {
 interface GetCommentListParams {
   feedBackList: any[]
   pageId: string
-  itemId: string
   studentId: string
+  id: string
 }
-export const getTeacherCommentList = ({ feedBackList, pageId, itemId, studentId }: GetCommentListParams) => {
+export const getTeacherCommentList = ({ feedBackList, pageId, studentId, id }: GetCommentListParams) => {
   const filterData = feedBackList.filter(item => {
-    const data = JSON.parse(item.data)
-    if(pageId === data.pageId && studentId === data.studentId && (!itemId || itemId === data.itemId)) {
+    const itemData = typeof item.data === 'object' ? item.data : JSON.parse(item.data)
+    const isSameItem = id === itemData.id
+    if(pageId === itemData.pageId && studentId === itemData.studentId && isSameItem) {
       return true
     }
     return false
   })
+  // console.log(feedBackList, pageId, studentId, id, filterData)
   const mapData = filterData.map((item) => {
     // console.log(item, '=====')
+    const itemData = typeof item.data === 'object' ? item.data : JSON.parse(item.data)
     return {
-      ...JSON.parse(item.data),
+      ...itemData,
       // @ts-ignore
       teacherName: window.currentTeacherName
     }
