@@ -13,7 +13,8 @@ import {
     InfiniteScroll,
     ButtonGroup,
     Card,
-    Tag
+    Tag,
+  Loading
 } from 'element-ui';
 
 Vue.use(Image)
@@ -53,4 +54,5 @@ Vue.use(InfiniteScroll)
 Vue.use(ButtonGroup)
 Vue.use(Card)
 Vue.use(Tag)
+Vue.use(Loading.directive)
 Vue.prototype.$alert = MessageBox
