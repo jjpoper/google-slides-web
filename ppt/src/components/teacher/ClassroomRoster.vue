@@ -6,7 +6,7 @@
       </div>
       <div class="roster-split">-</div>
       <div class="roster-class-select">
-        <el-select size="mini" v-model="selectedClassId" placeholder="Select class name list">
+        <el-select size="mini" v-model="switchClassId" placeholder="Select class name list" @change="switchClass">
           <el-option
             v-for="item in classList"
             :key="item.value"
@@ -28,16 +28,16 @@
         </div>
       </div>
     </div>
-    <div class="roster-detail">
+    <div class="roster-detail" v-loading="loading">
       <div class="roster-detail-list student-list" v-show="activeTab === 'student'">
         <div class="roster-detail-header">
-          <el-row :gutter="5">
+          <el-row>
             <el-col :span="5">
               <div class="roster-detail-header-item">
                 Name
               </div>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="2">
               <div class="roster-detail-header-item">
                 Status
               </div>
@@ -51,10 +51,10 @@
               <div class="roster-detail-header-item" @click="changeGroupSort">
                 Group
                 <div class="sort-icon">
-                  <template v-if="sortAsc">
+                  <template v-if="groupSortAsc">
                     <i class="el-icon-arrow-down"></i>
                   </template>
-                  <template v-if="!sortAsc">
+                  <template v-if="!groupSortAsc">
                     <i class="el-icon-arrow-up"></i>
                   </template>
                 </div>
@@ -65,26 +65,38 @@
                 Email
               </div>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <div class="roster-detail-header-action ">
-                <div class="roster-header-action-item">
+                <div class="roster-header-action-item" @click="listSortChange">
                   <div class="roster-action-text">
-                    Sort by Time
+                    <template v-if="timeSortAsc">
+                      Sort by Time
+                    </template>
+                    <template v-if="!timeSortAsc">
+                      Sort by first letter A-Z
+                    </template>
                   </div>
-                  <div class="roster-action-icon">
+                  <div class="roster-action-icon" :class="{'sort-asc': timeSortAsc}">
                     <img src="../../assets/icon/sort.png"/>
                   </div>
                 </div>
                 <div class="roster-header-action-setting">
-                  <i class="el-icon-s-tools"></i>
+                  <el-dropdown>
+                    <i class="el-icon-s-tools"></i>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item @click.native="updateRoster">Update roster</el-dropdown-item>
+                      <el-dropdown-item @click.native="saveAsClassRoster">Save as class roster</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+
                 </div>
               </div>
             </el-col>
           </el-row>
         </div>
         <div class="roster-detail-body">
-          <div class="roster-detail-item" :class="{'online-user': onlineUserIdList.includes(student.userId), 'offline-user': !onlineUserIdList.includes(student.userId)}" v-for="student in studentList">
-            <el-row :gutter="5">
+          <div class="roster-detail-item" :class="{'online-user': onlineUserIdList.includes(student.userId), 'offline-user': !onlineUserIdList.includes(student.userId)}" :key="sIndex" v-for="(student, sIndex) in studentList">
+            <el-row>
               <el-col :span="5">
                 <div class="roster-detail-data-item">
                   <img :src="student.avatar" alt="" v-if="student.avatar" class="student-avatar">
@@ -95,7 +107,7 @@
                   </div>
                 </div>
               </el-col>
-              <el-col :span="3">
+              <el-col :span="2">
                 <div class="roster-detail-data-item">
                   {{student.status}}
                 </div>
@@ -109,7 +121,7 @@
                 <div class="roster-detail-data-item ">
                   <div class="roster-change-group">
                     <select v-model="student.groupId">
-                      <option v-for="group in groupList" :value="group.id">
+                      <option v-for="(group, gIdx) in groupList" :value="group.id" :key="gIdx">
                         {{ group.name }}
                       </option>
                     </select>
@@ -121,7 +133,7 @@
                   {{ student.email }}
                 </div>
               </el-col>
-              <el-col :span="5">
+              <el-col :span="6">
                 <div class="roster-detail-data-action ">
                   <div class="roster-data-action roster-evaluate">
                     Evaluate
@@ -210,14 +222,55 @@
       </div>
     </div>
     <div class="roster-group-setting">
-      <div class="group-setting-button">
-        Group setting
-      </div>
+      <el-button type="primary" size="small" round class="classcipe-btn-primary">Group setting</el-button>
     </div>
+
+    <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :destroy-on-close="true"
+      :visible="saveAsRosterModalVisible"
+      :show-close="false"
+      :center="true"
+      custom-class="custom-dialog"
+      append-to-body
+      @close="saveAsRosterModalVisible = false"
+      width="600px"
+      top="30vh"
+    >
+    <el-card>
+      <div class="notice-img">
+        <img src="../../assets/icon/notice.png" />
+        <div class="notice-title">Notice</div>
+      </div>
+      <div class="confirm-tips">
+        Confirm to save current students as class roster?
+      </div>
+      <div class="class-name-select">
+        <div class="class-name">Class name</div>
+        <div class="input-select">
+          <el-select size="mini" filterable v-model="ensureClassId" placeholder="Enter class name">
+            <el-option
+              v-for="item in classList"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="action-button">
+        <el-button size="small" round class="classcipe-btn action-button-item" @click="saveAsRosterModalVisible = false">Cancel</el-button>
+        <el-button size="small" round class="action-button-item classcipe-btn-primary" type="primary" @click="ensureSaveAsClass">Confirm</el-button>
+      </div>
+    </el-card>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
+
+import { MessageBox } from 'element-ui';
 
 export default {
   name: "ClassroomRoster",
@@ -229,6 +282,7 @@ export default {
         {value: 2, label: 'Class 2'},
         {value: 3, label: 'Class 3'},
       ],
+      switchClassId: "",
       selectedClassId: "",
       activeTab: 'student',
       studentsTotalNum: 15,
@@ -243,51 +297,51 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 1,
         },
         {
           userId: '1',
           avatar: null,
-          name: 'xunwu1',
+          name: 'xunwu2',
           status: 'Online',
           attendance: 'Present',
-          groupName: 'Group 1',
-          groupId: '1',
+          groupName: 'Group 2',
+          groupId: '2',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 2,
         },
         {
           userId: '1',
           avatar: null,
-          name: 'xunwu1',
+          name: 'xunwu3',
           status: 'Online',
           attendance: 'Present',
-          groupName: 'Group 1',
-          groupId: '1',
+          groupName: 'Group 3',
+          groupId: '3',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 3,
         },
         {
           userId: '1',
           avatar: null,
-          name: 'xunwu1',
+          name: 'xunwu4',
           status: 'Online',
           attendance: 'Present',
-          groupName: 'Group 1',
-          groupId: '1',
+          groupName: 'Group 4',
+          groupId: '4',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 4,
         },
         {
           userId: '1',
           avatar: null,
-          name: 'xunwu1',
+          name: 'xunwu5',
           status: 'Online',
           attendance: 'Present',
-          groupName: 'Group 1',
-          groupId: '1',
+          groupName: 'Group 5',
+          groupId: '5',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 5,
         },
         {
           userId: '2',
@@ -298,7 +352,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 6,
         },
         {
           userId: '3',
@@ -309,7 +363,7 @@ export default {
           groupName: 'Group 1',
           groupId: '2',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 6,
         },
         {
           userId: '4',
@@ -320,7 +374,7 @@ export default {
           groupName: 'Group 1',
           groupId: '2',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 7,
         }
       ],
 
@@ -334,7 +388,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 5,
         },
         {
           userId: '1',
@@ -345,7 +399,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 4,
         },
         {
           userId: '1',
@@ -356,7 +410,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 1,
         },
         {
           userId: '1',
@@ -367,7 +421,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 1,
         },
         {
           userId: '1',
@@ -378,7 +432,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 2,
         },
         {
           userId: '2',
@@ -389,7 +443,7 @@ export default {
           groupName: 'Group 1',
           groupId: '1',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 1,
         },
         {
           userId: '3',
@@ -400,7 +454,7 @@ export default {
           groupName: 'Group 1',
           groupId: '2',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 1,
         },
         {
           userId: '4',
@@ -411,7 +465,7 @@ export default {
           groupName: 'Group 1',
           groupId: '2',
           email: "xunwu@gmail.com",
-          joinTime: new Date().getTime(),
+          joinTime: 2,
         }
       ],
       onlineUserIdList: ['1', '3', '5'],
@@ -419,10 +473,17 @@ export default {
         {id: '1', name: 'Group 1'},
         {id: '2', name: 'Group 2'},
         {id: '3', name: 'Group 3'},
+        {id: '4', name: 'Group 4'},
+        {id: '5', name: 'Group 5'},
       ],
       duplicatedUserNameList: ['xunwu2'],
 
-      sortAsc: true
+      groupSortAsc: true,
+      timeSortAsc: true,
+      loading: false,
+      saveAsRosterModalVisible: false,
+      newClassName: '',
+      ensureClassId: '',
     }
   },
   methods: {
@@ -434,8 +495,58 @@ export default {
       }
     },
 
+    switchClass () {
+      console.log('switchClass ', this.switchClassId, this.selectedClassId)
+      MessageBox.confirm('Switching classe will be changed together with the student list！Are you sure you want to switch?', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+        confirmButtonClass: 'classcipe-btn-primary',
+      }).then(() => {
+        this.selectedClassId = this.switchClassId;
+        this.handleChangeClass()
+      }).catch(() => {
+        this.switchClassId = this.selectedClassId;
+      });
+    },
+
     changeGroupSort () {
-      this.sortAsc = !this.sortAsc;
+      this.groupSortAsc = !this.groupSortAsc;
+      this.studentList = this.studentList.sort((item1, item2) => {
+        return (this.groupSortAsc ? item1.groupName > item2.groupName: item2.groupName < item1.groupName) ? 1: -1;
+      })
+      console.log('changeGroupSort', this.studentList)
+    },
+
+    listSortChange () {
+      this.timeSortAsc = !this.timeSortAsc;
+      this.studentList = this.studentList.sort((item1, item2) => {
+        return this.timeSortAsc ? item1.joinTime - item2.joinTime : (item2.name < item1.name ? 1 : -1);
+      })
+      console.log('listSortChange', this.studentList)
+    },
+
+    handleChangeClass () {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+      }, 800);
+    },
+
+    updateRoster () {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+      }, 800);
+    },
+
+    saveAsClassRoster () {
+      console.log('saveAsClassRoster')
+      this.saveAsRosterModalVisible = true
+    },
+
+    ensureSaveAsClass () {
+
     }
   },
 }
@@ -538,7 +649,7 @@ export default {
 .roster-detail-header-action {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   height: 50px;
 }
 
@@ -548,7 +659,7 @@ export default {
   justify-content: center;
   font-family: Segoe UI;
   line-height: 25px;
-  padding: 0 10px;
+  padding: 0 5px;
   color: #000000;
   border-radius: 4px;
 }
@@ -560,7 +671,9 @@ export default {
 .roster-action-text {
   padding-right: 5px;
   cursor: pointer;
+  font-weight: bold;
   user-select: none;
+  font-size: 12px;
 }
 
 .roster-action-icon img {
@@ -569,6 +682,7 @@ export default {
 
 .roster-header-action-setting {
   margin-left: 5px;
+  margin-right: 5px;
   height: 25px;
   padding: 0 10px;
   border-radius: 4px;
@@ -689,17 +803,55 @@ export default {
   display: flex;
 }
 
-.group-setting-button {
-  cursor: pointer;
-  user-select: none;
-  padding: 8px 10px;
+.sort-asc {
+}
+
+.confirm-tips, .action-button, .class-name-select {
+  line-height: 40px;
   display: flex;
   align-items: center;
-  border-radius: 30px;
-  background: #FAFAFA;
+  justify-content: center;
+}
+
+.class-name {
+  color: #999999;
+}
+
+.input-select {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  line-height: 30px;
+}
+
+.action-button-item {
+  margin: 0 20px;
+}
+
+.input-select {
+  margin-left: 10px;
   border: 1px solid #D8D8D8;
-  font-size: 13px;
-  font-family: Inter-Bold;
-  color: #15C39A;
+  border-radius: 3px;
+}
+
+.action-button {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.notice-img {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.notice-title {
+  line-height: 30px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.notice-img img {
+  height: 40px;
 }
 </style>

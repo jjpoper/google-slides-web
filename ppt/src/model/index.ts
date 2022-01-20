@@ -680,3 +680,11 @@ export const saveClassSet = async (
   })
   return data.data.code;
 }
+
+export const getClassMemeber = async (class_id: string) => {
+  const data = await axios.post(`${PPT.requestUrl}class/get_class_members`, {
+    class_id: class_id
+  })
+  let res = data.data.data;
+  return res;
+}
