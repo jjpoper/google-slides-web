@@ -7,6 +7,7 @@ const state = () => ({
   selectedGroupMembers: [], // 选中的学生。用于匹配答案，可能是一组，也可能是一个人
   currentGroupMembers: [], // 分组的学生，用于展示学生列表，肯定是一组
   feedBackList: [], // 老师的feedback回答列表
+  feedBackAnswerIds: {}, // 已feedback的id map
 })
 
 // getters
@@ -38,6 +39,12 @@ const actions = {
   },
   addFeedBack({commit}: any, data: any) {
     commit('addFeedBack', JSON.parse(JSON.stringify(data)))
+  },
+  setFeedBackAnswerIds({commit}: any, listMap: any) {
+    commit('setFeedBackAnswerIds', JSON.parse(JSON.stringify(listMap)))
+  },
+  addFeedBackId({commit}: any, id: any) {
+    commit('addFeedBackId', id)
   },
 }
 
@@ -76,6 +83,14 @@ const mutations = {
   },
   addFeedBack(nextState: any, data: any) {
     nextState.feedBackList.unshift(data)
+  },
+  setFeedBackAnswerIds(nextState: any, listMap: any) {
+    nextState.feedBackAnswerIds = listMap
+  },
+  addFeedBackId(nextState: any, id: any) {
+    const nextMap = {...nextState.feedBackAnswerIds}
+    nextMap[id] = true
+    nextState.feedBackAnswerIds = nextMap
   },
 }
 
