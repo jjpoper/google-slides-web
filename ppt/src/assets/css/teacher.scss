@@ -140,3 +140,9 @@
 .el-dropdown-menu__item:focus, .el-dropdown-menu__item:not(.is-disabled):hover {
   color: #15c39a;
 }
+
+.classcipe-btn, .classcipe-btn.el-button .classcipe-btn.el-button:focus, .classcipe-btn.el-button:hover {
+  background: #F5F5F5;
+  border-color: #F5F5F5;
+  color: #000;
+}

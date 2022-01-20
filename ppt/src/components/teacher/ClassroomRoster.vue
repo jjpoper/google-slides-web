@@ -235,17 +235,21 @@
       custom-class="custom-dialog"
       append-to-body
       @close="saveAsRosterModalVisible = false"
-      width="500px"
+      width="600px"
       top="30vh"
     >
     <el-card>
+      <div class="notice-img">
+        <img src="../../assets/icon/notice.png" />
+        <div class="notice-title">Notice</div>
+      </div>
       <div class="confirm-tips">
         Confirm to save current students as class roster?
       </div>
       <div class="class-name-select">
         <div class="class-name">Class name</div>
         <div class="input-select">
-          <el-select size="mini" v-model="ensureClassId" placeholder="Select class name list">
+          <el-select size="mini" filterable v-model="ensureClassId" placeholder="Enter class name">
             <el-option
               v-for="item in classList"
               :key="item.value"
@@ -256,8 +260,8 @@
         </div>
       </div>
       <div class="action-button">
-        <el-button  class="action-button-item" @click="saveAsRosterModalVisible = false">Cancel</el-button>
-        <el-button  class="action-button-item classcipe-btn-primary" type="primary" @click="ensureSaveAsClass">Confirm</el-button>
+        <el-button size="small" round class="classcipe-btn action-button-item" @click="saveAsRosterModalVisible = false">Cancel</el-button>
+        <el-button size="small" round class="action-button-item classcipe-btn-primary" type="primary" @click="ensureSaveAsClass">Confirm</el-button>
       </div>
     </el-card>
     </el-dialog>
@@ -802,10 +806,6 @@ export default {
 .sort-asc {
 }
 
-.confirm-tips {
-  margin-top: 20px;
-}
-
 .confirm-tips, .action-button, .class-name-select {
   line-height: 40px;
   display: flex;
@@ -820,19 +820,38 @@ export default {
 .input-select {
   margin-top: 10px;
   margin-bottom: 10px;
+  line-height: 30px;
 }
 
 .action-button-item {
-  margin: 0 10px;
+  margin: 0 20px;
 }
 
 .input-select {
   margin-left: 10px;
-  border: 1px solid #15c39aaa;
+  border: 1px solid #D8D8D8;
+  border-radius: 3px;
 }
 
 .action-button {
-  margin-top: 10px;
+  margin-top: 30px;
   margin-bottom: 20px;
+}
+
+.notice-img {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.notice-title {
+  line-height: 30px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.notice-img img {
+  height: 40px;
 }
 </style>
