@@ -79,10 +79,10 @@ export default {
       studentList: state => state.teacher.studentList,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     ...mapGetters({
-      currentPageAnswerList: 'student/currentPageAnswerList'
+      currentPageAnswerList: 'student/currentPageAnswerList',
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     answerList() {
       let list = this.currentPageAnswerList.map(item => {

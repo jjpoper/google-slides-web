@@ -4,7 +4,6 @@ const state = () => ({
   studentList: [],
   showDashFullResponse: false,
   allGroups: [],
-  selectedGroupMembers: [], // 选中的学生。用于匹配答案，可能是一组，也可能是一个人
   currentGroupMembers: [], // 分组的学生，用于展示学生列表，肯定是一组
   feedBackList: [], // 老师的feedback回答列表
   feedBackAnswerIds: {}, // 已feedback的id map
@@ -27,9 +26,6 @@ const actions = {
   },
   updateGroup({commit}: any, data: any) {
     commit('updateGroup', JSON.parse(JSON.stringify(data)))
-  },
-  changeSelectedGroup({commit}: any, list: string[]) {
-    commit('changeSelectedGroup', JSON.parse(JSON.stringify(list)))
   },
   changeGroupMembers({commit}: any, list: string[]) {
     commit('changeGroupMembers', JSON.parse(JSON.stringify(list)))
@@ -71,9 +67,6 @@ const mutations = {
     } else {
       nextState.allGroups.push(data)
     }
-  },
-  changeSelectedGroup(nextState: any, list: any) {
-    nextState.selectedGroupMembers = list
   },
   changeGroupMembers(nextState: any, list: any) {
     nextState.currentGroupMembers = list

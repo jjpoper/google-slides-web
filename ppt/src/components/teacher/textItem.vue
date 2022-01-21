@@ -55,7 +55,7 @@
 import { getStundentUidAndName } from "@/model/store.teacher";
 import { getCurrentPageAnswerList } from "@/model/store.teacher";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import CommonSwitchTab from './commonSwitchTab.vue';
 import LoadingView from './loadingView.vue';
 export default {
@@ -82,7 +82,9 @@ export default {
     },
     ...mapState({
       studentList: state => state.teacher.studentList,
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+    }),
+    ...mapGetters({
+      selectedGroupMembers: 'student/selectedGroupMembers'
     })
   },
   components: { StudentResponseOptBar, CommonSwitchTab, LoadingView },

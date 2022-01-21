@@ -537,7 +537,6 @@ type: "slide"*/
       this.getPageData();
       this.meterialVisiable = this.metrialStatusMap[this.currentPageId]
       this.checkResponseStatus()
-      this.changeSelectedGroup([])
       this.changeGroupMembers([])
     },
     onLine() {
@@ -565,13 +564,14 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeSelectedGroup", "changeGroupMembers", "setFeedBackList", "setFeedBackAnswerIds"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeGroupMembers", "setFeedBackList", "setFeedBackAnswerIds"]),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
       "updateAllAnswerdList",
       "setAllAnswerdList",
-      "deleteOnAnswerById"
+      "deleteOnAnswerById",
+      "changeSelectedGroup"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",

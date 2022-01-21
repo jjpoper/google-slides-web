@@ -69,7 +69,7 @@
 
 <script>
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
@@ -93,7 +93,9 @@ export default {
       allRemarks: state => state.remark.allRemarks,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+    }),
+    ...mapGetters({
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     selectedAnswerList() {
       if(this.selectedGroupMembers.length === 0) return this.marks

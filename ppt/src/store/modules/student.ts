@@ -13,7 +13,8 @@ const state = () => ({
     allAnswerList: [], // 全部回答数据
     studentFeedBackComments: [], // 老师端评论
     unreadStudentCommentIds: [], // 未读评论
-    isStudentPaced: false
+    isStudentPaced: false,
+    selectedMembersMap: {}, // 以pageid为key的选择学生
 })
 
 // getters
@@ -26,7 +27,7 @@ const getters = {
             allAnswerList
         } = currentState
         const { items, page_id } = studentAllSlides[currentPageIndex]
-        if (items.length === 0) return []
+        if(items.length === 0) return []
         const { type } = items[0]
         const answers = allAnswerList.filter((item: any) => item.page_id === page_id && item.type === type)
         return answers
@@ -85,7 +86,15 @@ const getters = {
         //   this.setDashFullPageResponse(false)
         // }
         return type && type !== null && type !== 'website'
-      }
+      },
+      // 当前选中的学生。用于匹配答案，可能是一组，也可能是一个人
+    selectedGroupMembers: (currentState: any) => {
+        const {
+            selectedMembersMap,
+            currentPageIndex
+        } = currentState
+        return selectedMembersMap[currentPageIndex] || []
+    }
 }
 
 // actions
@@ -141,6 +150,10 @@ const actions = {
 
     updateIsStudentPaced({ commit }: any, status: boolean) {
         commit('updateIsStudentPaced', status)
+    },
+
+    changeSelectedGroup({commit}: any, list: string[]) {
+        commit('changeSelectedGroup', JSON.parse(JSON.stringify(list)))
     },
 }
 
@@ -257,7 +270,12 @@ const mutations = {
     },
     updateIsStudentPaced(nextState: any, status: boolean) {
         nextState.isStudentPaced = status
-    }
+    },
+    changeSelectedGroup(nextState: any, list: any) {
+        const obj = JSON.parse(JSON.stringify(nextState.selectedMembersMap))
+        obj[nextState.currentPageIndex] = list
+        nextState.selectedMembersMap = obj
+    },
 }
 
 export default {

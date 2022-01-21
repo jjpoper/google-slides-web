@@ -57,7 +57,7 @@ import {
 } from "@/model/store.teacher";
 import ECharts from "vue-echarts";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import {mapState} from 'vuex'
+import {mapGetters} from 'vuex'
 import CommonSwitchTab from './commonSwitchTab.vue';
 import LoadingView from './loadingView.vue';
 export default {
@@ -95,8 +95,8 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+    ...mapGetters({
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     selectedAnswerList() {
       let result = []

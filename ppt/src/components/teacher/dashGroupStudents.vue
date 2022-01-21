@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
+import { getJSONValue } from '@/utils/help'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import dashGroupsSelect from './dashGroupsSelect.vue'
 import { controlProject } from '@/socket/socket.teacher'
@@ -32,7 +32,6 @@ export default {
       allGroups: state => {
         return state.teacher.allGroups.filter(item => item.members && item.members.length > 0)
       },
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
       currentGroupMembers: state => state.teacher.currentGroupMembers,
       allRemarks: state => state.remark.allRemarks,
       studentAllSlides: state => state.student.studentAllSlides,
@@ -42,6 +41,7 @@ export default {
       currentPageAnswerList: 'student/currentPageAnswerList',
       currentPageId: 'student/currentPageId',
       currentPageAnswerType: 'student/currentPageAnswerType',
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     // 未答题学生
     noAnswerStudents() {
@@ -86,48 +86,22 @@ export default {
         // this.changeTab(1)
       }
     },
-    currentGroupMembers() {
-      this.selectedStudents = false
-    }
-  },
-  data() {
-    return {
-      selectedStudents: false, // 是否选中学生
-    }
   },
   methods: {
-    ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
-    // changeGroup(id) {
-    //   this.selectedStudents = false
-    //   if(!id) {
-    //     this.changeSelectedGroup([])
-    //     this.changeGroupMembers([])
-    //     return
-    //   }
-    //   const data = this.allGroups.filter(item => item.group_id == id)[0]
-    //   console.log(data)
-    //   const list = data.members.map(item => item.user_id)
-    //   console.log(list)
-    //   this.changeSelectedGroup(list)
-    //   this.changeGroupMembers(list)
-    // },
+    ...mapActions("teacher", ["changeGroupMembers"]),
+    ...mapActions("student", ["changeSelectedGroup"]),
     selectUsers(item) {
       console.log(item)
       const {user_id} = item
       let newList = []
-      if(!this.selectedStudents) {
-        newList = [user_id]
+      newList = [].concat(this.selectedGroupMembers)
+      const index = newList.indexOf(user_id)
+      if(index > -1) {
+        newList.splice(index, 1)
       } else {
-        newList = [].concat(this.selectedGroupMembers)
-        const index = newList.indexOf(user_id)
-        if(index > -1) {
-          newList.splice(index, 1)
-        } else {
-          newList.push(user_id)
-        }
+        newList.push(user_id)
       }
       this.changeSelectedGroup(newList)
-      this.selectedStudents = true
       controlProject({
         controlType: 9,
         result: newList
@@ -135,11 +109,9 @@ export default {
       
     },
     getSelected(user_id) {
-      if(this.selectedStudents) {
-        const list = this.selectedGroupMembers
-        const isSelected = list.length > 0 && list.indexOf(user_id) > -1
-        return isSelected ? 'selected' : ''
-      }
+      const list = this.selectedGroupMembers
+      const isSelected = list.length > 0 && list.indexOf(user_id) > -1
+      return isSelected ? 'selected' : ''
     }
   }
 }
