@@ -18,6 +18,7 @@
                     controls=""
                     :src="item.content.link"
                     preload="auto"
+                    style="height: 150px"
                   />
                   <audio-player v-else-if="item.content.mediaType === 'audio'" :url="item.content.link"/>
                   <div

@@ -19,6 +19,7 @@
                         controls=""
                         :src="item.link"
                         preload="auto"
+                       style="height: 150px"
                       />
                       <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
                       <p class="textinner" v-else-if="item.type === 'text'">
