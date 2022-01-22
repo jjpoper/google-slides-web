@@ -306,7 +306,7 @@
     <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
       <network-error :hideNetWorkError="hideNetWorkError"/>
     </el-dialog>
-    <pdf-view :isShowResponse="showResponse"/>
+    <bigPreview :isShowResponse="showResponse"/>
   </div>
 </template>
 
@@ -374,7 +374,7 @@ import { openShare } from "@/utils/shareScreen";
 import { mapActions, mapState } from "vuex";
 import NewPromptPage from "@/components/teacher/newPromptPage.vue";
 import NetworkError from "@/components/common/networkError.vue";
-import pdfView from '@/components/common/pdfView.vue'
+import bigPreview from '@/components/common/bigPreview.vue'
 import {isDev} from '../utils/pptConfig'
 export default {
   components: {
@@ -396,7 +396,7 @@ export default {
     dashTipsModal,
     NewPromptPage,
     NetworkError,
-    pdfView
+    bigPreview
   },
 
   /*author: "yujj085@gmail.com"
@@ -569,7 +569,7 @@ type: "slide"*/
   },
   methods: {
     ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeGroupMembers", "setFeedBackList", "setFeedBackAnswerIds",
-    'setCurrentPreviewPDF']),
+    'setCurrentPreviewData']),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -1075,7 +1075,7 @@ type: "slide"*/
         // 展示pdf
         if(controlType == 10) {
           // EventBus.$emit('responseTabChange', result)
-          this.setCurrentPreviewPDF(result)
+          this.setCurrentPreviewData(result)
           return
         }
       }

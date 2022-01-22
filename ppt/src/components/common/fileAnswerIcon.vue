@@ -25,7 +25,7 @@ export default {
     this.isPdf = name.indexOf('.pdf') > -1
   },
   methods: {
-    ...mapActions("teacher", ["setCurrentPreviewPDF"]),
+    ...mapActions("teacher", ["setCurrentPreviewData"]),
     getIconClass(name) {
       if(!name) return 'file'
       name = name.toLocaleLowerCase()
@@ -36,8 +36,12 @@ export default {
     previewPdf() {
       if(this.isPdf) {
         const pdfUrl = this.item.content.link
-        this.setCurrentPreviewPDF(pdfUrl)
-        controlProject({result: pdfUrl, controlType: 10})
+        const data = {
+          type: 'pdf',
+          url: pdfUrl
+        }
+        this.setCurrentPreviewData(data)
+        controlProject({result: data, controlType: 10})
       }
     }
   }

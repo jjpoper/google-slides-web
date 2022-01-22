@@ -1,9 +1,9 @@
 <template>
-  <el-dialog :visible.sync="pdfVisable" width="80%" custom-class="custom-dialog" :show-close="false">    
+  <el-dialog :visible.sync="previewVisable" width="80%" custom-class="custom-dialog" :show-close="false">    
     <div style="padding: 5px; background: #fff;width: 100%; height: 100%; ">
       <div style=" paddingTop: 35px; position: relative">
         <common-close-button :deletefn="setCurrentPreviewUrl"/>
-        <embed width="800" height="550" :src="currentPreviewPDF"></embed>
+        <embed v-if="currentPreviewData.type === 'pdf'" width="800" height="550" :src="currentPreviewData.url"></embed>
       </div>
     </div>
   </el-dialog>
@@ -22,30 +22,33 @@ export default {
   components: { commonCloseButton },
   computed: {
     ...mapState({
-      currentPreviewPDF: state => state.teacher.currentPreviewPDF
+      currentPreviewData: state => state.teacher.currentPreviewData
     })
   },
   watch: {
-    currentPreviewPDF() {
+    currentPreviewData() {
       if(this.isProject && !this.isShowResponse) {
-        this.pdfVisable = false
+        this.previewVisable = false
       } else {
-        this.pdfVisable = !!this.currentPreviewPDF
-        console.log(this.pdfVisable)
+        this.previewVisable = !!this.currentPreviewData.url
       }
     }
   },
   data() {
     return {
-      pdfVisable: false,
+      previewVisable: false,
       isProject: location.href.indexOf('/t/') > -1
     }
   },
   methods: {
-    ...mapActions("teacher", ["setCurrentPreviewPDF"]),
+    ...mapActions("teacher", ["setCurrentPreviewData"]),
     setCurrentPreviewUrl() {
-      this.setCurrentPreviewPDF()
-      controlProject({result: '', controlType: 10})
+      const emptyData = {
+        type: '',
+        url: ''
+      }
+      this.setCurrentPreviewData(emptyData)
+      controlProject({result: emptyData, controlType: 10})
     }
   }
 }

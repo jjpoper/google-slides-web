@@ -7,7 +7,10 @@ const state = () => ({
   currentGroupMembers: [], // 分组的学生，用于展示学生列表，肯定是一组
   feedBackList: [], // 老师的feedback回答列表
   feedBackAnswerIds: {}, // 已feedback的id map
-  currentPreviewPDF: '', // 当前预览的pdf
+  currentPreviewData: {
+    type: '',
+    url: ''
+  }, // 当前预览的内容。包括图片。pdf。视频
 })
 
 // getters
@@ -43,8 +46,8 @@ const actions = {
   addFeedBackId({commit}: any, id: any) {
     commit('addFeedBackId', id)
   },
-  setCurrentPreviewPDF({ commit }: any, url: any) {
-    commit('setCurrentPreviewPDF', url)
+  setCurrentPreviewData({ commit }: any, data: any) {
+    commit('setCurrentPreviewData', JSON.parse(JSON.stringify(data)))
 },
 }
 
@@ -89,8 +92,8 @@ const mutations = {
     nextMap[id] = true
     nextState.feedBackAnswerIds = nextMap
   },
-  setCurrentPreviewPDF(nextState: any, url: any) {
-    nextState.currentPreviewPDF = url || ''
+  setCurrentPreviewData(nextState: any, data: any) {
+    nextState.currentPreviewData = data || {type: '', url: ''}
   }
 }
 
