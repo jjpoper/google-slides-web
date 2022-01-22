@@ -235,12 +235,13 @@ export default {
 }
 .medialist{
   display: flex;
-  width: 150px;
+  width: 220px;
   height: 100%;
   overflow: scroll;
   flex-direction: column;
-  background-color: rgba(195,102, 22, 0.5);
+  background-color: rgba(226, 235, 243, 1);
   align-items: center;
+
 }
 .mask{
   position: absolute;

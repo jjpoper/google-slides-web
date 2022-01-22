@@ -113,6 +113,7 @@ export default {
   flex-wrap: wrap;
   overflow: hidden;
   height: 100%;
+  background: rgba(0, 0, 0, 0.5);
 }
 .mediaFourItem{
   width: 50%;
@@ -124,7 +125,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbd4d4;
+  /* border: 1px solid #dbd4d4; */
 }
 .mediaFourItemfull{
   width: 100%;
