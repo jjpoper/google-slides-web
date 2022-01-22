@@ -180,30 +180,36 @@ const mutations = {
         nextState.allGroups = list
     },
     updateAllAnswerdList(nextState: any, data: any) {
+        const oldStudentData = JSON.parse(JSON.stringify(nextState.allAnswerList))
+        const {type} = data
         const {
-            allAnswerList,
             studentAllSlides,
-            currentPageIndex,
+            currentPageIndex
         } = nextState
-        if (data.type === 'media') {
+        if(data.type === 'media') {
             nextState.allAnswerList.push(data)
         } else {
             // const { item_id: itemId, student_user_id: sid, type } = data
-            // const pageId = studentAllSlides[currentPageIndex].page_id
-            // // console.log(itemId, sid, type, pageId, "addItem")
-            // let oldDataIndex = -1
-            // if(type === 'text') {
-            //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)
-            // } else {
-            //     // 一条答案数据，去重
-            //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.student_user_id === sid)
-            // }
-            // if(oldDataIndex > -1) {
-            //     allAnswerList.splice(oldDataIndex, 1, data)
-            // } else {
-            //     allAnswerList.push(data)
-            // }
+            const pageId = studentAllSlides[currentPageIndex].page_id
+            const { item_id: itemId } = data
+            let oldDataIndex = -1
+            if(type === 'choice' || type === 'draw') {
+                // 一条答案数据，去重
+                oldDataIndex = oldStudentData.findIndex((item: any) => item.page_id === pageId)
+            } else {
+                oldDataIndex = oldStudentData.findIndex((item: any) => {
+                    return item.page_id === pageId && item.item_id === itemId
+                })
+            }
+
+            if(oldDataIndex > -1) {
+                oldStudentData[oldDataIndex] = data
+            } else {
+                oldStudentData.push(data)
+            }
+            nextState.allAnswerList = oldStudentData
         }
+        
     },
     setAllAnswerdList(nextState: any, list: any) {
         nextState.allAnswerList = list

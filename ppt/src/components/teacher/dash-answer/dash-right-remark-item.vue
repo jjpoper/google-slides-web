@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="remark-img" v-else-if="item.content.mediaType === 'image'">
-      <base64image :url="item.content.link"/>
+      <base64image :url="item.content.link" :showPreview="true"/>
     </div>
   </div>
 </template>

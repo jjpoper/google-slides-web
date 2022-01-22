@@ -98,7 +98,7 @@
             </div>
           </div>
           <div style="width: 280px; height: 150px; position: relative" v-else-if="item.content.mediaType === 'image'">
-            <base64image :url="item.content.link" />
+            <base64image :url="item.content.link" :showPreview="true"/>
           </div>
         </div>
       </li>
@@ -136,7 +136,8 @@ export default {
       currentPageId: "student/currentPageId"
     }),
     answerList() {
-      return this.currentPageAnswerList.reverse().map(item => {
+      const list = [].concat(this.currentPageAnswerList)
+      return list.reverse().map(item => {
         const content = item.content || JSON.parse(item.data).content;
         return {
           ...item,

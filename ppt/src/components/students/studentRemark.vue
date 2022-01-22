@@ -457,6 +457,7 @@ export default {
   margin-bottom: 15px;
   flex: 1;
   word-break: break-all;
+  position: relative;
 }
 .remark-text {
   font-size: 10px;
