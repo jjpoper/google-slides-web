@@ -81,6 +81,7 @@ interface GetCommentListParams {
 export const getTeacherCommentList = ({ feedBackList, pageId, studentId, id }: GetCommentListParams) => {
   const filterData = feedBackList.filter(item => {
     const itemData = typeof item.data === 'object' ? item.data : JSON.parse(item.data)
+    if(!itemData.id) return false
     const isSameItem = id === itemData.id
     if(pageId === itemData.pageId && studentId === itemData.studentId && isSameItem) {
       return true

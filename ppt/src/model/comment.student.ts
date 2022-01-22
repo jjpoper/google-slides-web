@@ -28,8 +28,8 @@ export const initStudentCommentData = async (classId: string, token: string) => 
   studentAllCommentList = list
   const mapData = studentAllCommentList.map((item) => {
     return {
+      ...JSON.parse(item.data),
       ...item,
-      ...JSON.parse(item.data)
     }
   })
   return mapData

@@ -75,7 +75,7 @@ export default {
     }),
     isCommented() {
       const { id } = this.data;
-      return this.feedBackAnswerIds[id]
+      return id && this.feedBackAnswerIds[id]
     }
   },
   data() {

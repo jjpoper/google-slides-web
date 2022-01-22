@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <el-dialog :visible.sync="showLoginDialog" custom-class="custom-dialog">
+    <el-dialog :visible.sync="showLoginDialog" :close-on-click-modal="false" custom-class="custom-dialog">
       <StudentLoginPage :joinRoom="loginRoom" :googleLogin="googleLogin" :class_id="class_id" />
     </el-dialog>
     <class-room-closed

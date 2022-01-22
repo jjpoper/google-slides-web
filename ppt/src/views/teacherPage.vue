@@ -1072,7 +1072,7 @@ type: "slide"*/
           return
         }
 
-        // 展示pdf
+        // 弹框预览图片视频等
         if(controlType == 10) {
           // EventBus.$emit('responseTabChange', result)
           this.setCurrentPreviewData(result)
@@ -1329,13 +1329,14 @@ type: "slide"*/
       }
       // 回答choice
       if (d.type === "choice") {
-        const { answer, user_id, type } = d;
+        const { answer, user_id, type, response_id } = d;
         newList = addTeacherData(page_id, type, {
           user_id,
           answer,
           star: false,
           show: true,
           key: user_id,
+          id: response_id,
           ...d
         });
         const data = this.currentItemData;
@@ -1345,7 +1346,7 @@ type: "slide"*/
         d.type === SocketEventsEnum.NUMBER_INPUT
       ) {
         //接收到text input或者number input的值
-        const { content, user_id, user_name, item_id, type } = d;
+        const { content, user_id, user_name, item_id, type, response_id } = d;
         newList = addTeacherData(page_id, type, {
           user_id,
           content,
@@ -1354,11 +1355,12 @@ type: "slide"*/
           star: false,
           show: true,
           key: `${item_id}_${user_id}`,
-          ...d
+          ...d,
+          id: response_id
         });
         EventBus.$emit(d.type, { user_id, page_id, item_id });
       } else if (d.type === SocketEventsEnum.DRAW_CANVAS) {
-        const { result, content1, type, user_id, user_name } = d;
+        const { result, content1, type, user_id, user_name , response_id} = d;
         console.log(result)
         newList = addTeacherData(page_id, type, {
           user_id,
@@ -1367,6 +1369,7 @@ type: "slide"*/
           show: true,
           key: user_id,
           user_name,
+          id: response_id,
           ...d,
           content: result,
         });
