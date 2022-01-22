@@ -221,7 +221,6 @@ export default {
   },
   methods: {
     ...mapActions("remark", [
-      "addOneRemarkItem",
       "changeRemarkIndex",
       "updateOneRemarkItem",
       "setCurrentRemarkOptions",

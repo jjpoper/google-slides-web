@@ -545,7 +545,8 @@ type: "slide"*/
       "updateLatestRemarkId",
       "addOneRemarkItem",
       "updateOneRemarkItem",
-      "deleteOneRemarkItem"
+      "deleteOneRemarkItem",
+      "updateCommentStarOrResponse"
     ]),
     ...mapActions("metarial", [
       "setSelectedMetarialId",
@@ -899,7 +900,8 @@ type: "slide"*/
               res.data[i].data.updated_at = res.data[i].data.time;
               marks.push({
                 id: res.data[i].id,
-                ...res.data[i].data
+                ...res.data[i].data,
+                ...res.data[i]
               });
             }
 
@@ -1033,12 +1035,22 @@ type: "slide"*/
             id: response_id,
             star: star_type
           })
+        } else {
+          this.updateCommentStarOrResponse({
+            id: response_id,
+            star: star_type
+          })
         }
         
       } else if(d.mtype === 'control-response') {
         const {show_type, response_id, type} = d
         if(type === 'response') {
           this.updateAnswerStarOrResponse({
+            id: response_id,
+            show_response: show_type
+          })
+        } else {
+          this.updateCommentStarOrResponse({
             id: response_id,
             show_response: show_type
           })

@@ -180,7 +180,6 @@ export default {
   methods: {
     //返回当前这个item是否应该show出来
     shouldShow(item) {
-      return true
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
       if (item.show_response == 1) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示

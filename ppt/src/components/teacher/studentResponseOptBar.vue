@@ -45,6 +45,7 @@ export default {
     ...mapState({
       feedBackAnswerIds: state => state.teacher.feedBackAnswerIds,
       allAnswerList: state => state.student.allAnswerList,
+      allRemarks: state => state.remark.allRemarks
     }),
     ...mapGetters({
       currentPageAnswerType: 'student/currentPageAnswerType'
@@ -54,8 +55,14 @@ export default {
       return id && this.feedBackAnswerIds[id]
     },
     currentOptions() {
-      const data = this.allAnswerList.filter((item) => item.id == this.data.id)
-      // console.log(data)
+      let list = []
+      if(this.currentPageAnswerType === 'comment') {
+         list = this.allRemarks
+      } else {
+        list = this.allAnswerList
+      }
+      const data = list.filter((item) => item.id == this.data.id)
+      console.log(data)
       return data[0] || {}
     }
   },
@@ -69,6 +76,7 @@ export default {
   },
   methods: {
     ...mapActions('student', ['updateAnswerStarOrResponse']),
+    ...mapActions('remark', ['updateCommentStarOrResponse']),
     starAnswer() {
       const { id } = this.data;
       const {star} = this.currentOptions
@@ -91,6 +99,11 @@ export default {
       if(this.currentPageAnswerType !== 'comment') {
         // 非comment题型
         this.updateAnswerStarOrResponse({
+          id,
+          star: nextStatus
+        })
+      } else {
+        this.updateCommentStarOrResponse({
           id,
           star: nextStatus
         })
@@ -136,6 +149,11 @@ export default {
        if(this.currentPageAnswerType !== 'comment') {
         // 非comment题型
         this.updateAnswerStarOrResponse({
+          id,
+          show_response: nextStatus
+        })
+      } else {
+        this.updateCommentStarOrResponse({
           id,
           show_response: nextStatus
         })
