@@ -24,7 +24,7 @@
                     class="remark-file"
                     v-else-if="item.content.mediaType === 'file'"
                   >
-                    <div :class="`file-icon ${getIconClass(item.content.fileName)} ${currentTab === 1 ? '' : 'smallicon'}`" ></div>
+                    <file-answer-icon :item="item" :className="`${currentTab === 1 ? '' : 'smallicon'}`"/>
                     <div class="file-name" style="flex: 1">
                       <p class="file-name">{{item.content.fileName}}</p>
                       <a :href="item.content.link" target="_blank"  download class="download-text">Download</a>
@@ -81,6 +81,7 @@ import AudioPlayer from '../common/audioPlayer.vue';
 import Base64image from '../base64image.vue';
 import CommonSwitchTab from './commonSwitchTab.vue';
 import LoadingView from './loadingView.vue';
+import FileAnswerIcon from '../common/fileAnswerIcon.vue';
 export default {
   computed: {
     // 未答题学生
@@ -129,7 +130,7 @@ export default {
       return list;
     },
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab, LoadingView },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab, LoadingView, FileAnswerIcon },
   props: {
     data: {
       type: Object,

@@ -15,7 +15,7 @@
       :url="item.content.link"
     />
     <div class="remark-file-right" v-else-if="item.content.mediaType === 'file'">
-      <div :class="`file-icon-right ${getIconClass(item.content.fileName)}`"></div>
+      <file-answer-icon :item="item" />
       <div style="flex: 1">
         <p class="file-name-right">{{item.content.fileName}}</p>
         <a :href="item.content.link" download target="_blank"  class="download-text">Download</a>
@@ -29,8 +29,9 @@
 <script>
 import audioPlayer from '@/components/common/audioPlayer.vue';
 import base64image from '@/components/base64image.vue';
+import FileAnswerIcon from '@/components/common/fileAnswerIcon.vue';
 export default {
-  components: { audioPlayer, base64image },
+  components: { audioPlayer, base64image, FileAnswerIcon },
   props: {
     item: {
       type: Object,

@@ -94,7 +94,7 @@ const getters = {
             currentPageIndex
         } = currentState
         return selectedMembersMap[currentPageIndex] || []
-    }
+    },
 }
 
 // actions

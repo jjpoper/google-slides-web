@@ -664,6 +664,7 @@ video{
 }
 .file-icon.pdf{
   background-image: url(../picture/pdf.png);
+  cursor: pointer;
 }
 .file-icon.word{
   background-image: url(../picture/word.png);

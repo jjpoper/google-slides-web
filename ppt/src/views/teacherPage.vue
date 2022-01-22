@@ -306,6 +306,7 @@
     <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
       <network-error :hideNetWorkError="hideNetWorkError"/>
     </el-dialog>
+    <pdf-view :isShowResponse="showResponse"/>
   </div>
 </template>
 
@@ -373,6 +374,7 @@ import { openShare } from "@/utils/shareScreen";
 import { mapActions, mapState } from "vuex";
 import NewPromptPage from "@/components/teacher/newPromptPage.vue";
 import NetworkError from "@/components/common/networkError.vue";
+import pdfView from '@/components/common/pdfView.vue'
 import {isDev} from '../utils/pptConfig'
 export default {
   components: {
@@ -393,7 +395,8 @@ export default {
     dashCopyDialog,
     dashTipsModal,
     NewPromptPage,
-    NetworkError
+    NetworkError,
+    pdfView
   },
 
   /*author: "yujj085@gmail.com"
@@ -565,7 +568,8 @@ type: "slide"*/
     });
   },
   methods: {
-    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeGroupMembers", "setFeedBackList", "setFeedBackAnswerIds"]),
+    ...mapActions("teacher", ["setStudentList", "setAllGroups", "changeGroupMembers", "setFeedBackList", "setFeedBackAnswerIds",
+    'setCurrentPreviewPDF']),
     ...mapActions("student", [
       "setStudentAllSlides",
       "setStudentPageIndex",
@@ -1065,6 +1069,13 @@ type: "slide"*/
         if(controlType == 9) {
           // EventBus.$emit('responseTabChange', result)
           this.changeSelectedGroup(result)
+          return
+        }
+
+        // 展示pdf
+        if(controlType == 10) {
+          // EventBus.$emit('responseTabChange', result)
+          this.setCurrentPreviewPDF(result)
           return
         }
       }
