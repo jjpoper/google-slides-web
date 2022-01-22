@@ -470,8 +470,8 @@
 }
 /* 有星标时的bg */
 .star_bg {
-  border: 3px solid #f7d567;
-  background-color: #f8f1d3;
+  border: 3px solid #f7d567 !important;
+  background-color: #f8f1d3 !important;
 }
 .text-item-outer1{
   /* height: 290px; */

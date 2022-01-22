@@ -536,7 +536,8 @@ type: "slide"*/
       "updateAllAnswerdList",
       "setAllAnswerdList",
       "deleteOnAnswerById",
-      "changeSelectedGroup"
+      "changeSelectedGroup",
+      "updateAnswerStarOrResponse"
     ]),
     ...mapActions("remark", [
       "showRemarkModal",
@@ -1025,7 +1026,24 @@ type: "slide"*/
     },
     msgListener(d) {
       // console.log(d);
-      if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
+      if(d.mtype === 'star') {
+        const {star_type, response_id, type} = d
+        if(type === 'response') {
+          this.updateAnswerStarOrResponse({
+            id: response_id,
+            star: star_type
+          })
+        }
+        
+      } else if(d.mtype === 'control-response') {
+        const {show_type, response_id, type} = d
+        if(type === 'response') {
+          this.updateAnswerStarOrResponse({
+            id: response_id,
+            show_response: show_type
+          })
+        }
+      } else if (d.mtype === SocketEventsEnum.STUDENTS_COUNTS) {
         // 人数更新
         //  this.studentCounts = d.student_count;
         if (d.join_in) {

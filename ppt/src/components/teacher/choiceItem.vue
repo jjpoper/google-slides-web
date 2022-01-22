@@ -57,9 +57,10 @@ import {
 } from "@/model/store.teacher";
 import ECharts from "vue-echarts";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import {mapGetters} from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import CommonSwitchTab from './commonSwitchTab.vue';
 import LoadingView from './loadingView.vue';
+import { getJSONValue } from '@/utils/help';
 export default {
   components: { StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab, LoadingView },
   props: {
@@ -95,20 +96,31 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      selectedGroupMembers: 'student/selectedGroupMembers'
-    }),
     selectedAnswerList() {
-      let result = []
-      if(this.selectedGroupMembers.length === 0) {
-        result = this.answerList
-      } else {
-        result = this.answerList.filter(item => {
-          return this.selectedGroupMembers.indexOf(item.user_id) > -1
-        })
-      }
-      return result
+      const res = this.currentPageAnswerType === 'comment' ? this.currentComments : this.currentPageAnswerList
+      let list = this.currentPageAnswerList.map(item => {
+        const data = item.content ? {} : getJSONValue(item.data)
+        return {
+          ...data,
+          ...item,
+          id: item.id || item.response_id,
+        }
+      }).reverse()
+      console.log(list)
+      if(this.selectedGroupMembers.length === 0) return list
+      let slist = list.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+       console.log(slist)
+      return slist
     },
+    ...mapState({
+      studentList: state => state.teacher.studentList,
+    }),
+    ...mapGetters({
+      selectedGroupMembers: 'student/selectedGroupMembers',
+      currentPageAnswerList: 'student/currentPageAnswerList'
+    }),
     bar() {
       const names = this.options.map(item => {
         return this.optFlags[item.id] + ": " + item.text;
@@ -180,10 +192,10 @@ export default {
     this.title = title;
     this.options = options;
     this.isMulti = isMulti;
-    this.answerList = getCurrentPageAnswerList(
-      this.choiceData.page_id,
-      this.choiceData.items[0].type
-    );
+    // this.answerList = getCurrentPageAnswerList(
+    //   this.choiceData.page_id,
+    //   this.choiceData.items[0].type
+    // );
   },
   mounted() {
     EventBus.$on("choice", data => {
@@ -194,10 +206,10 @@ export default {
       this.isMulti = isMulti;
       // console.log(this.data, data, "EventBus on");
       const { user_id, answer, user_name } = data;
-      this.answerList = getCurrentPageAnswerList(
-        this.choiceData.page_id,
-        this.choiceData.items[0].type
-      );
+      // this.answerList = getCurrentPageAnswerList(
+      //   this.choiceData.page_id,
+      //   this.choiceData.items[0].type
+      // );
     });
   },
   methods: {
@@ -260,10 +272,9 @@ export default {
       return name ? name : id;
     },
 
-    //返回当前这个item是否应该show出来
     shouldShow(item) {
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
-      if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.show_response == 1) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示
       for (let i = 0; i < this.selectedAnswerList.length; i++) {
         if (this.selectedAnswerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏

@@ -3,15 +3,14 @@
     <div class="emoji_area" :title="data.name">
       {{ data ? data.name.split("@")[0] : " " }}
     </div>
-    <div class="opt_area">
+    <div class="opt_area" v-if="!isProject">
       <el-tooltip
-        v-if="data.isShowRes"
         effect="dark"
         content="Star Answer"
         placement="top-start"
       >
         <i @click="starAnswer"
-          :class="`answer-footer-button ${data.isStar ? 'star' : 'unstar'}`"></i>
+          :class="`answer-footer-button ${currentOptions.star ? 'star' : 'unstar'}`"></i>
       </el-tooltip>
 
       <el-tooltip class="item" effect="dark" content="Feedback" placement="top-start">
@@ -23,43 +22,16 @@
         <div
           class="response_opt"
           @click="hideResponse()"
-        >{{ data.isShowRes ? "Hide" : "Show" }} Response</div>
-        <!-- <svg
-          slot="reference"
-          t="1620960073835"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="10081"
-          :width="size"
-          :height="size"
-        >
-          <path
-            d="M365.066 197.39c0 0 0 0 0 0 0 58.569 47.479 106.048 106.048 106.048 58.569 0 106.048-47.479 106.048-106.048 0 0 0 0 0 0 0-58.569-47.479-106.048-106.048-106.048-58.569 0-106.048 47.479-106.048 106.048 0 0 0 0 0 0z"
-            fill="#1296db"
-            p-id="10082"
-          />
-          <path
-            d="M365.066 512c0 0 0 0 0 0 0 58.569 47.479 106.048 106.048 106.048 58.569 0 106.048-47.479 106.048-106.048 0 0 0 0 0 0 0-58.569-47.479-106.048-106.048-106.048-58.569 0-106.048 47.479-106.048 106.048 0 0 0 0 0 0z"
-            fill="#1296db"
-            p-id="10083"
-          />
-          <path
-            d="M365.066 826.61c0 0 0 0 0 0 0 58.569 47.479 106.048 106.048 106.048 58.569 0 106.048-47.479 106.048-106.048 0 0 0 0 0 0 0-58.569-47.479-106.048-106.048-106.048-58.569 0-106.048 47.479-106.048 106.048 0 0 0 0 0 0z"
-            fill="#1296db"
-            p-id="10084"
-          />
-        </svg> -->
+        >{{ !currentOptions.show_response ? "Hide" : "Show" }} Response</div>
         <i slot="reference" class="answer-footer-button pop"></i>
       </el-popover>
     </div>
   </div>
 </template>
 <script>
-import { getTimeValue, getTeacherCommentList } from "@/utils/help";
 import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
-import {mapState} from 'vuex'
+import {mapState, mapGetters, mapActions} from 'vuex'
+import { sendTeacherSocketRequest } from '@/socket/socket.teacher';
 export default {
   props: {
     data: {
@@ -71,11 +43,20 @@ export default {
   },
   computed: {
     ...mapState({
-      feedBackAnswerIds: state => state.teacher.feedBackAnswerIds
+      feedBackAnswerIds: state => state.teacher.feedBackAnswerIds,
+      allAnswerList: state => state.student.allAnswerList,
+    }),
+    ...mapGetters({
+      currentPageAnswerType: 'student/currentPageAnswerType'
     }),
     isCommented() {
       const { id } = this.data;
       return id && this.feedBackAnswerIds[id]
+    },
+    currentOptions() {
+      const data = this.allAnswerList.filter((item) => item.id == this.data.id)
+      // console.log(data)
+      return data[0] || {}
     }
   },
   data() {
@@ -83,23 +64,37 @@ export default {
       //   isStar: false,
       //   isShowRes: true,
       size: 20,
+      isProject: location.href.indexOf('/t/') > -1
     };
   },
   methods: {
+    ...mapActions('student', ['updateAnswerStarOrResponse']),
     starAnswer() {
-      const { pageId, itemId, studentId, title, isStar, id } = this.data;
-      const nextStatus = !isStar;
-      const type = "star";
-      console.log("星标", this.data);
-      EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
-        pageId,
-        itemId,
-        title,
-        studentId,
-        nextStatus,
-        type,
-        id
-      });
+      const { id } = this.data;
+      const {star} = this.currentOptions
+      const nextStatus = star == 1 ? 0 : 1;
+      console.log("星标", this.currentOptions, id);
+      // EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
+      //   pageId,
+      //   itemId,
+      //   title,
+      //   studentId,
+      //   nextStatus,
+      //   type,
+      //   id
+      // });
+      sendTeacherSocketRequest('star', {
+        star_type: nextStatus,   // 1：打星；0：取消打星
+        response_id: id,
+        type: this.currentPageAnswerType !== 'comment' ? 'response' : 'comment'
+      })
+      if(this.currentPageAnswerType !== 'comment') {
+        // 非comment题型
+        this.updateAnswerStarOrResponse({
+          id,
+          star: nextStatus
+        })
+      }
     },
     comment() {
       // console.log("回复");
@@ -120,17 +115,31 @@ export default {
     },
     hideResponse() {
       // console.log("隐藏");
-      const { pageId, itemId, studentId, title, isShowRes } = this.data;
-      const nextStatus = !isShowRes;
-      const type = "show";
-      EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
-        pageId,
-        itemId,
-        title,
-        studentId,
-        nextStatus,
-        type
-      });
+      const { id } = this.data;
+      const {show_response} = this.currentOptions
+      const nextStatus = show_response == 1 ? 0 : 1;
+      // const type = "show";
+      // EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
+      //   pageId,
+      //   itemId,
+      //   title,
+      //   studentId,
+      //   nextStatus,
+      //   type
+      // });
+      // show_response
+      sendTeacherSocketRequest('control-response', {
+        show_type: nextStatus,   // 1：打星；0：取消打星
+        response_id: id,
+        type: this.currentPageAnswerType !== 'comment' ? 'response' : 'comment'
+      })
+       if(this.currentPageAnswerType !== 'comment') {
+        // 非comment题型
+        this.updateAnswerStarOrResponse({
+          id,
+          show_response: nextStatus
+        })
+      }
     },
     video() {
       this.showComment(ModalEventsTypeEnum.VIDEO)

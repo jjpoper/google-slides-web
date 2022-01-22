@@ -47,6 +47,6 @@ export default {
     draw,
     AudioItem,
     RemarkItem
-  }
+  },
 };
 </script>

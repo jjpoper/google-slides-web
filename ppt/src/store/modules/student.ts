@@ -155,6 +155,9 @@ const actions = {
     changeSelectedGroup({commit}: any, list: string[]) {
         commit('changeSelectedGroup', JSON.parse(JSON.stringify(list)))
     },
+    updateAnswerStarOrResponse({commit}: any, data: any) {
+        commit('updateAnswerStarOrResponse', data)
+    },
 }
 
 // mutations
@@ -209,7 +212,7 @@ const mutations = {
             }
             nextState.allAnswerList = oldStudentData
         }
-        
+
     },
     setAllAnswerdList(nextState: any, list: any) {
         nextState.allAnswerList = list
@@ -282,6 +285,17 @@ const mutations = {
         obj[nextState.currentPageIndex] = list
         nextState.selectedMembersMap = obj
     },
+    updateAnswerStarOrResponse(nextState: any, data: any) {
+        const oldStudentData = JSON.parse(JSON.stringify(nextState.allAnswerList))
+        const oldDataIndex = oldStudentData.findIndex((item: any) => item.id == data.id)
+        if(oldDataIndex > -1) {
+            oldStudentData[oldDataIndex] = {
+                ...oldStudentData[oldDataIndex],
+                ...data
+            }
+            nextState.allAnswerList = oldStudentData
+        }
+    }
 }
 
 export default {

@@ -15,7 +15,9 @@ const RsendSocketTypeMaps: any = {
   'join-room': 'join-room',
   'update-tip': 'update-tip',
   'update-correct-answer': 'update-correct-answer',
-  'control': 'control'
+  'control': 'control',
+  'star': 'star',
+  'control-response': 'control-response'
 }
 
 interface BaseParams {
@@ -82,6 +84,12 @@ const getMessageId = (action: string, params: object) => {
       clientMsgId = getHashCode(keyMaps)
     } else if(action === RsendSocketTypeMaps['update-correct-answer']) {
       delete keyMaps.correct_answer
+      clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps.star) {
+      delete keyMaps.star_type
+      clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps['control-response']) {
+      delete keyMaps.show_type
       clientMsgId = getHashCode(keyMaps)
     }
     if(clientMsgId) {
@@ -305,6 +313,14 @@ export const createSo = (token: string, classId: string, callback: callback, onL
   socket.on('delete-response', (data: any) => {
     // // console.log("删除答案" + data);
     preCheckAck(data, callback, {mtype: SocketEventsEnum.DELETE_QUESTION})
+  });
+  socket.on('star', (data: any) => {
+    // // console.log("删除答案" + data);
+    preCheckAck(data, callback, {mtype: 'star'})
+  });
+  socket.on('control-response', (data: any) => {
+    // // console.log("删除答案" + data);
+    preCheckAck(data, callback, {mtype: 'control-response'})
   });
   socket.on('msg', (data: string) => {
     try {
