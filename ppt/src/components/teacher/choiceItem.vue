@@ -119,7 +119,11 @@ export default {
       return {
         tooltip: {
           trigger: "item",
-          formatter: "{c}%"
+          // formatter: "{c}%"
+          formatter: function(params){
+            const {name, value} = params
+            return `${name}`
+          }
         },
         xAxis: {
           type: "category",
@@ -154,9 +158,9 @@ export default {
             label: {
               show: true,
               position: "inside",
-              formatter: v => {
+              formatter: (v, index) => {
                 const val = v.data;
-                const len = this.selectedAnswerList.length;
+                const len = this.answerList.length;
                 if (len > 0 && val > 0) {
                   const per = ((val * 100) / len).toFixed(2);
                   return `${val}（${per}/%）`;
@@ -221,10 +225,7 @@ export default {
       const { isMulti } = this;
       for (let i = 0; i < this.selectedAnswerList.length; i++) {
         const { answer } = this.selectedAnswerList[i];
-        if (
-          (!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||
-          (!isMulti && value == parseInt(answer))
-        ) {
+        if ((!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||(!isMulti && value == parseInt(answer))) {
           if (this.selectedAnswerList[i].show || this.flag_1) {
             count++;
           }
