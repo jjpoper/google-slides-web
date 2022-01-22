@@ -16,7 +16,7 @@ const getters = {
 // actions
 const actions = {
   setStudentList({commit}: any, list: any) {
-    commit(TeacherActionTypes.SET_STUDENT_LIST, {list: JSON.parse(JSON.stringify(list))})
+    commit(TeacherActionTypes.SET_STUDENT_LIST, JSON.parse(JSON.stringify(list)))
   },
   setDashFullPageResponse({commit}: any, status: boolean) {
     commit('setDashFullPageResponse', status)
@@ -46,7 +46,7 @@ const actions = {
 
 // mutations
 const mutations = {
-  [TeacherActionTypes.SET_STUDENT_LIST](nextState: any, {list}: any) {
+  [TeacherActionTypes.SET_STUDENT_LIST](nextState: any, list: any) {
     nextState.studentList = list
   },
   setDashFullPageResponse(nextState: any, status: boolean) {

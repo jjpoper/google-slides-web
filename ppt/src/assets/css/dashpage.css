@@ -398,6 +398,10 @@
   padding-left: 15px;
   box-sizing: border-box;
   cursor: pointer;
+  margin: 1px 0;
+}
+.student-list-item.selected{
+  border:1px solid red;
 }
 .text-item-outer5{
   display: flex;

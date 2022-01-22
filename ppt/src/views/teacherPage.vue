@@ -531,6 +531,7 @@ type: "slide"*/
   },
   watch: {
     studentList() {
+      console.log('==== studentList',)
       this.setStudentList(this.studentList);
     },
     currentPageIndex() {
@@ -1134,6 +1135,7 @@ type: "slide"*/
             }
           }
         }
+        this.setStudentList(this.studentList);
       } else if (d.mtype === SocketEventsEnum.RENAME) {
         // 改名
         const { user_id, user_name_new, page_id } = d;
@@ -1143,6 +1145,7 @@ type: "slide"*/
             break;
           }
         }
+        this.setStudentList(this.studentList);
       } else if (d.type === SocketEventsEnum.GO_PAGE) {
         if (d.room == this.class_id) {
           if (d.params) {
@@ -1206,6 +1209,7 @@ type: "slide"*/
             break;
           }
         }
+        this.setStudentList(this.studentList);
       } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
         // console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
       } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {

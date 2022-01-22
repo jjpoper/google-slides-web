@@ -6,12 +6,12 @@
       </div>
       <ul class="res-list">
         <template  v-for="item in studentList" >
-          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
+          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'} ${getSelected(item.user_id)}`"
             v-if="currentGroupMembers.length === 0 || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
             @click="selectUsers(item)">
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
-            <div :class="`user-icon student-icon ${getSelected(item.user_id)}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
+            <div :class="`user-icon student-icon ${item.state}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
             <div class="user-name" :title="item.name">{{item.name.split("@")[0]}}</div>
           </li>
         </template>
@@ -145,7 +145,7 @@ export default {
     color: #fff;
     background-color: #afafaf;
   }
-  .user-icon.selected{
+  .user-icon.online{
     background-color: red;
   }
   .student-icon{
