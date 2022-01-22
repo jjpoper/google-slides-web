@@ -210,28 +210,6 @@
       <stepOneView :openTwo="openTwo" :hideStepOne="hideStepOne" />
     </el-dialog>
 
-    <!-- @close="closeCopyLinkDialog()" -->
-    <!-- <el-dialog
-      :title="getStepTwoTitle()"
-      :visible.sync="stepTwoDialog"
-      @open="openCopyLinkDialog()"
-      custom-class="custom-dialog"
-      width="80%"
-    >
-      <dash-copy-dialog
-        v-if="classRoomInfo"
-        :getStudentOnLineCount="getStudentOnLineCount"
-        :url="getStudentUrl()"
-        :copyLink="copyLink"
-        :getBtnString="getBtnString"
-        :enterClassroom="enterClassroom"
-        :setTimeDialogShow="setTimeDialogShow"
-        :currentMode="page_model"
-        :isDashboard="isDashboard"
-        :closeBtn="closeDashCopy"
-      />
-    </el-dialog> -->
-
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
       <feedbackTimePanel
         :mode="mode"
@@ -239,22 +217,6 @@
         :confirm="hindeTimeDialog"
       />
     </el-dialog>
-
-    <!-- custom-class="custom-dialog" @open="openCopyLinkDialog()" -->
-    <!-- title="Share this link with your students"       <copyLinkDialog
-        v-if="classRoomInfo"
-        :getStudentOnLineCount="getStudentOnLineCount"
-        :url="getStudentUrl()"
-        :copyLink="copyLink"
-        :getBtnString="getBtnString"
-        :enterClassroom="enterClassroom"
-        :setTimeDialogShow="setTimeDialogShow"
-        :currentMode="page_model"
-        :isDashboard="isDashboard"
-        :closeBtn="closeCopyDialog"
-    />-->
-
-    <!--  -->
     <el-dialog
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -264,7 +226,6 @@
       :center="true"
       custom-class="custom-dialog"
       width="900px"
-      @close="closeCopyLinkDialog()"
     >
       <AnonymousLogin
         v-if="classRoomInfo"
@@ -437,7 +398,6 @@ type: "slide"*/
       responsePercentage: [],
       isFocus: [],
       stepOneDialog: false,
-      stepTwoDialog: false,
       onLine: true, // 在线状态
       directFromPlugin: false, //是否是从插件直接打开的。
       showTimeSetDialog: false,
@@ -829,22 +789,6 @@ type: "slide"*/
             this.goToLogin();
           } else {
             this.afterLogin(profile);
-            // console.log(profile.config);
-            if (!this.directFromPlugin) {
-              return;
-            }
-            if (profile.config && profile.config.length > 0) {
-              for (let i = 0; i < profile.config.length; i++) {
-                if (profile.config[i].key === "dashboard_step_one_hide") {
-                  if (profile.config[i].value === "1") {
-                    this.stepTwoDialog = true;
-                    return;
-                  }
-                  break;
-                }
-              }
-            }
-            this.stepOneDialog = true;
           }
         });
       }
@@ -939,15 +883,6 @@ type: "slide"*/
             }
           }
           this.studentCounts = this.studentList.length;
-          if (this.studentCounts == 0) {
-            if (this.isDashboard) {
-              if (!this.directFromPlugin) {
-                this.stepTwoDialog = true;
-              }
-            } else {
-              this.copyUrl()
-            }
-          }
         })
         .catch(res => {});
 
@@ -1223,17 +1158,6 @@ type: "slide"*/
         this.setStudentList(this.studentList);
       } else if (d.type == SocketEventsEnum.SET_DEADLINE_TIME) {
         // console.log(d.params, SocketEventsEnum.SET_DEADLINE_TIME);
-      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_CLOSE) {
-        // this.firstCloseCopyLinkDialog = false;
-        // this.showCopyLinkDialog = false;
-        // this.stepTwoDialog = false;
-      } else if (d.type == SocketEventsEnum.COPY_LINK_DIALOG_OPEN) {
-        if (this.isDashboard) {
-          this.stepTwoDialog = true;
-        } else {
-          this.copyUrl()
-          this.copyLinkStr = "";
-        }
       } else if (d.mtype === SocketEventsEnum.STUNDENT_COMMENT_PPT) {
         // 评论ppt消息
         this.markupslist.push(d);
@@ -1570,11 +1494,6 @@ type: "slide"*/
     },
 
     copyUrl() {
-      // if (this.isDashboard) {
-      //   this.stepTwoDialog = true;
-      // } else {
-      //   this.showCopyLinkDialog = true;
-      // }
       this.alreadyShowCopyUrl = true
       this.showCopyLinkDialog = true;
       controlProject({"result": true, "controlType": 3})
@@ -1620,19 +1539,11 @@ type: "slide"*/
         showToast("Link copied successfully");
         this.copyLinkStr = this.getStudentUrl();
       }
-
-      // this.showCopyLinkDialog = false;
-      // this.stepTwoDialog = false;
     },
 
     emitControlSocket(message) {
       sendTeacherSocketRequest("control", typeof message === 'object' ? message : JSON.parse(message))
     },
-
-    closeDashCopy() {
-      this.stepTwoDialog = false;
-    },
-
     turnModel() {
       // console.log(this.page_model);
       if (this.page_model === ClassRoomModelEnum.STUDENT_MODEL) {
@@ -1874,11 +1785,9 @@ type: "slide"*/
     },
     openTwo() {
       this.stepOneDialog = false;
-      this.stepTwoDialog = true;
     },
     closeTwo() {
       this.stepOneDialog = false;
-      this.stepTwoDialog = false;
     },
     giveFocus(index, notSend) {
       if(isNaN(index)) return false
@@ -1958,22 +1867,6 @@ type: "slide"*/
     changeFeedbackTimeMode(index) {
       this.mode = index;
     },
-
-    closeCopyLinkDialog() {
-      // if (this.firstCloseCopyLinkDialog) {
-      // console.log("close copy link dialog!!");
-      // this.firstCloseCopyLinkDialog = false;
-      // this.emitControlSocket(
-      //   `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_CLOSE}","token": "${this.token}","class_id":"${this.class_id}"}`
-      // );
-      // }
-    },
-    openCopyLinkDialog() {
-      // console.log("open copy link dialog!!");
-      this.emitControlSocket(
-        `{"room":"${this.class_id}", "type": "${SocketEventsEnum.COPY_LINK_DIALOG_OPEN}","token": "${this.token}","class_id":"${this.class_id}"}`
-      );
-    },
     hideStepOne() {
       saveStepOneStatus(this.classRoomInfo.author, "true");
       saveUserConfig(this.token, "dashboard_step_one_hide", "1")
@@ -1983,7 +1876,6 @@ type: "slide"*/
         .catch(res => {
           // console.log(res);
         });
-      this.stepTwoDialog = true;
       this.stepOneDialog = false;
     },
     changeShowMetrial(status) {

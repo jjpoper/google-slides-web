@@ -1,6 +1,6 @@
 <template>
   <div v-if="rect.id" :class="`mitem ${ isSelected ? 'image_parent_focus' : ''}`">
-    <div :class="`full ${rect.type === 'audio' ? '' : 'forHover'}`" slot="reference">
+    <div :class="`full forHover`" slot="reference">
       <item-child :item="rect"/>
       <!-- <div v-if="rect.type === 'website'" class="meidaitem teacherppt full" >
         <img @click="clickWebsite(rect.url)"  src="../../assets/picture/websiteicon.png" style="width: 60px; height: 60px"/>
