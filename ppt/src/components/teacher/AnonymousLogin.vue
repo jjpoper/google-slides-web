@@ -7,7 +7,7 @@
         </div>
       </el-col>
       <el-col :span="16">
-        <div @click="closeBtn" class="common-close-btn"></div>
+        <div @click="closeLoginModal" class="common-close-btn"></div>
         <div class="login-main-content">
           <div class="login-header">
             <el-row  type="flex" justify="start">
@@ -258,7 +258,7 @@ export default {
     enterClassroom: {
       type: Function,
     },
-    closeBtn: {
+    closeLoginModal: {
       type: Function,
     },
     hindeTimeDialog: {
@@ -585,7 +585,7 @@ export default {
         deadlineStr,
         this.canAnonymous ? 1 : 0,
       ).then((res) => {
-        this.closeBtn()
+        this.closeLoginModal()
         this.setDeadLine();
       });
     },

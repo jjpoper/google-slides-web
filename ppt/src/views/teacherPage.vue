@@ -203,11 +203,12 @@
 
     <el-dialog
       title="Wellcom to the Teacher Dashboard!"
-      :visible.sync="stepOneDialog"
+      :visible.sync="welcomeModalVis"
       :close-on-click-modal="false"
       :show-close="false"
+      width="80%"
     >
-      <stepOneView :openTwo="openTwo" :hideStepOne="hideStepOne" />
+      <welcomeModal :hideWelcome="hideWelcome" />
     </el-dialog>
 
     <el-dialog title="Set feedback failure" :visible.sync="showTimeSetDialog">
@@ -233,7 +234,7 @@
         :url="getStudentUrl()"
         :copyLink="copyLink"
         :enterClassroom="enterClassroom"
-        :closeBtn="closeCopyDialog"
+        :closeLoginModal="closeCopyDialog"
         :user_id="uid"
         :classRoomInfo="classRoomInfo"
         :changeRoomName="changeRoomName"
@@ -320,8 +321,7 @@ import ConfirmEndDialog from "@/components/teacher/confirmEndDialog.vue";
 import CommentModal from "@/components/teacher/commentModal.vue";
 import TeacherPPTPage from "@/components/teacher/teacherPPTPage.vue";
 import DashboardPage from "@/components/teacher/dashboardPage.vue";
-import stepOneView from "../components/teacher/openDashboardStepOne";
-import stepTwoView from "../components/teacher/openDashboardStepTwo";
+import welcomeModal from "../components/teacher/welcomeModal";
 import studentList from "../components/teacher/studentList";
 import feedbackTimePanel from "../components/teacher/feedbackTimePanel";
 import copyLinkDialog from "../components/teacher/copyUrlDialog";
@@ -344,8 +344,7 @@ export default {
     CommentModal,
     TeacherPPTPage,
     DashboardPage,
-    stepOneView,
-    stepTwoView,
+    welcomeModal,
     studentList,
     feedbackTimePanel,
     copyLinkDialog,
@@ -397,7 +396,8 @@ type: "slide"*/
       isDashboard: false,
       responsePercentage: [],
       isFocus: [],
-      stepOneDialog: false,
+      welcomeModalVis: false,
+      welcomeModalShowed: false,
       onLine: true, // 在线状态
       directFromPlugin: false, //是否是从插件直接打开的。
       showTimeSetDialog: false,
@@ -1013,6 +1013,14 @@ type: "slide"*/
           this.setCurrentPreviewData(result)
           return
         }
+
+        // 欢迎弹框 this.welcomeModalVis = false;
+        if(controlType == 11) {
+          // EventBus.$emit('responseTabChange', result)
+          this.welcomeModalShowed = true
+          this.welcomeModalVis = result
+          return
+        }
       }
     },
     msgListener(d) {
@@ -1501,6 +1509,20 @@ type: "slide"*/
     closeCopyDialog() {
       this.showCopyLinkDialog = false;
       controlProject({"result": false, "controlType": 3})
+      this.showWelcome()
+    },
+
+    showWelcome() {
+      if(!this.welcomeModalShowed) {
+        this.welcomeModalShowed = true
+        this.welcomeModalVis = true
+        controlProject({"result": true, "controlType": 11})
+      }
+    },
+  
+    hideWelcome() {
+      this.welcomeModalVis = false;
+      controlProject({"result": false, "controlType": 11})
     },
 
     changeRoomName(name) {
@@ -1783,12 +1805,6 @@ type: "slide"*/
 
       return count;
     },
-    openTwo() {
-      this.stepOneDialog = false;
-    },
-    closeTwo() {
-      this.stepOneDialog = false;
-    },
     giveFocus(index, notSend) {
       if(isNaN(index)) return false
       console.log(index, notSend, 'giveFocus', this.page_model ,ClassRoomModelEnum.STUDENT_MODEL)
@@ -1866,17 +1882,6 @@ type: "slide"*/
     },
     changeFeedbackTimeMode(index) {
       this.mode = index;
-    },
-    hideStepOne() {
-      saveStepOneStatus(this.classRoomInfo.author, "true");
-      saveUserConfig(this.token, "dashboard_step_one_hide", "1")
-        .then(res => {
-          // console.log(res);
-        })
-        .catch(res => {
-          // console.log(res);
-        });
-      this.stepOneDialog = false;
     },
     changeShowMetrial(status) {
       this.meterialVisiable = status;

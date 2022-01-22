@@ -1,11 +1,11 @@
 <template>
-  <div class="page">
-    <img src="../../assets/step_one.jpg" />
+  <div class="welcomepage">
+    <img src="../../assets/step_one.jpg"  style="width: 100%"/>
 
     <div class="opts">
-      <el-button @click="openTwo()" type="primary">Got it</el-button>
+      <el-button @click="hideWelcome" type="primary">Got it</el-button>
 
-      <span @click="hideStepOne()">Don't show this again</span>
+      <!-- <span @click="hideStepOne()">Don't show this again</span> -->
     </div>
   </div>
 </template>
@@ -13,18 +13,23 @@
 <script>
 export default {
   props: {
-    openTwo: {
+    hideWelcome: {
       type: Function
     },
     hideStepOne: {
       type: Function
+    }
+  },
+  methods: {
+    notShow() {
+
     }
   }
 };
 </script>
 
 <style scoped>
-.page {
+.welcomepage {
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -37,10 +42,6 @@ span {
   text-decoration: underline;
 }
 .opts {
-  display: flex;
-  padding-top: 20px;
-  width: 100%;
-  align-items: center;
-  flex-direction: row-reverse;
+  margin: 0 20px 20px;
 }
 </style>
