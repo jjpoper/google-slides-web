@@ -34,7 +34,7 @@ export default {
     },
     accept: {
       type: String,
-      default: '.doc, .docx, .pdf, application/pdf,audio/*,video/*,image/*'
+      default: '.pdf, application/pdf,audio/*,video/*,image/*'
     },
     onlyGetFile: {
       type: Boolean,
