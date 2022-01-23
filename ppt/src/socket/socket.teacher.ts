@@ -207,7 +207,7 @@ const sendHeartBreak = () => {
     } = BaseTeacherParams
     heartOK = false
     BaseWsRequest('heart-beat', {room: classId, token: token, role: "teacher", class_id: classId, last_sid: lastSocketId});
-  }, 5000)
+  }, 3000)
 }
 
 const sendAck = (msgId: string) => {
