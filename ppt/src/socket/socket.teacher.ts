@@ -201,8 +201,12 @@ const sendHeartBreak = () => {
     if(!heartOK) {
       rJoinRoom()
     }
+    const {
+      classId,
+      token
+    } = BaseTeacherParams
     heartOK = false
-    BaseWsRequest('heart-beat', {role: "teacher"});
+    BaseWsRequest('heart-beat', {room: classId, token: token, role: "teacher", class_id: classId, last_sid: lastSocketId});
   }, 5000)
 }
 
