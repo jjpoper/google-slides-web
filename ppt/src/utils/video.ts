@@ -21,9 +21,10 @@ let videoRecordStatus = 0 // 0 未启动，1 启动中 2 已启动 3取消了
 let retryTimes = 0
 
 const closePictureInPicture = () => {
-  if(document.pictureInPictureElement) {
+  const doc: any = document
+  if(doc.pictureInPictureElement && doc.exitPictureInPicture) {
     try {
-      document.exitPictureInPicture()
+      doc.exitPictureInPicture()
     } catch(e) {}
   }
 }
