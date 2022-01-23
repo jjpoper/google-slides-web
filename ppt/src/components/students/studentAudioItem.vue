@@ -374,10 +374,6 @@ export default {
   align-items: center;
   padding: 0 20px 0 18px;
 }
-.user-info {
-  display: flex;
-  align-items: center;
-}
 .user-icon {
   width: 34px;
   height: 34px;

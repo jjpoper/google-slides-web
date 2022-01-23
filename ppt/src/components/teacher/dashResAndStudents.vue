@@ -14,20 +14,20 @@
       <template v-if="answerList.length > 0">
         <li class="res-list-item" v-for="item in answerList" :key="item.id">
           <div class="res-list-item-content">
-            <div class="user-info">
-              <!-- <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div> -->
-              <div>
-                <p class="user-name" v-if="item.user_name" :title="item.user_name">{{item.user_name.split("@")[0]}}</p>
-                <!-- <p class="user-name user-time">{{getTimeStr(item.updated_at || item.time)}}</p> -->
-                <p class="user-name user-time" style="opacity: 0">1</p>
-              </div>
-            </div>
             <div class="ans-detail">
               <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
               <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
               <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
               <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
               <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
+            </div>
+            <div class="user-info">
+              <!-- <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div> -->
+              <div>
+                <p class="user-name" v-if="item.user_name" :title="item.user_name">{{item.user_name.split("@")[0]}}</p>
+                <!-- <p class="user-name user-time">{{getTimeStr(item.updated_at || item.time)}}</p> -->
+                <!-- <p class="user-name user-time" style="opacity: 0">1</p> -->
+              </div>
             </div>
           </div>
         </li>

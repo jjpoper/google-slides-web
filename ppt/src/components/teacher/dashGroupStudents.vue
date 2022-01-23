@@ -128,11 +128,6 @@ export default {
     border: 1px solid rgba(216, 216, 216, 1);
     border-radius: 4px;
   }
-  .user-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
   .user-icon {
     width: 52px;
     height: 52px;
