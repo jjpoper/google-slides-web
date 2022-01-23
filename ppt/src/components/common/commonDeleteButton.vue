@@ -13,12 +13,11 @@ export default {
 </script>
 <style scoped>
 .delete-button {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 17px;
-  background-image: url(../../assets/picture/delete.png);
-  background-size: 16px 16px;
-  background-position: 9px 9px;
+  background-image: url(../../assets/picture/mdel.png);
+  background-size: 30px 30px;
   background-repeat: no-repeat;
   cursor: pointer;
   position: absolute;
