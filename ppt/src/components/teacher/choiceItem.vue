@@ -172,7 +172,7 @@ export default {
               position: "inside",
               formatter: (v, index) => {
                 const val = v.data;
-                const len = this.answerList.length;
+                const len = this.selectedAnswerList.length;
                 if (len > 0 && val > 0) {
                   const per = ((val * 100) / len).toFixed(2);
                   return `${val}（${per}/%）`;
