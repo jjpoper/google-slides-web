@@ -15,7 +15,9 @@ const RsendSocketTypeMaps: any = {
   'join-room': 'join-room',
   'update-tip': 'update-tip',
   'update-correct-answer': 'update-correct-answer',
-  'control': 'control'
+  'control': 'control',
+  'star': 'star',
+  'control-response': 'control-response'
 }
 
 interface BaseParams {
@@ -83,6 +85,12 @@ const getMessageId = (action: string, params: object) => {
     } else if(action === RsendSocketTypeMaps['update-correct-answer']) {
       delete keyMaps.correct_answer
       clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps.star) {
+      delete keyMaps.star_type
+      clientMsgId = getHashCode(keyMaps)
+    } else if(action === RsendSocketTypeMaps['control-response']) {
+      delete keyMaps.show_type
+      clientMsgId = getHashCode(keyMaps)
     }
     if(clientMsgId) {
       clientMsgId = `${action}${clientMsgId}`
@@ -130,7 +138,7 @@ const BaseWsRequest = (action: string, message: object, callback: callback = () 
     class_id: classId,
     clientMsgId: ''
   }
-  const clientMsgId = getMessageId(action, params)
+  const clientMsgId = getMessageId(action, JSON.parse(JSON.stringify(params)))
   if(clientMsgId) {
     params.clientMsgId = clientMsgId
   }
@@ -193,9 +201,13 @@ const sendHeartBreak = () => {
     if(!heartOK) {
       rJoinRoom()
     }
+    const {
+      classId,
+      token
+    } = BaseTeacherParams
     heartOK = false
-    BaseWsRequest('heart-beat', {role: "teacher"});
-  }, 5000)
+    BaseWsRequest('heart-beat', {room: classId, token: token, role: "teacher", class_id: classId, last_sid: lastSocketId});
+  }, 3000)
 }
 
 const sendAck = (msgId: string) => {
@@ -305,6 +317,14 @@ export const createSo = (token: string, classId: string, callback: callback, onL
   socket.on('delete-response', (data: any) => {
     // // console.log("删除答案" + data);
     preCheckAck(data, callback, {mtype: SocketEventsEnum.DELETE_QUESTION})
+  });
+  socket.on('star', (data: any) => {
+    // // console.log("删除答案" + data);
+    preCheckAck(data, callback, {mtype: 'star'})
+  });
+  socket.on('control-response', (data: any) => {
+    // // console.log("删除答案" + data);
+    preCheckAck(data, callback, {mtype: 'control-response'})
   });
   socket.on('msg', (data: string) => {
     try {

@@ -61,11 +61,10 @@
   /* width: 50%; */
   margin: 10px;
   /* display: inline-block; */
-  height: 50px;
+  /* min-height: 50px; */
   /* border: 1px solid #fff; */
   background-color: #fff;
   border-radius: 10px;
-  line-height: 50px;
   position: relative;
   align-items: center;
   display: flex;
@@ -96,12 +95,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-.rabox{
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
 }
 
 </style>

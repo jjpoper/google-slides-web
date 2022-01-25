@@ -1,7 +1,7 @@
 <template>
-  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+  <div class="text-answer-container" >
     <common-switch-tab :currentTab="currentTab" :changeTab="changeTab" hasStatics/>
-    <div class="text-scroll">
+    <div class="text-scroll" v-if="selectedAnswerList && selectedAnswerList.length > 0">
       <div class="text-answer-list" v-if="currentTab !== 3">
         <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
           <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
@@ -10,7 +10,7 @@
               :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
             >
               <div :class="`text_area ${!flag_1 && 'full-text-area'}`" >
-                <p v-for="ans_text in getAnswer(item)" :key="ans_text">{{ ans_text }}</p>
+                <p class="nowrapword" v-for="ans_text in getAnswer(item)" :key="ans_text">{{ ans_text }}</p>
                 <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
                   {{ index + 1 + " of " + selectedAnswerList.length }}
                 </span>
@@ -26,7 +26,8 @@
                     isStar: item.star,
                     isShowRes: item.show,
                     name: getUname(item.user_id),
-                    answertime: item.updated_at
+                    answertime: item.updated_at,
+                    id: item.id
                   }"
                 />
               </div>
@@ -44,7 +45,8 @@
           autoresize
         />
       </div>
-    </div>    
+    </div>
+    <loading-view v-else/>
   </div>
 </template>
 
@@ -55,10 +57,12 @@ import {
 } from "@/model/store.teacher";
 import ECharts from "vue-echarts";
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import {mapState} from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import CommonSwitchTab from './commonSwitchTab.vue';
+import LoadingView from './loadingView.vue';
+import { getJSONValue } from '@/utils/help';
 export default {
-  components: { StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab },
+  components: { StudentResponseOptBar, "v-chart": ECharts, CommonSwitchTab, LoadingView },
   props: {
     data: {
       type: Object,
@@ -92,20 +96,31 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
-    }),
     selectedAnswerList() {
-      let result = []
-      if(this.selectedGroupMembers.length === 0) {
-        result = this.answerList
-      } else {
-        result = this.answerList.filter(item => {
-          return this.selectedGroupMembers.indexOf(item.user_id) > -1
-        })
-      }
-      return result
+      const res = this.currentPageAnswerType === 'comment' ? this.currentComments : this.currentPageAnswerList
+      let list = this.currentPageAnswerList.map(item => {
+        const data = item.content ? {} : getJSONValue(item.data)
+        return {
+          ...data,
+          ...item,
+          id: item.id || item.response_id,
+        }
+      }).reverse()
+      console.log(list)
+      if(this.selectedGroupMembers.length === 0) return list
+      let slist = list.filter(item => {
+        return this.selectedGroupMembers.indexOf(item.user_id) > -1
+      })
+       console.log(slist)
+      return slist
     },
+    ...mapState({
+      studentList: state => state.teacher.studentList,
+    }),
+    ...mapGetters({
+      selectedGroupMembers: 'student/selectedGroupMembers',
+      currentPageAnswerList: 'student/currentPageAnswerList'
+    }),
     bar() {
       const names = this.options.map(item => {
         return this.optFlags[item.id] + ": " + item.text;
@@ -116,7 +131,11 @@ export default {
       return {
         tooltip: {
           trigger: "item",
-          formatter: "{c}%"
+          // formatter: "{c}%"
+          formatter: function(params){
+            const {name, value} = params
+            return `${name}`
+          }
         },
         xAxis: {
           type: "category",
@@ -151,7 +170,7 @@ export default {
             label: {
               show: true,
               position: "inside",
-              formatter: v => {
+              formatter: (v, index) => {
                 const val = v.data;
                 const len = this.selectedAnswerList.length;
                 if (len > 0 && val > 0) {
@@ -173,10 +192,10 @@ export default {
     this.title = title;
     this.options = options;
     this.isMulti = isMulti;
-    this.answerList = getCurrentPageAnswerList(
-      this.choiceData.page_id,
-      this.choiceData.items[0].type
-    );
+    // this.answerList = getCurrentPageAnswerList(
+    //   this.choiceData.page_id,
+    //   this.choiceData.items[0].type
+    // );
   },
   mounted() {
     EventBus.$on("choice", data => {
@@ -187,10 +206,10 @@ export default {
       this.isMulti = isMulti;
       // console.log(this.data, data, "EventBus on");
       const { user_id, answer, user_name } = data;
-      this.answerList = getCurrentPageAnswerList(
-        this.choiceData.page_id,
-        this.choiceData.items[0].type
-      );
+      // this.answerList = getCurrentPageAnswerList(
+      //   this.choiceData.page_id,
+      //   this.choiceData.items[0].type
+      // );
     });
   },
   methods: {
@@ -218,10 +237,7 @@ export default {
       const { isMulti } = this;
       for (let i = 0; i < this.selectedAnswerList.length; i++) {
         const { answer } = this.selectedAnswerList[i];
-        if (
-          (!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||
-          (!isMulti && value == parseInt(answer))
-        ) {
+        if ((!!answer && isMulti && JSON.parse(answer).indexOf(value) > -1) ||(!isMulti && value == parseInt(answer))) {
           if (this.selectedAnswerList[i].show || this.flag_1) {
             count++;
           }
@@ -243,9 +259,7 @@ export default {
         }
       } else {
         data.push(
-          this.optFlags[answer.answer] +
-            " : " +
-            this.options.filter(item => item.id == answer.answer)[0].text
+          this.optFlags[answer.answer] + ':' + this.options.filter(item => item.id == answer.answer)[0].text
         );
       }
       return data;
@@ -258,10 +272,9 @@ export default {
       return name ? name : id;
     },
 
-    //返回当前这个item是否应该show出来
     shouldShow(item) {
       if (this.flag_1) return true; //如果是dashboard 模式，则一定show
-      if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.show_response == 1) return false; //如果要求隐藏，则一定需要隐藏
       if (item.star) return true; //如果是星标答案，则需要显示
       for (let i = 0; i < this.selectedAnswerList.length; i++) {
         if (this.selectedAnswerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏

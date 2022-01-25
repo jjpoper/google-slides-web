@@ -1,6 +1,7 @@
 <template>
   <div class="base64img" :style="`background-image:url(${url})`">
     <slot />
+    <preview-button :url="url" v-if="showPreview"/>
   </div>
 </template>
 <style scoped>
@@ -14,12 +15,18 @@
 }
 </style>
 <script>
+import previewButton from './common/previewButton.vue'
 export default {
+  components: { previewButton },
   props: {
     url: {
       type: String,
       default: ''
+    },
+    showPreview: {
+      type: Boolean,
+      default: false
     }
-  }
+  },
 }
 </script>

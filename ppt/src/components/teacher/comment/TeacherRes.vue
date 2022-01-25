@@ -41,7 +41,7 @@
 import { getTimeValue } from '@/utils/help';
 import base64image from "../../base64image.vue";
 import AudioPlayer from '@/components/common/audioPlayer.vue';
-import DashRightRemarkItem from '../dash-answer/dash-right-remark-item.vue';
+import DashRightRemarkItem from '../dash-answer/dash-right-media-item.vue';
 export default {
   props: {
     item: {

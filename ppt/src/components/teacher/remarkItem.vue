@@ -1,83 +1,81 @@
 <template>
-  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+  <div class="text-answer-container" >
     <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
-    <template v-if="currentTab !== 3">
-      <div class="text-scroll">
-        <div class="text-answer-list">
-          <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
-            <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
-              <div
-                v-if="shouldShow(item)"
-                :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
-              >
-                <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
-                  <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
-                    <VideoPlayer
-                      v-if="item.type === 'video'"
-                      controlslist="nodownload"
-                      controls=""
-                      :src="item.link"
-                      preload="auto"
-                    />
-                    <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
-                    <p class="textinner" v-else-if="item.type === 'text'">
-                      {{item.link}}
-                    </p>
+    <template v-if="selectedAnswerList && selectedAnswerList.length > 0">
+      <template v-if="currentTab !== 3">
+        <div class="text-scroll">
+          <div class="text-answer-list">
+            <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
+              <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${!flag_1 && 'full-text-area'}`">
+                <div
+                  v-if="shouldShow(item)"
+                  :class="item.star ? 'text-list-item star_bg' : 'text-list-item'"
+                >
+                  <div :class="`text_area ${currentTab === 1 ? '' : 'columText'} ${!flag_1 && 'full-text-area'}`" >
+                    <div :class="`remark-item-content1 ${item.type === 'text' && 'content-text-scroll'}`">
+                      <VideoPlayer
+                        v-if="item.type === 'video'"
+                        controlslist="nodownload"
+                        controls=""
+                        :src="item.link"
+                        preload="auto"
+                       style="height: 150px"
+                      />
+                      <audio-player v-else-if="item.type === 'audio'" :url="item.link"/>
+                      <p class="textinner" v-else-if="item.type === 'text'">
+                        {{item.link}}
+                      </p>
+                    </div>
+                    <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
+                      {{ index + 1 + " of " + selectedAnswerList.length }}
+                    </span>
                   </div>
-                  <span class="text_static" v-if="flag_1 && selectedAnswerList.length > 1">
-                    {{ index + 1 + " of " + selectedAnswerList.length }}
-                  </span>
-                </div>
-                <div class="text-footer" v-if="flag_1">
-                  <student-response-opt-bar
-                    :data="{
-                      pageId: data.page_id,
-                      itemId: item.item_id,
-                      studentId: item.user_id,
-                      title: item.type === 'text' ? item.link : {link: item.link, mediaType: item.type},
-                      isStar: item.star,
-                      isShowRes: item.show,
-                      name: item.user_name,
-                      answertime: item.updated_at
-                    }"
-                  />
+                  <div class="text-footer" v-if="flag_1">
+                    <student-response-opt-bar
+                      :data="{
+                        pageId: data.page_id,
+                        itemId: item.item_id,
+                        studentId: item.user_id,
+                        title: item.type === 'text' ? item.link : {link: item.link, mediaType: item.type},
+                        isStar: item.star,
+                        isShowRes: item.show,
+                        name: item.user_name,
+                        answertime: item.updated_at,
+                        id: item.id
+                      }"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>    
+      </template>
+      <template v-else-if="currentTab === 3">
+        <div class="teacherppt-outer" >
+          <div class="fullbgimg" :style="`position: relative;background-image:url(${currentPPTUrl})`">
+            <student-questions :disable="true"/>
+          </div>
+          <div class="teacherppt-remark">
+            <student-remark :disable="true"/>
+          </div>
         </div>
-        <!-- <div v-if="flag_1 && noAnswerStudents.length" class="on-as-outer">
-          <div class="no-as-title">
-            <i></i> No Response
-          </div>
-          <div class="on-as-list">
-            <p class="on-as-list-item" v-for="item in noAnswerStudents" :key="item.user_id">
-              {{item.user_id}}
-            </p>
-          </div>
-        </div> -->
-      </div>    
+      </template>
     </template>
-    <template v-else-if="currentTab === 3">
-      <div class="teacherppt-outer" >
-        <div class="fullbgimg" :style="`position: relative;background-image:url(${currentPPTUrl})`">
-          <student-questions :disable="true"/>
-        </div>
-        <div class="teacherppt-remark">
-          <student-remark :disable="true"/>
-        </div>
-      </div>
+    <template v-else>
+      <loading-view />
     </template>
   </div>
 </template>
 
 <script>
 import StudentResponseOptBar from "./studentResponseOptBar.vue";
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import StudentQuestions from '../students/studentQuestions.vue';
 import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
 import CommonSwitchTab from './commonSwitchTab.vue';
+import LoadingView from './loadingView.vue';
 export default {
   computed: {
     // 未答题学生
@@ -96,7 +94,9 @@ export default {
       allRemarks: state => state.remark.allRemarks,
       currentPageIndex: state => state.student.currentPageIndex,
       studentAllSlides: state => state.student.studentAllSlides,
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
+    }),
+    ...mapGetters({
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     selectedAnswerList() {
       if(this.selectedGroupMembers.length === 0) return this.marks
@@ -123,7 +123,7 @@ export default {
       return this.studentAllSlides[this.currentPageIndex].thumbnail_url
     }
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, CommonSwitchTab},
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, CommonSwitchTab, LoadingView},
   props: {
     data: {
       type: Object,
@@ -180,12 +180,12 @@ export default {
   methods: {
     //返回当前这个item是否应该show出来
     shouldShow(item) {
-      // if (this.flag_1) return true; //如果是dashboard 模式，则一定show
-      // if (!item.show) return false; //如果要求隐藏，则一定需要隐藏
-      // if (item.star) return true; //如果是星标答案，则需要显示
-      // for (let i = 0; i < this.marks.length; i++) {
-      //   if (this.marks[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
-      // }
+      if (this.flag_1) return true; //如果是dashboard 模式，则一定show
+      if (item.show_response == 1) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.star) return true; //如果是星标答案，则需要显示
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        if (this.selectedAnswerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      }
       return true;
     },
     changeTab(i) {

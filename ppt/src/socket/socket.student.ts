@@ -211,9 +211,13 @@ const sendHeartBreak = () => {
     if(!heartOK) {
       rJoinRoom()
     }
+    const {
+      classId,
+      token
+    } = BaseStudentParams
     heartOK = false
-    BaseWsRequest('heart-beat', {role: "student"});
-  }, 5000)
+    BaseWsRequest('heart-beat', {room: classId, token: token, role: "student", class_id: classId, last_sid: lastSocketId});
+  }, 3000)
 }
 
 const sendAck = (msgId: string) => {
@@ -360,7 +364,8 @@ export const askToAddNewRemarkItem = (data: any) => {
     page_id,
     width = 0,
     height = 0,
-    pointType
+    pointType,
+    item_id
   } = data;
   BaseWsRequest(
     "comment-ppt",
@@ -379,7 +384,8 @@ export const askToAddNewRemarkItem = (data: any) => {
         height: height,
         pointType: pointType,
         page_id: page_id
-      }
+      },
+      item_id
     }
   );
 }

@@ -36,6 +36,7 @@
       </button>
       <student-tips-modal />
     </div>
+    <student-tips-modal v-else/>
 
     <div class="info_area">
       <div class="checkboxs">

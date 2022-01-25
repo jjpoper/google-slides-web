@@ -62,7 +62,7 @@ export default {
 <style scoped>
 .text-answer-tab{
   width: 100%;
-  height: 90px;
+  height: 40px;
   display: flex;
   align-items: center;
 }

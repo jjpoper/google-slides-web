@@ -2,6 +2,7 @@ import axios from 'axios';
 import { showToast } from '@/utils/loading';
 import PPT from '../utils/pptConfig'
 import { getTeacherStoreToken } from './store.teacher';
+import { upFireBaseFile } from '@/utils/uploadFile';
 
 axios.interceptors.response.use((res: any) => {
   return res;
@@ -429,17 +430,51 @@ export const upLoadFile = async (mp4: Blob) => {
 }
 
 // 下载服务器图片
-export const getOnlineImage = async (url: string) => {
-  const data = await axios.post(`${PPT.requestUrl}file/download`, {
-    url,
+export const upLoadImageToFireBaseByUrl = async (url: string) => {
+  // const data = await axios.post(`${PPT.requestUrl}file/download`, {
+  //   url,
+  // })
+  // let result = ''
+  // try {
+  //   result = data.data.data
+  // } catch(e) {
+  //   // // console.log(e)
+  // }
+  // return result;
+  return new Promise((res, rej) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = () => {
+      const imageType = xhr.getResponseHeader("Content-Type") || 'image/png';
+      const blob = new Blob([xhr.response], { type: imageType });
+      const file = new File([blob], `drivefile_${Date.now()}`, {
+          type: imageType,
+      });
+      const formData = new FormData();
+      formData.append('file', file);
+      upFireBaseFile(
+        file,
+        () => null,
+        ((result: any) => {
+          res(result)
+        })
+      )
+    };
+    xhr.onerror = () => {
+      console.log('下载图片失败')
+      rej()
+    }
+    xhr.ontimeout = () => {
+      console.log('下载图片超时')
+      rej()
+    }
+    xhr.onabort = () => {
+      console.log('下载图片取消')
+      rej()
+    }
+    xhr.send();
   })
-  let result = ''
-  try {
-    result = data.data.data
-  } catch(e) {
-    // // console.log(e)
-  }
-  return result;
 }
 
 export const addElementItem = async (slideId: string, pageId: string, type: string, content: string) => {
@@ -644,4 +679,12 @@ export const saveClassSet = async (
     can_anonymous_sign_in: canAnonymous
   })
   return data.data.code;
+}
+
+export const getClassMemeber = async (class_id: string) => {
+  const data = await axios.post(`${PPT.requestUrl}class/get_class_members`, {
+    class_id: class_id
+  })
+  let res = data.data.data;
+  return res;
 }

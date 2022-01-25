@@ -6,12 +6,12 @@
       </div>
       <ul class="res-list">
         <template  v-for="item in studentList" >
-          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'}`"
+          <li :class="`student-list-item ${noAnswerStudents.indexOf(item.user_id) > -1 && 'disable'} ${getSelected(item.user_id)}`"
             v-if="currentGroupMembers.length === 0 || currentGroupMembers.indexOf(item.user_id) > -1" :key="item.user_id"
             @click="selectUsers(item)">
             <img src="../../assets/picture/student-no-ans.png" class="ans-status" v-if="noAnswerStudents.indexOf(item.user_id) > -1"/>
             <img src="../../assets/picture/student-answered.png" class="ans-status" v-else/>
-            <div :class="`user-icon student-icon ${getSelected(item.user_id)}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
+            <div :class="`user-icon student-icon ${item.state}`">{{item.name ? item.name.substr(0, 1) : ''}}</div>
             <div class="user-name" :title="item.name">{{item.name.split("@")[0]}}</div>
           </li>
         </template>
@@ -20,9 +20,10 @@
   </div>
 </template>
 <script>
-import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
+import { getJSONValue } from '@/utils/help'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import dashGroupsSelect from './dashGroupsSelect.vue'
+import { controlProject } from '@/socket/socket.teacher'
 export default {
   components: { dashGroupsSelect },
   computed: {
@@ -31,7 +32,6 @@ export default {
       allGroups: state => {
         return state.teacher.allGroups.filter(item => item.members && item.members.length > 0)
       },
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
       currentGroupMembers: state => state.teacher.currentGroupMembers,
       allRemarks: state => state.remark.allRemarks,
       studentAllSlides: state => state.student.studentAllSlides,
@@ -41,6 +41,7 @@ export default {
       currentPageAnswerList: 'student/currentPageAnswerList',
       currentPageId: 'student/currentPageId',
       currentPageAnswerType: 'student/currentPageAnswerType',
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     // 未答题学生
     noAnswerStudents() {
@@ -85,56 +86,32 @@ export default {
         // this.changeTab(1)
       }
     },
-    currentGroupMembers() {
-      this.selectedStudents = false
-    }
-  },
-  data() {
-    return {
-      selectedStudents: false, // 是否选中学生
-    }
   },
   methods: {
-    ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
-    // changeGroup(id) {
-    //   this.selectedStudents = false
-    //   if(!id) {
-    //     this.changeSelectedGroup([])
-    //     this.changeGroupMembers([])
-    //     return
-    //   }
-    //   const data = this.allGroups.filter(item => item.group_id == id)[0]
-    //   console.log(data)
-    //   const list = data.members.map(item => item.user_id)
-    //   console.log(list)
-    //   this.changeSelectedGroup(list)
-    //   this.changeGroupMembers(list)
-    // },
+    ...mapActions("teacher", ["changeGroupMembers"]),
+    ...mapActions("student", ["changeSelectedGroup"]),
     selectUsers(item) {
       console.log(item)
       const {user_id} = item
       let newList = []
-      if(!this.selectedStudents) {
-        newList = [user_id]
+      newList = [].concat(this.selectedGroupMembers)
+      const index = newList.indexOf(user_id)
+      if(index > -1) {
+        newList.splice(index, 1)
       } else {
-        newList = [].concat(this.selectedGroupMembers)
-        const index = newList.indexOf(user_id)
-        if(index > -1) {
-          newList.splice(index, 1)
-        } else {
-          newList.push(user_id)
-        }
+        newList.push(user_id)
       }
       this.changeSelectedGroup(newList)
-      this.selectedStudents = true
+      controlProject({
+        controlType: 9,
+        result: newList
+      })
       
     },
     getSelected(user_id) {
-      if(this.selectedStudents) {
-        const list = this.selectedGroupMembers
-        const isSelected = list.length > 0 && list.indexOf(user_id) > -1
-        return isSelected ? 'selected' : ''
-      }
+      const list = this.selectedGroupMembers
+      const isSelected = list.length > 0 && list.indexOf(user_id) > -1
+      return isSelected ? 'selected' : ''
     }
   }
 }
@@ -151,11 +128,6 @@ export default {
     border: 1px solid rgba(216, 216, 216, 1);
     border-radius: 4px;
   }
-  .user-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
   .user-icon {
     width: 52px;
     height: 52px;
@@ -168,7 +140,7 @@ export default {
     color: #fff;
     background-color: #afafaf;
   }
-  .user-icon.selected{
+  .user-icon.online{
     background-color: red;
   }
   .student-icon{

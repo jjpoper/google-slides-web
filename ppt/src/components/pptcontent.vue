@@ -4,7 +4,7 @@
     </div> -->
     <div class="teacherppt" :style="`height: 100%; background-image:url(${url})`">
       <student-questions v-if="isRemark" :teacher="teacher"/>
-      <ppt-type />
+      <ppt-type v-if="showLogo"/>
     </div>
     <div class="metarialcontent" v-if="(meterialVisiable || defaultShowMeterial) && (leftSortList && leftSortList.length) && (teacher || isStudentPaced)">
       <div class="medialist">
@@ -59,6 +59,10 @@ export default {
       type: Number,
       default: 40,
     },
+    showLogo: {
+      type: Boolean,
+      default: false,
+    }
   },
   computed: {
     ...mapState({
@@ -231,12 +235,13 @@ export default {
 }
 .medialist{
   display: flex;
-  width: 150px;
+  width: 220px;
   height: 100%;
   overflow: scroll;
   flex-direction: column;
-  background-color: rgba(195,102, 22, 0.5);
+  background-color: rgba(226, 235, 243, 1);
   align-items: center;
+
 }
 .mask{
   position: absolute;

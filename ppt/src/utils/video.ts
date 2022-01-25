@@ -21,8 +21,12 @@ let videoRecordStatus = 0 // 0 未启动，1 启动中 2 已启动 3取消了
 let retryTimes = 0
 
 const closePictureInPicture = () => {
-  const dom: any = document
-  dom.exitPictureInPicture()
+  const doc: any = document
+  if(doc.pictureInPictureElement && doc.exitPictureInPicture) {
+    try {
+      doc.exitPictureInPicture()
+    } catch(e) {}
+  }
 }
 
 export const startRecordVideo = (domVideo: any, callback: any = () => null, fail: any = () => null) => {
@@ -83,6 +87,9 @@ export const endRecord = () => {
   }
   videoRecordStatus = 0
   retryTimes = 0
+  try {
+    closePictureInPicture()
+  } catch(e){}
   domVideoElement.pause();
   mediaRecorder.stopRecording(() => {
     domVideoElement.src = domVideoElement.srcObject = null;
@@ -97,9 +104,6 @@ export const endRecord = () => {
     //       tracks[i].stop();
     //   }
     // } catch(e){}
-    try {
-      closePictureInPicture()
-    } catch(e){}
   });
 }
 
@@ -112,6 +116,9 @@ export const cancelUpVideo = () => {
 
 export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promise<any> => {
   return new Promise((res, rej) => {
+    try {
+      closePictureInPicture()
+    } catch(e){}
     domVideoElement.pause();
     mediaRecorder.stopRecording(() => {
       domVideoElement.src = domVideoElement.srcObject = null;
@@ -147,9 +154,6 @@ export const saveRecordVideo = async (onProgressUpLoad: any = () => null): Promi
       mediaRecorder.camera.stop();
       mediaRecorder.destroy();
       mediaRecorder = null;
-      try {
-        closePictureInPicture()
-      } catch(e){}
     });
   })
 }

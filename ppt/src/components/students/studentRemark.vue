@@ -65,7 +65,7 @@
       <li
         v-for="(item, index) in marks"
         :class="`remark-list-item ${item.type === 'text' && 'text-item'} ${currentRemarkIndex === index && 'active-item'} ${(isEditing || (currentRemarkIndex >= 0 && currentRemarkIndex !== index)) ? 'remark-list-item-gray' : ''}`"
-        :key="item.id"
+        :key="item.id == -1 ? item.tempid : item.id"
         :ref="currentRemarkIndex === index ? 'activeRef': ''"
         :tabindex="currentRemarkIndex === index ? '0' : ''"
         @click="changeRemarkIndex(index)"
@@ -81,7 +81,7 @@
               <p class="user-name user-time">{{getTimeStr(item.time)}}</p>
             </div>
           </div> -->
-          <div v-if="item.id" @click.stop="deleteItem(item.id)" class="delete-button"></div>
+          <div v-if="item.id != -1" @click.stop="deleteItem(item.id)" class="delete-button"></div>
         </div>
         <div class="remark-item-content">
           <VideoPlayer
@@ -290,12 +290,16 @@ export default {
         width,
         height,
         pointType,
+        item_id: this.marks.length,
         id: -1
       };
       askToAddNewRemarkItem(params);
       // TODO 增加页面展示
       
-      this.addOneRemarkItem(params);
+      this.addOneRemarkItem({
+        ...params,
+        tempid: Date.now()
+      });
       // showToast("send success");
       this.cancelRecord();
       this.updateAnswerdPage(this.currentPageIndex);
@@ -418,10 +422,6 @@ export default {
   align-items: center;
   padding: 0 20px 0 18px;
 }
-.user-info {
-  display: flex;
-  align-items: center;
-}
 .user-icon {
   width: 34px;
   height: 34px;
@@ -453,6 +453,7 @@ export default {
   margin-bottom: 15px;
   flex: 1;
   word-break: break-all;
+  position: relative;
 }
 .remark-text {
   font-size: 10px;

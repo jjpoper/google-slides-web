@@ -9,7 +9,7 @@
         controls/>
     </div>
     <div v-if="item.type === 'audio'" class="meidaitem teacherppt full" >
-      <audio-player :url="item.url" class="full"/>
+      <audio-player :url="item.url" class="full" :withMaskButton="true"/>
     </div>
     <div v-if="item.type === 'iframe'" class="meidaitem teacherppt full" >
       <youtube :rect="item"/>

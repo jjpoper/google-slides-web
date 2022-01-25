@@ -13,7 +13,8 @@ const state = () => ({
     allAnswerList: [], // 全部回答数据
     studentFeedBackComments: [], // 老师端评论
     unreadStudentCommentIds: [], // 未读评论
-    isStudentPaced: false
+    isStudentPaced: false,
+    selectedMembersMap: {}, // 以pageid为key的选择学生
 })
 
 // getters
@@ -26,7 +27,7 @@ const getters = {
             allAnswerList
         } = currentState
         const { items, page_id } = studentAllSlides[currentPageIndex]
-        if (items.length === 0) return []
+        if(items.length === 0) return []
         const { type } = items[0]
         const answers = allAnswerList.filter((item: any) => item.page_id === page_id && item.type === type)
         return answers
@@ -85,7 +86,15 @@ const getters = {
         //   this.setDashFullPageResponse(false)
         // }
         return type && type !== null && type !== 'website'
-      }
+      },
+      // 当前选中的学生。用于匹配答案，可能是一组，也可能是一个人
+    selectedGroupMembers: (currentState: any) => {
+        const {
+            selectedMembersMap,
+            currentPageIndex
+        } = currentState
+        return selectedMembersMap[currentPageIndex] || []
+    },
 }
 
 // actions
@@ -142,6 +151,13 @@ const actions = {
     updateIsStudentPaced({ commit }: any, status: boolean) {
         commit('updateIsStudentPaced', status)
     },
+
+    changeSelectedGroup({commit}: any, list: string[]) {
+        commit('changeSelectedGroup', JSON.parse(JSON.stringify(list)))
+    },
+    updateAnswerStarOrResponse({commit}: any, data: any) {
+        commit('updateAnswerStarOrResponse', data)
+    },
 }
 
 // mutations
@@ -167,30 +183,36 @@ const mutations = {
         nextState.allGroups = list
     },
     updateAllAnswerdList(nextState: any, data: any) {
+        const oldStudentData = JSON.parse(JSON.stringify(nextState.allAnswerList))
+        const {type} = data
         const {
-            allAnswerList,
             studentAllSlides,
-            currentPageIndex,
+            currentPageIndex
         } = nextState
-        if (data.type === 'media') {
+        if(data.type === 'media') {
             nextState.allAnswerList.push(data)
         } else {
             // const { item_id: itemId, student_user_id: sid, type } = data
-            // const pageId = studentAllSlides[currentPageIndex].page_id
-            // // console.log(itemId, sid, type, pageId, "addItem")
-            // let oldDataIndex = -1
-            // if(type === 'text') {
-            //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.item_id === itemId && item.student_user_id === sid)
-            // } else {
-            //     // 一条答案数据，去重
-            //     oldDataIndex = allAnswerList.findIndex((item: any) => item.page_id === pageId && item.student_user_id === sid)
-            // }
-            // if(oldDataIndex > -1) {
-            //     allAnswerList.splice(oldDataIndex, 1, data)
-            // } else {
-            //     allAnswerList.push(data)
-            // }
+            const pageId = studentAllSlides[currentPageIndex].page_id
+            const { item_id: itemId } = data
+            let oldDataIndex = -1
+            if(type === 'choice' || type === 'draw') {
+                // 一条答案数据，去重
+                oldDataIndex = oldStudentData.findIndex((item: any) => item.page_id === pageId)
+            } else {
+                oldDataIndex = oldStudentData.findIndex((item: any) => {
+                    return item.page_id === pageId && item.item_id === itemId
+                })
+            }
+
+            if(oldDataIndex > -1) {
+                oldStudentData[oldDataIndex] = data
+            } else {
+                oldStudentData.push(data)
+            }
+            nextState.allAnswerList = oldStudentData
         }
+
     },
     setAllAnswerdList(nextState: any, list: any) {
         nextState.allAnswerList = list
@@ -257,6 +279,22 @@ const mutations = {
     },
     updateIsStudentPaced(nextState: any, status: boolean) {
         nextState.isStudentPaced = status
+    },
+    changeSelectedGroup(nextState: any, list: any) {
+        const obj = JSON.parse(JSON.stringify(nextState.selectedMembersMap))
+        obj[nextState.currentPageIndex] = list
+        nextState.selectedMembersMap = obj
+    },
+    updateAnswerStarOrResponse(nextState: any, data: any) {
+        const oldStudentData = JSON.parse(JSON.stringify(nextState.allAnswerList))
+        const oldDataIndex = oldStudentData.findIndex((item: any) => item.id == data.id)
+        if(oldDataIndex > -1) {
+            oldStudentData[oldDataIndex] = {
+                ...oldStudentData[oldDataIndex],
+                ...data
+            }
+            nextState.allAnswerList = oldStudentData
+        }
     }
 }
 

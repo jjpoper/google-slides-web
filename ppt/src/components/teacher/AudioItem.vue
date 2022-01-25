@@ -1,7 +1,7 @@
 <template>
-  <div class="text-answer-container" v-if="selectedAnswerList && selectedAnswerList.length > 0">
+  <div class="text-answer-container" >
     <common-switch-tab :currentTab="currentTab" :changeTab="changeTab"/>
-    <div class="text-scroll">
+    <div class="text-scroll" v-if="selectedAnswerList && selectedAnswerList.length > 0">
       <div class="text-answer-list">
         <div :class="`colume${currentTab === 1 ? '1' : '5'} `" v-for="(item, index) in selectedAnswerList" :key="index">
           <div :class="`text-item-outer${currentTab === 1 ? '1' : '5'} ${flag_1 ? 'dash-outer' : 'full-text-area'}`"
@@ -18,13 +18,14 @@
                     controls=""
                     :src="item.content.link"
                     preload="auto"
+                    style="height: 150px"
                   />
                   <audio-player v-else-if="item.content.mediaType === 'audio'" :url="item.content.link"/>
                   <div
                     class="remark-file"
                     v-else-if="item.content.mediaType === 'file'"
                   >
-                    <div :class="`file-icon ${getIconClass(item.content.fileName)} ${currentTab === 1 ? '' : 'smallicon'}`" ></div>
+                    <file-answer-icon :item="item" :className="`${currentTab === 1 ? '' : 'smallicon'}`"/>
                     <div class="file-name" style="flex: 1">
                       <p class="file-name">{{item.content.fileName}}</p>
                       <a :href="item.content.link" target="_blank"  download class="download-text">Download</a>
@@ -48,7 +49,8 @@
                     isStar: item.star,
                     isShowRes: item.show,
                     name: item.user_name,
-                    answertime: item.updated_at
+                    answertime: item.updated_at,
+                    id: item.id
                   }"
                 />
               </div>
@@ -67,6 +69,7 @@
         </div>
       </div> -->
     </div>
+    <loading-view v-else/>
   </div>
 </template>
 
@@ -78,6 +81,8 @@ import StudentRemark from '../students/studentRemark.vue';
 import AudioPlayer from '../common/audioPlayer.vue';
 import Base64image from '../base64image.vue';
 import CommonSwitchTab from './commonSwitchTab.vue';
+import LoadingView from './loadingView.vue';
+import FileAnswerIcon from '../common/fileAnswerIcon.vue';
 export default {
   computed: {
     // 未答题学生
@@ -101,11 +106,11 @@ export default {
     },
     ...mapState({
       studentList: state => state.teacher.studentList,
-      selectedGroupMembers: state => state.teacher.selectedGroupMembers,
     }),
     ...mapGetters({
       currentPageAnswerList: 'student/currentPageAnswerList',
       currentPageId: 'student/currentPageId',
+      selectedGroupMembers: 'student/selectedGroupMembers'
     }),
     answerList() {
       let list = this.currentPageAnswerList.map(item => {
@@ -126,7 +131,7 @@ export default {
       return list;
     },
   },
-  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab },
+  components: { StudentResponseOptBar, StudentQuestions, StudentRemark, AudioPlayer, Base64image, CommonSwitchTab, LoadingView, FileAnswerIcon },
   props: {
     data: {
       type: Object,
@@ -180,6 +185,12 @@ export default {
   methods: {
     //返回当前这个item是否应该show出来
     shouldShow(item) {
+      if (this.flag_1) return true; //如果是dashboard 模式，则一定show
+      if (item.show_response == 1) return false; //如果要求隐藏，则一定需要隐藏
+      if (item.star) return true; //如果是星标答案，则需要显示
+      for (let i = 0; i < this.selectedAnswerList.length; i++) {
+        if (this.selectedAnswerList[i].star) return false; //如果不是星标答案，且有其他的星标答案，则需要隐藏
+      }
       return true;
     },
     changeTab(i) {

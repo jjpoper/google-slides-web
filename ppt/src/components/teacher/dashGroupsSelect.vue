@@ -15,6 +15,7 @@
   </div>
 </template>
 <script>
+import { controlProject } from '@/socket/socket.teacher'
 import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
   computed: {
@@ -33,10 +34,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions("teacher", ["changeSelectedGroup", "changeGroupMembers"]),
+    ...mapActions("teacher", ["changeGroupMembers"]),
+    ...mapActions("student", ["changeSelectedGroup"]),
     changeGroup(id) {
       if(!id) {
-        this.changeSelectedGroup([])
         this.changeGroupMembers([])
         return
       }
@@ -44,7 +45,12 @@ export default {
       console.log(data)
       const list = data.members.map(item => item.user_id)
       console.log(list)
-      this.changeSelectedGroup(list)
+      // 分组切换后，选择状态取消
+      this.changeSelectedGroup([])
+      controlProject({
+        controlType: 9,
+        result: []
+      })
       this.changeGroupMembers(list)
     },
   }

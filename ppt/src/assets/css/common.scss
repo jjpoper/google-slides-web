@@ -192,6 +192,15 @@ html, button, input, select, textarea {
 .cursor{
   cursor: pointer;
 }
+.rabox{
+  width: 100%;
+  text-align: left;
+  word-break: break-word !important;
+  display: block !important;
+  white-space: normal !important;
+  line-height: 30px !important;
+  padding: 10px 10px !important;
+}
 .rabox .el-checkbox__label {
   display: inline !important
 }

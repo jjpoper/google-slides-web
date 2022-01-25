@@ -8,8 +8,10 @@
         v-model="item.content"
         @input="onInputText(index)"
         @focus="onFocusIndex(index)"
+        @blur="onBlurText"
         :disabled="showCorrect"
         :class="`${focusIndex !== index ? 'textblur' : ''}`"
+        ref="inputText"
       ></el-input>
       <div class="el-input__icon" v-if="item.textSended">
         <i class="el-icon-edit-outline"></i>
@@ -26,7 +28,7 @@
       @change="changeLocked('text')"
       active-text="show answer"
     />
-    <el-button type="text" @click="addInput()" :disabled="addDisable || showCorrect">+Add another option</el-button>
+    <el-button v-if="showMore" type="text" @click="addInput()" :disabled="addDisable || showCorrect">+Add another option</el-button>
   </div>
 </template>
 <style>
@@ -55,6 +57,15 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 20px;
+}
+.textblur{
+  cursor: pointer;
+}
+.textblur:hover{
+  background-image: url(../../assets/picture/bianji.png);
+  background-position:bottom 4px right 10px;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
 }
 .answer_text {
   margin-top: 10px;
@@ -113,8 +124,16 @@ export default {
       focusIndex: -1
     };
   },
+  computed: {
+    showMore () {
+      if(this.arrList.length === 5) return false
+      const item = this.arrList[this.arrList.length - 1]
+      return item.content
+    }
+  },
   created() {
     if (!this.arrList || this.arrList.length == 0) {
+      this.focusIndex = 0
       this.arrList.push({ content: "" });
     } else {
       for (let i = 0; i < this.arrList.length; i++) {
@@ -132,10 +151,21 @@ export default {
       }
     }
   },
+  mounted() {
+    if(this.focusIndex === 0) {
+      setTimeout(() => {
+        console.log(this.$refs.inputText[0])
+        this.$refs.inputText[0].focus()
+      }, 500)
+    }
+  },
   beforeDestroy() {
     this.clearDelay();
   },
   methods: {
+    onBlurText() {
+      this.focusIndex = -1
+    },
     onFocusIndex(index) {
       this.focusIndex = index
     },

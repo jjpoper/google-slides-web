@@ -4,6 +4,7 @@
     controls=""
     :src="src"
     preload="auto"
+    ref="videoPlayer"
   />
 </template>
 <script>
@@ -14,6 +15,9 @@ export default {
       type: String,
       default: ''
     }
+  },
+  mounted() {
+    this.$refs.videoPlayer.volume = 0
   },
   beforeDestroy() {
     if(document.pictureInPictureElement) {

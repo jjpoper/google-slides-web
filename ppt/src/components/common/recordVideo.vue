@@ -9,7 +9,7 @@
           <el-tooltip content="start" placement="top" v-if="endRecording">
             <el-button type="primary" class="record-button" icon="el-icon-video-play" @click="startRecord" circle></el-button>
           </el-tooltip>
-          <el-button v-if="!endRecording" class="record-button" type="primary" @click="doneRecord">DONE</el-button>
+          <el-button v-if="!endRecording && timeValue > 0" class="record-button" type="primary" @click="doneRecord">DONE</el-button>
           <p class="record-time">{{getTime(timeValue)}} / 02:00</p>
         </div>
       </div>

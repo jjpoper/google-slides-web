@@ -69,8 +69,8 @@ export const getTeacherCurrentPageAnswerList = (pageId: string, type: ItemType) 
     return {
       star: false,
       show: true,
-      updated_at: item.updated_at,
-      ...JSON.parse(item.data)
+      ...JSON.parse(item.data),
+      ...item
     }
   })
   // // console.log(mapData, teacherData)

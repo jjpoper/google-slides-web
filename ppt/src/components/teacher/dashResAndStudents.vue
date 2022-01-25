@@ -14,20 +14,20 @@
       <template v-if="answerList.length > 0">
         <li class="res-list-item" v-for="item in answerList" :key="item.id">
           <div class="res-list-item-content">
-            <div class="user-info">
-              <!-- <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div> -->
-              <div>
-                <p class="user-name" v-if="item.user_name" :title="item.user_name">{{item.user_name.split("@")[0]}}</p>
-                <!-- <p class="user-name user-time">{{getTimeStr(item.updated_at || item.time)}}</p> -->
-                <p class="user-name user-time" style="opacity: 0">1</p>
-              </div>
-            </div>
             <div class="ans-detail">
               <dash-right-remark-item v-if="currentPageAnswerType === 'media'" :item="item"/>
               <dash-right-comment-item v-if="currentPageAnswerType === 'comment'" :item="item"/>
               <dash-right-choice-item v-if="currentPageAnswerType === 'choice'" :item="item"/>
               <dash-right-draw-item v-if="currentPageAnswerType === 'draw'" :item="item" />
               <dash-right-text-item v-if="currentPageAnswerType === 'text'" :item="item" />
+            </div>
+            <div class="user-info">
+              <!-- <div class="user-icon">{{item.user_name ? item.user_name.substr(0, 1) : ''}}</div> -->
+              <div>
+                <p class="user-name" v-if="item.user_name" :title="item.user_name">{{item.user_name.split("@")[0]}}</p>
+                <!-- <p class="user-name user-time">{{getTimeStr(item.updated_at || item.time)}}</p> -->
+                <!-- <p class="user-name user-time" style="opacity: 0">1</p> -->
+              </div>
             </div>
           </div>
         </li>
@@ -39,7 +39,7 @@
 <script>
 import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters } from 'vuex'
-import dashRightRemarkItem from './dash-answer/dash-right-remark-item.vue'
+import dashRightRemarkItem from './dash-answer/dash-right-media-item.vue'
 import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
 import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
 import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
@@ -93,7 +93,6 @@ export default {
           id: item.id || item.response_id,
         }
       })
-      console.log(list, 'righten')
       return list.reverse();
     }
   },

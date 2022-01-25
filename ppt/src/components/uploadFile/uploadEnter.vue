@@ -171,7 +171,7 @@
 import { ModalEventsNameEnum, ModalEventsTypeEnum } from "@/socket/socketEvents";
 import GooglePicker from "@/utils/googlePicker";
 import { hideLoading, showLoading, showToast } from "@/utils/loading";
-import { getOnlineImage } from "@/model";
+import { upLoadImageToFireBaseByUrl } from "@/model";
 import googleImageSearch from "./googleImageSearch.vue";
 import GoogleYoutubeVedio from "./googleYoutubeVedio.vue";
 import {videoTypes, audioTypes} from '@/utils/constants'
@@ -348,7 +348,7 @@ export default {
       showLoading();
       // const item = this.imagesList[this.imageSelectedIndex];
 
-      getOnlineImage(imageUrl).then((url) => {
+      upLoadImageToFireBaseByUrl(imageUrl).then((url) => {
         hideLoading();
         this.closeImageSearch();
         // console.log(url)
@@ -356,7 +356,11 @@ export default {
           type: "image",
           url,
         });
-      });
+      }).catch(() => {
+        hideLoading();
+        this.closeImageSearch();
+        showToast('upload error, please try later', 'error')
+      })
     },
     closeImageSearch() {
       this.imageSelectedIndex = -1;

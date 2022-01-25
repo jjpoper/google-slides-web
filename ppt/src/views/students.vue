@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <el-dialog :visible.sync="showLoginDialog" custom-class="custom-dialog">
+    <el-dialog :visible.sync="showLoginDialog" :close-on-click-modal="false" custom-class="custom-dialog">
       <StudentLoginPage :joinRoom="loginRoom" :googleLogin="googleLogin" :class_id="class_id" />
     </el-dialog>
     <class-room-closed
@@ -44,6 +44,7 @@
             :filterAddedMediaList="filterAddedMediaList"
             :meterialVisiable="meterialVisiable"
             :isStudentPaced="isStudentPaced"
+            :showLogo="true"
           />
         </div>
         <div
@@ -63,6 +64,7 @@
               :filterAddedMediaList="filterAddedMediaList"
               :meterialVisiable="meterialVisiable"
               :isStudentPaced="isStudentPaced"
+              :showLogo="true"
             />
           </div>
         </div>
@@ -227,6 +229,7 @@
     <el-dialog :visible.sync="networkErrorVisible" custom-class="custom-dialog" width="80%" :show-close="false">
       <network-error :hideNetWorkError="hideNetWorkError"/>
     </el-dialog>
+    <big-preview />
   </div>
 </template>
 <script>
@@ -283,6 +286,7 @@ import StudentLoginPage from "@/components/students/studentLoginPage.vue";
 import moment from 'moment'
 import WaitingStart from "@/components/students/waitingStart.vue";
 import NetworkError from "@/components/common/networkError.vue";
+import BigPreview from '@/components/common/bigPreview.vue';
 
 export default {
   data() {
@@ -424,7 +428,8 @@ export default {
     TipsList,
     StudentsPptList,
     StudentLoginPage,
-    NetworkError
+    NetworkError,
+    BigPreview
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {

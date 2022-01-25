@@ -71,3 +71,32 @@ export const getHashCode = (hashString: any) => {
   // console.log('hashKey', result)
   return result.toString()
 }
+
+interface GetCommentListParams {
+  feedBackList: any[]
+  pageId: string
+  studentId: string
+  id: string
+}
+export const getTeacherCommentList = ({ feedBackList, pageId, studentId, id }: GetCommentListParams) => {
+  const filterData = feedBackList.filter(item => {
+    const itemData = typeof item.data === 'object' ? item.data : JSON.parse(item.data)
+    if(!itemData.id) return false
+    const isSameItem = id === itemData.id
+    if(pageId === itemData.pageId && studentId === itemData.studentId && isSameItem) {
+      return true
+    }
+    return false
+  })
+  // console.log(feedBackList, pageId, studentId, id, filterData)
+  const mapData = filterData.map((item) => {
+    // console.log(item, '=====')
+    const itemData = typeof item.data === 'object' ? item.data : JSON.parse(item.data)
+    return {
+      ...itemData,
+      // @ts-ignore
+      teacherName: window.currentTeacherName
+    }
+  })
+  return mapData
+}

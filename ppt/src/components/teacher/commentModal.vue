@@ -64,15 +64,16 @@
 </template>
 <script>
 import {
+  mapActions
+} from 'vuex'
+import {
   ModalEventsNameEnum,
   ModalEventsTypeEnum
 } from "@/socket/socketEvents";
 import {
   getTeacherUserName,
-  addTeacherComment,
-  getTeacherCommentList
 } from "@/model/store.teacher";
-import { getTimeValue } from "@/utils/help";
+import { getTimeValue, getTeacherCommentList } from "@/utils/help";
 import base64image from "../base64image.vue";
 import RecordVideo from "../common/recordVideo.vue";
 import TeacherRes from './comment/TeacherRes.vue';
@@ -87,7 +88,7 @@ export default {
       commentData: {
         title: "1",
         pageId: "1",
-        itemId: "1",
+        id: "1",
         studentId: "1",
         type: "text",
         sname: ''
@@ -108,32 +109,33 @@ export default {
   mounted() {
     EventBus.$on(
       ModalEventsNameEnum.TEACHER_COMMENT_MODAL,
-      ({ pageId, itemId, title, studentId, type, name, answertime }) => {
-        // 通知展示当前pageid，当前itemid的评论框
+      ({ pageId, id, title, studentId, type, name, answertime }) => {
+        // 通知展示当前pageid，当前id的评论框
         console.log(title, 'title')
-        this.showModal({ pageId, itemId, title, studentId, type, name, answertime });
+        this.showModal({ pageId, id, title, studentId, type, name, answertime });
       }
     );
   },
   methods: {
+    ...mapActions("teacher", ["addFeedBack", "addFeedBackId"]),
     focus() {
       this.textFocus = true
     },
     blur() {
       this.textFocus = false
     },
-    showModal({ pageId, itemId, title, studentId, type, name, answertime }) {
+    showModal({ pageId, id, title, studentId, type, name, answertime }) {
       this.commentData = {
         title,
         pageId,
-        itemId,
+        id,
         studentId,
         type,
         sname: window.currentTeacherName.split("@")[0],
         answertime
       };
       console.log('title', 'modal')
-      this.commentList = getTeacherCommentList({ pageId, itemId, studentId });
+      this.commentList = getTeacherCommentList({ feedBackList: this.$store.state.teacher.feedBackList, pageId, id, studentId });
       this.modalVisiable = true;
     },
     closeModal() {
@@ -149,23 +151,26 @@ export default {
       this.commentValue = "";
     },
     sendComment(value, commentType = "text") {
+      const { pageId, id, studentId, title, answertime } = this.commentData;
       const { year, hours, month, date, minutes } = getTimeValue(Date.now());
       // console.log(getTeacherUserName());
       const data = {
         time: `${month}/${date}/${year} ${hours}:${minutes}`, // 3/26/21 2:11
         value,
         commentType,
-        teacherName: getTeacherUserName()
+        teacherName: getTeacherUserName(),
+        id
       };
-      const { pageId, itemId, studentId, title, answertime } = this.commentData;
-      addTeacherComment({
+      const feedBackData = {
         studentId,
         pageId,
-        itemId,
+        id,
         title,
         answertime,
-        ...data
-      });
+        ...data,
+      }
+      this.addFeedBack({data: feedBackData})
+      this.addFeedBackId(id)
       this.commentList.unshift({
         ...this.commentData,
         ...data,
@@ -174,7 +179,7 @@ export default {
       EventBus.$emit(ModalEventsNameEnum.TEACHER_SEND_COMMENT, {
         studentId,
         pageId,
-        itemId,
+        id,
         title,
         answertime,
         ...data

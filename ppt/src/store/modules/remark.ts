@@ -55,6 +55,9 @@ const actions = {
   changeRemarkIndex({commit}: any, index: number) {
     commit(RemarkActionTypes.CHANGE_REMARK_INDEX, index)
   },
+  updateCommentStarOrResponse({commit}: any, data: any) {
+    commit('updateCommentStarOrResponse', data)
+  },
 }
 
 // mutations
@@ -98,12 +101,19 @@ const mutations = {
   [RemarkActionTypes.UPDATE_ONE_REMARK_ITEM](nextState: any, listItem: any) {
     const index = nextState.allRemarks.findIndex((item: any) => item.id === listItem.id)
     const currentData = nextState.allRemarks[index]
-    console.log(currentData, listItem, '====合并remark数据')
     nextState.allRemarks.splice(index, 1, {
       ...currentData,
       ...listItem
     })
   },
+  updateCommentStarOrResponse(nextState: any, data: any) {
+    const index = nextState.allRemarks.findIndex((item: any) => item.id === data.id)
+    const currentData = nextState.allRemarks[index]
+    nextState.allRemarks.splice(index, 1, {
+      ...currentData,
+      ...data
+    })
+  }
 }
 
 export default {

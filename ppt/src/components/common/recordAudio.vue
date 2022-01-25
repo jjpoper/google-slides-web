@@ -21,6 +21,14 @@
       <div class="audio-play"></div>
     </div>
     <div v-show="!endRecording">
+      <div v-if="!audioUrl">
+        <div class="record-footer">
+          <i class="done scale-animation" @click="done"></i>
+          <p v-if="!endRecording" class="record-time">{{getTime(timeValue)}} / 02:00</p>
+        </div>
+      </div>
+    </div>
+    <div v-show="!endRecording">
       <div class="fixed-area" v-if="!audioUrl">
         <audio id="record-audio" width="1" height="1" src="opacity: 0"/>
         <div v-if="isAniInFixed" class="audio-line animation-line">
@@ -236,6 +244,6 @@ export default {
 }
 
 .float-line{
-  margin-top: 15px;
+  /* margin-top: 15px; */
 }
 </style>
