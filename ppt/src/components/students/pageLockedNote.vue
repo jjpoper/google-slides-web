@@ -78,7 +78,7 @@
 import {mapState, mapGetters} from 'vuex'
 import { getStudentCurrentPageAnswerList } from '@/model/store.student';
 import Base64image from '../base64image.vue';
-import DashRightRemarkItem from '../teacher/dash-answer/dash-right-remark-item.vue';
+import DashRightRemarkItem from '../teacher/dash-answer/dash-right-media-item.vue';
 import DashRightCommentItem from '../teacher/dash-answer/dash-right-comment-item.vue';
 export default {
   components: {

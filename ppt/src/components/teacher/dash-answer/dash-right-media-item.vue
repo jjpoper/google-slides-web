@@ -37,15 +37,6 @@ export default {
       type: Object,
       default: () => {}
     }
-  },
-  methods: {
-    getIconClass(name) {
-      if (!name) return "file";
-      name = name.toLocaleLowerCase();
-      if (name.indexOf(".pdf") > -1) return "pdf";
-      if (name.indexOf(".doc") > -1) return "word";
-      return "file";
-    }
   }
 }
 </script>

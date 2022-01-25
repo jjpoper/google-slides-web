@@ -102,7 +102,7 @@ import {mapState, mapGetters, mapActions} from 'vuex'
 import { showToast } from "@/utils/loading";
 import base64image from "../base64image.vue";
 import AudioPlayer from "../common/audioPlayer.vue";
-import DashRightRemarkItem from '../teacher/dash-answer/dash-right-remark-item.vue';
+import DashRightRemarkItem from '../teacher/dash-answer/dash-right-media-item.vue';
 export default {
   components: {
     DashRightRemarkItem

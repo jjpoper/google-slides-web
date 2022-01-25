@@ -62,7 +62,6 @@ export default {
         list = this.allAnswerList
       }
       const data = list.filter((item) => item.id == this.data.id)
-      console.log(data)
       return data[0] || {}
     }
   },
@@ -81,7 +80,7 @@ export default {
       const { id } = this.data;
       const {star} = this.currentOptions
       const nextStatus = star == 1 ? 0 : 1;
-      console.log("星标", this.currentOptions, id);
+      // console.log("星标", this.currentOptions, id);
       // EventBus.$emit(ModalEventsNameEnum.SHOW_STAR_ANSWER, {
       //   pageId,
       //   itemId,

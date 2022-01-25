@@ -39,7 +39,7 @@
 <script>
 import { getAnswerTimeStr, getJSONValue } from '@/utils/help'
 import { mapState, mapGetters } from 'vuex'
-import dashRightRemarkItem from './dash-answer/dash-right-remark-item.vue'
+import dashRightRemarkItem from './dash-answer/dash-right-media-item.vue'
 import DashRightCommentItem from './dash-answer/dash-right-comment-item.vue'
 import DashRightChoiceItem from './dash-answer/dash-right-choice-item.vue'
 import DashRightDrawItem from './dash-answer/dash-right-draw-item.vue'
